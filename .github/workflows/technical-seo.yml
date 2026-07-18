@@ -1,0 +1,29 @@
+name: Technical SEO Audit (unlighthouse)
+
+# 담당 URL의 테크니컬 SEO를 정기/수동으로 실측 → 리포트 아티팩트로 저장
+on:
+  workflow_dispatch:          # 수동 실행
+  schedule:
+    - cron: '0 0 1 * *'       # 매월 1일 00:00 UTC
+
+jobs:
+  seo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # harlan-zw/unlighthouse — 담당 라우트만 크롤(설정파일 사용)
+      - name: Run unlighthouse (technical SEO)
+        run: npx unlighthouse-ci --config-file unlighthouse.config.ts --build-static
+        continue-on-error: true
+
+      # 리포트를 아티팩트로 저장 (다운로드해서 열람, 또는 Pages로 배포 가능)
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: unlighthouse-report
+          path: .unlighthouse
