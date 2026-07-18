@@ -3,23 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="한화 장기CM 6개 상품 실측 SEO 진단 + 범용 PRO 제너레이터. unlighthouse·next-seo·schema-dts 연동 개발자용 To-Do 보드.">
-<title>SEO To-Do 콘솔 — Modooflow</title>
+<meta name="description" content="한화손해보험 다이렉트 장기CM SEO To-Do 콘솔 — 담당 상품(장기·일반)만 실측 진단 + 범용 PRO. unlighthouse·next-seo·schema-dts 연동.">
+<title>한화손보 장기CM · SEO To-Do 콘솔</title>
 <style>
 /* ============================================================
-   SEO To-Do 콘솔 — 개발자용 실행 보드 (한화 장기CM + 범용 PRO)
-   Modooflow 디자인 시스템 · 자체완결 · 외부 의존성 0
+   한화손해보험 다이렉트 · 장기CM SEO To-Do 콘솔 (CM사업부)
+   상단 3토글(장기·일반·범용) · 자체완결 · 외부 의존성 0
    ============================================================ */
 :root{
   --brand:#e0850f; --brand-600:#b96b08; --brand-50:#fdeee0; --brand-tint:#fbf5ec;
   --grad:linear-gradient(135deg,#e0850f 0%,#f29e67 100%);
   --ink:#1e1e2c; --ink-2:#4b4d60; --muted:#8a8ea0; --faint:#c4c8d4;
-  --bg:#f4f3f0; --surface:#ffffff; --surface-2:#faf9f6;
-  --line:#e6e4dd; --line-2:#efeee8;
+  --bg:#f4f3f0; --surface:#ffffff; --surface-2:#faf9f6; --line:#e6e4dd; --line-2:#efeee8;
   --good:#16a34a; --good-bg:#e7f6ee; --good-ink:#0f7a37;
-  --mid:#c47f12;  --mid-bg:#fbf1de;  --mid-ink:#8a5906;
-  --bad:#e5484d;  --bad-bg:#fcecec;  --bad-ink:#b4242a;
-  --side:#191823; --side-2:#26232f; --side-ink:#c9c6d4; --side-ink-2:#8a869b;
+  --mid:#c47f12; --mid-bg:#fbf1de; --mid-ink:#8a5906;
+  --bad:#e5484d; --bad-bg:#fcecec; --bad-ink:#b4242a;
+  --side:#191823; --side-2:#26232f;
   --r:15px; --r-sm:11px; --r-xs:8px;
   --sh:0 1px 2px rgba(24,20,40,.05),0 6px 22px rgba(24,20,40,.06);
   --sh-lg:0 14px 44px rgba(24,20,40,.13);
@@ -34,7 +33,7 @@
   --good:#3ecf7a; --good-bg:#13301f; --good-ink:#5fdd92;
   --mid:#e6a53a; --mid-bg:#33270f; --mid-ink:#f0bd5c;
   --bad:#f2696e; --bad-bg:#361c1e; --bad-ink:#f78a8e;
-  --side:#0f0e14; --side-2:#1a1822; --side-ink:#c9c6d4; --side-ink-2:#7c798c;
+  --side:#0f0e14; --side-2:#1a1822;
   --sh:0 1px 2px rgba(0,0,0,.3),0 6px 22px rgba(0,0,0,.35); --sh-lg:0 14px 44px rgba(0,0,0,.5);
 }}
 :root[data-theme="dark"]{
@@ -45,7 +44,7 @@
   --good:#3ecf7a; --good-bg:#13301f; --good-ink:#5fdd92;
   --mid:#e6a53a; --mid-bg:#33270f; --mid-ink:#f0bd5c;
   --bad:#f2696e; --bad-bg:#361c1e; --bad-ink:#f78a8e;
-  --side:#0f0e14; --side-2:#1a1822; --side-ink:#c9c6d4; --side-ink-2:#7c798c;
+  --side:#0f0e14; --side-2:#1a1822;
   --sh:0 1px 2px rgba(0,0,0,.3),0 6px 22px rgba(0,0,0,.35); --sh-lg:0 14px 44px rgba(0,0,0,.5);
 }
 :root[data-theme="light"]{
@@ -56,83 +55,69 @@
   --good:#16a34a; --good-bg:#e7f6ee; --good-ink:#0f7a37;
   --mid:#c47f12; --mid-bg:#fbf1de; --mid-ink:#8a5906;
   --bad:#e5484d; --bad-bg:#fcecec; --bad-ink:#b4242a;
-  --side:#191823; --side-2:#26232f; --side-ink:#c9c6d4; --side-ink-2:#8a869b;
+  --side:#191823; --side-2:#26232f;
   --sh:0 1px 2px rgba(24,20,40,.05),0 6px 22px rgba(24,20,40,.06); --sh-lg:0 14px 44px rgba(24,20,40,.13);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.55;
   -webkit-font-smoothing:antialiased;letter-spacing:-.01em;word-break:keep-all;}
-.app{display:grid;grid-template-columns:262px 1fr;min-height:100vh;}
-@media(max-width:780px){.app{grid-template-columns:1fr;}.rail{position:static;height:auto;}}
-
-/* 사이드바 */
-.rail{background:linear-gradient(180deg,var(--side),var(--side-2));color:var(--side-ink);
-  padding:18px 14px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;overflow-y:auto;}
-.brand{display:flex;align-items:center;gap:11px;padding:4px 6px 14px;}
-.brand-logo{width:36px;height:36px;border-radius:10px;background:var(--grad);display:flex;align-items:center;
-  justify-content:center;color:#fff;font-weight:800;font-size:13px;box-shadow:0 6px 16px rgba(224,133,15,.45);flex:0 0 auto;}
-.brand-name{font-size:14.5px;font-weight:800;color:#fff;letter-spacing:-.02em;line-height:1.12;}
-.brand-sub{display:block;font-size:9.5px;font-weight:500;color:var(--side-ink-2);margin-top:2px;}
-.mode-switch{display:flex;flex-direction:column;gap:5px;padding:4px 2px 10px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:8px;}
-.mode-btn{display:flex;align-items:center;gap:9px;padding:11px 12px;border-radius:10px;border:1px solid transparent;
-  background:rgba(255,255,255,.05);color:var(--side-ink);font-family:inherit;font-size:13px;font-weight:700;
-  cursor:pointer;text-align:left;transition:.15s;}
-.mode-btn:hover{background:rgba(255,255,255,.1);color:#fff;}
-.mode-btn.on{background:var(--grad);color:#fff;box-shadow:0 8px 18px rgba(224,133,15,.32);}
-.mode-btn .mb-ico{width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,.14);display:flex;
-  align-items:center;justify-content:center;font-size:12px;flex:0 0 auto;}
-.mode-btn.on .mb-ico{background:rgba(255,255,255,.25);}
-.mb-txt{flex:1;min-width:0;}
-.mb-txt small{display:block;font-size:9.5px;font-weight:500;color:var(--side-ink-2);margin-top:1px;}
-.mode-btn.on .mb-txt small{color:rgba(255,255,255,.8);}
-.pro-tag{font-size:8.5px;font-weight:800;background:#fff;color:#b96b08;padding:1px 5px;border-radius:5px;letter-spacing:.04em;}
-.nav-cap{font-size:9.5px;font-weight:800;color:var(--side-ink-2);text-transform:uppercase;letter-spacing:.09em;padding:10px 8px 5px;}
-.scr-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;border:none;background:transparent;
-  color:var(--side-ink);font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;text-align:left;width:100%;transition:.15s;}
-.scr-item:hover{background:rgba(255,255,255,.06);color:#fff;}
-.scr-item.on{background:rgba(255,255,255,.1);color:#fff;}
-.scr-check{width:16px;height:16px;border-radius:5px;border:1.5px solid var(--side-ink-2);flex:0 0 auto;display:flex;
-  align-items:center;justify-content:center;font-size:10px;color:transparent;}
-.scr-item.done .scr-check{background:var(--good);border-color:var(--good);color:#fff;}
-.scr-main{flex:1;min-width:0;}
-.scr-main small{display:block;font-size:9.5px;color:var(--side-ink-2);margin-top:1px;}
-.rail-foot{margin-top:auto;padding:12px 8px 2px;font-size:9.5px;color:var(--side-ink-2);line-height:1.6;}
-
-/* 메인 */
-.main{min-width:0;display:flex;flex-direction:column;}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 28px;
-  border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:0;z-index:20;flex-wrap:wrap;}
-.page-title{font-size:18.5px;font-weight:800;letter-spacing:-.03em;}
-.page-sub{font-size:11.5px;color:var(--muted);margin-top:2px;}
-.tb-actions{display:flex;align-items:center;gap:8px;}
-.pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--brand-600);
-  background:var(--brand-50);border-radius:999px;padding:5px 11px;}
-.pill .dot{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px var(--good-bg);}
-.btn{padding:8px 13px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);
-  font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:.15s;}
-.btn:hover{border-color:var(--brand);color:var(--brand-600);}
-.btn.primary{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(224,133,15,.28);}
-.btn.primary:hover{color:#fff;filter:brightness(1.04);}
-.icon-btn{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--surface);
-  color:var(--ink-2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
-.icon-btn:hover{border-color:var(--brand);color:var(--brand-600);}
-.content{padding:22px 28px 60px;max-width:1080px;width:100%;}
-.view{display:none;} .view.on{display:block;animation:fade .22s ease;}
-@keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+.wrap{max-width:1120px;margin:0 auto;min-height:100vh;}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto;}}
 
-/* 화면 헤더 카드 */
-.scr-hero{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;
-  margin-bottom:16px;box-shadow:var(--sh);}
-.scr-hero-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+/* ── 상단바 + 3토글 ── */
+.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px 18px;flex-wrap:wrap;
+  padding:13px 24px;background:var(--surface);border-bottom:1px solid var(--line);}
+.brand{display:flex;align-items:center;gap:11px;}
+.brand-logo{width:38px;height:38px;border-radius:10px;background:var(--grad);display:flex;align-items:center;
+  justify-content:center;color:#fff;font-weight:800;font-size:13px;box-shadow:0 6px 16px rgba(224,133,15,.42);flex:0 0 auto;letter-spacing:-.02em;}
+.brand-name{font-size:15px;font-weight:800;color:var(--ink);letter-spacing:-.02em;line-height:1.15;}
+.brand-name small{display:block;font-size:10px;font-weight:600;color:var(--muted);margin-top:1px;letter-spacing:0;}
+.seg3{display:inline-flex;background:var(--line-2);border:1px solid var(--line);border-radius:12px;padding:4px;gap:3px;margin-left:auto;}
+.seg3 button{border:none;background:transparent;font-family:inherit;font-weight:800;font-size:13px;color:var(--muted);
+  padding:9px 20px;border-radius:9px;cursor:pointer;transition:.15s;white-space:nowrap;}
+.seg3 button:hover{color:var(--ink);}
+.seg3 button.on{background:var(--grad);color:#fff;box-shadow:0 4px 12px rgba(224,133,15,.3);}
+.seg3 button .cnt{font-family:var(--mono);font-size:10.5px;opacity:.7;margin-left:4px;}
+.icon-btn{width:36px;height:36px;border-radius:9px;border:1px solid var(--line);background:var(--surface);
+  color:var(--ink-2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.icon-btn:hover{border-color:var(--brand);color:var(--brand-600);}
+
+/* ── 상품 칩 서브내비 ── */
+.subnav{display:flex;gap:8px;overflow-x:auto;padding:13px 24px;background:var(--bg);border-bottom:1px solid var(--line);
+  scrollbar-width:thin;}
+.chip{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink-2);font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;
+  white-space:nowrap;transition:.15s;}
+.chip:hover{border-color:var(--brand);color:var(--ink);}
+.chip.on{background:var(--brand-50);border-color:var(--brand);color:var(--brand-600);}
+.chip .cdot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;}
+.chip small{font-family:var(--mono);font-size:10px;color:var(--muted);font-weight:600;}
+.chip.on small{color:var(--brand-600);}
+.chip.pinned{border-style:dashed;}
+
+.content{padding:22px 24px 60px;}
+.view{display:none;} .view.on{display:block;animation:fade .2s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+.scope{font-size:11.5px;color:var(--muted);margin-bottom:14px;line-height:1.6;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.scope .sc-tag{font-weight:800;color:var(--brand-600);background:var(--brand-50);padding:2px 9px;border-radius:6px;}
+
+/* ── 화면 헤더 ── */
+.scr-hero{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin-bottom:16px;box-shadow:var(--sh);}
+.scr-hero-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:11px;}
 .scr-hero-top h2{font-size:17px;font-weight:800;letter-spacing:-.02em;}
 .scr-hero-top .spacer{flex:1;}
 .score-chip{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:12px;font-weight:800;
   padding:4px 10px;border-radius:8px;font-variant-numeric:tabular-nums;}
 .score-chip small{font-family:var(--sans);font-weight:700;opacity:.75;}
-.url-line{font-family:var(--mono);font-size:11.5px;color:var(--brand-600);word-break:break-all;margin-bottom:12px;}
+.delivery{font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:999px;}
+.delivery.direct{background:var(--brand-50);color:var(--brand-600);}
+.delivery.bridge{background:var(--bad-bg);color:var(--bad-ink);}
+.delivery.home{background:var(--line-2);color:var(--ink-2);}
+.url-line{font-family:var(--mono);font-size:11.5px;color:var(--brand-600);word-break:break-all;margin-bottom:4px;}
 .url-line a{color:inherit;}
+.dest-line{font-family:var(--mono);font-size:11px;color:var(--muted);word-break:break-all;margin-bottom:12px;}
+.dest-line b{color:var(--bad-ink);}
 .cur-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 @media(max-width:720px){.cur-grid{grid-template-columns:1fr;}}
 .cur-box{border:1px solid var(--line);border-radius:var(--r-sm);padding:11px 13px;background:var(--surface-2);}
@@ -141,42 +126,36 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .cur-box .cb-v{font-family:var(--mono);font-size:11.5px;line-height:1.5;color:var(--ink);word-break:break-all;}
 .cur-box .cb-v.bad{color:var(--bad-ink);}
 
-/* 진행률 바 */
 .prog{display:flex;align-items:center;gap:12px;margin-bottom:16px;background:var(--surface);border:1px solid var(--line);
   border-radius:var(--r);padding:13px 18px;box-shadow:var(--sh);}
 .prog-bar{flex:1;height:8px;border-radius:99px;background:var(--line-2);overflow:hidden;}
 .prog-fill{height:100%;border-radius:99px;background:var(--grad);transition:width .3s;}
 .prog-num{font-family:var(--mono);font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;}
 .prog-num small{color:var(--muted);font-weight:600;}
-
-/* 섹션 */
 .sec-lbl{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:18px 2px 10px;}
 
-/* To-Do 아이템 */
-.todo{border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface);margin-bottom:11px;
-  box-shadow:var(--sh);overflow:hidden;transition:.15s;}
+/* ── To-Do ── */
+.todo{border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface);margin-bottom:11px;box-shadow:var(--sh);overflow:hidden;}
 .todo.done{opacity:.62;}
 .todo-head{display:flex;align-items:flex-start;gap:12px;padding:13px 15px;cursor:pointer;}
-.chk{width:22px;height:22px;border-radius:7px;border:2px solid var(--faint);flex:0 0 auto;display:flex;
-  align-items:center;justify-content:center;font-size:13px;color:transparent;background:var(--surface);transition:.15s;margin-top:1px;}
+.chk{width:22px;height:22px;border-radius:7px;border:2px solid var(--faint);flex:0 0 auto;display:flex;align-items:center;
+  justify-content:center;font-size:13px;color:transparent;background:var(--surface);transition:.15s;margin-top:1px;}
 .todo.done .chk{background:var(--good);border-color:var(--good);color:#fff;}
 .todo-hmain{flex:1;min-width:0;}
 .todo-what{font-size:14px;font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .todo.done .todo-what{text-decoration:line-through;text-decoration-color:var(--faint);}
 .todo-why{font-size:12px;color:var(--ink-2);margin-top:4px;line-height:1.55;}
 .todo-why code{font-family:var(--mono);font-size:10.5px;background:var(--line-2);padding:1px 5px;border-radius:4px;color:var(--ink);}
-.pri{font-size:10px;font-weight:800;padding:2px 8px;border-radius:999px;letter-spacing:-.01em;flex:0 0 auto;}
-.pri.상{background:var(--bad-bg);color:var(--bad-ink);}
-.pri.중{background:var(--mid-bg);color:var(--mid-ink);}
-.pri.하{background:var(--line-2);color:var(--ink-2);}
+.pri{font-size:10px;font-weight:800;padding:2px 8px;border-radius:999px;flex:0 0 auto;}
+.pri.상{background:var(--bad-bg);color:var(--bad-ink);} .pri.중{background:var(--mid-bg);color:var(--mid-ink);} .pri.하{background:var(--line-2);color:var(--ink-2);}
 .todo-body{padding:0 15px 15px 49px;}
 .code-row{margin-top:8px;}
-.code-lbl{font-size:9.5px;font-weight:800;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;
-  margin-bottom:3px;display:flex;align-items:center;justify-content:space-between;}
+.code-lbl{font-size:9.5px;font-weight:800;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:3px;
+  display:flex;align-items:center;justify-content:space-between;}
 .code-lbl .cp{cursor:pointer;color:var(--brand-600);border:none;background:none;font-family:inherit;font-size:10px;font-weight:700;padding:0;}
 .code-lbl .cp:hover{text-decoration:underline;}
 .codeblk{font-family:var(--mono);font-size:11.5px;line-height:1.6;border-radius:8px;padding:11px 13px;overflow-x:auto;white-space:pre;}
-.codeblk.before{background:var(--bad-bg);color:var(--bad-ink);border:1px solid var(--bad-bg);}
+.codeblk.before{background:var(--bad-bg);color:var(--bad-ink);}
 .codeblk.after{background:var(--side);color:#e8e6f0;}
 .codeblk.after .tag{color:#f0b968;} .codeblk.after .str{color:#7fe0a3;} .codeblk.after .cm{color:#8a869b;}
 .meter{display:flex;align-items:center;gap:8px;margin-top:7px;}
@@ -185,95 +164,68 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .meter-num{font-family:var(--mono);font-size:10.5px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;}
 .meter-num small{color:var(--muted);font-weight:600;}
 
-/* PRO 입력 폼 */
-.pro-hero{background:linear-gradient(135deg,var(--brand-tint),var(--surface));border:1px solid var(--line);
-  border-radius:var(--r);padding:20px 22px;margin-bottom:16px;box-shadow:var(--sh);}
+/* ── PRO ── */
+.pro-hero{background:linear-gradient(135deg,var(--brand-tint),var(--surface));border:1px solid var(--line);border-radius:var(--r);padding:20px 22px;margin-bottom:16px;box-shadow:var(--sh);}
 .pro-hero h2{font-size:18px;font-weight:800;display:flex;align-items:center;gap:9px;letter-spacing:-.02em;}
 .pro-badge{font-size:10px;font-weight:800;background:var(--grad);color:#fff;padding:3px 9px;border-radius:6px;letter-spacing:.04em;}
 .pro-hero p{font-size:12.5px;color:var(--ink-2);margin-top:6px;line-height:1.6;}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;background:var(--surface);border:1px solid var(--line);
-  border-radius:var(--r);padding:20px;box-shadow:var(--sh);}
-@media(max-width:720px){.form-grid{grid-template-columns:1fr;}}
-.ff{display:flex;flex-direction:column;gap:5px;}
-.ff.full{grid-column:1/-1;}
-.ff label{font-size:11px;font-weight:800;color:var(--ink-2);letter-spacing:.01em;}
-.ff label small{color:var(--muted);font-weight:600;}
-.ff input,.ff select,.ff textarea{font-family:inherit;font-size:12.5px;color:var(--ink);background:var(--surface-2);
-  border:1px solid var(--line);border-radius:9px;padding:9px 11px;transition:.15s;width:100%;}
-.ff input:focus,.ff select:focus,.ff textarea:focus{outline:none;border-color:var(--brand);background:var(--surface);
-  box-shadow:0 0 0 3px var(--brand-50);}
-.ff textarea{resize:vertical;min-height:52px;line-height:1.5;}
-.form-actions{grid-column:1/-1;display:flex;gap:10px;align-items:center;margin-top:4px;flex-wrap:wrap;}
-.form-actions .hint{font-size:11px;color:var(--muted);}
 .import-card{background:var(--surface);border:1px dashed var(--brand);border-radius:var(--r);padding:15px 18px;margin-bottom:14px;box-shadow:var(--sh);}
 .import-card .ic-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;font-size:12.5px;}
 .import-card .ic-top b{font-weight:800;}
 .import-card textarea{width:100%;min-height:64px;font-family:var(--mono);font-size:11px;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:9px 11px;color:var(--ink);resize:vertical;line-height:1.5;}
 .import-card .ic-actions{display:flex;align-items:center;gap:10px;margin-top:9px;flex-wrap:wrap;}
-.impl-note{font-size:11.5px;color:var(--ink-2);line-height:1.65;margin-bottom:11px;}
-.impl-note a{color:var(--brand-600);font-weight:700;text-decoration:none;}
-.impl-note a:hover{text-decoration:underline;}
-.impl-block{margin-bottom:11px;}
-.impl-block .code-lbl{margin-bottom:4px;}
-
-/* PRO 결과 */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--sh);}
+@media(max-width:720px){.form-grid{grid-template-columns:1fr;}}
+.ff{display:flex;flex-direction:column;gap:5px;} .ff.full{grid-column:1/-1;}
+.ff label{font-size:11px;font-weight:800;color:var(--ink-2);} .ff label small{color:var(--muted);font-weight:600;}
+.ff input,.ff select,.ff textarea{font-family:inherit;font-size:12.5px;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:9px 11px;transition:.15s;width:100%;}
+.ff input:focus,.ff select:focus,.ff textarea:focus{outline:none;border-color:var(--brand);background:var(--surface);box-shadow:0 0 0 3px var(--brand-50);}
+.ff textarea{resize:vertical;min-height:52px;line-height:1.5;}
+.form-actions{grid-column:1/-1;display:flex;gap:10px;align-items:center;margin-top:4px;flex-wrap:wrap;}
+.form-actions .hint{font-size:11px;color:var(--muted);}
+.btn{padding:8px 13px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:.15s;}
+.btn:hover{border-color:var(--brand);color:var(--brand-600);}
+.btn.primary{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(224,133,15,.28);}
 .pro-result{margin-top:18px;}
 .copy-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
 @media(max-width:820px){.copy-grid{grid-template-columns:1fr;}}
 .copy-card{border:1px solid var(--line);border-radius:var(--r-sm);padding:14px;background:var(--surface);display:flex;flex-direction:column;gap:11px;box-shadow:var(--sh);}
-.copy-card .cc-t{font-size:12px;font-weight:800;}
-.copy-card .cc-tg{font-size:10px;font-weight:700;color:var(--muted);}
+.copy-card .cc-t{font-size:12px;font-weight:800;} .copy-card .cc-tg{font-size:10px;font-weight:700;color:var(--muted);}
 .cfield{display:flex;flex-direction:column;gap:4px;}
 .cf-lbl{font-size:9.5px;font-weight:800;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;display:flex;justify-content:space-between;}
 .cf-lbl .cp{cursor:pointer;color:var(--brand-600);border:none;background:none;font-family:inherit;font-size:9.5px;font-weight:700;padding:0;}
 .cf-text{font-size:12px;line-height:1.5;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:8px 10px;}
+.impl-note{font-size:11.5px;color:var(--ink-2);line-height:1.65;margin-bottom:11px;}
+.impl-note a{color:var(--brand-600);font-weight:700;text-decoration:none;} .impl-note a:hover{text-decoration:underline;}
+.impl-block{margin-bottom:11px;} .impl-block .code-lbl{margin-bottom:4px;}
 
 .badge{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:999px;white-space:nowrap;}
-.badge.good{background:var(--good-bg);color:var(--good-ink);}
-.badge.mid{background:var(--mid-bg);color:var(--mid-ink);}
-.badge.bad{background:var(--bad-bg);color:var(--bad-ink);}
-.badge.ghost{background:var(--line-2);color:var(--ink-2);}
-.foot-note{font-size:11px;color:var(--muted);line-height:1.6;margin-top:18px;padding:12px 14px;background:var(--surface-2);
-  border:1px solid var(--line);border-radius:var(--r-sm);}
+.badge.good{background:var(--good-bg);color:var(--good-ink);} .badge.mid{background:var(--mid-bg);color:var(--mid-ink);}
+.badge.bad{background:var(--bad-bg);color:var(--bad-ink);} .badge.ghost{background:var(--line-2);color:var(--ink-2);}
+.foot-note{font-size:11px;color:var(--muted);line-height:1.6;margin-top:18px;padding:12px 14px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);}
 .foot-note b{color:var(--ink-2);font-weight:800;}
-.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);
-  padding:10px 18px;border-radius:10px;font-size:12.5px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:50;box-shadow:var(--sh-lg);}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:10px;font-size:12.5px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:50;box-shadow:var(--sh-lg);}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-.empty-state{text-align:center;padding:50px 20px;color:var(--muted);}
-.empty-state .es-ico{font-size:34px;margin-bottom:10px;}
 </style>
 </head>
 <body>
-<div class="app">
-  <aside class="rail">
+<div class="wrap">
+  <header class="topbar">
     <div class="brand">
-      <div class="brand-logo">MF</div>
-      <div><div class="brand-name">Modooflow<span class="brand-sub">SEO To-Do 콘솔</span></div></div>
+      <div class="brand-logo">CM</div>
+      <div class="brand-name">한화손해보험 다이렉트<small>장기CM · SEO To-Do 콘솔 · CM사업부</small></div>
     </div>
-    <div class="mode-switch">
-      <button class="mode-btn on" data-mode="hanwha">
-        <span class="mb-ico">🏢</span><span class="mb-txt">한화 장기CM<small>실측 6개 화면 · 고정 진단</small></span>
-      </button>
-      <button class="mode-btn" data-mode="pro">
-        <span class="mb-ico">⚡</span><span class="mb-txt">범용 SEO 솔루션 <span class="pro-tag">PRO</span><small>URL 입력 → 진단·To-Do 자동생성</small></span>
-      </button>
+    <div class="seg3" id="seg3">
+      <button data-cat="장기" class="on">장기<span class="cnt">7</span></button>
+      <button data-cat="일반">일반<span class="cnt">1</span></button>
+      <button data-cat="범용">범용 PRO</button>
     </div>
-    <div id="railBody"></div>
-    <div class="rail-foot" id="railFoot"></div>
-  </aside>
-
-  <main class="main">
-    <header class="topbar">
-      <div>
-        <div class="page-title" id="pgTitle">한화 장기CM</div>
-        <div class="page-sub" id="pgSub">현행 화면 실측 기반 개발 To-Do</div>
-      </div>
-      <div class="tb-actions" id="tbActions"></div>
-    </header>
-    <div class="content">
-      <section class="view on" id="v-hanwha"></section>
-      <section class="view" id="v-pro"></section>
-    </div>
+    <button class="icon-btn" id="themeBtn" title="라이트/다크 전환">◐</button>
+  </header>
+  <nav class="subnav" id="subnav"></nav>
+  <main class="content">
+    <section class="view on" id="v-product"></section>
+    <section class="view" id="v-pro"></section>
   </main>
 </div>
 <div class="toast" id="toast"></div>
@@ -281,76 +233,91 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 <script>
 "use strict";
 /* ============================================================
-   실측 데이터 — 네이버 웹문서 색인(2026-07-18)의 실제 SERP 노출값
+   담당 상품(CM사업부) 실측 데이터 — 네이버 색인(2026-07-18)
+   URL은 모바일(m.hanwhadirect.com) 기준. TM·오프라인 제외.
    ============================================================ */
 const W={google:{title:.22,meta:.12,semantic:.22,url:.12,social:.10,trust:.22},
          naver:{title:.24,meta:.22,semantic:.10,url:.08,social:.16,trust:.20}};
 const AXES=["title","meta","semantic","url","social","trust"];
 
 const PRODUCTS=[
-  {key:"fire",site:"hanwha",name:"주택화재보험",product:"119주택화재보험 무배당2506",
-   url:"https://www.hanwhadirect.com/ltr/hrmf/main.do",
-   exTitle:"화재>고객정보입력",exTitleV:"bad",
+  {key:"home",cat:"home",name:"다이렉트 홈(메인)",product:"한화손해보험 다이렉트 메인",brand:"한화손해보험 다이렉트",delivery:"home",path:"/",
+   url:"https://m.hanwhadirect.com/",exTitle:"메인>다이렉트 홈",exTitleV:"bad",
+   exDesc:"한화손해보험 다이렉트보험 공식사이트, 자동차보험, 장기보험, 운전자, 골프, 화재 등 보상서비스, 고객센터.",exDescV:"mid",
+   exOg:"없음(추정)",ax:{title:26,meta:55,semantic:45,url:62,social:32,trust:64}},
+
+  {key:"hrmf",cat:"장기",name:"주택화재보험",product:"119주택화재보험 무배당2506",brand:"한화 다이렉트",delivery:"direct",path:"/ltr/hrmf/main.do",
+   url:"https://m.hanwhadirect.com/ltr/hrmf/main.do",exTitle:"화재>고객정보입력",exTitleV:"bad",
    exDesc:"찾는 직업이 없으면 가장 유사한 직업을 선택하고, 부업이나 겸업이 있다면 가장 위험하다고 생각되는 직업을 선택하세요.",exDescV:"bad",
    exOg:"없음(추정)",ax:{title:18,meta:15,semantic:42,url:45,social:25,trust:55}},
-  {key:"cancer",site:"hanwha",name:"암보험",product:"내가고른 암보험 무배당2604",
-   url:"https://www.hanwhadirect.com/ltr/cncr/",
-   exTitle:"암>고객정보입력 - 메인>다이렉트 홈",exTitleV:"bad",
-   exDesc:"이 상품을 꼭 가입하셔야 하는 이유 … 확인필-제2026-장기CM사업부-기타(광고)01545L",exDescV:"mid",
-   exOg:"없음(추정)",ax:{title:20,meta:35,semantic:45,url:42,social:28,trust:52}},
-  {key:"dental",site:"hanwha",name:"치아보험",product:"치아안심보험 무배당2504",
-   url:"https://www.hanwhadirect.com/ltr/dntl/",
-   exTitle:"한화손해보험 다이렉트 치아안심보험 무배당2504",exTitleV:"good",
-   exDesc:"남자 · 여자 ; 자가용 · 영업용 · 비운전자",exDescV:"bad",
-   exOg:"없음(추정)",ax:{title:68,meta:30,semantic:50,url:45,social:35,trust:58}},
-  {key:"golf",site:"hanwha",name:"골프보험",product:"홀인원보험 무배당2604",
-   url:"https://www.hanwhadirect.com/ltr/golf/",
-   exTitle:"골프>고객정보입력",exTitleV:"bad",
+  {key:"golf",cat:"장기",name:"골프보험",product:"홀인원보험 무배당2604",brand:"한화 다이렉트",delivery:"direct",path:"/ltr/golf/",
+   url:"https://m.hanwhadirect.com/ltr/golf/",exTitle:"골프>고객정보입력",exTitleV:"bad",
    exDesc:"찾는 직업이 없으면 가장 유사한 직업을 선택하고, 부업이나 겸업이 있다면 가장 위험하다고 생각되는 직업을 선택하세요.",exDescV:"bad",
    exOg:"없음(추정)",ax:{title:18,meta:15,semantic:42,url:45,social:25,trust:54}},
-  {key:"women",site:"carrot",name:"여성건강보험",product:"시그니처 여성건강보험4.0(무)2604",
-   url:"https://www.carrotins.com/long-term/women-signature/",
-   exTitle:"한화 다이렉트 시그니처 여성 건강보험4.0(무)",exTitleV:"good",
-   exDesc:"아이가 생기고, 출산은 물론 산후조리원비용까지 지급해요. 임신지원금(1회한), 출산지원금(세부보장별각1회한), 출산후조리원비용(실손)(14일한도)",exDescV:"good",
-   exOg:"설정(추정)",ax:{title:80,meta:78,semantic:62,url:70,social:60,trust:66}},
-  {key:"driver",site:"carrot",name:"운전자보험",product:"캐롯 운전자보험 무배당2604",
-   url:"https://www.carrotins.com/long-term/driver",
-   exTitle:"캐롯 운전자보험 무배당2604",exTitleV:"good",
+  {key:"cncr",cat:"장기",name:"암보험",product:"내가고른 암보험 무배당2604",brand:"한화 다이렉트",delivery:"direct",path:"/ltr/cncr/",
+   url:"https://m.hanwhadirect.com/ltr/cncr/",exTitle:"암>고객정보입력 - 메인>다이렉트 홈",exTitleV:"bad",
+   exDesc:"이 상품을 꼭 가입하셔야 하는 이유 … 확인필-제2026-장기CM사업부-기타(광고)01545L",exDescV:"mid",
+   exOg:"없음(추정)",ax:{title:20,meta:35,semantic:45,url:42,social:28,trust:52}},
+  {key:"dntl",cat:"장기",name:"치아보험",product:"치아안심보험 무배당2504",brand:"한화 다이렉트",delivery:"direct",path:"/ltr/dntl/",
+   url:"https://m.hanwhadirect.com/ltr/dntl/",exTitle:"한화손해보험 다이렉트 치아안심보험 무배당2504",exTitleV:"good",
+   exDesc:"남자 · 여자 ; 자가용 · 영업용 · 비운전자",exDescV:"bad",
+   exOg:"없음(추정)",ax:{title:68,meta:30,semantic:50,url:45,social:35,trust:58}},
+  {key:"driver",cat:"장기",name:"운전자보험",product:"캐롯 운전자보험 무배당2604",brand:"캐롯(한화손보)",delivery:"bridge",path:"/cmcom/carrotBridge.do?carrot=driver",destUrl:"https://www.carrotins.com/long-term/driver",
+   url:"https://m.hanwhadirect.com/cmcom/carrotBridge.do?carrot=driver",exTitle:"캐롯 운전자보험 무배당2604",exTitleV:"good",
    exDesc:"자동차보험, 운전자보험, 해외여행보험 등 가입부터 관리까지 비대면으로 간편하게 가입. 한화손보 캐롯의 다양한 보험상품과 혜택, 이벤트를 확인해보세요",exDescV:"mid",
-   exOg:"설정(추정)",ax:{title:72,meta:45,semantic:60,url:72,social:55,trust:64}}
+   exOg:"설정(추정)",ax:{title:72,meta:45,semantic:60,url:48,social:55,trust:60}},
+  {key:"woman",cat:"장기",name:"여성건강보험",product:"시그니처 여성건강보험4.0(무)2604",brand:"캐롯(한화손보)",delivery:"bridge",path:"/cmcom/carrotBridge.do?carrot=woman",destUrl:"https://www.carrotins.com/long-term/women-signature/",
+   url:"https://m.hanwhadirect.com/cmcom/carrotBridge.do?carrot=woman",exTitle:"한화 다이렉트 시그니처 여성 건강보험4.0(무)",exTitleV:"good",
+   exDesc:"아이가 생기고, 출산은 물론 산후조리원비용까지 지급해요. 임신지원금(1회한), 출산지원금(세부보장별각1회한), 출산후조리원비용(실손)(14일한도)",exDescV:"good",
+   exOg:"설정(추정)",ax:{title:80,meta:78,semantic:62,url:50,social:60,trust:64}},
+  {key:"birth",cat:"장기",name:"임신·출산(태아)보험",product:"캐롯 태아/출산 보장",brand:"캐롯(한화손보)",delivery:"bridge",path:"/cmcom/carrotBridge.do?carrot=birth",destUrl:"https://www.carrotins.com/",
+   url:"https://m.hanwhadirect.com/cmcom/carrotBridge.do?carrot=birth",exTitle:"(전용 색인 노출 약함 — 태아보험 SERP를 경쟁사가 점유)",exTitleV:"bad",
+   exDesc:"(캐롯 임신·출산 상품 전용 랜딩이 검색에 뚜렷이 잡히지 않음 — 브릿지 목적지가 홈으로 연결됨)",exDescV:"bad",
+   exOg:"미상",ax:{title:22,meta:20,semantic:40,url:40,social:35,trust:48}},
+
+  {key:"overseas",cat:"일반",name:"해외여행보험",product:"캐롯 해외여행보험",brand:"캐롯(한화손보)",delivery:"bridge",path:"/cmcom/carrotBridge.do?carrot=overseas",destUrl:"https://www.carrotins.com/product/overseas",
+   url:"https://m.hanwhadirect.com/cmcom/carrotBridge.do?carrot=overseas",exTitle:"한화손보 캐롯 해외여행보험 | 여행자 보험료 개인정보 없이 간편 확인",exTitleV:"good",
+   exDesc:"출국 7일 이전 가입 ; 2명 이상 함께 가입 ; 10% 환급 ; 고객님께 안내드립니다. 전쟁, 내란, 폭동, 외국의 무력행사 등으로 발생한 손해는 보험에서 보상되지 않습니다.",exDescV:"mid",
+   exOg:"설정(추정)",ax:{title:78,meta:52,semantic:60,url:52,social:58,trust:66}}
 ];
-// 상품별 추천 카피 (광고심의 준수)
+
 const COPY={
-  fire:{nt:"한화 다이렉트 주택화재보험 | 풍수재·임시거주비 보장",
+  home:{nt:"한화손해보험 다이렉트 | 자동차·운전자·암·치아·화재보험",
+        gd:"자동차·운전자·암·치아·주택화재보험까지, 한화손해보험 다이렉트에서 개인정보 없이 온라인으로 비교하고 보험료를 확인하세요.",
+        st:"한화손해보험 다이렉트 — 필요한 보험을 한 곳에서",
+        sd:"자동차부터 장기보험까지, 개인정보 없이 3분 만에 보험료를 확인해요.",h1:"한화손해보험 다이렉트"},
+  hrmf:{nt:"한화 다이렉트 주택화재보험 | 풍수재·임시거주비 보장",
         gd:"화재·누수·풍수재로 인한 주택 피해와 임시거주비까지. 한화 다이렉트 119주택화재보험을 온라인에서 설계하고 보험료를 확인하세요.",
         st:"우리 집, 화재·폭우에도 괜찮을까? — 한화 다이렉트",
-        sd:"임시거주비까지 챙기는 주택화재보험을 3분 만에 설계하고 카톡으로 가족과 공유해요.",
-        h1:"주택화재보험 — 119주택화재보험"},
-  cancer:{nt:"한화 다이렉트 내가고른 암보험 | 4대유사암 단독가입",
-        gd:"필요한 담보만 직접 고르는 한화 다이렉트 암보험. 4대 유사암 단독 가입과 진단·수술·입원비 보장을 온라인에서 설계·비교해 보세요.",
-        st:"내 암보험, 담보는 내가 고른다 — 한화 다이렉트",
-        sd:"필요한 보장만 골라 담고 불필요한 특약은 빼고. 카톡으로 공유하고 보험료까지 3분 안에 확인해요.",
-        h1:"내가고른 암보험 — 담보 선택형"},
-  dental:{nt:"한화 다이렉트 치아안심보험 | 스케일링·보철 보장",
-        gd:"충치·치주질환 치료비부터 스케일링까지. 한화 다이렉트 치아안심보험의 보존·보철 보장과 보험료를 온라인에서 바로 확인하세요.",
-        st:"스케일링부터 임플란트까지 — 한화 다이렉트 치아보험",
-        sd:"미루기 쉬운 치과 치료비, 미리 준비해요. 보장과 보험료를 3분 만에 확인하고 카톡으로 공유하세요.",
-        h1:"치아안심보험 — 보존·보철 보장"},
+        sd:"임시거주비까지 챙기는 주택화재보험을 3분 만에 설계하고 카톡으로 가족과 공유해요.",h1:"주택화재보험 — 119주택화재보험"},
   golf:{nt:"한화 다이렉트 골프보험 | 홀인원·배상책임 보장",
         gd:"홀인원 축하비용부터 타인 상해 배상책임까지. 한화 다이렉트 골프보험으로 라운딩 중 위험을 온라인에서 설계하고 보험료를 확인하세요.",
         st:"홀인원, 축하만큼 비용도 크다 — 한화 다이렉트 골프보험",
-        sd:"라운딩 중 사고·배상책임·홀인원 비용까지. 3분 만에 설계하고 동반자와 공유해요.",
-        h1:"골프보험 — 홀인원·배상책임"},
-  women:{nt:"캐롯 시그니처 여성건강보험 | 임신·출산·산후조리 지원",
-        gd:"임신·출산지원금부터 산후조리원 비용까지. 캐롯 시그니처 여성건강보험4.0의 여성 특화 보장을 온라인에서 설계하고 보험료를 확인하세요.",
-        st:"임신부터 산후조리까지, 여성을 위한 설계 — 캐롯",
-        sd:"출산지원금과 산후조리원 비용까지 챙기는 여성건강보험. 3분 만에 설계하고 카톡으로 공유해요.",
-        h1:"시그니처 여성건강보험4.0"},
+        sd:"라운딩 중 사고·배상책임·홀인원 비용까지. 3분 만에 설계하고 동반자와 공유해요.",h1:"골프보험 — 홀인원·배상책임"},
+  cncr:{nt:"한화 다이렉트 내가고른 암보험 | 4대유사암 단독가입",
+        gd:"필요한 담보만 직접 고르는 한화 다이렉트 암보험. 4대 유사암 단독 가입과 진단·수술·입원비 보장을 온라인에서 설계·비교해 보세요.",
+        st:"내 암보험, 담보는 내가 고른다 — 한화 다이렉트",
+        sd:"필요한 보장만 골라 담고 불필요한 특약은 빼고. 카톡으로 공유하고 보험료까지 3분 안에 확인해요.",h1:"내가고른 암보험 — 담보 선택형"},
+  dntl:{nt:"한화 다이렉트 치아안심보험 | 스케일링·보철 보장",
+        gd:"충치·치주질환 치료비부터 스케일링까지. 한화 다이렉트 치아안심보험의 보존·보철 보장과 보험료를 온라인에서 바로 확인하세요.",
+        st:"스케일링부터 임플란트까지 — 한화 다이렉트 치아보험",
+        sd:"미루기 쉬운 치과 치료비, 미리 준비해요. 보장과 보험료를 3분 만에 확인하고 카톡으로 공유하세요.",h1:"치아안심보험 — 보존·보철 보장"},
   driver:{nt:"캐롯 운전자보험 | 교통사고 벌금·변호사·합의금 보장",
         gd:"교통사고 벌금·변호사선임비·형사합의금까지. 캐롯 운전자보험을 온라인에서 필요한 담보만 골라 설계하고 보험료를 확인하세요.",
         st:"사고는 순간, 비용은 오래 간다 — 캐롯 운전자보험",
-        sd:"벌금·변호사비·합의금까지 대비하는 운전자보험. 3분 만에 담보를 골라 설계하고 카톡으로 공유해요.",
-        h1:"캐롯 운전자보험"}
+        sd:"벌금·변호사비·합의금까지 대비하는 운전자보험. 3분 만에 담보를 골라 설계하고 카톡으로 공유해요.",h1:"캐롯 운전자보험"},
+  woman:{nt:"캐롯 시그니처 여성건강보험 | 임신·출산·산후조리 지원",
+        gd:"임신·출산지원금부터 산후조리원 비용까지. 캐롯 시그니처 여성건강보험4.0의 여성 특화 보장을 온라인에서 설계하고 보험료를 확인하세요.",
+        st:"임신부터 산후조리까지, 여성을 위한 설계 — 캐롯",
+        sd:"출산지원금과 산후조리원 비용까지 챙기는 여성건강보험. 3분 만에 설계하고 카톡으로 공유해요.",h1:"시그니처 여성건강보험4.0"},
+  birth:{nt:"캐롯 태아보험 | 임신·출산·선천이상 보장 설계",
+        gd:"임신 중 가입부터 미숙아·선천이상 수술·입원 보장까지. 캐롯 태아보험을 온라인에서 설계하고 보험료를 확인하세요.",
+        st:"엄마가 되기 전에, 태아보험부터 — 캐롯",
+        sd:"임신 22주 전 가입·태아 특약까지. 3분 만에 설계하고 카톡으로 공유해요.",h1:"캐롯 태아보험"},
+  overseas:{nt:"캐롯 해외여행보험 | 개인정보 없이 여행자보험료 확인",
+        gd:"출국 전 간편 가입과 무사고 시 캐시백까지. 캐롯 해외여행보험을 개인정보 없이 온라인에서 비교하고 보험료를 확인하세요.",
+        st:"여행 전 3분, 캐롯 해외여행보험",
+        sd:"출국 전 간편가입·무사고 캐시백. 개인정보 없이 보험료를 바로 확인해요.",h1:"캐롯 해외여행보험"}
 };
 
 /* ── 유틸 ── */
@@ -362,173 +329,92 @@ const gScore=p=>Math.round(AXES.reduce((s,k)=>s+p.ax[k]*W.google[k],0));
 const nScore=p=>Math.round(AXES.reduce((s,k)=>s+p.ax[k]*W.naver[k],0));
 const grade=n=>n>=80?["A","good"]:n>=65?["B","good"]:n>=50?["C","mid"]:n>=40?["D","mid"]:["F","bad"];
 const sevWord=v=>v==="good"?"양호":v==="mid"?"보통":"수정필요";
-const colOf=g=>g==="good"?"var(--good)":g==="mid"?"var(--mid)":"var(--bad)";
 const bgOf=g=>g==="good"?"var(--good-bg)":g==="mid"?"var(--mid-bg)":"var(--bad-bg)";
 const inkOf=g=>g==="good"?"var(--good-ink)":g==="mid"?"var(--mid-ink)":"var(--bad-ink)";
+const delWord=d=>d==="direct"?"한화 다이렉트 직접":d==="bridge"?"캐롯 분기(브릿지)":"메인 사이트";
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1500);}
-function hlAfter(s){return esc(s).replace(/(&lt;\/?[a-z0-9]+)/gi,'<span class="tag">$1</span>').replace(/(&lt;!--.*?--&gt;)/g,'<span class="cm">$1</span>').replace(/content=(&quot;.*?&quot;)/g,'content=<span class="str">$1</span>');}
+function hlAfter(s){return esc(s).replace(/(&lt;\/?[a-z0-9]+)/gi,'<span class="tag">$1</span>').replace(/(&lt;!--[\s\S]*?--&gt;)/g,'<span class="cm">$1</span>').replace(/content=(&quot;.*?&quot;)/g,'content=<span class="str">$1</span>');}
 
-/* ── 완료상태 저장 ── */
-const DONE_KEY="mf_seo_done_v1";
-function loadDone(){try{return JSON.parse(localStorage.getItem(DONE_KEY)||"{}");}catch(e){return{};}}
-function saveDone(d){try{localStorage.setItem(DONE_KEY,JSON.stringify(d));}catch(e){}}
-let DONE=loadDone();
+/* ── 완료 저장 ── */
+const DONE_KEY="hw_cm_seo_done_v1";
+let DONE=(()=>{try{return JSON.parse(localStorage.getItem(DONE_KEY)||"{}");}catch(e){return{};}})();
 const isDone=id=>!!DONE[id];
-function setDone(id,v){DONE[id]=v;if(!v)delete DONE[id];saveDone(DONE);}
+function setDone(id,v){if(v)DONE[id]=1;else delete DONE[id];try{localStorage.setItem(DONE_KEY,JSON.stringify(DONE));}catch(e){}}
 
 /* ── 미터 ── */
 function meter(text,limit){
   const c=charLen(text),u=utf8Len(text),e=euckrLen(text);
-  const over=c>limit,near=c>limit*.85,col=over?"var(--bad)":near?"var(--mid)":"var(--good)";
+  const col=c>limit?"var(--bad)":c>limit*.85?"var(--mid)":"var(--good)";
   return `<div class="meter"><div class="meter-bar"><div class="meter-fill" style="width:${Math.min(100,c/limit*100)}%;background:${col}"></div></div>
     <div class="meter-num" style="color:${col}">${c}자 <small>/${limit} · ${u}B(UTF-8) · ${e}B(EUC-KR)</small></div></div>`;
 }
 
-/* ── To-Do 생성 (실측/입력값 → 실행 항목) ── */
+/* ── To-Do 생성 (현행 화면 + 분기/모바일 대응) ── */
 function todosFor(p,c){
   const T=[];
   T.push({id:"title",pri:p.exTitleV==="good"?"중":"상",what:"&lt;title&gt; 교체",
-    why:p.exTitleV==="bad"?`현재 제목이 가입폼 스텝(<code>${esc(p.exTitle)}</code>) — 상품명·핵심담보 없음`:`상품명은 있으나 <code>무배당·4.0</code> 등 비핵심 토큰이 노출 픽셀 차지`,
+    why:p.exTitleV==="bad"?`현재 제목이 가입폼/브레드크럼(<code>${esc(p.exTitle)}</code>) — 상품명·핵심담보 없음`:`상품명은 있으나 <code>무배당·4.0</code> 등 비핵심 토큰이 노출 픽셀 차지`,
     before:`<title>${p.exTitle}</title>`,after:`<title>${c.nt}</title>`,meterText:c.nt,meterLimit:30});
   T.push({id:"meta",pri:p.exDescV==="good"?"하":"상",what:'&lt;meta name="description"&gt; 신설/교체',
     why:p.exDescV==="bad"?`검색 스니펫에 <b>폼 라벨/안내문</b>이 그대로 유출됨`:p.exDescV==="mid"?`사이트 공통·심의문구라 이 화면만의 개별성이 없음`:`혜택 중심으로 양호 — 핵심 키워드 앞배치만 미세 조정`,
-    before:p.exDescV==="bad"?`<!-- description 미설정 → 본문 폼 텍스트가 스니펫으로 노출 -->`:`<meta name="description" content="${p.exDesc.slice(0,54)}…">`,
+    before:p.exDescV==="bad"?`<!-- description 미설정/부적절 → 본문·폼 텍스트가 스니펫으로 노출 -->`:`<meta name="description" content="${p.exDesc.slice(0,52)}…">`,
     after:`<meta name="description" content="${c.gd}">`,meterText:c.gd,meterLimit:80});
+  if(p.delivery==="bridge") T.push({id:"bridge",pri:"상",what:"분기(carrotBridge) 색인·canonical 정리",
+    why:`<code>carrotBridge.do</code>는 <b>캐롯으로 URL이 분기(이동)</b>되는 페이지 — 브릿지 자체 색인은 거의 없고(전체 55건) 랭킹·링크에쿼티는 캐롯이 가져갑니다. <code>campaignId</code> 파라미터로 URL도 중복됩니다.`,
+    before:`<!-- ${p.path}\n     302(추정) 이동 · canonical 없음 · campaignId=... 로 URL 중복 -->`,
+    after:`<!-- 목적지가 정본이면: 301 영구이동 + canonical 통일 -->\n<link rel="canonical" href="${p.destUrl}">\n<!-- CM이 랭킹을 직접 확보하려면: 브릿지 대신 hanwhadirect에 상품 콘텐츠 랜딩을 두고 캐롯 견적으로 연결 -->`});
   T.push({id:"og",pri:p.exOg.startsWith("설정")?"하":"중",what:"OG 태그 세트 추가/점검",
     why:`카톡·블로그 공유 미리보기용 (현재: <code>${esc(p.exOg)}</code>)`,
     before:`<!-- og:* 태그 없음/부분 -->`,
-    after:`<meta property="og:title" content="${c.st}">\n<meta property="og:description" content="${c.sd}">\n<meta property="og:image" content="https://.../og/${p.key}_1200x630.png">\n<meta property="og:url" content="${p.url}">`});
-  if(p.exTitleV==="bad") T.push({id:"h1",pri:"중",what:"H1을 상품명으로 1회만 지정",
+    after:`<meta property="og:title" content="${c.st}">\n<meta property="og:description" content="${c.sd}">\n<meta property="og:image" content="https://.../og/${p.key}_1200x630.png">\n<meta property="og:url" content="${p.delivery==="bridge"?p.destUrl:p.url}">`});
+  if(p.delivery!=="bridge") T.push({id:"mobile",pri:"중",what:"모바일(m.)·PC(www) 메타 일치 + canonical",
+    why:`구글 <b>모바일 우선색인</b> — <code>m.hanwhadirect.com</code>이 실제 색인 기준입니다. m./www 타이틀·설명이 다르거나 canonical이 없으면 평가가 분산됩니다.`,
+    before:`<!-- m.hanwhadirect.com 과 www 메타 상이/canonical 누락 가능 -->`,
+    after:`<link rel="canonical" href="https://www.hanwhadirect.com${p.path}">\n<link rel="alternate" media="only screen and (max-width: 640px)" href="https://m.hanwhadirect.com${p.path}">`});
+  if(p.exTitleV==="bad"&&p.delivery==="direct") T.push({id:"h1",pri:"중",what:"H1을 상품명으로 1회만 지정",
     why:`가입 SPA가 통짜 색인돼 주제 신호가 폼 UI에 묻힘 — 페이지당 &lt;h1&gt; 1회`,
-    before:`<div class="logo">한화 다이렉트</div>  <!-- h1이 로고/스텝인 경우 -->`,
-    after:`<h1>${c.h1}</h1>`});
+    before:`<div class="logo">한화 다이렉트</div>  <!-- h1이 로고/스텝인 경우 -->`,after:`<h1>${c.h1}</h1>`});
+  if(p.delivery==="home") T.push({id:"brand",pri:"중",what:"사이트명·브랜드 구조화(Organization/WebSite)",
+    why:`메인은 <b>브랜드검색·사이트링크</b>의 기준 — 사이트명 JSON-LD로 네이버·구글 브랜드 노출을 강화합니다.`,
+    before:`<!-- WebSite/Organization 구조화 없음 -->`,
+    after:`<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"한화손해보험 다이렉트","url":"https://www.hanwhadirect.com/"}<\/script>`});
   T.push({id:"alt",pri:"하",what:"상품 이미지 alt 텍스트 보강",
-    why:p._altMissing!=null?`alt 누락 <b>${p._altMissing}개</b> — 스크린리더/이미지색인 텍스트 삽입`:`상품 상세 이미지 alt 누락 여부 점검(실측 필요) 후 삽입`,
-    before:`<img src="/img/${p.key}_cover.png">`,
-    after:`<img src="/img/${p.key}_cover.png" alt="${p.name} ${p.product} 보장내용 안내">`});
+    why:`상품 상세 이미지 alt 누락 여부 점검(실측 필요) 후 삽입 — 스크린리더·이미지색인`,
+    before:`<img src="/img/${p.key}_cover.png">`,after:`<img src="/img/${p.key}_cover.png" alt="${p.name} ${p.product} 보장내용 안내">`});
   return T;
 }
-function todoHtml(scope,p,t){
-  const id=`${scope}:${p.key}:${t.id}`,done=isDone(id);
+const PRIO={"상":0,"중":1,"하":2};
+function todoHtml(p,t){
+  const id=`cm:${p.key}:${t.id}`,done=isDone(id);
   const mt=t.meterText?meter(t.meterText,t.meterLimit):"";
   return `<div class="todo${done?" done":""}" data-id="${id}">
-    <div class="todo-head" data-toggle="${id}">
-      <div class="chk">✓</div>
-      <div class="todo-hmain">
-        <div class="todo-what"><span class="pri ${t.pri}">${t.pri}</span>${t.what}</div>
-        <div class="todo-why">${t.why}</div>
-      </div>
-    </div>
+    <div class="todo-head" data-toggle="${id}"><div class="chk">✓</div>
+      <div class="todo-hmain"><div class="todo-what"><span class="pri ${t.pri}">${t.pri}</span>${t.what}</div>
+      <div class="todo-why">${t.why}</div></div></div>
     <div class="todo-body">
       <div class="code-row"><div class="code-lbl">현행 (Before)</div><div class="codeblk before">${esc(t.before)}</div></div>
       <div class="code-row"><div class="code-lbl">변경 (After)<button class="cp" data-copy="${esc(t.after)}">코드 복사</button></div>
         <div class="codeblk after">${hlAfter(t.after)}</div>${mt}</div>
-    </div>
-  </div>`;
+    </div></div>`;
 }
 
-/* ── 한화 모드 ── */
-let curScreen="fire";
-function screenDoneCount(p){const ts=todosFor(p,COPY[p.key]);const d=ts.filter(t=>isDone(`hanwha:${p.key}:${t.id}`)).length;return[d,ts.length];}
-function renderRailHanwha(){
-  $("#railBody").innerHTML=`<div class="nav-cap">화면 · hanwhadirect.com</div>`+
-    PRODUCTS.filter(p=>p.site==="hanwha").map(railItem).join("")+
-    `<div class="nav-cap">화면 · carrotins.com</div>`+
-    PRODUCTS.filter(p=>p.site==="carrot").map(railItem).join("");
-  $("#railFoot").innerHTML="데이터: 네이버 색인 실측(2026-07-18)<br>라이브 DOM(H·alt·OG)은 사이트 봇차단(403)으로 미수집 — 실측 확정 필요<br>카피는 개선안 · 광고심의 검수 전제";
-}
-function railItem(p){
-  const[d,n]=screenDoneCount(p),allDone=d===n;
-  return `<button class="scr-item${p.key===curScreen?" on":""}${allDone?" done":""}" data-screen="${p.key}">
-    <span class="scr-check">✓</span>
-    <span class="scr-main">${esc(p.name)}<small>To-Do ${d}/${n} · G${gScore(p)} N${nScore(p)}</small></span></button>`;
-}
-function renderHanwha(){
-  const p=PRODUCTS.find(x=>x.key===curScreen);
-  const g=gScore(p),n=nScore(p),[gg,gc]=grade(g),[ng,nc]=grade(n);
-  const ts=todosFor(p,COPY[p.key]);
-  const done=ts.filter(t=>isDone(`hanwha:${p.key}:${t.id}`)).length;
-  const pct=Math.round(done/ts.length*100);
-  $("#pgTitle").textContent=`${p.name} · SEO To-Do`;
-  $("#pgSub").innerHTML=`${esc(p.product)} · ${p.site==="hanwha"?"한화 다이렉트":"캐롯"}`;
-  $("#v-hanwha").innerHTML=`
-    <div class="scr-hero">
-      <div class="scr-hero-top">
-        <h2>${esc(p.name)}</h2>
-        <span class="score-chip" style="background:${bgOf(gc)};color:${inkOf(gc)}"><small>구글</small>${g}</span>
-        <span class="score-chip" style="background:${bgOf(nc)};color:${inkOf(nc)}"><small>네이버</small>${n}</span>
-        <span class="spacer"></span>
-        <a class="btn" href="${esc(p.url)}" target="_blank" rel="noopener">화면 열기 ↗</a>
-      </div>
-      <div class="url-line">${esc(p.url)}</div>
-      <div class="cur-grid">
-        <div class="cur-box"><div class="cb-top"><span class="cb-k">현재 Title</span><span class="badge ${p.exTitleV}">${sevWord(p.exTitleV)}</span></div><div class="cb-v ${p.exTitleV==="bad"?"bad":""}">${esc(p.exTitle)}</div></div>
-        <div class="cur-box"><div class="cb-top"><span class="cb-k">현재 Description</span><span class="badge ${p.exDescV}">${sevWord(p.exDescV)}</span></div><div class="cb-v ${p.exDescV==="bad"?"bad":""}">${esc(p.exDesc)}</div></div>
-      </div>
-    </div>
-    <div class="prog">
-      <div class="prog-num">${done}<small>/${ts.length} 완료</small></div>
-      <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
-      <div class="prog-num" style="color:var(--brand-600)">${pct}%</div>
-    </div>
-    <div class="sec-lbl">이 화면에서 할 일 (우선순위 상→하)</div>
-    ${ts.slice().sort((a,b)=>({"상":0,"중":1,"하":2}[a.pri]-{"상":0,"중":1,"하":2}[b.pri])).map(t=>todoHtml("hanwha",p,t)).join("")}
-    ${implSection(p,COPY[p.key],{brand:p.site==="hanwha"?"한화 다이렉트":"캐롯",benefits:""})}
-    <div class="foot-note"><b>참고</b> · 위 Before는 네이버 색인에 실제 노출 중인 값(2026-07-18). H1·alt·OG는 사이트 봇차단(403)으로 원본 미수집이라 <b>템플릿 예시</b>이니 실제 DOM에 맞춰 반영하세요. After 카피는 광고심의 검수 후 배포.</div>`;
-}
-
-/* ── PRO 모드 ── */
-function classifyTitle(t){
-  if(!t.trim())return"bad";
-  if(/[>＞]|고객정보입력|메인&gt;|메인>/.test(t))return"bad";
-  const len=charLen(t); if(len<6||len>34)return"mid"; return"good";
-}
-function classifyDesc(d){
-  if(!d.trim())return"bad";
-  if(/남자|여자|자가용|영업용|직업을 선택|고객정보|확인필-제/.test(d))return"bad";
-  const len=charLen(d); if(len<40)return"mid"; if(len>95)return"mid"; return"good";
-}
-function genCopy(f){
-  const b=(f.benefits||"").split(/[,，·]/).map(s=>s.trim()).filter(Boolean);
-  const b0=b[0]||"핵심담보",b1=b[1]||"보장",b2=b[2]||b1;
-  const brand=f.brand||"",prod=f.product||f.keyword||"상품",kw=f.keyword||prod;
-  const clip=(s,n)=>charLen(s)<=n?s:[...s].slice(0,n).join("");
-  return{
-    nt:clip(`${brand} ${prod} | ${b0}·${b1} 보장`.trim(),30),
-    gd:clip(`${b0}·${b1}·${b2} 보장까지. ${brand} ${prod}을(를) 온라인에서 설계하고 보험료를 확인하세요.`.trim(),80),
-    st:clip(`${b0}부터 ${b2}까지 — ${brand} ${prod}`.trim(),30),
-    sd:clip(`${b0}·${b1}·${b2}까지 대비하는 ${prod}. 3분 만에 설계하고 카톡으로 공유해요.`.trim(),80),
-    h1:`${prod}`
-  };
-}
-
-/* ── 오픈소스 연동 ────────────────────────────────────────────
-   1) unlighthouse/Lighthouse/크롤러 JSON → 진단 폼 자동 채움
-   2) next-seo · schema-dts(JSON-LD) 구현코드 생성
-   3) unlighthouse 재검증 커맨드
-   ─────────────────────────────────────────────────────────── */
+/* ── 오픈소스 연동 ── */
 function readForm(){return{url:$("#f_url").value.trim(),brand:$("#f_brand").value.trim(),product:$("#f_product").value.trim(),
   keyword:$("#f_keyword").value.trim(),benefits:$("#f_benefits").value.trim(),title:$("#f_title").value.trim(),
   desc:$("#f_desc").value.trim(),og:$("#f_og").value,h1:$("#f_h1").value,alt:$("#f_alt").value,target:$("#f_target").value};}
 function parseCrawlJson(raw){
-  let o; try{o=JSON.parse(raw);}catch(e){toast("JSON 파싱 실패");return null;}
-  if(Array.isArray(o))o=o[0]||{};
-  if(o.report)o=o.report;
+  let o;try{o=JSON.parse(raw);}catch(e){toast("JSON 파싱 실패");return null;}
+  if(Array.isArray(o))o=o[0]||{}; if(o.report)o=o.report;
   const out={};
   out.url=o.url||o.finalUrl||o.requestedUrl||(o.route&&o.route.url)||"";
-  if(o.audits){ // Lighthouse / unlighthouse 감사 결과
-    const a=o.audits;
-    const imgAlt=a["image-alt"]&&a["image-alt"].details&&a["image-alt"].details.items;
-    if(imgAlt)out.alt=imgAlt.length;
-    if(a["meta-description"]&&a["meta-description"].score===0)out.desc="";
-    out.og=a["structured-data"]?"partial":"none";
-  }
+  if(o.audits){const a=o.audits;const ia=a["image-alt"]&&a["image-alt"].details&&a["image-alt"].details.items;
+    if(ia)out.alt=ia.length; if(a["meta-description"]&&a["meta-description"].score===0)out.desc="";
+    out.og=a["structured-data"]?"partial":"none";}
   if(o.title!=null)out.title=o.title;
   if(o.description!=null)out.desc=o.description; else if(o.metaDescription!=null)out.desc=o.metaDescription;
   if(o.h1Count!=null)out.h1=o.h1Count; else if(o.h1!=null)out.h1=Array.isArray(o.h1)?o.h1.length:o.h1;
   if(o.imagesMissingAlt!=null)out.alt=o.imagesMissingAlt; else if(o.missingAlt!=null)out.alt=o.missingAlt;
-  if(o.og!=null)out.og=(o.og===true?"yes":o.og===false?"none":o.og);
-  else if(o.ogPresent!=null)out.og=o.ogPresent?"yes":"none";
+  if(o.og!=null)out.og=(o.og===true?"yes":o.og===false?"none":o.og); else if(o.ogPresent!=null)out.og=o.ogPresent?"yes":"none";
   return out;
 }
 function nextSeoBlock(name,url,slug,c){
@@ -537,60 +423,102 @@ function nextSeoBlock(name,url,slug,c){
 function jsonLdBlock(name,url,brand,c){
   return `<!-- JSON-LD · google/schema-dts 로 타입검증 (npm i -D schema-dts) -->\n<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@graph": [\n    { "@type": "Product",\n      "name": "${name}",\n      "brand": { "@type": "Brand", "name": "${brand}" },\n      "url": "${url}",\n      "description": "${c.gd}" },\n    { "@type": "FAQPage",\n      "mainEntity": [{ "@type": "Question",\n        "name": "가입은 어떻게 하나요?",\n        "acceptedAnswer": { "@type": "Answer", "text": "온라인에서 담보를 선택하고 보험료를 확인해 바로 가입할 수 있습니다." } }] }\n  ]\n}\n<\/script>`;
 }
-function unlighthouseCmd(url){
-  let origin=url,path="/";
-  try{const u=new URL(url);origin=u.origin;path=u.pathname||"/";}catch(e){}
-  return `# 적용 후 재검증 (harlan-zw/unlighthouse)\nnpx unlighthouse --site ${origin} --router.include "${path}"`;
-}
+function unlighthouseCmd(url){let origin=url,path="/";try{const u=new URL(url);origin=u.origin;path=u.pathname||"/";}catch(e){}
+  return `# 적용 후 재검증 (harlan-zw/unlighthouse)\nnpx unlighthouse --site ${origin} --router.include "${path}"`;}
 function implSection(p,c,opt){
-  const brand=(opt&&opt.brand)||"", url=p.url||"", name=p.name||"", slug=p.key||"page";
+  const brand=(opt&&opt.brand)||p.brand||"", url=(p.delivery==="bridge"&&p.destUrl)||p.url||"", name=p.name||"", slug=p.key||"page";
   const blk=(lbl,code)=>`<div class="impl-block"><div class="code-lbl">${lbl}<button class="cp" data-copy="${esc(code)}">코드 복사</button></div><div class="codeblk after">${esc(code)}</div></div>`;
   return `<div class="sec-lbl">구현 코드 · 오픈소스 적용</div>
-    <div class="impl-note">추천 파이프라인 — <a href="https://github.com/harlan-zw/unlighthouse" target="_blank" rel="noopener">unlighthouse</a>로 실측 크롤 → 이 진단 → <a href="https://github.com/garmeeh/next-seo" target="_blank" rel="noopener">next-seo</a>·<a href="https://github.com/google/schema-dts" target="_blank" rel="noopener">schema-dts</a>로 실제 적용. 아래 코드는 위 After 카피를 각 도구 형식으로 옮긴 산출물입니다.</div>
+    <div class="impl-note">추천 파이프라인 — <a href="https://github.com/harlan-zw/unlighthouse" target="_blank" rel="noopener">unlighthouse</a>로 실측 크롤 → 이 진단 → <a href="https://github.com/garmeeh/next-seo" target="_blank" rel="noopener">next-seo</a>·<a href="https://github.com/google/schema-dts" target="_blank" rel="noopener">schema-dts</a>로 적용.</div>
     ${blk("next-seo 설정",nextSeoBlock(name,url,slug,c))}
     ${blk("JSON-LD (schema-dts)",jsonLdBlock(name,url,brand,c))}
     ${blk("적용 후 재검증",unlighthouseCmd(url))}`;
 }
 
-function renderRailPro(){
-  $("#railBody").innerHTML=`<div class="nav-cap">범용 진단 · PRO</div>
-    <div style="padding:6px 10px;font-size:11.5px;color:var(--side-ink);line-height:1.65">
-      아무 보험 상품 페이지의 현행 크롤링 값을 입력하면 <b style="color:#fff">점수·To-Do·코드·카피</b>를 자동 생성합니다.</div>
-    <div style="padding:10px;margin-top:8px;border-radius:10px;background:rgba(255,255,255,.05);font-size:10.5px;color:var(--side-ink-2);line-height:1.6">
-      <b style="color:#fff">PRO 기능</b><br>· 무제한 URL 진단<br>· 완료상태 저장<br>· To-Do CSV 내보내기<br>· 팀 공유(로드맵)</div>`;
-  $("#railFoot").innerHTML="입력값 기반 휴리스틱 진단.<br>실제 배포 전 광고심의 검수 필요.";
+/* ── 서브내비 + 화면 ── */
+let cat="장기", curKey=null;
+const catProducts=c=>PRODUCTS.filter(p=>p.cat===c);
+const subnavList=c=>[PRODUCTS.find(p=>p.key==="home")].concat(catProducts(c));
+function screenDone(p){const ts=todosFor(p,COPY[p.key]);const d=ts.filter(t=>isDone(`cm:${p.key}:${t.id}`)).length;return[d,ts.length];}
+function renderSubnav(){
+  $("#subnav").innerHTML=subnavList(cat).map(p=>{
+    const[d,n]=screenDone(p),done=d===n;
+    const col=done?"var(--good)":d>0?"var(--mid)":"var(--faint)";
+    return `<button class="chip${p.key===curKey?" on":""}${p.key==="home"?" pinned":""}" data-screen="${p.key}">
+      <span class="cdot" style="background:${col}"></span>${esc(p.name)}<small>${d}/${n}</small></button>`;
+  }).join("");
+}
+function renderScreen(){
+  const p=PRODUCTS.find(x=>x.key===curKey);if(!p)return;
+  const g=gScore(p),n=nScore(p),[,gc]=grade(g),[,nc]=grade(n);
+  const ts=todosFor(p,COPY[p.key]).slice().sort((a,b)=>PRIO[a.pri]-PRIO[b.pri]);
+  const done=ts.filter(t=>isDone(`cm:${p.key}:${t.id}`)).length,pct=Math.round(done/ts.length*100);
+  const destLine=p.delivery==="bridge"?`<div class="dest-line">→ 실제 이동(색인·랭킹 주체): <b>${esc(p.destUrl)}</b></div>`:"";
+  $("#v-product").innerHTML=`
+    <div class="scope"><span class="sc-tag">CM사업부 담당 상품만</span> TM·오프라인 상품 제외 · 모바일(m.hanwhadirect.com) 기준 · 네이버 색인 실측(2026-07-18)</div>
+    <div class="scr-hero">
+      <div class="scr-hero-top">
+        <h2>${esc(p.name)}</h2>
+        <span class="delivery ${p.delivery}">${delWord(p.delivery)}</span>
+        <span class="score-chip" style="background:${bgOf(gc)};color:${inkOf(gc)}"><small>구글</small>${g}</span>
+        <span class="score-chip" style="background:${bgOf(nc)};color:${inkOf(nc)}"><small>네이버</small>${n}</span>
+        <span class="spacer"></span>
+        <a class="btn" href="${esc(p.url)}" target="_blank" rel="noopener">화면 열기 ↗</a>
+      </div>
+      <div class="url-line">${esc(p.url)}</div>
+      ${destLine}
+      <div class="cur-grid">
+        <div class="cur-box"><div class="cb-top"><span class="cb-k">현재 Title</span><span class="badge ${p.exTitleV}">${sevWord(p.exTitleV)}</span></div><div class="cb-v ${p.exTitleV==="bad"?"bad":""}">${esc(p.exTitle)}</div></div>
+        <div class="cur-box"><div class="cb-top"><span class="cb-k">현재 Description</span><span class="badge ${p.exDescV}">${sevWord(p.exDescV)}</span></div><div class="cb-v ${p.exDescV==="bad"?"bad":""}">${esc(p.exDesc)}</div></div>
+      </div>
+    </div>
+    <div class="prog"><div class="prog-num">${done}<small>/${ts.length} 완료</small></div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+      <div class="prog-num" style="color:var(--brand-600)">${pct}%</div></div>
+    <div class="sec-lbl">이 화면에서 할 일 (우선순위 상→하)</div>
+    ${ts.map(t=>todoHtml(p,t)).join("")}
+    ${implSection(p,COPY[p.key],{brand:p.brand})}
+    <div class="foot-note"><b>참고</b> · Before는 네이버 색인 실측값(2026-07-18). 브릿지 상품은 <b>캐롯 목적지 페이지</b> 색인값 기준이며, 브릿지 자체는 색인이 거의 없습니다(분기 처리 To-Do 참고). H1·alt·OG 원본은 사이트 봇차단(403)으로 미수집 → 템플릿 예시이니 실제 DOM에 맞춰 반영. After 카피는 광고심의 검수 후 배포.</div>`;
+  renderSubnav();
+}
+
+/* ── PRO ── */
+function classifyTitle(t){if(!t.trim())return"bad";if(/[>＞]|고객정보입력|메인&gt;|메인>/.test(t))return"bad";const l=charLen(t);if(l<6||l>34)return"mid";return"good";}
+function classifyDesc(d){if(!d.trim())return"bad";if(/남자|여자|자가용|영업용|직업을 선택|고객정보|확인필-제/.test(d))return"bad";const l=charLen(d);if(l<40)return"mid";if(l>95)return"mid";return"good";}
+function genCopy(f){
+  const b=(f.benefits||"").split(/[,，·]/).map(s=>s.trim()).filter(Boolean);
+  const b0=b[0]||"핵심담보",b1=b[1]||"보장",b2=b[2]||b1;
+  const brand=f.brand||"",prod=f.product||f.keyword||"상품";
+  const clip=(s,n)=>charLen(s)<=n?s:[...s].slice(0,n).join("");
+  return{nt:clip(`${brand} ${prod} | ${b0}·${b1} 보장`.trim(),30),
+    gd:clip(`${b0}·${b1}·${b2} 보장까지. ${brand} ${prod}을(를) 온라인에서 설계하고 보험료를 확인하세요.`.trim(),80),
+    st:clip(`${b0}부터 ${b2}까지 — ${brand} ${prod}`.trim(),30),
+    sd:clip(`${b0}·${b1}·${b2}까지 대비하는 ${prod}. 3분 만에 설계하고 카톡으로 공유해요.`.trim(),80),h1:`${prod}`};
 }
 function renderPro(prefill){
-  $("#pgTitle").innerHTML=`범용 SEO 솔루션 <span class="pro-badge">PRO</span>`;
-  $("#pgSub").textContent="현행 화면 값 입력 → 진단·To-Do·카피 자동생성";
   const f=prefill||{};
   $("#v-pro").innerHTML=`
-    <div class="pro-hero">
-      <h2>SEO 진단 제너레이터 <span class="pro-badge">PRO</span></h2>
-      <p>보험 상품 페이지의 <b>현재 크롤링 값</b>을 붙여넣으면, 개발자가 바로 작업할 수 있는 <b>To-Do + before/after 코드</b>와 검색엔진별 카피안을 생성합니다. 한화 전용이 아니라 <b>어떤 상품·회사에도</b> 재사용됩니다.</p>
-    </div>
+    <div class="pro-hero"><h2>범용 SEO 진단 제너레이터 <span class="pro-badge">PRO</span></h2>
+      <p>담당 외 상품이나 <b>타사·신규 페이지</b>도 크롤링 값만 넣으면 점수·To-Do·코드·카피를 자동 생성합니다. 어떤 회사/상품에도 재사용됩니다.</p></div>
     <div class="import-card">
       <div class="ic-top"><b>⚡ unlighthouse / 크롤러 결과 불러오기</b><button class="btn" id="lhSample">샘플 JSON</button></div>
-      <textarea id="lhJson" placeholder='unlighthouse · Lighthouse · python-seo-analyzer 등의 JSON을 붙여넣으세요 (image-alt · meta-description · title 감사 항목을 자동 반영)'></textarea>
-      <div class="ic-actions"><button class="btn primary" id="lhLoad">불러와서 폼 채우기 →</button><span class="hint">크롤 JSON → 아래 폼 자동 프리필. 브라우저에서만 처리(외부전송 0).</span></div>
+      <textarea id="lhJson" placeholder='unlighthouse · Lighthouse · python-seo-analyzer 등의 JSON을 붙여넣으세요 (image-alt · meta-description · title 감사 항목 자동 반영)'></textarea>
+      <div class="ic-actions"><button class="btn primary" id="lhLoad">불러와서 폼 채우기 →</button><span class="hint">브라우저에서만 처리 · 외부전송 0</span></div>
     </div>
     <div class="form-grid">
-      <div class="ff full"><label>분석 URL</label><input id="f_url" placeholder="https://example.com/product/cancer" value="${esc(f.url||"")}"></div>
-      <div class="ff"><label>브랜드/회사 <small>예: 한화 다이렉트</small></label><input id="f_brand" placeholder="브랜드명" value="${esc(f.brand||"")}"></div>
-      <div class="ff"><label>상품명 <small>예: 내가고른 암보험</small></label><input id="f_product" placeholder="상품명" value="${esc(f.product||"")}"></div>
-      <div class="ff"><label>대표 키워드 <small>예: 암보험</small></label><input id="f_keyword" placeholder="대표 검색키워드" value="${esc(f.keyword||"")}"></div>
-      <div class="ff"><label>핵심 담보/혜택 <small>쉼표로 3개</small></label><input id="f_benefits" placeholder="진단비, 수술비, 입원비" value="${esc(f.benefits||"")}"></div>
-      <div class="ff full"><label>현재 Title <small>크롤링 값 그대로</small></label><input id="f_title" placeholder="현재 <title> 값" value="${esc(f.title||"")}"></div>
+      <div class="ff full"><label>분석 URL</label><input id="f_url" placeholder="https://example.com/product" value="${esc(f.url||"")}"></div>
+      <div class="ff"><label>브랜드/회사</label><input id="f_brand" placeholder="예: 한화 다이렉트" value="${esc(f.brand||"")}"></div>
+      <div class="ff"><label>상품명</label><input id="f_product" placeholder="예: 내가고른 암보험" value="${esc(f.product||"")}"></div>
+      <div class="ff"><label>대표 키워드</label><input id="f_keyword" placeholder="예: 암보험" value="${esc(f.keyword||"")}"></div>
+      <div class="ff"><label>핵심 담보/혜택 <small>쉼표 3개</small></label><input id="f_benefits" placeholder="진단비, 수술비, 입원비" value="${esc(f.benefits||"")}"></div>
+      <div class="ff full"><label>현재 Title</label><input id="f_title" placeholder="현재 <title> 값" value="${esc(f.title||"")}"></div>
       <div class="ff full"><label>현재 Meta Description</label><textarea id="f_desc" placeholder="현재 meta description (없으면 비워두기)">${esc(f.desc||"")}</textarea></div>
       <div class="ff"><label>OG 태그 상태</label><select id="f_og"><option value="none">없음</option><option value="partial">일부만</option><option value="yes">설정됨</option></select></div>
       <div class="ff"><label>H1 개수</label><input id="f_h1" type="number" min="0" placeholder="0 / 1 / 2+" value="${f.h1??""}"></div>
       <div class="ff"><label>이미지 alt 누락 개수</label><input id="f_alt" type="number" min="0" placeholder="예: 7" value="${f.alt??""}"></div>
       <div class="ff"><label>우선 타깃</label><select id="f_target"><option value="both">네이버+구글</option><option value="naver">네이버 우선</option><option value="google">구글 우선</option></select></div>
-      <div class="form-actions">
-        <button class="btn primary" id="genBtn">진단 생성 →</button>
-        <button class="btn" id="sampleBtn">샘플 채우기</button>
-        <span class="hint">입력값은 브라우저에만 남고 외부로 전송되지 않습니다.</span>
-      </div>
+      <div class="form-actions"><button class="btn primary" id="genBtn">진단 생성 →</button><button class="btn" id="sampleBtn">샘플 채우기</button>
+        <span class="hint">입력값은 브라우저에만 남습니다.</span></div>
     </div>
     <div class="pro-result" id="proResult"></div>`;
   $("#genBtn").addEventListener("click",runPro);
@@ -599,99 +527,84 @@ function renderPro(prefill){
   $("#lhSample").addEventListener("click",()=>{$("#lhJson").value=JSON.stringify({url:"https://www.hanwhadirect.com/ltr/cncr/",title:"암>고객정보입력 - 메인>다이렉트 홈",description:"",h1Count:0,ogPresent:false,imagesMissingAlt:6},null,2);});
   if(f.og)$("#f_og").value=f.og; if(f.target)$("#f_target").value=f.target;
 }
+function proCopyCard(t,tg,title,desc){
+  return `<div class="copy-card"><div style="display:flex;justify-content:space-between;align-items:center"><span class="cc-t">${t}</span><span class="cc-tg">${tg}</span></div>
+    <div class="cfield"><span class="cf-lbl">Title<button class="cp" data-copy="${esc(title)}">복사</button></span><div class="cf-text">${esc(title)}</div>${meter(title,30)}</div>
+    <div class="cfield"><span class="cf-lbl">Description<button class="cp" data-copy="${esc(desc)}">복사</button></span><div class="cf-text">${esc(desc)}</div>${meter(desc,80)}</div></div>`;
+}
 function runPro(){
   const f=readForm();
   const tv=classifyTitle(f.title),dv=classifyDesc(f.desc);
-  const h1n=f.h1===""?null:parseInt(f.h1,10);
-  const altn=f.alt===""?null:parseInt(f.alt,10);
-  const ax={
-    title:tv==="good"?76:tv==="mid"?50:22,
-    meta:dv==="good"?78:dv==="mid"?48:18,
-    semantic:h1n==null?50:h1n===1?70:h1n===0?38:34,
-    url:/[a-z]{3,}/.test(f.url.split("/").pop()||"")?58:48,
-    social:f.og==="yes"?72:f.og==="partial"?46:22,
-    trust:55
-  };
-  const p={key:"pro",name:f.product||f.keyword||"대상 상품",product:f.product||f.keyword||"—",url:f.url||"(URL 미입력)",
-    exTitle:f.title||"(제목 없음)",exTitleV:tv,exDesc:f.desc||"(설명 없음)",exDescV:dv,
-    exOg:f.og==="yes"?"설정":f.og==="partial"?"일부":"없음",ax,_altMissing:altn};
-  const c=genCopy(f);
-  const g=gScore(p),n=nScore(p),[gg,gc]=grade(g),[ng,nc]=grade(n);
-  const ts=todosFor(p,c);
+  const h1n=f.h1===""?null:parseInt(f.h1,10),altn=f.alt===""?null:parseInt(f.alt,10);
+  const ax={title:tv==="good"?76:tv==="mid"?50:22,meta:dv==="good"?78:dv==="mid"?48:18,
+    semantic:h1n==null?50:h1n===1?70:h1n===0?38:34,url:/[a-z]{3,}/.test((f.url.split("/").pop()||""))?58:48,
+    social:f.og==="yes"?72:f.og==="partial"?46:22,trust:55};
+  const p={key:"pro",name:f.product||f.keyword||"대상 상품",product:f.product||f.keyword||"—",url:f.url||"(URL 미입력)",brand:f.brand,delivery:"direct",path:"/",
+    exTitle:f.title||"(제목 없음)",exTitleV:tv,exDesc:f.desc||"(설명 없음)",exDescV:dv,exOg:f.og==="yes"?"설정":f.og==="partial"?"일부":"없음",ax};
+  const c=genCopy(f),g=gScore(p),n=nScore(p),[,gc]=grade(g),[,nc]=grade(n);
+  const ts=todosFor(p,c).slice().sort((a,b)=>PRIO[a.pri]-PRIO[b.pri]);
   const R=$("#proResult");
   R.innerHTML=`
-    <div class="scr-hero">
-      <div class="scr-hero-top">
-        <h2>${esc(p.name)}</h2>
-        <span class="score-chip" style="background:${bgOf(gc)};color:${inkOf(gc)}"><small>구글</small>${g}</span>
-        <span class="score-chip" style="background:${bgOf(nc)};color:${inkOf(nc)}"><small>네이버</small>${n}</span>
-        <span class="spacer"></span>
-        <button class="btn" id="csvBtn">To-Do CSV ↓</button>
-      </div>
+    <div class="scr-hero"><div class="scr-hero-top"><h2>${esc(p.name)}</h2>
+      <span class="score-chip" style="background:${bgOf(gc)};color:${inkOf(gc)}"><small>구글</small>${g}</span>
+      <span class="score-chip" style="background:${bgOf(nc)};color:${inkOf(nc)}"><small>네이버</small>${n}</span>
+      <span class="spacer"></span><button class="btn" id="csvBtn">To-Do CSV ↓</button></div>
       <div class="url-line">${esc(p.url)}</div>
       <div class="cur-grid">
         <div class="cur-box"><div class="cb-top"><span class="cb-k">입력 Title</span><span class="badge ${tv}">${sevWord(tv)}</span></div><div class="cb-v ${tv==="bad"?"bad":""}">${esc(p.exTitle)}</div></div>
         <div class="cur-box"><div class="cb-top"><span class="cb-k">입력 Description</span><span class="badge ${dv}">${sevWord(dv)}</span></div><div class="cb-v ${dv==="bad"?"bad":""}">${esc(p.exDesc)}</div></div>
-      </div>
-    </div>
+      </div></div>
     <div class="sec-lbl">자동 생성된 To-Do (우선순위 상→하)</div>
-    ${ts.slice().sort((a,b)=>({"상":0,"중":1,"하":2}[a.pri]-{"상":0,"중":1,"하":2}[b.pri])).map(t=>todoHtml("pro",p,t)).join("")}
+    ${ts.map(t=>todoHtml(p,t)).join("")}
     <div class="sec-lbl">검색엔진별 카피안 (자동 생성 · 심의 검수 전제)</div>
     <div class="copy-grid">
       ${proCopyCard("네이버 타깃","상품명+혜택",c.nt,c.gd)}
       ${proCopyCard("구글 타깃","키워드+해결책",`${f.keyword||p.name} 비교 | ${(f.benefits||"보장").split(/[,，]/)[0].trim()} 보장 - ${f.brand||""}`.trim(),c.gd)}
       ${proCopyCard("소셜/OG","카톡·블로그 감성",c.st,c.sd)}
     </div>
-    ${implSection(p,c,{brand:f.brand,benefits:f.benefits})}
-    <div class="foot-note"><b>휴리스틱 진단</b> · 점수·등급은 입력값 규칙 기반 추정이며 실제 순위를 보장하지 않습니다. 생성 카피는 초안이므로 <b>보험협회 광고심의</b> 검수 후 사용하세요.</div>`;
-  $("#csvBtn").addEventListener("click",()=>exportCsv(p,ts,c));
+    ${implSection(p,c,{brand:f.brand})}
+    <div class="foot-note"><b>휴리스틱 진단</b> · 점수는 입력값 규칙 기반 추정이며 실제 순위를 보장하지 않습니다. 카피는 초안이므로 광고심의 검수 후 사용하세요.</div>`;
+  $("#csvBtn").addEventListener("click",()=>{
+    const rows=[["url","priority","todo","before","after"]];
+    ts.forEach(t=>rows.push([p.url,t.pri,t.what.replace(/&lt;/g,"<").replace(/&gt;/g,">"),t.before.replace(/\n/g," "),t.after.replace(/\n/g," ")]));
+    const csv="﻿"+rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(",")).join("\n");
+    const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+    a.download=`seo-todo-${(p.name||"page").replace(/\s/g,"_")}.csv`;a.click();toast("CSV 내려받기 시작");});
   R.scrollIntoView({behavior:"smooth",block:"start"});
 }
-function proCopyCard(t,tg,title,desc){
-  return `<div class="copy-card"><div style="display:flex;justify-content:space-between;align-items:center"><span class="cc-t">${t}</span><span class="cc-tg">${tg}</span></div>
-    <div class="cfield"><span class="cf-lbl">Title<button class="cp" data-copy="${esc(title)}">복사</button></span><div class="cf-text">${esc(title)}</div>${meter(title,30)}</div>
-    <div class="cfield"><span class="cf-lbl">Description<button class="cp" data-copy="${esc(desc)}">복사</button></span><div class="cf-text">${esc(desc)}</div>${meter(desc,80)}</div></div>`;
-}
-function exportCsv(p,ts,c){
-  const rows=[["screen","priority","todo","current(before)","recommended(after)"]];
-  ts.forEach(t=>rows.push([p.name,t.pri,t.what.replace(/&lt;/g,"<").replace(/&gt;/g,">"),t.before.replace(/\n/g," "),t.after.replace(/\n/g," ")]));
-  const csv="﻿"+rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(",")).join("\n");
-  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
-  a.download=`seo-todo-${(p.name||"page").replace(/\s/g,"_")}.csv`;a.click();toast("CSV 내려받기 시작");
-}
 
-/* ── 모드 전환 ── */
-let mode="hanwha";
-function setMode(m){
-  mode=m;
-  document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("on",b.dataset.mode===m));
-  $("#v-hanwha").classList.toggle("on",m==="hanwha");
-  $("#v-pro").classList.toggle("on",m==="pro");
-  $("#tbActions").innerHTML=m==="hanwha"
-    ? `<span class="pill"><span class="dot"></span>실측 색인 기반</span><button class="icon-btn" id="themeBtn" title="테마 전환">◐</button>`
-    : `<span class="pill" style="color:var(--brand-600)">⚡ PRO 제너레이터</span><button class="icon-btn" id="themeBtn" title="테마 전환">◐</button>`;
-  bindTheme();
-  if(m==="hanwha"){renderRailHanwha();renderHanwha();}
-  else{renderRailPro();renderPro();}
+/* ── 토글/이벤트 ── */
+function setCat(c){
+  cat=c;
+  document.querySelectorAll("#seg3 button").forEach(b=>b.classList.toggle("on",b.dataset.cat===c));
+  if(c==="범용"){
+    $("#subnav").style.display="none";
+    $("#v-product").classList.remove("on");$("#v-pro").classList.add("on");
+    renderPro();
+  }else{
+    $("#subnav").style.display="";
+    $("#v-pro").classList.remove("on");$("#v-product").classList.add("on");
+    curKey=catProducts(c)[0].key;
+    renderScreen();
+  }
   window.scrollTo({top:0,behavior:"auto"});
 }
-
-/* ── 이벤트 ── */
 document.addEventListener("click",e=>{
-  const mb=e.target.closest(".mode-btn"); if(mb){setMode(mb.dataset.mode);return;}
-  const si=e.target.closest(".scr-item"); if(si){curScreen=si.dataset.screen;renderRailHanwha();renderHanwha();window.scrollTo({top:0});return;}
+  const seg=e.target.closest("#seg3 button"); if(seg){setCat(seg.dataset.cat);return;}
+  const chip=e.target.closest(".chip"); if(chip){curKey=chip.dataset.screen;renderScreen();window.scrollTo({top:0});return;}
   const cp=e.target.closest(".cp,[data-copy]"); if(cp&&cp.dataset.copy!=null){navigator.clipboard?.writeText(cp.dataset.copy).then(()=>toast("복사됨"),()=>toast("복사 실패"));return;}
   const tg=e.target.closest("[data-toggle]"); if(tg){const id=tg.getAttribute("data-toggle");setDone(id,!isDone(id));
-    if(mode==="hanwha"){renderRailHanwha();renderHanwha();}else{const el=document.querySelector(`.todo[data-id="${CSS.escape(id)}"]`);if(el)el.classList.toggle("done",isDone(id));}
+    if($("#v-product").classList.contains("on"))renderScreen();
+    else{const el=document.querySelector(`.todo[data-id="${CSS.escape(id)}"]`);if(el)el.classList.toggle("done",isDone(id));}
     return;}
 });
-function bindTheme(){const b=$("#themeBtn");if(!b)return;b.onclick=()=>{
+$("#themeBtn").addEventListener("click",()=>{
   const cur=document.documentElement.getAttribute("data-theme");
   const dark=cur?cur==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
-  document.documentElement.setAttribute("data-theme",dark?"light":"dark");};}
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");});
 
 /* ── init ── */
-setMode("hanwha");
+setCat("장기");
 </script>
 
 </body>
