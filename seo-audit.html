@@ -178,6 +178,13 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .qa button:hover{border-color:var(--brand);background:var(--brand-tint);}
 .qa .qa-ico{width:30px;height:30px;border-radius:8px;background:var(--brand-50);color:var(--brand-600);display:flex;align-items:center;justify-content:center;font-size:14px;flex:0 0 auto;}
 .qa small{display:block;font-size:10.5px;color:var(--muted);font-weight:500;margin-top:1px;}
+.panel code{font-family:var(--mono);font-size:10.5px;background:var(--line-2);padding:1px 5px;border-radius:4px;color:var(--ink);word-break:break-all;}
+.wstd{padding:10px 0;border-bottom:1px solid var(--line-2);}
+.wstd:last-child{border-bottom:none;}
+.wstd-h{font-size:13px;font-weight:800;margin-bottom:5px;}
+.wstd-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:11.5px;line-height:1.5;}
+@media(max-width:640px){.wstd-cols{grid-template-columns:1fr;}}
+.wstd-cols .bad b{color:var(--bad-ink);} .wstd-cols .good b{color:var(--good-ink);}
 /* 요금제 */
 .price-hero{text-align:center;padding:12px 0 22px;}
 .price-hero h2{font-size:24px;font-weight:800;letter-spacing:-.03em;}
@@ -485,6 +492,10 @@ function todosFor(p,c){
       why:`네이버 가이드 — <code>sitemap.xml</code>을 만들어 <b>웹마스터도구 '요청 &gt; 사이트맵 제출'</b> 및 구글 서치콘솔에 등록하세요. 정보 변경 시 '페이지 수집요청'으로 재수집을 앞당길 수 있습니다.`,
       before:`# sitemap.xml 미제출 → 하위 상품 페이지가 색인에서 누락될 수 있음`,
       after:`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>https://m.hanwhadirect.com/ltr/cncr/</loc><lastmod>2026-07-20</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>\n  <!-- 담당 상품 URL 전체를 같은 형식으로 나열 -->\n</urlset>\n<!-- 제출: 네이버 웹마스터도구 요청>사이트맵 제출 / 구글 Search Console -->`});
+    T.push({id:"channel",pri:"하",what:"연관 채널 구조화 데이터 (선택·고급)",
+      why:`네이버 가이드 — 메인 페이지에 <b>Organization + sameAs</b>로 공식 블로그·SNS를 연결하면 검색결과에 <b>연관 채널</b>이 노출될 수 있습니다. (선택 항목 — 어렵다면 건너뛰어도 됩니다)`,
+      before:`<!-- 연관 채널(블로그·SNS) 구조화 데이터 없음 -->`,
+      after:`<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "Organization",\n  "name": "한화손해보험 다이렉트",\n  "url": "https://www.hanwhadirect.com/",\n  "sameAs": [\n    "https://blog.naver.com/hwgi01",\n    "https://www.instagram.com/공식계정",\n    "https://www.youtube.com/@공식채널"\n  ]\n}\n<\/script>`});
   }
   T.push({id:"alt",pri:"하",what:"상품 이미지 alt 텍스트 보강",
     why:`상품 상세 이미지 alt 누락 여부 점검(실측 필요) 후 삽입 — 스크린리더·이미지색인`,
@@ -582,6 +593,25 @@ function renderSubnav(){
       <span class="cdot" style="background:${col}"></span>${esc(p.name)}<small>${d}/${n}</small></button>`;
   }).join("");
 }
+function webStdPanel(){
+  const rows=[
+    ["Redirect(리다이렉트)","JS·meta refresh 이동","서버 HTTP 301/3xx","location.href / &lt;meta http-equiv=&quot;refresh&quot;&gt;","HTTP 301 Location 헤더"],
+    ["Canonical URL","파라미터로 중복 URL 생성","대표 URL 1개 지정","?event=code01 · ?event=none","&lt;link rel=&quot;canonical&quot; href=&quot;…&quot;&gt;"],
+    ["Meta Tag","title·description·og 누락","문서 메타 제공","(태그 없음)","title · description · og"],
+    ["태그 위치","head 전용 태그가 body 안에","head 안에 위치","&lt;body&gt;&lt;title&gt;…","&lt;head&gt;&lt;title&gt;…&lt;/head&gt;"],
+    ["Link Syntax","JS 링크(onclick)","일반 &lt;a href&gt; 링크","&lt;a href=&quot;#&quot; onclick=&quot;goto()&quot;&gt;","&lt;a href=&quot;/ltr/cncr/&quot;&gt;"],
+    ["Frame Tag","frame로 콘텐츠 구성","일반 HTML 마크업","&lt;frame src=&quot;…&quot;&gt;","&lt;main&gt;·&lt;section&gt; 구조"],
+    ["앵커 텍스트","‘여기 클릭’ 등 모호","대표 키워드로 간결","&lt;a&gt;여기&lt;/a&gt;","&lt;a&gt;암보험 보장내용&lt;/a&gt;"],
+    ["이미지 alt","alt 속성 누락","대체 텍스트 필수","&lt;img src=&quot;…&quot;&gt;","&lt;img alt=&quot;…보장내용&quot;&gt;"]
+  ];
+  return `<div class="panel" style="margin-top:16px">
+    <h3>📋 네이버 웹표준 체크리스트 <span style="font-size:11px;color:var(--muted);font-weight:600">· 웹마스터도구 품질 가이드</span></h3>
+    ${rows.map(r=>`<div class="wstd"><div class="wstd-h">${r[0]}</div>
+      <div class="wstd-cols">
+        <div class="bad"><b>✕ ${r[1]}</b><br><code>${r[3]}</code></div>
+        <div class="good"><b>✓ ${r[2]}</b><br><code>${r[4]}</code></div>
+      </div></div>`).join("")}</div>`;
+}
 function renderScreen(){
   const p=PRODUCTS.find(x=>x.key===curKey);if(!p)return;
   const g=gScore(p),n=nScore(p),[,gc]=grade(g),[,nc]=grade(n);
@@ -617,6 +647,7 @@ function renderScreen(){
     <div class="sec-lbl">이 화면에서 할 일 (우선순위 상→하)</div>
     ${ts.map(t=>todoHtml(p,t)).join("")}
     ${implSection(p,COPY[p.key],{brand:p.brand})}
+    ${p.delivery==="home"?webStdPanel():""}
     <div class="foot-note"><b>참고</b> · Before는 네이버 색인 실측값(2026-07-18). 브릿지 상품은 <b>캐롯 목적지 페이지</b> 색인값 기준이며, 브릿지 자체는 색인이 거의 없습니다(분기 처리 To-Do 참고). H1·alt·OG 원본은 사이트 봇차단(403)으로 미수집 → 템플릿 예시이니 실제 DOM에 맞춰 반영. After 카피는 광고심의 검수 후 배포.<br><b>네이버 웹마스터도구 가이드</b> · 제목 15자·설명 45자 이내 권장, 제목=설명·키워드 반복·낚시성 금지, robots.txt와 로봇 메타태그 <b>둘 다 허용</b>, 리다이렉트는 <b>HTTP 301</b>, 사이트맵·RSS 제출.</div>`;
   renderSubnav();
 }
