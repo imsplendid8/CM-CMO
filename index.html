@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Modooflow SEO — 한화손보 장기CM 테크니컬 SEO 자동화 SaaS 콘솔.">
+<meta name="description" content="Modooflow SEO — 한화손보 장기CM 테크니컬 SEO 자동화 콘솔.">
 <title>Modooflow SEO · 테크니컬 SEO 자동화 (PRO)</title>
 <style>
 /* ============================================================
@@ -289,7 +289,6 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
     <div class="ab-right">
       <span class="ws">워크스페이스 · <b>한화손보 CM</b></span>
       <span class="usage">이번 달 진단 <b>∞</b> · 담당 10</span>
-      <button class="btn upgrade" data-nav="pricing">⤴ 업그레이드</button>
       <button class="icon-btn" id="themeBtn" title="라이트/다크 전환">◐</button>
       <div class="avatar" title="한화손보 CM">CM</div>
     </div>
@@ -299,14 +298,12 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
     <button data-nav="장기">장기 <span class="tcnt">7</span></button>
     <button data-nav="일반">일반 <span class="tcnt">2</span></button>
     <button data-nav="pro">범용 진단 <span class="plan-badge sm">PRO</span></button>
-    <button data-nav="pricing">요금제</button>
   </nav>
   <nav class="subnav" id="subnav"></nav>
   <main class="content">
     <section class="view" id="v-dash"></section>
     <section class="view" id="v-product"></section>
     <section class="view" id="v-pro"></section>
-    <section class="view" id="v-pricing"></section>
   </main>
 </div>
 <div class="toast" id="toast"></div>
@@ -734,7 +731,6 @@ function renderDash(){
         <div class="qa">
           <button data-nav="pro"><span class="qa-ico">🔍</span><span>범용 진단 실행<small>URL·크롤 JSON → To-Do 자동생성</small></span></button>
           <button data-xls="__all"><span class="qa-ico">📊</span><span>전체 태깅가이드 Excel<small>담당 10상품 통합표 다운로드</small></span></button>
-          <button data-nav="pricing"><span class="qa-ico">⤴</span><span>플랜 업그레이드<small>팀 워크스페이스·자동 크롤·연동</small></span></button>
         </div>
       </div>
     </div>
@@ -748,34 +744,16 @@ function renderDash(){
     </div>`;
 }
 
-/* ── 요금제 ── */
-function renderPricing(){
-  const plan=(name,price,unit,desc,feats,cta,featured)=>`<div class="plan${featured?" featured":""}">
-    <div class="p-name">${name}</div><div class="p-price">${price}<small>${unit}</small></div>
-    <div class="p-desc">${desc}</div>
-    <ul>${feats.map(f=>`<li class="${f[0]?"":"off"}">${f[1]}</li>`).join("")}</ul>
-    <button class="p-cta">${cta}</button></div>`;
-  $("#v-pricing").innerHTML=`
-    <div class="price-hero"><h2>요금제</h2><p>테크니컬 SEO 진단·태깅 자동화 — 보험 마케팅팀을 위한 플랜 (금액은 예시)</p></div>
-    <div class="plans">
-      ${plan("Free","₩0","/월","개인·소규모 점검용",[[1,"담당 상품 3개까지 진단"],[1,"우선순위 To-Do·코드"],[1,"수동 색인값 입력"],[0,"Excel·PPT·텍스트 내보내기"],[0,"unlighthouse 크롤 연동"],[0,"팀 워크스페이스"]],"플랜 낮추기")}
-      ${plan("Pro","₩89,000","/월","실무 담당자용",[[1,"담당 상품 무제한 진단"],[1,"Excel·PPT·텍스트 내보내기"],[1,"범용 진단 제너레이터 무제한"],[1,"unlighthouse 크롤 JSON 연동"],[1,"완료상태 저장·진행률"],[0,"팀 권한·API"]],"현재 이용 중",true)}
-      ${plan("Enterprise","문의","","팀·전사 운영용",[[1,"Pro 전체 포함"],[1,"팀 워크스페이스·권한관리"],[1,"Jira·Confluence 연동"],[1,"정기 크롤 자동화(CI)·알림"],[1,"API·SSO"],[1,"전담 지원"]],"문의하기")}
-    </div>
-    <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:16px">※ 데모용 플랜 구성 — 실제 과금 없음. 사내 도입 시 조직 규모에 맞춰 조정.</p>`;
-}
-
 /* ── 네비게이션 ── */
 let nav="dash";
 function setNav(v){
   nav=v;
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.nav===v));
-  ["dash","product","pro","pricing"].forEach(x=>$("#v-"+x).classList.remove("on"));
+  ["dash","product","pro"].forEach(x=>$("#v-"+x).classList.remove("on"));
   $("#subnav").style.display=(v==="장기"||v==="일반")?"":"none";
   if(v==="dash"){$("#v-dash").classList.add("on");renderDash();}
   else if(v==="장기"||v==="일반"){cat=v;$("#v-product").classList.add("on");curKey=catProducts(v)[0].key;renderScreen();}
   else if(v==="pro"){$("#v-pro").classList.add("on");renderPro();}
-  else if(v==="pricing"){$("#v-pricing").classList.add("on");renderPricing();}
   window.scrollTo({top:0,behavior:"auto"});
 }
 function gotoProduct(c,k){setNav(c);curKey=k;renderScreen();}
