@@ -109,6 +109,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .delivery.direct{background:var(--brand-50);color:var(--brand-600);}
 .delivery.bridge{background:var(--bad-bg);color:var(--bad-ink);}
 .delivery.home{background:var(--line-2);color:var(--ink-2);}
+.usp-line{font-size:12px;font-weight:600;color:var(--brand-600);background:var(--brand-50);border:1px solid var(--brand-50);border-radius:9px;padding:8px 12px;margin-bottom:11px;line-height:1.5;}
+.usp-line b{font-weight:800;}
 .url-line{font-family:var(--mono);font-size:11.5px;color:var(--brand-600);word-break:break-all;margin-bottom:4px;}
 .url-line a{color:inherit;}
 .dest-line{font-family:var(--mono);font-size:11px;color:var(--muted);word-break:break-all;margin-bottom:12px;}
@@ -240,19 +242,19 @@ const PRODUCTS=[
    exDesc:"한화손해보험 다이렉트보험 공식사이트, 자동차보험, 장기보험, 운전자, 골프, 화재 등 보상서비스, 고객센터.",exDescV:"mid",
    exOg:"없음(추정)",ax:{title:26,meta:55,semantic:45,url:62,social:32,trust:64}},
 
-  {key:"hrmf",cat:"장기",name:"주택화재보험",product:"119주택화재보험 무배당2506",brand:"한화 다이렉트",delivery:"direct",path:"/ltr/hrmf/main.do",
+  {key:"hrmf",cat:"장기",name:"주택화재보험",product:"119주택화재보험 무배당2506",brand:"한화손보다이렉트",delivery:"direct",path:"/ltr/hrmf/main.do",
    url:"https://m.hanwhadirect.com/ltr/hrmf/main.do",exTitle:"화재>고객정보입력",exTitleV:"bad",
    exDesc:"찾는 직업이 없으면 가장 유사한 직업을 선택하고, 부업이나 겸업이 있다면 가장 위험하다고 생각되는 직업을 선택하세요.",exDescV:"bad",
    exOg:"없음(추정)",ax:{title:18,meta:15,semantic:42,url:45,social:25,trust:55}},
-  {key:"golf",cat:"장기",name:"골프보험",product:"홀인원보험 무배당2604",brand:"한화 다이렉트",delivery:"direct",path:"/ltr/golf/",
+  {key:"golf",cat:"장기",name:"골프보험",product:"홀인원보험 무배당2604",brand:"한화손보다이렉트",delivery:"direct",path:"/ltr/golf/",
    url:"https://m.hanwhadirect.com/ltr/golf/",exTitle:"골프>고객정보입력",exTitleV:"bad",
    exDesc:"찾는 직업이 없으면 가장 유사한 직업을 선택하고, 부업이나 겸업이 있다면 가장 위험하다고 생각되는 직업을 선택하세요.",exDescV:"bad",
    exOg:"없음(추정)",ax:{title:18,meta:15,semantic:42,url:45,social:25,trust:54}},
-  {key:"cncr",cat:"장기",name:"암보험",product:"내가고른 암보험 무배당2604",brand:"한화 다이렉트",delivery:"direct",path:"/ltr/cncr/",
+  {key:"cncr",cat:"장기",name:"암보험",product:"내가고른 암보험 무배당2604",brand:"한화손보다이렉트",delivery:"direct",path:"/ltr/cncr/",
    url:"https://m.hanwhadirect.com/ltr/cncr/",exTitle:"암>고객정보입력 - 메인>다이렉트 홈",exTitleV:"bad",
    exDesc:"이 상품을 꼭 가입하셔야 하는 이유 … 확인필-제2026-장기CM사업부-기타(광고)01545L",exDescV:"mid",
    exOg:"없음(추정)",ax:{title:20,meta:35,semantic:45,url:42,social:28,trust:52}},
-  {key:"dntl",cat:"장기",name:"치아보험",product:"치아안심보험 무배당2504",brand:"한화 다이렉트",delivery:"direct",path:"/ltr/dntl/",
+  {key:"dntl",cat:"장기",name:"치아보험",product:"치아안심보험 무배당2504",brand:"한화손보다이렉트",delivery:"direct",path:"/ltr/dntl/",
    url:"https://m.hanwhadirect.com/ltr/dntl/",exTitle:"한화손해보험 다이렉트 치아안심보험 무배당2504",exTitleV:"good",
    exDesc:"남자 · 여자 ; 자가용 · 영업용 · 비운전자",exDescV:"bad",
    exOg:"없음(추정)",ax:{title:68,meta:30,semantic:50,url:45,social:35,trust:58}},
@@ -276,25 +278,25 @@ const PRODUCTS=[
 ];
 
 const COPY={
-  home:{nt:"한화손해보험 다이렉트 | 자동차·운전자·암·치아·화재보험",
-        gd:"자동차·운전자·암·치아·주택화재보험까지, 한화손해보험 다이렉트에서 개인정보 없이 온라인으로 비교하고 보험료를 확인하세요.",
-        st:"한화손해보험 다이렉트 — 필요한 보험을 한 곳에서",
-        sd:"자동차부터 장기보험까지, 개인정보 없이 3분 만에 보험료를 확인해요.",h1:"한화손해보험 다이렉트"},
-  hrmf:{nt:"한화 다이렉트 주택화재보험 | 풍수재·임시거주비 보장",
-        gd:"화재·누수·풍수재로 인한 주택 피해와 임시거주비까지. 한화 다이렉트 119주택화재보험을 온라인에서 설계하고 보험료를 확인하세요.",
-        st:"우리 집, 화재·폭우에도 괜찮을까? — 한화 다이렉트",
-        sd:"임시거주비까지 챙기는 주택화재보험을 3분 만에 설계하고 카톡으로 가족과 공유해요.",h1:"주택화재보험 — 119주택화재보험"},
-  golf:{nt:"한화 다이렉트 골프보험 | 홀인원·배상책임 보장",
-        gd:"홀인원 축하비용부터 타인 상해 배상책임까지. 한화 다이렉트 골프보험으로 라운딩 중 위험을 온라인에서 설계하고 보험료를 확인하세요.",
-        st:"홀인원, 축하만큼 비용도 크다 — 한화 다이렉트 골프보험",
+  home:{nt:"한화손보다이렉트 | 암·치아·운전자·주택화재·골프보험",
+        gd:"암·치아·운전자·주택화재·골프보험까지, 한화손보다이렉트에서 개인정보 없이 온라인으로 비교하고 보험료를 확인하세요.",
+        st:"한화손보다이렉트 — 필요한 보험을 한 곳에서",
+        sd:"장기보험을 개인정보 없이 3분 만에 비교하고 보험료를 확인해요.",h1:"한화손해보험 다이렉트"},
+  hrmf:{nt:"한화손보다이렉트 주택화재보험 | 스크린홀인원·임시거주비",
+        gd:"화재·누수·풍수재 피해와 임시거주비는 물론 스크린홀인원 담보까지. 한화손보다이렉트 주택화재보험을 온라인에서 설계하고 보험료를 확인하세요.",
+        st:"화재보험에 스크린홀인원까지 — 한화손보다이렉트 주택화재보험",
+        sd:"임시거주비에 스크린홀인원 담보까지 챙기는 주택화재보험을 3분 만에 설계하고 공유해요.",h1:"주택화재보험 — 119주택화재보험(스크린홀인원 담보)"},
+  golf:{nt:"한화손보다이렉트 골프보험 | 홀인원·배상책임 보장",
+        gd:"홀인원 축하비용부터 타인 상해 배상책임까지. 한화손보다이렉트 골프보험으로 라운딩 중 위험을 온라인에서 설계하고 보험료를 확인하세요.",
+        st:"홀인원, 축하만큼 비용도 크다 — 한화손보다이렉트 골프보험",
         sd:"라운딩 중 사고·배상책임·홀인원 비용까지. 3분 만에 설계하고 동반자와 공유해요.",h1:"골프보험 — 홀인원·배상책임"},
-  cncr:{nt:"한화 다이렉트 내가고른 암보험 | 4대유사암 단독가입",
-        gd:"필요한 담보만 직접 고르는 한화 다이렉트 암보험. 4대 유사암 단독 가입과 진단·수술·입원비 보장을 온라인에서 설계·비교해 보세요.",
-        st:"내 암보험, 담보는 내가 고른다 — 한화 다이렉트",
+  cncr:{nt:"한화손보다이렉트 내가고른 암보험 | 4대유사암 단독가입",
+        gd:"필요한 담보만 직접 고르는 한화손보다이렉트 암보험. 4대 유사암 단독 가입과 진단·수술·입원비 보장을 온라인에서 설계·비교해 보세요.",
+        st:"내 암보험, 담보는 내가 고른다 — 한화손보다이렉트",
         sd:"필요한 보장만 골라 담고 불필요한 특약은 빼고. 카톡으로 공유하고 보험료까지 3분 안에 확인해요.",h1:"내가고른 암보험 — 담보 선택형"},
-  dntl:{nt:"한화 다이렉트 치아안심보험 | 스케일링·보철 보장",
-        gd:"충치·치주질환 치료비부터 스케일링까지. 한화 다이렉트 치아안심보험의 보존·보철 보장과 보험료를 온라인에서 바로 확인하세요.",
-        st:"스케일링부터 임플란트까지 — 한화 다이렉트 치아보험",
+  dntl:{nt:"한화손보다이렉트 치아안심보험 | 스케일링·보철 보장",
+        gd:"충치·치주질환 치료비부터 스케일링까지. 한화손보다이렉트 치아안심보험의 보존·보철 보장과 보험료를 온라인에서 바로 확인하세요.",
+        st:"스케일링부터 임플란트까지 — 한화손보다이렉트 치아보험",
         sd:"미루기 쉬운 치과 치료비, 미리 준비해요. 보장과 보험료를 3분 만에 확인하고 카톡으로 공유하세요.",h1:"치아안심보험 — 보존·보철 보장"},
   driver:{nt:"캐롯 운전자보험 | 교통사고 벌금·변호사·합의금 보장",
         gd:"교통사고 벌금·변호사선임비·형사합의금까지. 캐롯 운전자보험을 온라인에서 필요한 담보만 골라 설계하고 보험료를 확인하세요.",
@@ -312,6 +314,19 @@ const COPY={
         gd:"출국 전 간편 가입과 무사고 시 캐시백까지. 캐롯 해외여행보험을 개인정보 없이 온라인에서 비교하고 보험료를 확인하세요.",
         st:"여행 전 3분, 캐롯 해외여행보험",
         sd:"출국 전 간편가입·무사고 캐시백. 개인정보 없이 보험료를 바로 확인해요.",h1:"캐롯 해외여행보험"}
+};
+
+// 상품 장점(USP) — 화면 노출 + 카피 반영 근거
+const USP={
+  home:"암·치아·운전자·화재·골프를 한 곳에서 · 개인정보 없이 3분 견적",
+  hrmf:"스크린홀인원 담보 + 풍수재·임시거주비 보장",
+  golf:"홀인원 축하비용 · 타인 상해 배상책임",
+  cncr:"담보 골라담기(내가 고른) · 4대유사암 단독가입",
+  dntl:"스케일링 연 2회 · 보철·보존 치료비",
+  driver:"교통사고 벌금·변호사비·형사합의금",
+  woman:"임신·출산지원금 · 산후조리원비용",
+  birth:"임신 22주 내 가입 · 태아 특약",
+  overseas:"출국 전 간편가입 · 무사고 캐시백"
 };
 
 /* ── 유틸 ── */
@@ -459,6 +474,7 @@ function renderScreen(){
         <span class="spacer"></span>
         <a class="btn" href="${esc(p.url)}" target="_blank" rel="noopener">화면 열기 ↗</a>
       </div>
+      ${USP[p.key]?`<div class="usp-line">💡 <b>상품 장점</b> · ${esc(USP[p.key])} <span style="color:var(--muted);font-weight:600">→ 타이틀·카피에 반영</span></div>`:""}
       <div class="url-line">${esc(p.url)}</div>
       ${destLine}
       <div class="cur-grid">
@@ -516,7 +532,7 @@ function renderPro(prefill){
     </div>
     <div class="pro-result" id="proResult"></div>`;
   $("#genBtn").addEventListener("click",runPro);
-  $("#sampleBtn").addEventListener("click",()=>renderPro({url:"https://www.hanwhadirect.com/ltr/cncr/",brand:"한화 다이렉트",product:"내가고른 암보험",keyword:"암보험",benefits:"진단비, 수술비, 입원비",title:"암>고객정보입력 - 메인>다이렉트 홈",desc:"",og:"none",h1:0,alt:6,target:"both"}));
+  $("#sampleBtn").addEventListener("click",()=>renderPro({url:"https://www.hanwhadirect.com/ltr/cncr/",brand:"한화손보다이렉트",product:"내가고른 암보험",keyword:"암보험",benefits:"진단비, 수술비, 입원비",title:"암>고객정보입력 - 메인>다이렉트 홈",desc:"",og:"none",h1:0,alt:6,target:"both"}));
   $("#lhLoad").addEventListener("click",()=>{const parsed=parseCrawlJson($("#lhJson").value);if(parsed){renderPro(Object.assign(readForm(),parsed));toast("크롤 결과 반영됨");}});
   $("#lhSample").addEventListener("click",()=>{$("#lhJson").value=JSON.stringify({url:"https://www.hanwhadirect.com/ltr/cncr/",title:"암>고객정보입력 - 메인>다이렉트 홈",description:"",h1Count:0,ogPresent:false,imagesMissingAlt:6},null,2);});
   if(f.og)$("#f_og").value=f.og; if(f.target)$("#f_target").value=f.target;
