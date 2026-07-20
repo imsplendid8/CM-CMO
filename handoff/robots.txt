@@ -1,0 +1,40 @@
+# robots.txt
+# 한화손해보험 다이렉트 — https://m.hanwhadirect.com/robots.txt (사이트 루트에 저장)
+# 목적: 검색로봇 허용 + 색인 불필요/비공개 경로 차단
+
+# ── 검색로봇 명시 허용 ──
+User-agent: Yeti
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Daumoa
+Allow: /
+
+# ── 전체 로봇 공통 ──
+User-agent: *
+Allow: /
+
+# 색인 제외 — 분기(브릿지)·시스템
+Disallow: /cmcom/
+
+# 색인 제외 — 관리자
+Disallow: /admin/
+Disallow: /manager/
+Disallow: /mng/
+
+# 색인 제외 — 검색 결과 페이지
+Disallow: /search
+Disallow: /search/
+Disallow: /*?keyword=
+Disallow: /*?searchWord=
+Disallow: /*?q=
+
+# ── 사이트맵 ──
+Sitemap: https://m.hanwhadirect.com/sitemap.xml
+Sitemap: https://www.hanwhadirect.com/sitemap.xml
+
+# 참고: /cmcom/ 브릿지가 캐롯으로 301 리다이렉트하며 링크에쿼티를 넘기는 용도라면,
+#       Disallow 대신 '크롤 허용 + 페이지 noindex'가 더 안전합니다
+#       (robots로 막으면 크롤러가 리다이렉트를 따라가지 못함).

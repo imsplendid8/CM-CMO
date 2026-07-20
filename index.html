@@ -474,10 +474,10 @@ function todosFor(p,c){
   if(p.exTitleV==="bad"&&p.delivery==="direct") T.push({id:"h1",pri:"중",what:"H1을 상품명으로 1회만 지정",
     why:`가입 SPA가 통짜 색인돼 주제 신호가 폼 UI에 묻힘 — 페이지당 &lt;h1&gt; 1회`,
     before:`<div class="logo">한화 다이렉트</div>  <!-- h1이 로고/스텝인 경우 -->`,after:`<h1>${c.h1}</h1>`});
-  if(p.delivery==="home") T.push({id:"robots",pri:"상",what:"robots.txt · sitemap.xml 설치/점검 (사이트 전체)",
-    why:`점검 결과 <code>www·m.hanwhadirect.com/robots.txt</code> 접근 시 <b>HTTP 403</b> — 미설치이거나 검색로봇(Yeti·Googlebot)까지 차단될 위험. 사이트 루트에 아래 파일을 두고 사이트맵을 등록하세요.`,
-    before:`# https://www.hanwhadirect.com/robots.txt → 현재 403 (설치·크롤러 허용 여부 확인 필요)`,
-    after:`# robots.txt — 사이트 루트(/robots.txt)에 파일로 저장\nUser-agent: Yeti\nAllow: /\nUser-agent: Googlebot\nAllow: /\nUser-agent: *\nAllow: /\nSitemap: https://www.hanwhadirect.com/sitemap.xml`});
+  if(p.delivery==="home") T.push({id:"robots",pri:"상",what:"robots.txt 설치 (사이트 전체 · 완성본)",
+    why:`점검 결과 <code>m.hanwhadirect.com/robots.txt</code> 접근 시 <b>HTTP 403</b>. 아래 완성본을 사이트 루트에 그대로 저장하세요 — 검색로봇 허용 + <code>/cmcom/</code>·관리자·검색결과 차단 + 사이트맵 등록.`,
+    before:`# https://m.hanwhadirect.com/robots.txt → 현재 403 (설치 여부·크롤러 허용 확인 필요)`,
+    after:`# robots.txt — 사이트 루트(/robots.txt)에 그대로 저장\n# ── 검색로봇 명시 허용 ──\nUser-agent: Yeti\nAllow: /\n\nUser-agent: Googlebot\nAllow: /\n\nUser-agent: Daumoa\nAllow: /\n\n# ── 전체 로봇 공통 ──\nUser-agent: *\nAllow: /\n# 분기(브릿지)·시스템\nDisallow: /cmcom/\n# 관리자\nDisallow: /admin/\nDisallow: /manager/\nDisallow: /mng/\n# 검색 결과 페이지\nDisallow: /search\nDisallow: /search/\nDisallow: /*?keyword=\nDisallow: /*?searchWord=\nDisallow: /*?q=\n\n# ── 사이트맵 ──\nSitemap: https://m.hanwhadirect.com/sitemap.xml\nSitemap: https://www.hanwhadirect.com/sitemap.xml\n\n# 참고: /cmcom/ 브릿지가 301로 캐롯에 링크에쿼티를 넘기는 용도라면\n#       Disallow 대신 '크롤 허용 + noindex'가 더 안전(리다이렉트를 크롤러가 따라가야 함).`});
   T.push({id:"alt",pri:"하",what:"상품 이미지 alt 텍스트 보강",
     why:`상품 상세 이미지 alt 누락 여부 점검(실측 필요) 후 삽입 — 스크린리더·이미지색인`,
     before:`<img src="/img/${p.key}_cover.png">`,after:`<img src="/img/${p.key}_cover.png" alt="${p.name} ${p.product} 보장내용 안내">`});
