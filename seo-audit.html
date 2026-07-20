@@ -468,10 +468,10 @@ function todosFor(p,c){
   if(p.exTitleV==="bad"&&p.delivery==="direct") T.push({id:"h1",pri:"중",what:"H1을 상품명으로 1회만 지정",
     why:`가입 SPA가 통짜 색인돼 주제 신호가 폼 UI에 묻힘 — 페이지당 &lt;h1&gt; 1회`,
     before:`<div class="logo">한화 다이렉트</div>  <!-- h1이 로고/스텝인 경우 -->`,after:`<h1>${c.h1}</h1>`});
-  if(p.delivery==="home") T.push({id:"brand",pri:"중",what:"사이트명·브랜드 구조화(Organization/WebSite)",
-    why:`메인은 <b>브랜드검색·사이트링크</b>의 기준 — 사이트명 JSON-LD로 네이버·구글 브랜드 노출을 강화합니다.`,
-    before:`<!-- WebSite/Organization 구조화 없음 -->`,
-    after:`<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"한화손해보험 다이렉트","url":"https://www.hanwhadirect.com/"}<\/script>`});
+  if(p.delivery==="home") T.push({id:"robots",pri:"상",what:"robots.txt · sitemap.xml 설치/점검 (사이트 전체)",
+    why:`점검 결과 <code>www·m.hanwhadirect.com/robots.txt</code> 접근 시 <b>HTTP 403</b> — 미설치이거나 검색로봇(Yeti·Googlebot)까지 차단될 위험. 사이트 루트에 아래 파일을 두고 사이트맵을 등록하세요.`,
+    before:`# https://www.hanwhadirect.com/robots.txt → 현재 403 (설치·크롤러 허용 여부 확인 필요)`,
+    after:`# robots.txt — 사이트 루트(/robots.txt)에 파일로 저장\nUser-agent: Yeti\nAllow: /\nUser-agent: Googlebot\nAllow: /\nUser-agent: *\nAllow: /\nSitemap: https://www.hanwhadirect.com/sitemap.xml`});
   T.push({id:"alt",pri:"하",what:"상품 이미지 alt 텍스트 보강",
     why:`상품 상세 이미지 alt 누락 여부 점검(실측 필요) 후 삽입 — 스크린리더·이미지색인`,
     before:`<img src="/img/${p.key}_cover.png">`,after:`<img src="/img/${p.key}_cover.png" alt="${p.name} ${p.product} 보장내용 안내">`});
