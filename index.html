@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="한화손보다이렉트 장기CM 테크니컬 SEO 콘솔 — 개발자 전달용 태깅가이드 Excel·텍스트 내보내기 포함.">
+<meta name="description" content="한화손보다이렉트 장기CM 테크니컬 SEO 콘솔.">
 <title>한화손보 장기CM · 테크니컬 SEO(Technical SEO) 콘솔</title>
 <style>
 /* ============================================================
@@ -221,7 +221,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
     </div>
     <div class="seg3" id="seg3">
       <button data-cat="장기" class="on">장기<span class="cnt">7</span></button>
-      <button data-cat="일반">일반<span class="cnt">1</span></button>
+      <button data-cat="일반">일반<span class="cnt">2</span></button>
       <button data-cat="범용">범용 PRO</button>
     </div>
     <button class="icon-btn" id="themeBtn" title="라이트/다크 전환">◐</button>
@@ -282,7 +282,11 @@ const PRODUCTS=[
   {key:"overseas",cat:"일반",name:"해외여행보험",product:"캐롯 해외여행보험",brand:"한화손보 캐롯",delivery:"bridge",path:"/cmcom/carrotBridge.do?carrot=overseas",destUrl:"https://www.carrotins.com/product/overseas",
    url:"https://m.hanwhadirect.com/cmcom/carrotBridge.do?carrot=overseas",exTitle:"한화손보 캐롯 해외여행보험 | 여행자 보험료 개인정보 없이 간편 확인",exTitleV:"good",
    exDesc:"출국 7일 이전 가입 ; 2명 이상 함께 가입 ; 10% 환급 ; 고객님께 안내드립니다. 전쟁, 내란, 폭동, 외국의 무력행사 등으로 발생한 손해는 보험에서 보상되지 않습니다.",exDescV:"mid",
-   exOg:"설정(추정)",ax:{title:78,meta:52,semantic:60,url:52,social:58,trust:66}}
+   exOg:"설정(추정)",ax:{title:78,meta:52,semantic:60,url:52,social:58,trust:66}},
+  {key:"overseaslong",cat:"일반",name:"해외장기체류보험",product:"캐롯 해외장기체류보험",brand:"한화손보 캐롯",delivery:"bridge",path:"/cmcom/carrotBridge.do?carrot=overseas-long",destUrl:"https://www.carrotins.com/product/overseas-long/intro",
+   url:"https://m.hanwhadirect.com/cmcom/carrotBridge.do?carrot=overseas-long",exTitle:"한화손보 캐롯 해외장기체류보험 | 3개월 초과 여행, 장기 유학시 보장",exTitleV:"good",
+   exDesc:"해외체류 중 질병이나 상해를 입어 해외의료기관에서 치료를 받은 경우 최대 10만달러까지 보장해 드려요. (프리미엄 플랜 특약 가입 시)",exDescV:"mid",
+   exOg:"설정(추정)",ax:{title:78,meta:55,semantic:60,url:52,social:58,trust:66}}
 ];
 
 const COPY={
@@ -321,7 +325,11 @@ const COPY={
   overseas:{nt:"한화손보 캐롯 해외여행보험 | 개인정보 없이 보험료 확인",
         gd:"출국 전 간편 가입과 무사고 시 캐시백까지. 한화손보 캐롯 해외여행보험을 개인정보 없이 온라인에서 비교하고 보험료를 확인하세요.",
         st:"여행 전 3분, 한화손보 캐롯 해외여행보험",
-        sd:"출국 전 간편가입·무사고 캐시백. 개인정보 없이 보험료를 바로 확인해요.",h1:"한화손보 캐롯 해외여행보험"}
+        sd:"출국 전 간편가입·무사고 캐시백. 개인정보 없이 보험료를 바로 확인해요.",h1:"한화손보 캐롯 해외여행보험"},
+  overseaslong:{nt:"한화손보 캐롯 해외장기체류보험 | 유학·장기체류 보장",
+        gd:"3개월 초과 해외체류·유학 중 질병·상해 의료비를 최대 10만달러까지. 한화손보 캐롯 해외장기체류보험을 온라인에서 확인하세요.",
+        st:"유학·장기출장 전 필수 — 한화손보 캐롯 해외장기체류보험",
+        sd:"3개월 넘는 해외체류, 현지 의료비까지 대비하는 장기체류보험. 개인정보 없이 보험료를 확인해요.",h1:"한화손보 캐롯 해외장기체류보험"}
 };
 
 // 상품 장점(USP) — 화면 노출 + 카피 반영 근거
@@ -334,7 +342,8 @@ const USP={
   driver:"교통사고 벌금·변호사비·형사합의금",
   woman:"임신·출산지원금 · 산후조리원비용",
   birth:"임신 22주 내 가입 · 태아 특약",
-  overseas:"출국 전 간편가입 · 무사고 캐시백"
+  overseas:"출국 전 간편가입 · 무사고 캐시백",
+  overseaslong:"3개월 초과 체류·유학 · 해외 의료비 최대 10만달러"
 };
 
 /* ── 유틸 ── */
