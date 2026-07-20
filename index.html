@@ -517,22 +517,27 @@ function parseCrawlJson(raw){
   if(o.og!=null)out.og=(o.og===true?"yes":o.og===false?"none":o.og); else if(o.ogPresent!=null)out.og=o.ogPresent?"yes":"none";
   return out;
 }
-function nextSeoBlock(name,url,slug,c){
-  return `// next-seo (garmeeh/next-seo) · ${name}\nimport { NextSeo } from 'next-seo';\n\nexport const seo = (\n  <NextSeo\n    title="${c.nt}"\n    description="${c.gd}"\n    openGraph={{\n      url: '${url}',\n      title: '${c.st}',\n      description: '${c.sd}',\n      images: [{ url: 'https://cdn.example.com/og/${slug}_1200x630.png', width: 1200, height: 630 }],\n    }}\n  />\n);`;
-}
-function jsonLdBlock(name,url,brand,c){
-  return `<!-- JSON-LD · google/schema-dts 로 타입검증 (npm i -D schema-dts) -->\n<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@graph": [\n    { "@type": "Product",\n      "name": "${name}",\n      "brand": { "@type": "Brand", "name": "${brand}" },\n      "url": "${url}",\n      "description": "${c.gd}" },\n    { "@type": "FAQPage",\n      "mainEntity": [{ "@type": "Question",\n        "name": "가입은 어떻게 하나요?",\n        "acceptedAnswer": { "@type": "Answer", "text": "온라인에서 담보를 선택하고 보험료를 확인해 바로 가입할 수 있습니다." } }] }\n  ]\n}\n<\/script>`;
-}
-function unlighthouseCmd(url){let origin=url,path="/";try{const u=new URL(url);origin=u.origin;path=u.pathname||"/";}catch(e){}
-  return `# 적용 후 재검증 (harlan-zw/unlighthouse)\nnpx unlighthouse --site ${origin} --router.include "${path}"`;}
 function implSection(p,c,opt){
-  const brand=(opt&&opt.brand)||p.brand||"", url=(p.delivery==="bridge"&&p.destUrl)||p.url||"", name=p.name||"", slug=p.key||"page";
+  const url=(p.delivery==="bridge"&&p.destUrl)||p.url||"";
+  const canonical = p.delivery==="bridge"
+    ? `<link rel="canonical" href="${p.destUrl||url}">`
+    : `<link rel="canonical" href="https://www.hanwhadirect.com${p.path||"/"}">\n<link rel="alternate" media="only screen and (max-width: 640px)" href="https://m.hanwhadirect.com${p.path||"/"}">`;
+  const head=`<!-- ① 이 부분을 <head> ... </head> 사이에 붙여넣으세요 -->
+<title>${c.nt}</title>
+<meta name="description" content="${c.gd}">
+<meta property="og:title" content="${c.st}">
+<meta property="og:description" content="${c.sd}">
+<meta property="og:image" content="https://이미지주소/og/${p.key}_1200x630.png">
+<meta property="og:url" content="${url}">
+${canonical}`;
+  const body=`<!-- ② <body> 안, 화면에서 상품명(제목)이 보이는 그 자리에 딱 1번만 넣으세요 -->
+<!--    (로고나 단계표시가 h1이면 그건 <div>로 바꾸고, h1은 상품명에만) -->
+<h1>${c.h1}</h1>`;
   const blk=(lbl,code)=>`<div class="impl-block"><div class="code-lbl">${lbl}<button class="cp" data-copy="${esc(code)}">코드 복사</button></div><div class="codeblk after">${esc(code)}</div></div>`;
-  return `<div class="sec-lbl">구현 코드 · 오픈소스 적용</div>
-    <div class="impl-note">추천 파이프라인 — <a href="https://github.com/harlan-zw/unlighthouse" target="_blank" rel="noopener">unlighthouse</a>로 실측 크롤 → 이 진단 → <a href="https://github.com/garmeeh/next-seo" target="_blank" rel="noopener">next-seo</a>·<a href="https://github.com/google/schema-dts" target="_blank" rel="noopener">schema-dts</a>로 적용.</div>
-    ${blk("next-seo 설정",nextSeoBlock(name,url,slug,c))}
-    ${blk("JSON-LD (schema-dts)",jsonLdBlock(name,url,brand,c))}
-    ${blk("적용 후 재검증",unlighthouseCmd(url))}`;
+  return `<div class="sec-lbl">화면 적용용 HTML 태깅 가이드</div>
+    <div class="impl-note"><b>이 페이지에 그대로 붙여넣는 완성 HTML</b>입니다. 프레임워크·구조화데이터 없이 순수 HTML만 — <b>①은 &lt;head&gt; 안</b>, <b>②는 본문의 상품명 제목 위치</b>(페이지당 &lt;h1&gt; 1개).</div>
+    ${blk("① &lt;head&gt; 태그 — 제목·설명·OG·canonical",head)}
+    ${blk("② &lt;h1&gt; 위치 — 본문 상품명 자리",body)}`;
 }
 
 /* ── 개발자 전달용 내보내기 (Excel/텍스트) ── */
