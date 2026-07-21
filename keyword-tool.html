@@ -54,6 +54,12 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .btn:hover{border-color:var(--brand);color:var(--brand-600);} .btn.primary{background:var(--grad);color:#fff;border:none;box-shadow:0 4px 12px rgba(43,108,176,.28);}
 .icon-btn{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
 .content{padding:22px 24px 60px;max-width:1160px;}
+.imp{margin:16px 24px 0;background:var(--surface);border:1px dashed var(--brand);border-radius:var(--r-sm);box-shadow:var(--sh);}
+.imp summary{cursor:pointer;font-size:12px;font-weight:800;color:var(--brand-600);padding:11px 15px;list-style:none;}
+.imp summary::-webkit-details-marker{display:none;} .imp summary::before{content:"▸ ";} .imp[open] summary::before{content:"▾ ";}
+.imp .ib{padding:0 15px 13px;}
+.imp textarea{width:100%;min-height:66px;font-family:var(--mono);font-size:11px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:9px 11px;color:var(--ink);resize:vertical;}
+.imp .ir{display:flex;gap:9px;align-items:center;margin-top:9px;flex-wrap:wrap;} .imp .hint{font-size:11px;color:var(--muted);}
 .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:16px;}
 @media(max-width:820px){.kpi-row{grid-template-columns:1fr 1fr;}}
 .kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:15px 16px;box-shadow:var(--sh);}
@@ -113,6 +119,13 @@ td.kw{font-weight:700;color:var(--ink);white-space:normal;} td.c{text-align:cent
         <button class="icon-btn" id="themeBtn" title="테마">◐</button>
       </div>
     </header>
+    <details class="imp" id="impPanel"><summary>📊 실검색량·경쟁도 데이터 불러오기 (네이버 검색광고 / 구글 Keyword Planner API 결과 JSON)</summary>
+      <div class="ib">
+        <textarea id="volJson" placeholder='{"keywords": {"암보험": {"pc": 12000, "mobile": 88000, "comp": "높음"}, "암보험 비교": {"pc": 300, "mobile": 2100, "comp": "중간"}}}'></textarea>
+        <div class="ir"><button class="btn primary" id="volLoad">적용</button><button class="btn" id="volSample">샘플 JSON</button>
+          <span class="hint">scripts/naver_searchad_keywords.py 실행 결과를 붙여넣으면 <b>월검색량·경쟁도</b> 열이 추가됩니다 · 키는 서버/로컬 · 브라우저 전송 0</span></div>
+      </div>
+    </details>
     <div class="content" id="content"></div>
   </main>
 </div>
@@ -167,7 +180,11 @@ function genKeywords(p){
 const ALL={}; PRODUCTS.forEach(p=>ALL[p.key]=genKeywords(p));
 const INTENT_COL={거래:"var(--trx)",정보:"var(--inf)",브랜드:"var(--brd)",담보:"var(--brand)"};
 
-let curKey="__all", pf="all";
+let curKey="__all", pf="all", VOL={};
+const nk=s=>String(s).replace(/\s/g,"");
+const hasVol=()=>Object.keys(VOL).length>0;
+const volOf=kw=>VOL[nk(kw)]||null;
+const fmtVol=n=>n>=10000?(n/10000).toFixed(1)+"만":n>=1000?(n/1000).toFixed(1)+"천":String(n);
 const filt=rows=>pf==="all"?rows:rows.filter(r=>r.pf===pf||r.pf==="공통");
 
 function renderSidebar(){
@@ -221,12 +238,15 @@ function renderProduct(){
   $("#pt").textContent=p.name; $("#pts").textContent=`· ${rows.length} 키워드`;
   const ic=intentCounts(rows),pc=pfCounts(rows);
   const kpi=(n,l,col)=>`<div class="kpi"><div class="n"${col?` style="color:${col}"`:""}>${n}</div><div class="l">${l}</div></div>`;
-  const trows=rows.map(r=>`<tr>
+  const vh=hasVol();
+  const rows2=vh?rows.slice().sort((a,b)=>{const va=volOf(a.kw),vb=volOf(b.kw);return((vb?vb.pc+vb.mobile:-1)-(va?va.pc+va.mobile:-1));}):rows;
+  const trows=rows2.map(r=>{const v=volOf(r.kw);const vol=v?(v.pc||0)+(v.mobile||0):null;
+    return `<tr>
     <td class="kw">${esc(r.kw)}</td>
     <td class="c gram">${r.gram}단어</td>
     <td class="c"><span class="pill ${r.intent}">${r.intent}</span></td>
     <td class="c"><span class="pill ${r.pf}">${r.pf}</span></td>
-    <td class="c gram">${r.mt}</td></tr>`).join("");
+    <td class="c gram">${r.mt}</td>`+(vh?`<td class="c" style="font-family:var(--mono);font-weight:700">${vol!=null?fmtVol(vol):"—"}</td><td class="c gram">${v?esc(v.comp||"—"):"—"}</td>`:"")+`</tr>`;}).join("");
   $("#content").innerHTML=`
     <div class="seedbar"><div class="st"><h2>${esc(p.name)}</h2><span class="tier ${p.tier}">검색수요 ${p.tier}</span>
       <span style="margin-left:auto;font-size:11.5px;color:var(--muted)">광고그룹 = 이 상품</span></div>
@@ -238,15 +258,16 @@ function renderProduct(){
       ${kpi(pc.구글+pc.공통,"구글 우선","var(--goo-ink)")}
     </div>
     <div class="sec-lbl">추출 키워드 <span style="font-weight:600;color:var(--muted);text-transform:none">· 인텐트·플랫폼·매치타입 자동 분류</span></div>
-    <div class="tbl-wrap"><table><thead><tr><th>키워드</th><th class="c">구성</th><th class="c">인텐트</th><th class="c">추천 플랫폼</th><th class="c">매치타입</th></tr></thead><tbody>${trows}</tbody></table></div>
+    <div class="tbl-wrap"><table><thead><tr><th>키워드</th><th class="c">구성</th><th class="c">인텐트</th><th class="c">추천 플랫폼</th><th class="c">매치타입</th>${vh?'<th class="c">월검색량</th><th class="c">경쟁도</th>':''}</tr></thead><tbody>${trows}</tbody></table></div>
     <div class="note"><b>바로 활용</b> · 우측 상단 <b>CSV 내보내기</b>로 네이버 검색광고/구글 Ads 업로드용 파일을 받으세요(광고그룹=상품, 키워드, 인텐트, 플랫폼, 매치타입). 거래형=구문/일치로 좁게, 정보형=확장으로 넓게 세팅 권장.</div>`;
 }
 function render(){ curKey==="__all"?renderOverview():renderProduct(); renderSidebar(); window.scrollTo({top:0}); }
 
 function exportCsv(){
   const list = curKey==="__all" ? PRODUCTS : [PRODUCTS.find(p=>p.key===curKey)];
-  const rows=[["광고그룹","키워드","구성(단어수)","인텐트","추천플랫폼","매치타입"]];
-  list.forEach(p=>filt(ALL[p.key]).forEach(r=>rows.push([p.name,r.kw,r.gram,r.intent,r.pf,r.mt])));
+  const vh=hasVol();
+  const rows=[["광고그룹","키워드","구성(단어수)","인텐트","추천플랫폼","매치타입"].concat(vh?["월PC검색량","월모바일검색량","경쟁도"]:[])];
+  list.forEach(p=>filt(ALL[p.key]).forEach(r=>{const v=volOf(r.kw);rows.push([p.name,r.kw,r.gram,r.intent,r.pf,r.mt].concat(vh?[v?v.pc:"",v?v.mobile:"",v?v.comp||"":""]:[]));}));
   const csv="﻿"+rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(",")).join("\n");
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
   a.download=`검색광고키워드_${curKey==="__all"?"전체":PRODUCTS.find(p=>p.key===curKey).name}.csv`;a.click();
@@ -258,6 +279,8 @@ document.addEventListener("click",e=>{
   const sg=e.target.closest("#pfSeg button"); if(sg){pf=sg.dataset.pf;document.querySelectorAll("#pfSeg button").forEach(b=>b.classList.toggle("on",b===sg));render();return;}
 });
 $("#exp").addEventListener("click",exportCsv);
+$("#volLoad").addEventListener("click",()=>{try{const o=JSON.parse($("#volJson").value);const src=o.keywords||o;VOL={};Object.keys(src).forEach(k=>{VOL[nk(k)]=src[k];});toast(Object.keys(VOL).length+"개 키워드 검색량 적용");render();}catch(e){toast("JSON 파싱 실패");}});
+$("#volSample").addEventListener("click",()=>{$("#volJson").value=JSON.stringify({keywords:{"암보험":{pc:9000,mobile:76000,comp:"높음"},"암보험 비교":{pc:250,mobile:1900,comp:"중간"},"다이렉트 암보험":{pc:400,mobile:3300,comp:"높음"},"40대 암보험 추천":{pc:60,mobile:520,comp:"낮음"}}},null,2);});
 $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");});
 render();
 </script>
