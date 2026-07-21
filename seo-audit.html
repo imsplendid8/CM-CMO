@@ -155,6 +155,32 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .tabs button.on{color:var(--brand-600);border-bottom-color:var(--brand);}
 .tabs .tcnt{font-family:var(--mono);font-size:10.5px;background:var(--line-2);color:var(--ink-2);padding:0 6px;border-radius:99px;font-weight:700;}
 .tabs button.on .tcnt{background:var(--brand-50);color:var(--brand-600);}
+/* ══ 좌측 사이드바 레이아웃 ══ */
+.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh;}
+@media(max-width:820px){.app{grid-template-columns:1fr;}.sidebar{position:static!important;height:auto!important;}}
+.sidebar{background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.sb-brand{display:flex;align-items:center;gap:10px;padding:16px 16px 14px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface);z-index:2;}
+.sb-brand .brand-logo{width:34px;height:34px;border-radius:9px;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;box-shadow:0 6px 16px rgba(224,133,15,.4);flex:0 0 auto;}
+.sb-brand .bn{font-size:14px;font-weight:800;letter-spacing:-.02em;}
+.sb-brand small{display:block;font-size:9.5px;color:var(--muted);font-weight:600;margin-top:1px;}
+.sb-nav{flex:1;padding:10px 10px 16px;display:flex;flex-direction:column;gap:2px;}
+.sb-cap{font-size:9.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:13px 8px 5px;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;border:none;background:none;font-family:inherit;font-size:13px;font-weight:700;color:var(--ink-2);cursor:pointer;text-align:left;width:100%;transition:.14s;}
+.sb-item:hover{background:var(--surface-2);color:var(--ink);}
+.sb-item.on{background:var(--brand-50);color:var(--brand-600);}
+.sb-item .sb-ico{font-size:13px;width:18px;text-align:center;flex:0 0 auto;}
+.sb-prod{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;border:none;background:none;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--ink-2);cursor:pointer;text-align:left;width:100%;transition:.14s;}
+.sb-prod:hover{background:var(--surface-2);color:var(--ink);}
+.sb-prod.on{background:var(--brand-50);color:var(--brand-600);font-weight:800;}
+.sb-dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto;}
+.sb-pname{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sb-cnt{font-family:var(--mono);font-size:10px;color:var(--muted);font-weight:700;}
+.sb-prod.on .sb-cnt{color:var(--brand-600);}
+.sb-foot{padding:12px 16px;border-top:1px solid var(--line);font-size:9.5px;color:var(--muted);line-height:1.6;}
+.main{min-width:0;display:flex;flex-direction:column;}
+.topbar-slim{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 24px;background:var(--surface);border-bottom:1px solid var(--line);}
+.topbar-slim #pageTitle{font-size:16px;font-weight:800;letter-spacing:-.02em;}
+.topbar-slim .ts-right{margin-left:auto;display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
 /* 대시보드 */
 .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
 @media(max-width:820px){.kpi-row{grid-template-columns:1fr 1fr;}}
@@ -280,31 +306,30 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 
-<div class="wrap">
-  <header class="appbar">
-    <div class="ab-brand">
+<div class="app">
+  <aside class="sidebar">
+    <div class="sb-brand">
       <div class="brand-logo">◆</div>
-      <div><div class="bn">Modooflow SEO</div>
-        <small>테크니컬 SEO 자동화 · 한화손보 CM사업부</small></div>
+      <div><div class="bn">Modooflow SEO</div><small>테크니컬 SEO · 한화손보 CM</small></div>
     </div>
-    <div class="ab-right">
-      <span class="ws">워크스페이스 · <b>한화손보 CM</b></span>
-      <span class="usage">담당 상품 <b>10</b>종</span>
-      <button class="icon-btn" id="themeBtn" title="라이트/다크 전환">◐</button>
-      <div class="avatar" title="한화손보 CM">CM</div>
+    <nav class="sb-nav" id="sbNav"></nav>
+    <div class="sb-foot">네이버 웹마스터도구 가이드 반영<br>모바일(m.hanwhadirect.com) 기준 · 실측 2026-07-18</div>
+  </aside>
+  <main class="main">
+    <header class="topbar-slim">
+      <div id="pageTitle">대시보드</div>
+      <div class="ts-right">
+        <span class="ws">워크스페이스 · <b>한화손보 CM</b></span>
+        <span class="usage">담당 상품 <b>10</b>종</span>
+        <button class="icon-btn" id="themeBtn" title="라이트/다크 전환">◐</button>
+        <div class="avatar" title="한화손보 CM">CM</div>
+      </div>
+    </header>
+    <div class="content">
+      <section class="view" id="v-dash"></section>
+      <section class="view" id="v-product"></section>
+      <section class="view" id="v-pro"></section>
     </div>
-  </header>
-  <nav class="tabs" id="tabs">
-    <button data-nav="dash" class="on">대시보드</button>
-    <button data-nav="장기">장기 <span class="tcnt">7</span></button>
-    <button data-nav="일반">일반 <span class="tcnt">2</span></button>
-    <button data-nav="pro">범용 진단</button>
-  </nav>
-  <nav class="subnav" id="subnav"></nav>
-  <main class="content">
-    <section class="view" id="v-dash"></section>
-    <section class="view" id="v-product"></section>
-    <section class="view" id="v-pro"></section>
   </main>
 </div>
 <div class="toast" id="toast"></div>
@@ -649,7 +674,8 @@ function renderScreen(){
     ${implSection(p,COPY[p.key],{brand:p.brand})}
     ${p.delivery==="home"?webStdPanel():""}
     <div class="foot-note"><b>참고</b> · Before는 네이버 색인 실측값(2026-07-18). 브릿지 상품은 <b>캐롯 목적지 페이지</b> 색인값 기준이며, 브릿지 자체는 색인이 거의 없습니다(분기 처리 To-Do 참고). H1·alt·OG 원본은 사이트 봇차단(403)으로 미수집 → 템플릿 예시이니 실제 DOM에 맞춰 반영. After 카피는 광고심의 검수 후 배포.<br><b>네이버 웹마스터도구 가이드</b> · 제목 15자·설명 45자 이내 권장, 제목=설명·키워드 반복·낚시성 금지, robots.txt와 로봇 메타태그 <b>둘 다 허용</b>, 리다이렉트는 <b>HTTP 301</b>, 사이트맵·RSS 제출.</div>`;
-  renderSubnav();
+  $("#pageTitle").textContent=p.name;
+  renderSidebar();
 }
 
 /* ── PRO ── */
@@ -765,7 +791,7 @@ function renderDash(){
     <div class="dash-2">
       <div class="panel">
         <h3>⚠️ 우선 조치 상품 <span style="font-size:11px;color:var(--muted);font-weight:600">· 점수 낮은 순</span></h3>
-        ${worst.map((x,i)=>{const avg=Math.round((x.g+x.n)/2),g=grade(avg)[1];return `<div class="rank-item" data-goto="${x.p.cat==="home"?"장기":x.p.cat}:${x.p.key}">
+        ${worst.map((x,i)=>{const avg=Math.round((x.g+x.n)/2),g=grade(avg)[1];return `<div class="rank-item" data-goto="${x.p.key}">
           <span class="ri-rank">${i+1}</span>
           <span class="ri-name">${esc(x.p.name)}<small>${esc(x.p.brand)} · ${delText(x.p.delivery)}</small></span>
           <span class="ri-score" style="background:${bgOf(g)};color:${inkOf(g)}">G${x.g} · N${x.n}</span></div>`;}).join("")}
@@ -789,23 +815,33 @@ function renderDash(){
     </div>`;
 }
 
-/* ── 네비게이션 ── */
-let nav="dash";
-function setNav(v){
-  nav=v;
-  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.nav===v));
+/* ── 네비게이션 (좌측 사이드바) ── */
+let view="dash";
+function renderSidebar(){
+  const prodBtn=p=>{const[d,n]=screenDone(p);const col=d===n?"var(--good)":d>0?"var(--mid)":"var(--faint)";
+    return `<button class="sb-prod${view==="product"&&curKey===p.key?" on":""}" data-screen="${p.key}"><span class="sb-dot" style="background:${col}"></span><span class="sb-pname">${esc(p.name)}</span><span class="sb-cnt">${d}/${n}</span></button>`;};
+  $("#sbNav").innerHTML=
+    `<button class="sb-item${view==="dash"?" on":""}" data-nav="dash"><span class="sb-ico">▦</span>대시보드</button>`+
+    `<div class="sb-cap">사이트</div>`+prodBtn(PRODUCTS.find(p=>p.key==="home"))+
+    `<div class="sb-cap">장기 · 7</div>`+catProducts("장기").map(prodBtn).join("")+
+    `<div class="sb-cap">일반 · 2</div>`+catProducts("일반").map(prodBtn).join("")+
+    `<div class="sb-cap">도구</div>`+
+    `<button class="sb-item${view==="pro"?" on":""}" data-nav="pro"><span class="sb-ico">⚡</span>범용 진단</button>`;
+}
+function setView(v){
+  view=v;
   ["dash","product","pro"].forEach(x=>$("#v-"+x).classList.remove("on"));
-  $("#subnav").style.display=(v==="장기"||v==="일반")?"":"none";
-  if(v==="dash"){$("#v-dash").classList.add("on");renderDash();}
-  else if(v==="장기"||v==="일반"){cat=v;$("#v-product").classList.add("on");curKey=catProducts(v)[0].key;renderScreen();}
-  else if(v==="pro"){$("#v-pro").classList.add("on");renderPro();}
+  if(v==="dash"){$("#v-dash").classList.add("on");$("#pageTitle").textContent="대시보드";renderDash();}
+  else if(v==="pro"){$("#v-pro").classList.add("on");$("#pageTitle").textContent="범용 진단";renderPro();}
+  else if(v==="product"){$("#v-product").classList.add("on");renderScreen();}
+  renderSidebar();
   window.scrollTo({top:0,behavior:"auto"});
 }
-function gotoProduct(c,k){setNav(c);curKey=k;renderScreen();}
+function selectProduct(k){curKey=k;setView("product");}
 document.addEventListener("click",e=>{
-  const gt=e.target.closest("[data-goto]"); if(gt){const a=gt.dataset.goto.split(":");gotoProduct(a[0],a[1]);return;}
-  const nb=e.target.closest("[data-nav]"); if(nb){setNav(nb.dataset.nav);return;}
-  const chip=e.target.closest(".chip"); if(chip){curKey=chip.dataset.screen;renderScreen();window.scrollTo({top:0});return;}
+  const nb=e.target.closest("[data-nav]"); if(nb){setView(nb.dataset.nav);return;}
+  const sp=e.target.closest("[data-screen]"); if(sp){selectProduct(sp.dataset.screen);return;}
+  const gt=e.target.closest("[data-goto]"); if(gt){selectProduct(gt.dataset.goto);return;}
   const xls=e.target.closest("[data-xls]"); if(xls){exportXls(xls.dataset.xls);return;}
   const txt=e.target.closest("[data-txt]"); if(txt){exportText(txt.dataset.txt);return;}
   const cp=e.target.closest(".cp,[data-copy]"); if(cp&&cp.dataset.copy!=null){navigator.clipboard?.writeText(cp.dataset.copy).then(()=>toast("복사됨"),()=>toast("복사 실패"));return;}
@@ -820,5 +856,5 @@ $("#themeBtn").addEventListener("click",()=>{
   document.documentElement.setAttribute("data-theme",dark?"light":"dark");});
 
 /* ── init ── */
-setNav("dash");
+setView("dash");
 </script>
