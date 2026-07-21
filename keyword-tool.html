@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="한화손보 CM 검색광고 키워드 추출 대시보드 — 네이버+구글 조합">
+<title>Modooflow SEM · 검색광고 키워드 추출</title>
+<style>
+:root{
+  --brand:#2b6cb0; --brand-600:#1e4e8c; --brand-50:#e7f0fa; --brand-tint:#eef5fc;
+  --grad:linear-gradient(135deg,#2b6cb0 0%,#4a9fe0 100%);
+  --ink:#1a1f2c; --ink-2:#48506a; --muted:#8b90a3; --faint:#c4c8d4;
+  --bg:#f3f5f8; --surface:#ffffff; --surface-2:#f8fafc; --line:#e4e8ef; --line-2:#eef1f6;
+  --nav:#03C75A; --nav-bg:#e6f8ee; --nav-ink:#0a7c3e;
+  --goo:#4285F4; --goo-bg:#e8f0fe; --goo-ink:#1a56c4;
+  --com:#8a5cf6; --com-bg:#efe9fe; --com-ink:#6636d6;
+  --trx:#c47f12; --trx-bg:#fbf1de; --inf:#2b8a6b; --inf-bg:#e3f5ee; --brd:#b4508c; --brd-bg:#fbe9f4;
+  --r:14px; --r-sm:10px; --sh:0 1px 2px rgba(20,28,60,.05),0 6px 20px rgba(20,28,60,.06); --sh-lg:0 12px 40px rgba(20,28,60,.12);
+  --mono:ui-monospace,"SF Mono","Roboto Mono",Menlo,monospace;
+  --sans:'Pretendard','Noto Sans KR','Nanum Gothic','Apple SD Gothic Neo',-apple-system,sans-serif;
+}
+@media(prefers-color-scheme:dark){:root{
+  --brand:#5aa0e6; --brand-600:#7bb6ee; --brand-50:#152638; --brand-tint:#121d2a;
+  --ink:#eef0f6; --ink-2:#bcc2d4; --muted:#868ba0; --faint:#4a4f60;
+  --bg:#0f1420; --surface:#171d2a; --surface-2:#1c2431; --line:#293246; --line-2:#222a3a;
+  --nav-bg:#0f2c1c; --goo-bg:#122238; --com-bg:#221838; --trx-bg:#33270f; --inf-bg:#0f2c22; --brd-bg:#331426;
+  --sh:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35); --sh-lg:0 12px 40px rgba(0,0,0,.5);
+}}
+:root[data-theme="dark"]{--brand:#5aa0e6;--brand-600:#7bb6ee;--brand-50:#152638;--brand-tint:#121d2a;--ink:#eef0f6;--ink-2:#bcc2d4;--muted:#868ba0;--faint:#4a4f60;--bg:#0f1420;--surface:#171d2a;--surface-2:#1c2431;--line:#293246;--line-2:#222a3a;--nav-bg:#0f2c1c;--goo-bg:#122238;--com-bg:#221838;--trx-bg:#33270f;--inf-bg:#0f2c22;--brd-bg:#331426;--sh:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);--sh-lg:0 12px 40px rgba(0,0,0,.5);}
+:root[data-theme="light"]{--brand:#2b6cb0;--brand-600:#1e4e8c;--brand-50:#e7f0fa;--brand-tint:#eef5fc;--ink:#1a1f2c;--ink-2:#48506a;--muted:#8b90a3;--faint:#c4c8d4;--bg:#f3f5f8;--surface:#fff;--surface-2:#f8fafc;--line:#e4e8ef;--line-2:#eef1f6;--nav-bg:#e6f8ee;--goo-bg:#e8f0fe;--com-bg:#efe9fe;--trx-bg:#fbf1de;--inf-bg:#e3f5ee;--brd-bg:#fbe9f4;--sh:0 1px 2px rgba(20,28,60,.05),0 6px 20px rgba(20,28,60,.06);--sh-lg:0 12px 40px rgba(20,28,60,.12);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;word-break:keep-all;}
+.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh;}
+@media(max-width:820px){.app{grid-template-columns:1fr;}.sidebar{position:static!important;height:auto!important;}}
+.sidebar{background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.sb-brand{display:flex;align-items:center;gap:10px;padding:16px 16px 14px;border-bottom:1px solid var(--line);}
+.brand-logo{width:34px;height:34px;border-radius:9px;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;box-shadow:0 6px 16px rgba(43,108,176,.4);flex:0 0 auto;}
+.bn{font-size:14px;font-weight:800;letter-spacing:-.02em;} .sb-brand small{display:block;font-size:9.5px;color:var(--muted);font-weight:600;margin-top:1px;}
+.sb-nav{flex:1;padding:10px;display:flex;flex-direction:column;gap:2px;}
+.sb-cap{font-size:9.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:13px 8px 5px;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;border:none;background:none;font-family:inherit;font-size:12.5px;font-weight:700;color:var(--ink-2);cursor:pointer;text-align:left;width:100%;transition:.14s;}
+.sb-item:hover{background:var(--surface-2);color:var(--ink);} .sb-item.on{background:var(--brand-50);color:var(--brand-600);}
+.sb-item .kc{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--muted);font-weight:700;} .sb-item.on .kc{color:var(--brand-600);}
+.sb-foot{padding:12px 14px;border-top:1px solid var(--line);font-size:9.5px;color:var(--muted);line-height:1.6;}
+.sb-foot a{color:var(--brand-600);text-decoration:none;font-weight:700;}
+.main{min-width:0;display:flex;flex-direction:column;}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 24px;background:var(--surface);border-bottom:1px solid var(--line);}
+.topbar #pt{font-size:16px;font-weight:800;letter-spacing:-.02em;} .topbar #pts{font-size:11.5px;color:var(--muted);margin-left:2px;}
+.tr{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.seg{display:inline-flex;background:var(--line-2);border:1px solid var(--line);border-radius:9px;padding:3px;gap:2px;}
+.seg button{border:none;background:none;font-family:inherit;font-size:11.5px;font-weight:700;color:var(--muted);padding:6px 11px;border-radius:7px;cursor:pointer;}
+.seg button.on{background:var(--surface);color:var(--brand-600);box-shadow:var(--sh);}
+.btn{padding:8px 13px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:.15s;}
+.btn:hover{border-color:var(--brand);color:var(--brand-600);} .btn.primary{background:var(--grad);color:#fff;border:none;box-shadow:0 4px 12px rgba(43,108,176,.28);}
+.icon-btn{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.content{padding:22px 24px 60px;max-width:1160px;}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:16px;}
+@media(max-width:820px){.kpi-row{grid-template-columns:1fr 1fr;}}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:15px 16px;box-shadow:var(--sh);}
+.kpi .n{font-family:var(--mono);font-size:24px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1;}
+.kpi .l{font-size:11px;color:var(--muted);font-weight:700;margin-top:6px;} .kpi .s{font-size:11px;margin-top:3px;font-weight:700;}
+.seedbar{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:15px 18px;margin-bottom:16px;box-shadow:var(--sh);}
+.seedbar .st{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:9px;}
+.seedbar h2{font-size:16px;font-weight:800;} .tier{font-size:10px;font-weight:800;padding:2px 8px;border-radius:6px;}
+.tier.대형{background:var(--trx-bg);color:var(--trx);} .tier.중형{background:var(--inf-bg);color:var(--inf-ink,var(--inf));} .tier.니치{background:var(--line-2);color:var(--ink-2);}
+.seeds{display:flex;flex-wrap:wrap;gap:6px;}
+.seed{font-family:var(--mono);font-size:11.5px;font-weight:700;background:var(--brand-50);color:var(--brand-600);padding:4px 10px;border-radius:7px;}
+.sec-lbl{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:16px 2px 9px;display:flex;align-items:center;gap:8px;}
+.pill{font-size:10px;font-weight:800;padding:2px 8px;border-radius:999px;}
+.pill.네이버{background:var(--nav-bg);color:var(--nav-ink);} .pill.구글{background:var(--goo-bg);color:var(--goo-ink);} .pill.공통{background:var(--com-bg);color:var(--com-ink);}
+.pill.거래{background:var(--trx-bg);color:var(--trx);} .pill.정보{background:var(--inf-bg);color:var(--inf);} .pill.브랜드{background:var(--brd-bg);color:var(--brd);} .pill.담보{background:var(--brand-50);color:var(--brand-600);}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface);box-shadow:var(--sh);}
+table{border-collapse:collapse;width:100%;font-size:12.5px;min-width:640px;}
+th,td{padding:9px 13px;text-align:left;border-bottom:1px solid var(--line-2);white-space:nowrap;}
+th{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;background:var(--surface-2);position:sticky;top:0;}
+tbody tr:last-child td{border-bottom:none;} tbody tr:hover{background:var(--surface-2);}
+td.kw{font-weight:700;color:var(--ink);white-space:normal;} td.c{text-align:center;}
+.gram{font-family:var(--mono);font-size:10.5px;color:var(--muted);}
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:13px;}
+.ov-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:15px 16px;box-shadow:var(--sh);cursor:pointer;transition:.15s;}
+.ov-card:hover{border-color:var(--brand);box-shadow:var(--sh-lg);transform:translateY(-1px);}
+.ov-card .ct{font-size:13.5px;font-weight:800;display:flex;align-items:center;gap:7px;justify-content:space-between;}
+.ov-card .cn{font-family:var(--mono);font-size:20px;font-weight:800;margin:8px 0 2px;} .ov-card .cs{font-size:11px;color:var(--muted);}
+.bars{display:flex;height:7px;border-radius:99px;overflow:hidden;margin-top:9px;background:var(--line-2);}
+.bars i{height:100%;display:block;}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:11px;color:var(--ink-2);margin-top:10px;}
+.legend span{display:inline-flex;align-items:center;gap:5px;} .lg{width:9px;height:9px;border-radius:2px;}
+.note{font-size:11.5px;color:var(--ink-2);line-height:1.7;margin-top:18px;padding:13px 15px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);}
+.note b{font-weight:800;} .note a{color:var(--brand-600);font-weight:700;text-decoration:none;} .note a:hover{text-decoration:underline;}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:10px;font-size:12.5px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:50;box-shadow:var(--sh-lg);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sb-brand"><div class="brand-logo">KW</div>
+      <div><div class="bn">Modooflow SEM</div><small>검색광고 키워드 추출 · 한화손보 CM</small></div></div>
+    <nav class="sb-nav" id="sbNav"></nav>
+    <div class="sb-foot">엔진 참고 · <a href="https://github.com/eliasdabbas/advertools" target="_blank" rel="noopener">advertools</a> kw_generate · 네이버 검색광고/데이터랩 · 구글 <a href="https://github.com/GeneralMills/pytrends" target="_blank" rel="noopener">pytrends</a><br>검색량·경쟁도는 각 광고 플랫폼에서 확정</div>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <div><span id="pt">전체 개요</span> <span id="pts"></span></div>
+      <div class="tr">
+        <div class="seg" id="pfSeg">
+          <button data-pf="all" class="on">전체</button>
+          <button data-pf="네이버">네이버</button>
+          <button data-pf="구글">구글</button>
+        </div>
+        <button class="btn primary" id="exp">CSV 내보내기</button>
+        <button class="icon-btn" id="themeBtn" title="테마">◐</button>
+      </div>
+    </header>
+    <div class="content" id="content"></div>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* 상품(광고그룹) · 시드 키워드 · 담보 키워드 · 검색수요 tier */
+const PRODUCTS=[
+ {key:"home",cat:"사이트",name:"다이렉트 홈(브랜드)",tier:"대형",core:["한화손보 다이렉트","한화 다이렉트보험","한화손해보험 다이렉트"],special:["자동차보험","운전자보험","장기보험","다이렉트보험"]},
+ {key:"hrmf",cat:"장기",name:"주택화재보험",tier:"대형",core:["주택화재보험","화재보험","다이렉트 화재보험"],special:["풍수재","스크린홀인원","임시거주비","누수","도난"]},
+ {key:"golf",cat:"장기",name:"골프보험",tier:"중형",core:["골프보험","홀인원보험","다이렉트 골프보험"],special:["홀인원","배상책임","캐디","용품손해"]},
+ {key:"cncr",cat:"장기",name:"암보험",tier:"중형",core:["암보험","다이렉트 암보험","내가고른 암보험"],special:["유사암","진단비","소액암","표적항암","재발암"]},
+ {key:"dntl",cat:"장기",name:"치아보험",tier:"중형",core:["치아보험","다이렉트 치아보험","치아안심보험"],special:["임플란트","스케일링","보철","크라운","충치"]},
+ {key:"driver",cat:"장기",name:"운전자보험",tier:"대형",core:["운전자보험","다이렉트 운전자보험","캐롯 운전자보험"],special:["벌금","변호사선임","형사합의금","교통사고","12대중과실"]},
+ {key:"woman",cat:"장기",name:"여성건강보험",tier:"니치",core:["여성건강보험","여성보험","여성 다이렉트보험"],special:["임신","출산","산후조리","여성암","자궁"]},
+ {key:"birth",cat:"장기",name:"임신·출산(태아)보험",tier:"니치",core:["태아보험","임신보험","출산보험"],special:["태아","선천이상","미숙아","산모","제왕절개"]},
+ {key:"overseas",cat:"일반",name:"해외여행보험",tier:"중형",core:["해외여행보험","여행자보험","다이렉트 여행자보험"],special:["실손","휴대품","항공기지연","여권분실"]},
+ {key:"overseaslong",cat:"일반",name:"해외장기체류보험",tier:"니치",core:["해외장기체류보험","장기여행보험","유학생보험"],special:["유학","장기체류","워홀","어학연수","주재원"]},
+];
+/* 수식어(수식어 조합) · 인텐트 */
+const MODS=[
+ {intent:"거래",front:false,words:["보험료","비교","다이렉트","가입","견적","계산기","얼마","추천","순위","저렴한","할인"]},
+ {intent:"정보",front:false,words:["보장내용","가입조건","갱신","비갱신","후기","필요성","특약","만기","해지환급금","나이"]},
+ {intent:"브랜드",front:true,words:["한화손보","한화 다이렉트","캐롯"]},
+];
+const AGES=["20대","30대","40대","50대","60대"];
+const TIER_IDX={대형:92,중형:55,니치:24};
+
+const $=(s,el=document)=>el.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1500);}
+
+/* 키워드 생성 (advertools kw_generate 스타일) */
+function genKeywords(p){
+  const rows=[],seen=new Set();
+  const core=p.core[0];
+  const rule=(intent,gram)=>{
+    const pf = gram>=3 ? "구글" : (intent==="거래"?"네이버":intent==="정보"?"구글":intent==="브랜드"?"네이버":"공통");
+    const mt = gram>=3 ? "구문" : (intent==="거래"?"구문":intent==="정보"?"확장":intent==="브랜드"?"일치":"구문");
+    return [pf,mt];
+  };
+  const push=(kw,gram,intent)=>{kw=kw.trim().replace(/\s+/g," ");if(!kw||seen.has(kw))return;seen.add(kw);
+    const[pf,mt]=rule(intent,gram);rows.push({kw,gram,intent,pf,mt});};
+  p.core.forEach(c=>push(c,c.split(" ").length,"거래"));           // 시드·동의어
+  MODS.forEach(g=>g.words.forEach(w=>{push(`${core} ${w}`,2,g.intent);if(g.front)push(`${w} ${core}`,2,g.intent);}));
+  p.special.forEach(s=>{push(`${core} ${s}`,2,"담보");push(`${core} ${s} 보장`,3,"담보");});
+  AGES.forEach(a=>["보험료","추천","비교"].forEach(w=>push(`${a} ${core} ${w}`,3,"거래")));
+  ["필요할까","어디가 좋을까","얼마","단점","순위"].forEach(w=>push(`${core} ${w}`,2,"정보"));
+  return rows;
+}
+const ALL={}; PRODUCTS.forEach(p=>ALL[p.key]=genKeywords(p));
+const INTENT_COL={거래:"var(--trx)",정보:"var(--inf)",브랜드:"var(--brd)",담보:"var(--brand)"};
+
+let curKey="__all", pf="all";
+const filt=rows=>pf==="all"?rows:rows.filter(r=>r.pf===pf||r.pf==="공통");
+
+function renderSidebar(){
+  const total=Object.values(ALL).reduce((s,r)=>s+r.length,0);
+  const item=(key,label,cnt,on)=>`<button class="sb-item${on?" on":""}" data-key="${key}"><span>${esc(label)}</span><span class="kc">${cnt}</span></button>`;
+  let h=item("__all",`▦ 전체 개요`,total,curKey==="__all");
+  ["사이트","장기","일반"].forEach(cat=>{
+    h+=`<div class="sb-cap">${cat}</div>`;
+    PRODUCTS.filter(p=>p.cat===cat).forEach(p=>h+=item(p.key,p.name,ALL[p.key].length,curKey===p.key));
+  });
+  $("#sbNav").innerHTML=h;
+}
+function intentCounts(rows){const c={거래:0,정보:0,브랜드:0,담보:0};rows.forEach(r=>c[r.intent]++);return c;}
+function pfCounts(rows){const c={네이버:0,구글:0,공통:0};rows.forEach(r=>c[r.pf]++);return c;}
+
+function renderOverview(){
+  $("#pt").textContent="전체 개요"; $("#pts").textContent="· 10개 광고그룹 통합";
+  const total=Object.values(ALL).reduce((s,r)=>s+filt(r).length,0);
+  const allrows=Object.values(ALL).flatMap(filt);
+  const ic=intentCounts(allrows), pc=pfCounts(allrows);
+  const kpi=(n,l,s,col)=>`<div class="kpi"><div class="n"${col?` style="color:${col}"`:""}>${n}</div><div class="l">${l}</div>${s?`<div class="s" style="color:${col||"var(--muted)"}">${s}</div>`:""}</div>`;
+  const cards=PRODUCTS.map(p=>{
+    const rows=filt(ALL[p.key]),ic=intentCounts(rows),tot=rows.length||1;
+    const seg=(v,c)=>`<i style="width:${v/tot*100}%;background:${c}"></i>`;
+    return `<div class="ov-card" data-key="${p.key}">
+      <div class="ct">${esc(p.name)}<span class="tier ${p.tier}">${p.tier}</span></div>
+      <div class="cn">${rows.length}<span style="font-size:12px;color:var(--muted);font-weight:600"> 키워드</span></div>
+      <div class="cs">시드: ${esc(p.core[0])}</div>
+      <div class="bars">${seg(ic.거래,"var(--trx)")}${seg(ic.담보,"var(--brand)")}${seg(ic.정보,"var(--inf)")}${seg(ic.브랜드,"var(--brd)")}</div>
+    </div>`;
+  }).join("");
+  $("#content").innerHTML=`
+    <div class="kpi-row">
+      ${kpi(total,"총 키워드","10개 상품(광고그룹)")}
+      ${kpi(pc.네이버+pc.공통,"네이버 우선","거래·브랜드형 중심","var(--nav-ink)")}
+      ${kpi(pc.구글+pc.공통,"구글 우선","정보·롱테일 중심","var(--goo-ink)")}
+      ${kpi(ic.거래,"거래형 키워드","가입·보험료·비교","var(--trx)")}
+    </div>
+    <div class="sec-lbl">상품별 키워드 집합 <span style="font-weight:600;color:var(--muted);text-transform:none">· 카드를 클릭하면 상세</span></div>
+    <div class="ov-grid">${cards}</div>
+    <div class="legend">
+      <span><i class="lg" style="background:var(--trx)"></i>거래형</span>
+      <span><i class="lg" style="background:var(--brand)"></i>담보형</span>
+      <span><i class="lg" style="background:var(--inf)"></i>정보형</span>
+      <span><i class="lg" style="background:var(--brd)"></i>브랜드형</span>
+    </div>
+    <div class="note"><b>키워드 생성 방식</b> · 상품 시드 × 수식어(보험료·비교·가입 등) 조합(<a href="https://github.com/eliasdabbas/advertools" target="_blank" rel="noopener">advertools</a> kw_generate 방식) + 담보 키워드 + 연령 롱테일 + 질문형. <b>인텐트</b>(거래/정보/브랜드/담보)로 분류하고 <b>플랫폼</b>(네이버 검색광고 vs 구글 Ads)·<b>매치타입</b>을 추천합니다.<br><b>검색량·경쟁도·입찰가</b>는 <b>네이버 검색광고 키워드도구</b>·<b>구글 Keyword Planner</b>에서 확정하세요(본 도구는 키워드 후보 추출·분류 담당). 실검색 수요 추세는 네이버 데이터랩·구글 트렌드(<a href="https://github.com/GeneralMills/pytrends" target="_blank" rel="noopener">pytrends</a>)로 검증.</div>`;
+}
+function renderProduct(){
+  const p=PRODUCTS.find(x=>x.key===curKey);const rows=filt(ALL[p.key]);
+  $("#pt").textContent=p.name; $("#pts").textContent=`· ${rows.length} 키워드`;
+  const ic=intentCounts(rows),pc=pfCounts(rows);
+  const kpi=(n,l,col)=>`<div class="kpi"><div class="n"${col?` style="color:${col}"`:""}>${n}</div><div class="l">${l}</div></div>`;
+  const trows=rows.map(r=>`<tr>
+    <td class="kw">${esc(r.kw)}</td>
+    <td class="c gram">${r.gram}단어</td>
+    <td class="c"><span class="pill ${r.intent}">${r.intent}</span></td>
+    <td class="c"><span class="pill ${r.pf}">${r.pf}</span></td>
+    <td class="c gram">${r.mt}</td></tr>`).join("");
+  $("#content").innerHTML=`
+    <div class="seedbar"><div class="st"><h2>${esc(p.name)}</h2><span class="tier ${p.tier}">검색수요 ${p.tier}</span>
+      <span style="margin-left:auto;font-size:11.5px;color:var(--muted)">광고그룹 = 이 상품</span></div>
+      <div class="seeds">${p.core.map(c=>`<span class="seed">${esc(c)}</span>`).join("")}${p.special.map(s=>`<span class="seed" style="background:var(--surface-2);color:var(--ink-2)">+${esc(s)}</span>`).join("")}</div></div>
+    <div class="kpi-row">
+      ${kpi(rows.length,"총 키워드")}
+      ${kpi(ic.거래+ic.담보,"거래·담보형","var(--trx)")}
+      ${kpi(pc.네이버+pc.공통,"네이버 우선","var(--nav-ink)")}
+      ${kpi(pc.구글+pc.공통,"구글 우선","var(--goo-ink)")}
+    </div>
+    <div class="sec-lbl">추출 키워드 <span style="font-weight:600;color:var(--muted);text-transform:none">· 인텐트·플랫폼·매치타입 자동 분류</span></div>
+    <div class="tbl-wrap"><table><thead><tr><th>키워드</th><th class="c">구성</th><th class="c">인텐트</th><th class="c">추천 플랫폼</th><th class="c">매치타입</th></tr></thead><tbody>${trows}</tbody></table></div>
+    <div class="note"><b>바로 활용</b> · 우측 상단 <b>CSV 내보내기</b>로 네이버 검색광고/구글 Ads 업로드용 파일을 받으세요(광고그룹=상품, 키워드, 인텐트, 플랫폼, 매치타입). 거래형=구문/일치로 좁게, 정보형=확장으로 넓게 세팅 권장.</div>`;
+}
+function render(){ curKey==="__all"?renderOverview():renderProduct(); renderSidebar(); window.scrollTo({top:0}); }
+
+function exportCsv(){
+  const list = curKey==="__all" ? PRODUCTS : [PRODUCTS.find(p=>p.key===curKey)];
+  const rows=[["광고그룹","키워드","구성(단어수)","인텐트","추천플랫폼","매치타입"]];
+  list.forEach(p=>filt(ALL[p.key]).forEach(r=>rows.push([p.name,r.kw,r.gram,r.intent,r.pf,r.mt])));
+  const csv="﻿"+rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+  a.download=`검색광고키워드_${curKey==="__all"?"전체":PRODUCTS.find(p=>p.key===curKey).name}.csv`;a.click();
+  toast(`CSV 내보내기 (${rows.length-1}개 키워드)`);
+}
+
+document.addEventListener("click",e=>{
+  const si=e.target.closest(".sb-item,[data-key]"); if(si&&si.dataset.key){curKey=si.dataset.key;render();return;}
+  const sg=e.target.closest("#pfSeg button"); if(sg){pf=sg.dataset.pf;document.querySelectorAll("#pfSeg button").forEach(b=>b.classList.toggle("on",b===sg));render();return;}
+});
+$("#exp").addEventListener("click",exportCsv);
+$("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");});
+render();
+</script>
+
+</body>
+</html>

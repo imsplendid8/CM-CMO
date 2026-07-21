@@ -3,866 +3,95 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Modooflow SEO — 한화손보 장기CM 테크니컬 SEO 콘솔.">
-<title>Modooflow SEO · 테크니컬 SEO 콘솔</title>
+<meta name="description" content="Modooflow — 한화손보 CM SEO·SEM 마케팅 콘솔 허브">
+<title>Modooflow · 한화손보 CM 마케팅 콘솔</title>
 <style>
-/* ============================================================
-   한화손해보험 다이렉트 · 장기CM SEO To-Do 콘솔 (CM사업부)
-   상단 3토글(장기·일반·범용) · 자체완결 · 외부 의존성 0
-   ============================================================ */
 :root{
-  --brand:#e0850f; --brand-600:#b96b08; --brand-50:#fdeee0; --brand-tint:#fbf5ec;
+  --brand:#e0850f; --brand-600:#b96b08; --brand-50:#fdeee0;
   --grad:linear-gradient(135deg,#e0850f 0%,#f29e67 100%);
-  --ink:#1e1e2c; --ink-2:#4b4d60; --muted:#8a8ea0; --faint:#c4c8d4;
-  --bg:#f4f3f0; --surface:#ffffff; --surface-2:#faf9f6; --line:#e6e4dd; --line-2:#efeee8;
-  --good:#16a34a; --good-bg:#e7f6ee; --good-ink:#0f7a37;
-  --mid:#c47f12; --mid-bg:#fbf1de; --mid-ink:#8a5906;
-  --bad:#e5484d; --bad-bg:#fcecec; --bad-ink:#b4242a;
-  --side:#191823; --side-2:#26232f;
-  --r:15px; --r-sm:11px; --r-xs:8px;
-  --sh:0 1px 2px rgba(24,20,40,.05),0 6px 22px rgba(24,20,40,.06);
-  --sh-lg:0 14px 44px rgba(24,20,40,.13);
-  --mono:ui-monospace,"SF Mono","Roboto Mono","Menlo",monospace;
-  --sans:'Pretendard','Noto Sans KR','Nanum Gothic','Apple SD Gothic Neo',-apple-system,BlinkMacSystemFont,sans-serif;
+  --grad2:linear-gradient(135deg,#2b6cb0 0%,#4a9fe0 100%);
+  --ink:#1e1e2c; --ink-2:#4b4d60; --muted:#8a8ea0; --line:#e6e4dd;
+  --bg:#f4f3f0; --surface:#fff; --surface-2:#faf9f6;
+  --sh:0 1px 2px rgba(24,20,40,.05),0 8px 26px rgba(24,20,40,.07); --sh-lg:0 18px 50px rgba(24,20,40,.15);
+  --sans:'Pretendard','Noto Sans KR','Nanum Gothic','Apple SD Gothic Neo',-apple-system,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;
 }
-@media (prefers-color-scheme:dark){:root{
-  --brand:#f0a63f; --brand-600:#f7b95f; --brand-50:#3a2a12; --brand-tint:#211a10;
-  --grad:linear-gradient(135deg,#e0850f 0%,#f2a95c 100%);
-  --ink:#f2f0f6; --ink-2:#c3c1d0; --muted:#8f8ca0; --faint:#54525f;
-  --bg:#131118; --surface:#1c1a23; --surface-2:#211f29; --line:#2e2b37; --line-2:#262330;
-  --good:#3ecf7a; --good-bg:#13301f; --good-ink:#5fdd92;
-  --mid:#e6a53a; --mid-bg:#33270f; --mid-ink:#f0bd5c;
-  --bad:#f2696e; --bad-bg:#361c1e; --bad-ink:#f78a8e;
-  --side:#0f0e14; --side-2:#1a1822;
-  --sh:0 1px 2px rgba(0,0,0,.3),0 6px 22px rgba(0,0,0,.35); --sh-lg:0 14px 44px rgba(0,0,0,.5);
-}}
-:root[data-theme="dark"]{
-  --brand:#f0a63f; --brand-600:#f7b95f; --brand-50:#3a2a12; --brand-tint:#211a10;
-  --grad:linear-gradient(135deg,#e0850f 0%,#f2a95c 100%);
-  --ink:#f2f0f6; --ink-2:#c3c1d0; --muted:#8f8ca0; --faint:#54525f;
-  --bg:#131118; --surface:#1c1a23; --surface-2:#211f29; --line:#2e2b37; --line-2:#262330;
-  --good:#3ecf7a; --good-bg:#13301f; --good-ink:#5fdd92;
-  --mid:#e6a53a; --mid-bg:#33270f; --mid-ink:#f0bd5c;
-  --bad:#f2696e; --bad-bg:#361c1e; --bad-ink:#f78a8e;
-  --side:#0f0e14; --side-2:#1a1822;
-  --sh:0 1px 2px rgba(0,0,0,.3),0 6px 22px rgba(0,0,0,.35); --sh-lg:0 14px 44px rgba(0,0,0,.5);
-}
-:root[data-theme="light"]{
-  --brand:#e0850f; --brand-600:#b96b08; --brand-50:#fdeee0; --brand-tint:#fbf5ec;
-  --grad:linear-gradient(135deg,#e0850f 0%,#f29e67 100%);
-  --ink:#1e1e2c; --ink-2:#4b4d60; --muted:#8a8ea0; --faint:#c4c8d4;
-  --bg:#f4f3f0; --surface:#ffffff; --surface-2:#faf9f6; --line:#e6e4dd; --line-2:#efeee8;
-  --good:#16a34a; --good-bg:#e7f6ee; --good-ink:#0f7a37;
-  --mid:#c47f12; --mid-bg:#fbf1de; --mid-ink:#8a5906;
-  --bad:#e5484d; --bad-bg:#fcecec; --bad-ink:#b4242a;
-  --side:#191823; --side-2:#26232f;
-  --sh:0 1px 2px rgba(24,20,40,.05),0 6px 22px rgba(24,20,40,.06); --sh-lg:0 14px 44px rgba(24,20,40,.13);
-}
+@media(prefers-color-scheme:dark){:root{--ink:#f2f0f6;--ink-2:#c3c1d0;--muted:#8f8ca0;--line:#2e2b37;--bg:#131118;--surface:#1c1a23;--surface-2:#211f29;--brand-50:#3a2a12;--sh:0 1px 2px rgba(0,0,0,.3),0 8px 26px rgba(0,0,0,.4);--sh-lg:0 18px 50px rgba(0,0,0,.55);}}
+:root[data-theme="dark"]{--ink:#f2f0f6;--ink-2:#c3c1d0;--muted:#8f8ca0;--line:#2e2b37;--bg:#131118;--surface:#1c1a23;--surface-2:#211f29;--brand-50:#3a2a12;--sh:0 1px 2px rgba(0,0,0,.3),0 8px 26px rgba(0,0,0,.4);--sh-lg:0 18px 50px rgba(0,0,0,.55);}
+:root[data-theme="light"]{--ink:#1e1e2c;--ink-2:#4b4d60;--muted:#8a8ea0;--line:#e6e4dd;--bg:#f4f3f0;--surface:#fff;--surface-2:#faf9f6;--brand-50:#fdeee0;--sh:0 1px 2px rgba(24,20,40,.05),0 8px 26px rgba(24,20,40,.07);--sh-lg:0 18px 50px rgba(24,20,40,.15);}
 *{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.55;
-  -webkit-font-smoothing:antialiased;letter-spacing:-.01em;word-break:keep-all;}
-.wrap{max-width:1120px;margin:0 auto;min-height:100vh;}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto;}}
-
-/* ── 상단바 + 3토글 ── */
-.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px 18px;flex-wrap:wrap;
-  padding:13px 24px;background:var(--surface);border-bottom:1px solid var(--line);}
-.brand{display:flex;align-items:center;gap:11px;}
-.brand-logo{width:38px;height:38px;border-radius:10px;background:var(--grad);display:flex;align-items:center;
-  justify-content:center;color:#fff;font-weight:800;font-size:13px;box-shadow:0 6px 16px rgba(224,133,15,.42);flex:0 0 auto;letter-spacing:-.02em;}
-.brand-name{font-size:15px;font-weight:800;color:var(--ink);letter-spacing:-.02em;line-height:1.15;}
-.brand-name small{display:block;font-size:10px;font-weight:600;color:var(--muted);margin-top:1px;letter-spacing:0;}
-.seg3{display:inline-flex;background:var(--line-2);border:1px solid var(--line);border-radius:12px;padding:4px;gap:3px;margin-left:auto;}
-.seg3 button{border:none;background:transparent;font-family:inherit;font-weight:800;font-size:13px;color:var(--muted);
-  padding:9px 20px;border-radius:9px;cursor:pointer;transition:.15s;white-space:nowrap;}
-.seg3 button:hover{color:var(--ink);}
-.seg3 button.on{background:var(--grad);color:#fff;box-shadow:0 4px 12px rgba(224,133,15,.3);}
-.seg3 button .cnt{font-family:var(--mono);font-size:10.5px;opacity:.7;margin-left:4px;}
-.icon-btn{width:36px;height:36px;border-radius:9px;border:1px solid var(--line);background:var(--surface);
-  color:var(--ink-2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
-.icon-btn:hover{border-color:var(--brand);color:var(--brand-600);}
-
-/* ── 상품 칩 서브내비 ── */
-.subnav{display:flex;gap:8px;overflow-x:auto;padding:13px 24px;background:var(--bg);border-bottom:1px solid var(--line);
-  scrollbar-width:thin;}
-.chip{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);
-  background:var(--surface);color:var(--ink-2);font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;
-  white-space:nowrap;transition:.15s;}
-.chip:hover{border-color:var(--brand);color:var(--ink);}
-.chip.on{background:var(--brand-50);border-color:var(--brand);color:var(--brand-600);}
-.chip .cdot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;}
-.chip small{font-family:var(--mono);font-size:10px;color:var(--muted);font-weight:600;}
-.chip.on small{color:var(--brand-600);}
-.chip.pinned{border-style:dashed;}
-
-.content{padding:22px 24px 60px;}
-.view{display:none;} .view.on{display:block;animation:fade .2s ease;}
-@keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
-.scope{font-size:11.5px;color:var(--muted);margin-bottom:14px;line-height:1.6;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
-.scope .sc-tag{font-weight:800;color:var(--brand-600);background:var(--brand-50);padding:2px 9px;border-radius:6px;}
-
-/* ── 화면 헤더 ── */
-.scr-hero{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin-bottom:16px;box-shadow:var(--sh);}
-.scr-hero-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:11px;}
-.scr-hero-top h2{font-size:17px;font-weight:800;letter-spacing:-.02em;}
-.scr-hero-top .spacer{flex:1;}
-.score-chip{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:12px;font-weight:800;
-  padding:4px 10px;border-radius:8px;font-variant-numeric:tabular-nums;}
-.score-chip small{font-family:var(--sans);font-weight:700;opacity:.75;}
-.delivery{font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:999px;}
-.delivery.direct{background:var(--brand-50);color:var(--brand-600);}
-.delivery.bridge{background:var(--bad-bg);color:var(--bad-ink);}
-.delivery.home{background:var(--line-2);color:var(--ink-2);}
-.usp-line{font-size:12px;font-weight:600;color:var(--brand-600);background:var(--brand-50);border:1px solid var(--brand-50);border-radius:9px;padding:8px 12px;margin-bottom:11px;line-height:1.5;}
-.usp-line b{font-weight:800;}
-.url-line{font-family:var(--mono);font-size:11.5px;color:var(--brand-600);word-break:break-all;margin-bottom:4px;}
-.url-line a{color:inherit;}
-.dest-line{font-family:var(--mono);font-size:11px;color:var(--muted);word-break:break-all;margin-bottom:12px;}
-.dest-line b{color:var(--bad-ink);}
-.cur-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-@media(max-width:720px){.cur-grid{grid-template-columns:1fr;}}
-.cur-box{border:1px solid var(--line);border-radius:var(--r-sm);padding:11px 13px;background:var(--surface-2);}
-.cur-box .cb-top{display:flex;align-items:center;gap:7px;margin-bottom:6px;}
-.cur-box .cb-k{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;}
-.cur-box .cb-v{font-family:var(--mono);font-size:11.5px;line-height:1.5;color:var(--ink);word-break:break-all;}
-.cur-box .cb-v.bad{color:var(--bad-ink);}
-
-.prog{display:flex;align-items:center;gap:12px;margin-bottom:16px;background:var(--surface);border:1px solid var(--line);
-  border-radius:var(--r);padding:13px 18px;box-shadow:var(--sh);}
-.prog-bar{flex:1;height:8px;border-radius:99px;background:var(--line-2);overflow:hidden;}
-.prog-fill{height:100%;border-radius:99px;background:var(--grad);transition:width .3s;}
-.prog-num{font-family:var(--mono);font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;}
-.prog-num small{color:var(--muted);font-weight:600;}
-.sec-lbl{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:18px 2px 10px;}
-.handoff{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;font-weight:700;color:var(--ink-2);margin-bottom:16px;background:var(--surface-2);border:1px dashed var(--brand);border-radius:var(--r-sm);padding:11px 14px;}
-.handoff .hf-lbl{color:var(--brand-600);font-weight:800;}
-
-/* ══ 유료 SaaS 셸 ══ */
-.appbar{position:sticky;top:0;z-index:31;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:11px 22px;background:var(--surface);border-bottom:1px solid var(--line);}
-.ab-brand{display:flex;align-items:center;gap:11px;}
-.ab-brand .brand-logo{width:36px;height:36px;border-radius:10px;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;box-shadow:0 6px 16px rgba(224,133,15,.42);}
-.ab-brand .bn{font-size:15px;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:7px;color:var(--ink);}
-.ab-brand small{display:block;font-size:10px;color:var(--muted);font-weight:600;margin-top:1px;}
-.plan-badge{font-size:9.5px;font-weight:800;background:var(--grad);color:#fff;padding:2px 7px;border-radius:5px;letter-spacing:.05em;}
-.plan-badge.sm{font-size:8.5px;padding:1px 5px;}
-.ab-right{margin-left:auto;display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
-.ws{font-size:11px;font-weight:700;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;}
-.ws b{color:var(--brand-600);}
-.usage{font-size:10.5px;color:var(--muted);font-weight:600;}
-.usage b{color:var(--good);font-weight:800;}
-.btn.upgrade{background:var(--grad);color:#fff;border:none;box-shadow:0 4px 12px rgba(224,133,15,.3);}
-.btn.upgrade:hover{filter:brightness(1.05);color:#fff;}
-.avatar{width:34px;height:34px;border-radius:50%;background:var(--side);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800;flex:0 0 auto;}
-.tabs{position:sticky;top:58px;z-index:30;display:flex;gap:2px;padding:0 16px;background:var(--surface);border-bottom:1px solid var(--line);overflow-x:auto;}
-.tabs button{border:none;background:none;font-family:inherit;font-size:13.5px;font-weight:700;color:var(--muted);padding:13px 15px;cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:6px;transition:.15s;}
-.tabs button:hover{color:var(--ink);}
-.tabs button.on{color:var(--brand-600);border-bottom-color:var(--brand);}
-.tabs .tcnt{font-family:var(--mono);font-size:10.5px;background:var(--line-2);color:var(--ink-2);padding:0 6px;border-radius:99px;font-weight:700;}
-.tabs button.on .tcnt{background:var(--brand-50);color:var(--brand-600);}
-/* ══ 좌측 사이드바 레이아웃 ══ */
-.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh;}
-@media(max-width:820px){.app{grid-template-columns:1fr;}.sidebar{position:static!important;height:auto!important;}}
-.sidebar{background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
-.sb-brand{display:flex;align-items:center;gap:10px;padding:16px 16px 14px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface);z-index:2;}
-.sb-brand .brand-logo{width:34px;height:34px;border-radius:9px;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;box-shadow:0 6px 16px rgba(224,133,15,.4);flex:0 0 auto;}
-.sb-brand .bn{font-size:14px;font-weight:800;letter-spacing:-.02em;}
-.sb-brand small{display:block;font-size:9.5px;color:var(--muted);font-weight:600;margin-top:1px;}
-.sb-nav{flex:1;padding:10px 10px 16px;display:flex;flex-direction:column;gap:2px;}
-.sb-cap{font-size:9.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:13px 8px 5px;}
-.sb-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;border:none;background:none;font-family:inherit;font-size:13px;font-weight:700;color:var(--ink-2);cursor:pointer;text-align:left;width:100%;transition:.14s;}
-.sb-item:hover{background:var(--surface-2);color:var(--ink);}
-.sb-item.on{background:var(--brand-50);color:var(--brand-600);}
-.sb-item .sb-ico{font-size:13px;width:18px;text-align:center;flex:0 0 auto;}
-.sb-prod{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;border:none;background:none;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--ink-2);cursor:pointer;text-align:left;width:100%;transition:.14s;}
-.sb-prod:hover{background:var(--surface-2);color:var(--ink);}
-.sb-prod.on{background:var(--brand-50);color:var(--brand-600);font-weight:800;}
-.sb-dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto;}
-.sb-pname{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.sb-cnt{font-family:var(--mono);font-size:10px;color:var(--muted);font-weight:700;}
-.sb-prod.on .sb-cnt{color:var(--brand-600);}
-.sb-foot{padding:12px 16px;border-top:1px solid var(--line);font-size:9.5px;color:var(--muted);line-height:1.6;}
-.main{min-width:0;display:flex;flex-direction:column;}
-.topbar-slim{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 24px;background:var(--surface);border-bottom:1px solid var(--line);}
-.topbar-slim #pageTitle{font-size:16px;font-weight:800;letter-spacing:-.02em;}
-.topbar-slim .ts-right{margin-left:auto;display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
-/* 대시보드 */
-.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
-@media(max-width:820px){.kpi-row{grid-template-columns:1fr 1fr;}}
-.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh);}
-.kpi .k-num{font-family:var(--mono);font-size:27px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1;}
-.kpi .k-lbl{font-size:11.5px;color:var(--muted);font-weight:700;margin-top:6px;}
-.kpi .k-sub{font-size:11px;margin-top:4px;font-weight:700;}
-.dash-2{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;}
-@media(max-width:820px){.dash-2{grid-template-columns:1fr;}}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;box-shadow:var(--sh);}
-.panel h3{font-size:14px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
-.rank-item{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--line-2);cursor:pointer;}
-.rank-item:last-child{border-bottom:none;}
-.rank-item:hover .ri-name{color:var(--brand-600);}
-.ri-rank{font-family:var(--mono);font-size:12px;font-weight:800;color:var(--muted);width:16px;}
-.ri-name{flex:1;font-size:13px;font-weight:700;}
-.ri-name small{display:block;font-size:10.5px;color:var(--muted);font-weight:500;margin-top:1px;}
-.ri-score{font-family:var(--mono);font-size:11.5px;font-weight:800;padding:3px 8px;border-radius:7px;font-variant-numeric:tabular-nums;}
-.qa{display:flex;flex-direction:column;gap:9px;}
-.qa button{display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface-2);font-family:inherit;font-size:12.5px;font-weight:700;color:var(--ink);cursor:pointer;transition:.15s;}
-.qa button:hover{border-color:var(--brand);background:var(--brand-tint);}
-.qa .qa-ico{width:30px;height:30px;border-radius:8px;background:var(--brand-50);color:var(--brand-600);display:flex;align-items:center;justify-content:center;font-size:14px;flex:0 0 auto;}
-.qa small{display:block;font-size:10.5px;color:var(--muted);font-weight:500;margin-top:1px;}
-.panel code{font-family:var(--mono);font-size:10.5px;background:var(--line-2);padding:1px 5px;border-radius:4px;color:var(--ink);word-break:break-all;}
-.wstd{padding:10px 0;border-bottom:1px solid var(--line-2);}
-.wstd:last-child{border-bottom:none;}
-.wstd-h{font-size:13px;font-weight:800;margin-bottom:5px;}
-.wstd-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:11.5px;line-height:1.5;}
-@media(max-width:640px){.wstd-cols{grid-template-columns:1fr;}}
-.wstd-cols .bad b{color:var(--bad-ink);} .wstd-cols .good b{color:var(--good-ink);}
-/* 요금제 */
-.price-hero{text-align:center;padding:12px 0 22px;}
-.price-hero h2{font-size:24px;font-weight:800;letter-spacing:-.03em;}
-.price-hero p{font-size:13px;color:var(--muted);margin-top:6px;}
-.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:stretch;}
-@media(max-width:820px){.plans{grid-template-columns:1fr;}}
-.plan{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px 20px;box-shadow:var(--sh);display:flex;flex-direction:column;}
-.plan.featured{border:2px solid var(--brand);box-shadow:var(--sh-lg);position:relative;}
-.plan.featured::before{content:"현재 플랜";position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--grad);color:#fff;font-size:10px;font-weight:800;padding:3px 12px;border-radius:99px;letter-spacing:.04em;white-space:nowrap;}
-.plan .p-name{font-size:15px;font-weight:800;}
-.plan .p-price{font-size:29px;font-weight:800;letter-spacing:-.02em;margin:10px 0 2px;font-family:var(--sans);}
-.plan .p-price small{font-size:13px;color:var(--muted);font-weight:600;font-family:var(--sans);}
-.plan .p-desc{font-size:11.5px;color:var(--muted);margin-bottom:16px;line-height:1.5;}
-.plan ul{list-style:none;display:flex;flex-direction:column;gap:9px;flex:1;margin-bottom:18px;}
-.plan li{font-size:12px;color:var(--ink-2);display:flex;gap:8px;line-height:1.45;}
-.plan li::before{content:"✓";color:var(--good);font-weight:800;flex:0 0 auto;}
-.plan li.off{color:var(--faint);} .plan li.off::before{content:"—";color:var(--faint);}
-.plan .p-cta{padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;color:var(--ink);transition:.15s;}
-.plan.featured .p-cta{background:var(--grad);color:#fff;border-color:transparent;}
-.plan .p-cta:hover{border-color:var(--brand);}
-
-/* ── To-Do ── */
-.todo{border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface);margin-bottom:11px;box-shadow:var(--sh);overflow:hidden;}
-.todo.done{opacity:.62;}
-.todo-head{display:flex;align-items:flex-start;gap:12px;padding:13px 15px;cursor:pointer;}
-.chk{width:22px;height:22px;border-radius:7px;border:2px solid var(--faint);flex:0 0 auto;display:flex;align-items:center;
-  justify-content:center;font-size:13px;color:transparent;background:var(--surface);transition:.15s;margin-top:1px;}
-.todo.done .chk{background:var(--good);border-color:var(--good);color:#fff;}
-.todo-hmain{flex:1;min-width:0;}
-.todo-what{font-size:14px;font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.todo.done .todo-what{text-decoration:line-through;text-decoration-color:var(--faint);}
-.todo-why{font-size:12px;color:var(--ink-2);margin-top:4px;line-height:1.55;}
-.todo-why code{font-family:var(--mono);font-size:10.5px;background:var(--line-2);padding:1px 5px;border-radius:4px;color:var(--ink);}
-.pri{font-size:10px;font-weight:800;padding:2px 8px;border-radius:999px;flex:0 0 auto;}
-.pri.상{background:var(--bad-bg);color:var(--bad-ink);} .pri.중{background:var(--mid-bg);color:var(--mid-ink);} .pri.하{background:var(--line-2);color:var(--ink-2);}
-.todo-body{padding:0 15px 15px 49px;}
-.code-row{margin-top:8px;}
-.code-lbl{font-size:9.5px;font-weight:800;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:3px;
-  display:flex;align-items:center;justify-content:space-between;}
-.code-lbl .cp{cursor:pointer;color:var(--brand-600);border:none;background:none;font-family:inherit;font-size:10px;font-weight:700;padding:0;}
-.code-lbl .cp:hover{text-decoration:underline;}
-.codeblk{font-family:var(--mono);font-size:11.5px;line-height:1.6;border-radius:8px;padding:11px 13px;overflow-x:auto;white-space:pre;}
-.codeblk.before{background:var(--bad-bg);color:var(--bad-ink);}
-.codeblk.after{background:var(--side);color:#e8e6f0;}
-.codeblk.after .tag{color:#f0b968;} .codeblk.after .str{color:#7fe0a3;} .codeblk.after .cm{color:#8a869b;}
-.meter{display:flex;align-items:center;gap:8px;margin-top:7px;}
-.meter-bar{flex:1;height:5px;border-radius:99px;background:var(--line-2);overflow:hidden;}
-.meter-fill{height:100%;border-radius:99px;transition:width .3s;}
-.meter-num{font-family:var(--mono);font-size:10.5px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;}
-.meter-num small{color:var(--muted);font-weight:600;}
-
-/* ── PRO ── */
-.pro-hero{background:linear-gradient(135deg,var(--brand-tint),var(--surface));border:1px solid var(--line);border-radius:var(--r);padding:20px 22px;margin-bottom:16px;box-shadow:var(--sh);}
-.pro-hero h2{font-size:18px;font-weight:800;display:flex;align-items:center;gap:9px;letter-spacing:-.02em;}
-.pro-badge{font-size:10px;font-weight:800;background:var(--grad);color:#fff;padding:3px 9px;border-radius:6px;letter-spacing:.04em;}
-.pro-hero p{font-size:12.5px;color:var(--ink-2);margin-top:6px;line-height:1.6;}
-.import-card{background:var(--surface);border:1px dashed var(--brand);border-radius:var(--r);padding:15px 18px;margin-bottom:14px;box-shadow:var(--sh);}
-.import-card .ic-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;font-size:12.5px;}
-.import-card .ic-top b{font-weight:800;}
-.import-card textarea{width:100%;min-height:64px;font-family:var(--mono);font-size:11px;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:9px 11px;color:var(--ink);resize:vertical;line-height:1.5;}
-.import-card .ic-actions{display:flex;align-items:center;gap:10px;margin-top:9px;flex-wrap:wrap;}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--sh);}
-@media(max-width:720px){.form-grid{grid-template-columns:1fr;}}
-.ff{display:flex;flex-direction:column;gap:5px;} .ff.full{grid-column:1/-1;}
-.ff label{font-size:11px;font-weight:800;color:var(--ink-2);} .ff label small{color:var(--muted);font-weight:600;}
-.ff input,.ff select,.ff textarea{font-family:inherit;font-size:12.5px;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:9px 11px;transition:.15s;width:100%;}
-.ff input:focus,.ff select:focus,.ff textarea:focus{outline:none;border-color:var(--brand);background:var(--surface);box-shadow:0 0 0 3px var(--brand-50);}
-.ff textarea{resize:vertical;min-height:52px;line-height:1.5;}
-.form-actions{grid-column:1/-1;display:flex;gap:10px;align-items:center;margin-top:4px;flex-wrap:wrap;}
-.form-actions .hint{font-size:11px;color:var(--muted);}
-.btn{padding:8px 13px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:.15s;}
-.btn:hover{border-color:var(--brand);color:var(--brand-600);}
-.btn.primary{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(224,133,15,.28);}
-.pro-result{margin-top:18px;}
-.copy-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-@media(max-width:820px){.copy-grid{grid-template-columns:1fr;}}
-.copy-card{border:1px solid var(--line);border-radius:var(--r-sm);padding:14px;background:var(--surface);display:flex;flex-direction:column;gap:11px;box-shadow:var(--sh);}
-.copy-card .cc-t{font-size:12px;font-weight:800;} .copy-card .cc-tg{font-size:10px;font-weight:700;color:var(--muted);}
-.cfield{display:flex;flex-direction:column;gap:4px;}
-.cf-lbl{font-size:9.5px;font-weight:800;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;display:flex;justify-content:space-between;}
-.cf-lbl .cp{cursor:pointer;color:var(--brand-600);border:none;background:none;font-family:inherit;font-size:9.5px;font-weight:700;padding:0;}
-.cf-text{font-size:12px;line-height:1.5;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:8px 10px;}
-.impl-note{font-size:11.5px;color:var(--ink-2);line-height:1.65;margin-bottom:11px;}
-.impl-note a{color:var(--brand-600);font-weight:700;text-decoration:none;} .impl-note a:hover{text-decoration:underline;}
-.impl-block{margin-bottom:11px;} .impl-block .code-lbl{margin-bottom:4px;}
-
-.badge{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:999px;white-space:nowrap;}
-.badge.good{background:var(--good-bg);color:var(--good-ink);} .badge.mid{background:var(--mid-bg);color:var(--mid-ink);}
-.badge.bad{background:var(--bad-bg);color:var(--bad-ink);} .badge.ghost{background:var(--line-2);color:var(--ink-2);}
-.foot-note{font-size:11px;color:var(--muted);line-height:1.6;margin-top:18px;padding:12px 14px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);}
-.foot-note b{color:var(--ink-2);font-weight:800;}
-.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:10px;font-size:12.5px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:50;box-shadow:var(--sh-lg);}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;word-break:keep-all;min-height:100vh;}
+.wrap{max-width:940px;margin:0 auto;padding:56px 24px 80px;}
+.top{display:flex;align-items:center;gap:13px;margin-bottom:8px;}
+.logo{width:46px;height:46px;border-radius:13px;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;box-shadow:0 8px 20px rgba(224,133,15,.42);}
+.brand h1{font-size:22px;font-weight:800;letter-spacing:-.03em;line-height:1.1;}
+.brand p{font-size:12.5px;color:var(--muted);font-weight:600;margin-top:2px;}
+.lede{font-size:14.5px;color:var(--ink-2);margin:20px 0 32px;max-width:660px;line-height:1.7;}
+.lede b{color:var(--ink);font-weight:800;}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+@media(max-width:720px){.grid{grid-template-columns:1fr;}}
+.card{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:var(--sh);text-decoration:none;color:inherit;transition:.18s;position:relative;overflow:hidden;}
+.card:hover{box-shadow:var(--sh-lg);transform:translateY(-3px);border-color:transparent;}
+.card::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:var(--accent);}
+.card .ico{width:44px;height:44px;border-radius:12px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;margin-bottom:15px;}
+.card h2{font-size:17px;font-weight:800;letter-spacing:-.02em;margin-bottom:6px;}
+.card .desc{font-size:12.5px;color:var(--ink-2);line-height:1.65;flex:1;}
+.card .feats{list-style:none;margin:14px 0 0;display:flex;flex-direction:column;gap:6px;}
+.card .feats li{font-size:11.5px;color:var(--ink-2);display:flex;gap:7px;}
+.card .feats li::before{content:"→";color:var(--accent);font-weight:800;}
+.card .go{margin-top:16px;font-size:12.5px;font-weight:800;color:var(--accent);display:flex;align-items:center;gap:6px;}
+.card.soon{opacity:.6;pointer-events:none;}
+.tag{position:absolute;top:20px;right:20px;font-size:9.5px;font-weight:800;padding:3px 9px;border-radius:99px;background:var(--surface-2);color:var(--muted);letter-spacing:.03em;}
+.foot{margin-top:34px;font-size:11.5px;color:var(--muted);line-height:1.7;}
+.foot b{color:var(--ink-2);font-weight:800;}
+.themebtn{position:fixed;top:20px;right:20px;width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);cursor:pointer;font-size:15px;}
 </style>
 </head>
 <body>
-<div class="app">
-  <aside class="sidebar">
-    <div class="sb-brand">
-      <div class="brand-logo">◆</div>
-      <div><div class="bn">Modooflow SEO</div><small>테크니컬 SEO · 한화손보 CM</small></div>
-    </div>
-    <nav class="sb-nav" id="sbNav"></nav>
-    <div class="sb-foot">네이버 웹마스터도구 가이드 반영<br>모바일(m.hanwhadirect.com) 기준 · 실측 2026-07-18</div>
-  </aside>
-  <main class="main">
-    <header class="topbar-slim">
-      <div id="pageTitle">대시보드</div>
-      <div class="ts-right">
-        <span class="ws">워크스페이스 · <b>한화손보 CM</b></span>
-        <span class="usage">담당 상품 <b>10</b>종</span>
-        <button class="icon-btn" id="themeBtn" title="라이트/다크 전환">◐</button>
-        <div class="avatar" title="한화손보 CM">CM</div>
-      </div>
-    </header>
-    <div class="content">
-      <section class="view" id="v-dash"></section>
-      <section class="view" id="v-product"></section>
-      <section class="view" id="v-pro"></section>
-    </div>
-  </main>
+<button class="themebtn" id="themeBtn" title="테마 전환">◐</button>
+<div class="wrap">
+  <div class="top">
+    <div class="logo">◆</div>
+    <div class="brand"><h1>Modooflow</h1><p>한화손해보험 다이렉트 · 장기CM 마케팅 콘솔</p></div>
+  </div>
+  <p class="lede">CM사업부 담당 상품의 <b>검색 노출(SEO)</b> 과 <b>검색광고(SEM)</b> 를 한 곳에서.
+    진단 → 실행 태그 → 키워드까지, 개발·마케팅이 바로 쓰는 대시보드 모음입니다.</p>
+
+  <div class="grid">
+    <a class="card" href="seo-audit.html" style="--accent:#e0850f">
+      <div class="ico">🔧</div>
+      <div class="tag">10개 상품</div>
+      <h2>테크니컬 SEO 콘솔</h2>
+      <div class="desc">담당 상품의 현행 화면(제목·메타·OG·H·robots·분기)을 실측 진단하고, 화면에 바로 붙여넣는 HTML 태깅 가이드를 제공합니다.</div>
+      <ul class="feats">
+        <li>상품별 우선순위 To-Do + before/after 코드</li>
+        <li>화면 적용용 HTML(head·h1) · robots.txt</li>
+        <li>네이버 웹마스터도구 가이드 반영 · Excel/PPT 전달</li>
+      </ul>
+      <div class="go">콘솔 열기 →</div>
+    </a>
+
+    <a class="card" href="keyword-tool.html" style="--accent:#2b6cb0">
+      <div class="ico">🔎</div>
+      <div class="tag">네이버 + 구글</div>
+      <h2>검색광고 키워드 추출</h2>
+      <div class="desc">상품 시드 × 수식어 조합으로 검색광고 키워드를 대량 추출하고, 인텐트·플랫폼·매치타입으로 분류해 CSV로 내보냅니다.</div>
+      <ul class="feats">
+        <li>거래·정보·브랜드·담보 인텐트 자동 분류</li>
+        <li>네이버 검색광고 / 구글 Ads 플랫폼·매치타입 추천</li>
+        <li>광고그룹별 CSV 내보내기(업로드용)</li>
+      </ul>
+      <div class="go">키워드 도구 열기 →</div>
+    </a>
+  </div>
+
+  <div class="foot">
+    <b>연결 구조</b> · 이 페이지(main)에서 각 대시보드로 이동합니다. 두 도구는 같은 담당 상품 집합(홈·장기7·일반2)을 공유합니다.<br>
+    데이터·카피는 샘플·공개값 기준 · 광고 문구는 배포 전 광고심의 검수 · 검색량/입찰가는 각 광고 플랫폼에서 확정.
+  </div>
 </div>
-<div class="toast" id="toast"></div>
-
 <script>
-"use strict";
-/* ============================================================
-   담당 상품(CM사업부) 실측 데이터 — 네이버 색인(2026-07-18)
-   URL은 모바일(m.hanwhadirect.com) 기준. TM·오프라인 제외.
-   ============================================================ */
-const W={google:{title:.22,meta:.12,semantic:.22,url:.12,social:.10,trust:.22},
-         naver:{title:.24,meta:.22,semantic:.10,url:.08,social:.16,trust:.20}};
-const AXES=["title","meta","semantic","url","social","trust"];
-
-const PRODUCTS=[
-  {key:"home",cat:"home",name:"다이렉트 홈(메인)",product:"한화손해보험 다이렉트 메인",brand:"한화손해보험 다이렉트",delivery:"home",path:"/",
-   url:"https://m.hanwhadirect.com/",exTitle:"메인>다이렉트 홈",exTitleV:"bad",
-   exDesc:"한화손해보험 다이렉트보험 공식사이트, 자동차보험, 장기보험, 운전자, 골프, 화재 등 보상서비스, 고객센터.",exDescV:"mid",
-   exOg:"없음(추정)",ax:{title:26,meta:55,semantic:45,url:62,social:32,trust:64}},
-
-  {key:"hrmf",cat:"장기",name:"주택화재보험",product:"119주택화재보험 무배당2506",brand:"한화손보다이렉트",delivery:"direct",path:"/ltr/hrmf/main.do",
-   url:"https://m.hanwhadirect.com/ltr/hrmf/main.do",exTitle:"화재>고객정보입력",exTitleV:"bad",
-   exDesc:"찾는 직업이 없으면 가장 유사한 직업을 선택하고, 부업이나 겸업이 있다면 가장 위험하다고 생각되는 직업을 선택하세요.",exDescV:"bad",
-   exOg:"없음(추정)",ax:{title:18,meta:15,semantic:42,url:45,social:25,trust:55}},
-  {key:"golf",cat:"장기",name:"골프보험",product:"홀인원보험 무배당2604",brand:"한화손보다이렉트",delivery:"direct",path:"/ltr/golf/",
-   url:"https://m.hanwhadirect.com/ltr/golf/",exTitle:"골프>고객정보입력",exTitleV:"bad",
-   exDesc:"찾는 직업이 없으면 가장 유사한 직업을 선택하고, 부업이나 겸업이 있다면 가장 위험하다고 생각되는 직업을 선택하세요.",exDescV:"bad",
-   exOg:"없음(추정)",ax:{title:18,meta:15,semantic:42,url:45,social:25,trust:54}},
-  {key:"cncr",cat:"장기",name:"암보험",product:"내가고른 암보험 무배당2604",brand:"한화손보다이렉트",delivery:"direct",path:"/ltr/cncr/",
-   url:"https://m.hanwhadirect.com/ltr/cncr/",exTitle:"암>고객정보입력 - 메인>다이렉트 홈",exTitleV:"bad",
-   exDesc:"이 상품을 꼭 가입하셔야 하는 이유 … 확인필-제2026-장기CM사업부-기타(광고)01545L",exDescV:"mid",
-   exOg:"없음(추정)",ax:{title:20,meta:35,semantic:45,url:42,social:28,trust:52}},
-  {key:"dntl",cat:"장기",name:"치아보험",product:"치아안심보험 무배당2504",brand:"한화손보다이렉트",delivery:"direct",path:"/ltr/dntl/",
-   url:"https://m.hanwhadirect.com/ltr/dntl/",exTitle:"한화손해보험 다이렉트 치아안심보험 무배당2504",exTitleV:"good",
-   exDesc:"남자 · 여자 ; 자가용 · 영업용 · 비운전자",exDescV:"bad",
-   exOg:"없음(추정)",ax:{title:68,meta:30,semantic:50,url:45,social:35,trust:58}},
-  {key:"driver",cat:"장기",name:"운전자보험",product:"캐롯 운전자보험 무배당2604",brand:"한화손보 캐롯",delivery:"bridge",path:"/cmcom/carrotBridge.do?carrot=driver",destUrl:"https://www.carrotins.com/long-term/driver",
-   url:"https://m.hanwhadirect.com/cmcom/carrotBridge.do?carrot=driver",exTitle:"캐롯 운전자보험 무배당2604",exTitleV:"good",
-   exDesc:"자동차보험, 운전자보험, 해외여행보험 등 가입부터 관리까지 비대면으로 간편하게 가입. 한화손보 캐롯의 다양한 보험상품과 혜택, 이벤트를 확인해보세요",exDescV:"mid",
-   exOg:"설정(추정)",ax:{title:72,meta:45,semantic:60,url:48,social:55,trust:60}},
-  {key:"woman",cat:"장기",name:"여성건강보험",product:"시그니처 여성건강보험4.0(무)2604",brand:"한화손보 캐롯",delivery:"bridge",path:"/cmcom/carrotBridge.do?carrot=woman",destUrl:"https://www.carrotins.com/long-term/women-signature/",
-   url:"https://m.hanwhadirect.com/cmcom/carrotBridge.do?carrot=woman",exTitle:"한화 다이렉트 시그니처 여성 건강보험4.0(무)",exTitleV:"good",
-   exDesc:"아이가 생기고, 출산은 물론 산후조리원비용까지 지급해요. 임신지원금(1회한), 출산지원금(세부보장별각1회한), 출산후조리원비용(실손)(14일한도)",exDescV:"good",
-   exOg:"설정(추정)",ax:{title:80,meta:78,semantic:62,url:50,social:60,trust:64}},
-  {key:"birth",cat:"장기",name:"임신·출산(태아)보험",product:"캐롯 태아/출산 보장",brand:"한화손보 캐롯",delivery:"bridge",path:"/cmcom/carrotBridge.do?carrot=birth",destUrl:"https://www.carrotins.com/",
-   url:"https://m.hanwhadirect.com/cmcom/carrotBridge.do?carrot=birth",exTitle:"(전용 색인 노출 약함 — 태아보험 SERP를 경쟁사가 점유)",exTitleV:"bad",
-   exDesc:"(캐롯 임신·출산 상품 전용 랜딩이 검색에 뚜렷이 잡히지 않음 — 브릿지 목적지가 홈으로 연결됨)",exDescV:"bad",
-   exOg:"미상",ax:{title:22,meta:20,semantic:40,url:40,social:35,trust:48}},
-
-  {key:"overseas",cat:"일반",name:"해외여행보험",product:"캐롯 해외여행보험",brand:"한화손보 캐롯",delivery:"bridge",path:"/cmcom/carrotBridge.do?carrot=overseas",destUrl:"https://www.carrotins.com/product/overseas",
-   url:"https://m.hanwhadirect.com/cmcom/carrotBridge.do?carrot=overseas",exTitle:"한화손보 캐롯 해외여행보험 | 여행자 보험료 개인정보 없이 간편 확인",exTitleV:"good",
-   exDesc:"출국 7일 이전 가입 ; 2명 이상 함께 가입 ; 10% 환급 ; 고객님께 안내드립니다. 전쟁, 내란, 폭동, 외국의 무력행사 등으로 발생한 손해는 보험에서 보상되지 않습니다.",exDescV:"mid",
-   exOg:"설정(추정)",ax:{title:78,meta:52,semantic:60,url:52,social:58,trust:66}},
-  {key:"overseaslong",cat:"일반",name:"해외장기체류보험",product:"캐롯 해외장기체류보험",brand:"한화손보 캐롯",delivery:"bridge",path:"/cmcom/carrotBridge.do?carrot=overseas-long",destUrl:"https://www.carrotins.com/product/overseas-long/intro",
-   url:"https://m.hanwhadirect.com/cmcom/carrotBridge.do?carrot=overseas-long",exTitle:"한화손보 캐롯 해외장기체류보험 | 3개월 초과 여행, 장기 유학시 보장",exTitleV:"good",
-   exDesc:"해외체류 중 질병이나 상해를 입어 해외의료기관에서 치료를 받은 경우 최대 10만달러까지 보장해 드려요. (프리미엄 플랜 특약 가입 시)",exDescV:"mid",
-   exOg:"설정(추정)",ax:{title:78,meta:55,semantic:60,url:52,social:58,trust:66}}
-];
-
-const COPY={
-  home:{nt:"한화손보다이렉트 | 암·치아·운전자·주택화재·골프보험",
-        gd:"암·치아·운전자·주택화재·골프보험까지, 한화손보다이렉트에서 개인정보 없이 온라인으로 비교하고 보험료를 확인하세요.",
-        st:"한화손보다이렉트 — 필요한 보험을 한 곳에서",
-        sd:"장기보험을 개인정보 없이 3분 만에 비교하고 보험료를 확인해요.",h1:"한화손해보험 다이렉트"},
-  hrmf:{nt:"한화손보다이렉트 주택화재보험 | 스크린홀인원·임시거주비",
-        gd:"화재·누수·풍수재 피해와 임시거주비는 물론 스크린홀인원 담보까지. 한화손보다이렉트 주택화재보험을 온라인에서 설계하고 보험료를 확인하세요.",
-        st:"화재보험에 스크린홀인원까지 — 한화손보다이렉트 주택화재보험",
-        sd:"임시거주비에 스크린홀인원 담보까지 챙기는 주택화재보험을 3분 만에 설계하고 공유해요.",h1:"주택화재보험 — 119주택화재보험(스크린홀인원 담보)"},
-  golf:{nt:"한화손보다이렉트 골프보험 | 홀인원·배상책임 보장",
-        gd:"홀인원 축하비용부터 타인 상해 배상책임까지. 한화손보다이렉트 골프보험으로 라운딩 중 위험을 온라인에서 설계하고 보험료를 확인하세요.",
-        st:"홀인원, 축하만큼 비용도 크다 — 한화손보다이렉트 골프보험",
-        sd:"라운딩 중 사고·배상책임·홀인원 비용까지. 3분 만에 설계하고 동반자와 공유해요.",h1:"골프보험 — 홀인원·배상책임"},
-  cncr:{nt:"한화손보다이렉트 내가고른 암보험 | 4대유사암 단독가입",
-        gd:"필요한 담보만 직접 고르는 한화손보다이렉트 암보험. 4대 유사암 단독 가입과 진단·수술·입원비 보장을 온라인에서 설계·비교해 보세요.",
-        st:"내 암보험, 담보는 내가 고른다 — 한화손보다이렉트",
-        sd:"필요한 보장만 골라 담고 불필요한 특약은 빼고. 카톡으로 공유하고 보험료까지 3분 안에 확인해요.",h1:"내가고른 암보험 — 담보 선택형"},
-  dntl:{nt:"한화손보다이렉트 치아안심보험 | 스케일링·보철 보장",
-        gd:"충치·치주질환 치료비부터 스케일링까지. 한화손보다이렉트 치아안심보험의 보존·보철 보장과 보험료를 온라인에서 바로 확인하세요.",
-        st:"스케일링부터 임플란트까지 — 한화손보다이렉트 치아보험",
-        sd:"미루기 쉬운 치과 치료비, 미리 준비해요. 보장과 보험료를 3분 만에 확인하고 카톡으로 공유하세요.",h1:"치아안심보험 — 보존·보철 보장"},
-  driver:{nt:"한화손보 캐롯 운전자보험 | 벌금·변호사·합의금 보장",
-        gd:"교통사고 벌금·변호사선임비·형사합의금까지. 한화손보 캐롯 운전자보험을 온라인에서 필요한 담보만 골라 설계하고 보험료를 확인하세요.",
-        st:"사고는 순간, 비용은 오래 간다 — 한화손보 캐롯 운전자보험",
-        sd:"벌금·변호사비·합의금까지 대비하는 운전자보험. 3분 만에 담보를 골라 설계하고 카톡으로 공유해요.",h1:"한화손보 캐롯 운전자보험"},
-  woman:{nt:"한화손보 캐롯 여성건강보험 | 임신·출산·산후조리 지원",
-        gd:"임신·출산지원금부터 산후조리원 비용까지. 한화손보 캐롯 시그니처 여성건강보험4.0의 여성 특화 보장을 온라인에서 설계하고 보험료를 확인하세요.",
-        st:"임신부터 산후조리까지, 여성을 위한 설계 — 한화손보 캐롯",
-        sd:"출산지원금과 산후조리원 비용까지 챙기는 여성건강보험. 3분 만에 설계하고 카톡으로 공유해요.",h1:"한화손보 캐롯 시그니처 여성건강보험4.0"},
-  birth:{nt:"한화손보 캐롯 태아보험 | 임신·출산·선천이상 보장",
-        gd:"임신 중 가입부터 미숙아·선천이상 수술·입원 보장까지. 한화손보 캐롯 태아보험을 온라인에서 설계하고 보험료를 확인하세요.",
-        st:"엄마가 되기 전에, 태아보험부터 — 한화손보 캐롯",
-        sd:"임신 22주 전 가입·태아 특약까지. 3분 만에 설계하고 카톡으로 공유해요.",h1:"한화손보 캐롯 태아보험"},
-  overseas:{nt:"한화손보 캐롯 해외여행보험 | 개인정보 없이 보험료 확인",
-        gd:"출국 전 간편 가입과 무사고 시 캐시백까지. 한화손보 캐롯 해외여행보험을 개인정보 없이 온라인에서 비교하고 보험료를 확인하세요.",
-        st:"여행 전 3분, 한화손보 캐롯 해외여행보험",
-        sd:"출국 전 간편가입·무사고 캐시백. 개인정보 없이 보험료를 바로 확인해요.",h1:"한화손보 캐롯 해외여행보험"},
-  overseaslong:{nt:"한화손보 캐롯 해외장기체류보험 | 유학·장기체류 보장",
-        gd:"3개월 초과 해외체류·유학 중 질병·상해 의료비를 최대 10만달러까지. 한화손보 캐롯 해외장기체류보험을 온라인에서 확인하세요.",
-        st:"유학·장기출장 전 필수 — 한화손보 캐롯 해외장기체류보험",
-        sd:"3개월 넘는 해외체류, 현지 의료비까지 대비하는 장기체류보험. 개인정보 없이 보험료를 확인해요.",h1:"한화손보 캐롯 해외장기체류보험"}
-};
-
-// 상품 장점(USP) — 화면 노출 + 카피 반영 근거
-const USP={
-  home:"암·치아·운전자·화재·골프를 한 곳에서 · 개인정보 없이 3분 견적",
-  hrmf:"스크린홀인원 담보 + 풍수재·임시거주비 보장",
-  golf:"홀인원 축하비용 · 타인 상해 배상책임",
-  cncr:"담보 골라담기(내가 고른) · 4대유사암 단독가입",
-  dntl:"스케일링 연 2회 · 보철·보존 치료비",
-  driver:"교통사고 벌금·변호사비·형사합의금",
-  woman:"임신·출산지원금 · 산후조리원비용",
-  birth:"임신 22주 내 가입 · 태아 특약",
-  overseas:"출국 전 간편가입 · 무사고 캐시백",
-  overseaslong:"3개월 초과 체류·유학 · 해외 의료비 최대 10만달러"
-};
-
-/* ── 유틸 ── */
-const $=(s,el=document)=>el.querySelector(s);
-const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-const charLen=s=>[...s].length, utf8Len=s=>new TextEncoder().encode(s).length;
-const euckrLen=s=>{let n=0;for(const c of s)n+=(c.codePointAt(0)>127?2:1);return n;};
-const gScore=p=>Math.round(AXES.reduce((s,k)=>s+p.ax[k]*W.google[k],0));
-const nScore=p=>Math.round(AXES.reduce((s,k)=>s+p.ax[k]*W.naver[k],0));
-const grade=n=>n>=80?["A","good"]:n>=65?["B","good"]:n>=50?["C","mid"]:n>=40?["D","mid"]:["F","bad"];
-const sevWord=v=>v==="good"?"양호":v==="mid"?"보통":"수정필요";
-const bgOf=g=>g==="good"?"var(--good-bg)":g==="mid"?"var(--mid-bg)":"var(--bad-bg)";
-const inkOf=g=>g==="good"?"var(--good-ink)":g==="mid"?"var(--mid-ink)":"var(--bad-ink)";
-const delWord=d=>d==="direct"?"한화 다이렉트 직접":d==="bridge"?"캐롯 분기(브릿지)":"메인 사이트";
-function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1500);}
-function hlAfter(s){return esc(s).replace(/(&lt;\/?[a-z0-9]+)/gi,'<span class="tag">$1</span>').replace(/(&lt;!--[\s\S]*?--&gt;)/g,'<span class="cm">$1</span>').replace(/content=(&quot;.*?&quot;)/g,'content=<span class="str">$1</span>');}
-
-/* ── 완료 저장 ── */
-const DONE_KEY="hw_cm_seo_done_v1";
-let DONE=(()=>{try{return JSON.parse(localStorage.getItem(DONE_KEY)||"{}");}catch(e){return{};}})();
-const isDone=id=>!!DONE[id];
-function setDone(id,v){if(v)DONE[id]=1;else delete DONE[id];try{localStorage.setItem(DONE_KEY,JSON.stringify(DONE));}catch(e){}}
-
-/* ── 미터 ── */
-function meter(text,limit){
-  const c=charLen(text),u=utf8Len(text),e=euckrLen(text);
-  const col=c>limit?"var(--bad)":c>limit*.85?"var(--mid)":"var(--good)";
-  return `<div class="meter"><div class="meter-bar"><div class="meter-fill" style="width:${Math.min(100,c/limit*100)}%;background:${col}"></div></div>
-    <div class="meter-num" style="color:${col}">${c}자 <small>/${limit} · ${u}B(UTF-8) · ${e}B(EUC-KR)</small></div></div>`;
-}
-
-/* ── To-Do 생성 (현행 화면 + 분기/모바일 대응) ── */
-function todosFor(p,c){
-  const T=[];
-  T.push({id:"title",pri:p.exTitleV==="good"?"중":"상",what:"&lt;title&gt; 교체",
-    why:p.exTitleV==="bad"?`현재 제목이 가입폼/브레드크럼(<code>${esc(p.exTitle)}</code>) — 상품명·핵심담보 없음`:`상품명은 있으나 <code>무배당·4.0</code> 등 비핵심 토큰이 노출 픽셀 차지`,
-    before:`<title>${p.exTitle}</title>`,after:`<title>${c.nt}</title>`,meterText:c.nt,meterLimit:30});
-  T.push({id:"meta",pri:p.exDescV==="good"?"하":"상",what:'&lt;meta name="description"&gt; 신설/교체',
-    why:p.exDescV==="bad"?`검색 스니펫에 <b>폼 라벨/안내문</b>이 그대로 유출됨`:p.exDescV==="mid"?`사이트 공통·심의문구라 이 화면만의 개별성이 없음`:`혜택 중심으로 양호 — 핵심 키워드 앞배치만 미세 조정`,
-    before:p.exDescV==="bad"?`<!-- description 미설정/부적절 → 본문·폼 텍스트가 스니펫으로 노출 -->`:`<meta name="description" content="${p.exDesc.slice(0,52)}…">`,
-    after:`<meta name="description" content="${c.gd}">`,meterText:c.gd,meterLimit:80});
-  if(p.delivery==="bridge") T.push({id:"bridge",pri:"상",what:"분기(carrotBridge) 리다이렉트·canonical 정리",
-    why:`<code>carrotBridge.do</code>는 <b>캐롯으로 URL이 분기(이동)</b>되는 페이지 — 브릿지 자체 색인은 거의 없고(전체 55건) 랭킹·링크에쿼티는 캐롯이 가져갑니다. 네이버 웹표준: <b>JS·meta refresh가 아닌 HTTP 301</b>로 이동해야 검색로봇이 해석합니다.`,
-    before:`<!-- ${p.path} -->\n<!-- ❌ 302(추정)·JS location.href·<meta http-equiv="refresh"> · canonical 없음 · campaignId 중복 -->`,
-    after:`<!-- ✅ 서버에서 HTTP 301 (Location 헤더)로 목적지 이동 -->\n<!-- ✅ 목적지 정본 canonical 통일 -->\n<link rel="canonical" href="${p.destUrl}">\n<!-- CM이 랭킹을 직접 확보하려면: 브릿지 대신 hanwhadirect에 상품 콘텐츠 랜딩을 두고 캐롯 견적으로 연결 -->`});
-  T.push({id:"og",pri:p.exOg.startsWith("설정")?"하":"중",what:"OG 태그 세트 추가/점검",
-    why:`카톡·블로그 공유 미리보기용 (현재: <code>${esc(p.exOg)}</code>)`,
-    before:`<!-- og:* 태그 없음/부분 -->`,
-    after:`<meta property="og:title" content="${c.st}">\n<meta property="og:description" content="${c.sd}">\n<meta property="og:image" content="https://.../og/${p.key}_1200x630.png">\n<meta property="og:url" content="${p.delivery==="bridge"?p.destUrl:p.url}">`});
-  if(p.delivery!=="bridge") T.push({id:"mobile",pri:"중",what:"모바일(m.)·PC(www) 메타 일치 + canonical",
-    why:`구글 <b>모바일 우선색인</b> — <code>m.hanwhadirect.com</code>이 실제 색인 기준입니다. m./www 타이틀·설명이 다르거나 canonical이 없으면 평가가 분산됩니다.`,
-    before:`<!-- m.hanwhadirect.com 과 www 메타 상이/canonical 누락 가능 -->`,
-    after:`<link rel="canonical" href="https://www.hanwhadirect.com${p.path}">\n<link rel="alternate" media="only screen and (max-width: 640px)" href="https://m.hanwhadirect.com${p.path}">`});
-  if(p.exTitleV==="bad"&&p.delivery==="direct") T.push({id:"h1",pri:"중",what:"H1을 상품명으로 1회만 지정",
-    why:`가입 SPA가 통짜 색인돼 주제 신호가 폼 UI에 묻힘 — 페이지당 &lt;h1&gt; 1회`,
-    before:`<div class="logo">한화 다이렉트</div>  <!-- h1이 로고/스텝인 경우 -->`,after:`<h1>${c.h1}</h1>`});
-  if(p.delivery==="home"){
-    T.push({id:"crawler",pri:"상",what:"검색로봇(Yeti) 접근 차단 해제 (방화벽/서버)",
-      why:`네이버 웹마스터도구 가이드 — <b>방화벽·WAF가 검색로봇(Yeti) 접근을 막으면 검색에서 제외</b>됩니다. 점검상 페이지·robots.txt가 <b>HTTP 403</b>이라 Yeti 허용이 최우선.`,
-      before:`# Yeti 접근 시 HTTP 403 (방화벽/WAF 차단 의심)\n# UA: Mozilla/5.0 (compatible; Yeti/1.1; +http://naver.me/spd)`,
-      after:`# 방화벽/WAF·서버에서 검색로봇 UA를 허용(allowlist)\n# 네이버 Yeti · 구글 Googlebot · 다음 Daumoa\n# → 정상 200 응답으로 페이지·robots.txt 반환되게`});
-    T.push({id:"robots",pri:"상",what:"robots.txt 설치 (사이트 전체 · 완성본)",
-    why:`점검 결과 <code>m.hanwhadirect.com/robots.txt</code> 접근 시 <b>HTTP 403</b>. 아래 완성본을 사이트 루트에 그대로 저장하세요 — 검색로봇 허용 + <code>/cmcom/</code>·관리자·검색결과 차단 + 사이트맵 등록.`,
-    before:`# https://m.hanwhadirect.com/robots.txt → 현재 403 (설치 여부·크롤러 허용 확인 필요)`,
-    after:`# robots.txt — 사이트 루트(/robots.txt)에 그대로 저장\n# ── 검색로봇 명시 허용 ──\nUser-agent: Yeti\nAllow: /\n\nUser-agent: Googlebot\nAllow: /\n\nUser-agent: Daumoa\nAllow: /\n\n# ── 전체 로봇 공통 ──\nUser-agent: *\nAllow: /\n# 분기(브릿지)·시스템\nDisallow: /cmcom/\n# 관리자\nDisallow: /admin/\nDisallow: /manager/\nDisallow: /mng/\n# 검색 결과 페이지\nDisallow: /search\nDisallow: /search/\nDisallow: /*?keyword=\nDisallow: /*?searchWord=\nDisallow: /*?q=\n\n# ── 사이트맵 ──\nSitemap: https://m.hanwhadirect.com/sitemap.xml\nSitemap: https://www.hanwhadirect.com/sitemap.xml\n\n# 참고: /cmcom/ 브릿지가 301로 캐롯에 링크에쿼티를 넘기는 용도라면\n#       Disallow 대신 '크롤 허용 + noindex'가 더 안전(리다이렉트를 크롤러가 따라가야 함).`});
-    T.push({id:"robotsmeta",pri:"중",what:"로봇 메타태그 noindex 점검",
-      why:`네이버 가이드 — <b>robots.txt와 로봇 메타태그가 모두 '허용'</b>이어야 노출됩니다. 실수로 <code>noindex</code>가 들어가면 수집돼도 검색에서 제외돼요.`,
-      before:`<meta name="robots" content="noindex">   <!-- 이 태그가 있으면 색인 제외 → 제거 -->`,
-      after:`<!-- noindex 태그를 제거 (태그가 없으면 색인 허용으로 간주) · 명시하려면 아래 -->\n<meta name="robots" content="index,follow">`});
-    T.push({id:"sitemap",pri:"중",what:"사이트맵 제출 · 웹마스터도구/서치어드바이저 등록",
-      why:`네이버 가이드 — <code>sitemap.xml</code>을 만들어 <b>웹마스터도구 '요청 &gt; 사이트맵 제출'</b> 및 구글 서치콘솔에 등록하세요. 정보 변경 시 '페이지 수집요청'으로 재수집을 앞당길 수 있습니다.`,
-      before:`# sitemap.xml 미제출 → 하위 상품 페이지가 색인에서 누락될 수 있음`,
-      after:`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>https://m.hanwhadirect.com/ltr/cncr/</loc><lastmod>2026-07-20</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>\n  <!-- 담당 상품 URL 전체를 같은 형식으로 나열 -->\n</urlset>\n<!-- 제출: 네이버 웹마스터도구 요청>사이트맵 제출 / 구글 Search Console -->`});
-    T.push({id:"channel",pri:"하",what:"연관 채널 구조화 데이터 (선택·고급)",
-      why:`네이버 가이드 — 메인 페이지에 <b>Organization + sameAs</b>로 공식 블로그·SNS를 연결하면 검색결과에 <b>연관 채널</b>이 노출될 수 있습니다. (선택 항목 — 어렵다면 건너뛰어도 됩니다)`,
-      before:`<!-- 연관 채널(블로그·SNS) 구조화 데이터 없음 -->`,
-      after:`<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "Organization",\n  "name": "한화손해보험 다이렉트",\n  "url": "https://www.hanwhadirect.com/",\n  "sameAs": [\n    "https://blog.naver.com/hwgi01",\n    "https://www.instagram.com/공식계정",\n    "https://www.youtube.com/@공식채널"\n  ]\n}\n<\/script>`});
-  }
-  T.push({id:"alt",pri:"하",what:"상품 이미지 alt 텍스트 보강",
-    why:`상품 상세 이미지 alt 누락 여부 점검(실측 필요) 후 삽입 — 스크린리더·이미지색인`,
-    before:`<img src="/img/${p.key}_cover.png">`,after:`<img src="/img/${p.key}_cover.png" alt="${p.name} ${p.product} 보장내용 안내">`});
-  return T;
-}
-const PRIO={"상":0,"중":1,"하":2};
-function todoHtml(p,t){
-  const id=`cm:${p.key}:${t.id}`,done=isDone(id);
-  const mt=t.meterText?meter(t.meterText,t.meterLimit):"";
-  return `<div class="todo${done?" done":""}" data-id="${id}">
-    <div class="todo-head" data-toggle="${id}"><div class="chk">✓</div>
-      <div class="todo-hmain"><div class="todo-what"><span class="pri ${t.pri}">${t.pri}</span>${t.what}</div>
-      <div class="todo-why">${t.why}</div></div></div>
-    <div class="todo-body">
-      <div class="code-row"><div class="code-lbl">현행 (Before)</div><div class="codeblk before">${esc(t.before)}</div></div>
-      <div class="code-row"><div class="code-lbl">변경 (After)<button class="cp" data-copy="${esc(t.after)}">코드 복사</button></div>
-        <div class="codeblk after">${hlAfter(t.after)}</div>${mt}</div>
-    </div></div>`;
-}
-
-/* ── 오픈소스 연동 ── */
-function readForm(){return{url:$("#f_url").value.trim(),brand:$("#f_brand").value.trim(),product:$("#f_product").value.trim(),
-  keyword:$("#f_keyword").value.trim(),benefits:$("#f_benefits").value.trim(),title:$("#f_title").value.trim(),
-  desc:$("#f_desc").value.trim(),og:$("#f_og").value,h1:$("#f_h1").value,alt:$("#f_alt").value,target:$("#f_target").value};}
-function parseCrawlJson(raw){
-  let o;try{o=JSON.parse(raw);}catch(e){toast("JSON 파싱 실패");return null;}
-  if(Array.isArray(o))o=o[0]||{}; if(o.report)o=o.report;
-  const out={};
-  out.url=o.url||o.finalUrl||o.requestedUrl||(o.route&&o.route.url)||"";
-  if(o.audits){const a=o.audits;const ia=a["image-alt"]&&a["image-alt"].details&&a["image-alt"].details.items;
-    if(ia)out.alt=ia.length; if(a["meta-description"]&&a["meta-description"].score===0)out.desc="";
-    out.og=a["structured-data"]?"partial":"none";}
-  if(o.title!=null)out.title=o.title;
-  if(o.description!=null)out.desc=o.description; else if(o.metaDescription!=null)out.desc=o.metaDescription;
-  if(o.h1Count!=null)out.h1=o.h1Count; else if(o.h1!=null)out.h1=Array.isArray(o.h1)?o.h1.length:o.h1;
-  if(o.imagesMissingAlt!=null)out.alt=o.imagesMissingAlt; else if(o.missingAlt!=null)out.alt=o.missingAlt;
-  if(o.og!=null)out.og=(o.og===true?"yes":o.og===false?"none":o.og); else if(o.ogPresent!=null)out.og=o.ogPresent?"yes":"none";
-  return out;
-}
-function implSection(p,c,opt){
-  const url=(p.delivery==="bridge"&&p.destUrl)||p.url||"";
-  const canonical = p.delivery==="bridge"
-    ? `<link rel="canonical" href="${p.destUrl||url}">`
-    : `<link rel="canonical" href="https://www.hanwhadirect.com${p.path||"/"}">\n<link rel="alternate" media="only screen and (max-width: 640px)" href="https://m.hanwhadirect.com${p.path||"/"}">`;
-  const head=`<!-- ① 이 부분을 <head> ... </head> 사이에 붙여넣으세요 -->
-<title>${c.nt}</title>
-<meta name="description" content="${c.gd}">
-<meta property="og:title" content="${c.st}">
-<meta property="og:description" content="${c.sd}">
-<meta property="og:image" content="https://이미지주소/og/${p.key}_1200x630.png">
-<meta property="og:url" content="${url}">
-${canonical}`;
-  const body=`<!-- ② <body> 안, 화면에서 상품명(제목)이 보이는 그 자리에 딱 1번만 넣으세요 -->
-<!--    (로고나 단계표시가 h1이면 그건 <div>로 바꾸고, h1은 상품명에만) -->
-<h1>${c.h1}</h1>`;
-  const blk=(lbl,code)=>`<div class="impl-block"><div class="code-lbl">${lbl}<button class="cp" data-copy="${esc(code)}">코드 복사</button></div><div class="codeblk after">${esc(code)}</div></div>`;
-  return `<div class="sec-lbl">화면 적용용 HTML 태깅 가이드</div>
-    <div class="impl-note"><b>이 페이지에 그대로 붙여넣는 완성 HTML</b>입니다. 프레임워크·구조화데이터 없이 순수 HTML만 — <b>①은 &lt;head&gt; 안</b>, <b>②는 본문의 상품명 제목 위치</b>(페이지당 &lt;h1&gt; 1개).</div>
-    ${blk("① &lt;head&gt; 태그 — 제목·설명·OG·canonical",head)}
-    ${blk("② &lt;h1&gt; 위치 — 본문 상품명 자리",body)}`;
-}
-
-/* ── 개발자 전달용 내보내기 (Excel/텍스트) ── */
-function stripEnt(s){return String(s).replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/<[^>]+>/g,"").replace(/&amp;/g,"&");}
-function guideRows(p){return todosFor(p,COPY[p.key]).slice().sort((a,b)=>PRIO[a.pri]-PRIO[b.pri])
-  .map(t=>({pri:t.pri,item:stripEnt(t.what),before:t.before,after:t.after,count:t.meterText?charLen(t.meterText)+"자":""}));}
-function dl(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();}
-function delText(d){return d==="bridge"?"캐롯 분기":d==="home"?"메인":"한화손보다이렉트 직접";}
-function exportXls(key){
-  const list=key==="__all"?PRODUCTS:[PRODUCTS.find(p=>p.key===key)];
-  let rows="";
-  list.forEach(p=>guideRows(p).forEach(r=>{rows+=`<tr><td>${esc(p.name)}</td><td>${esc(p.brand)}</td><td>${esc(delText(p.delivery))}</td><td>${esc(p.url)}</td><td>${r.pri}</td><td>${esc(r.item)}</td><td>${esc(r.before).replace(/\n/g,"&#10;")}</td><td>${esc(r.after).replace(/\n/g,"&#10;")}</td><td>${r.count}</td></tr>`;}));
-  const html=`﻿<html><head><meta charset="utf-8"><style>table{border-collapse:collapse;} td,th{border:1px solid #ccc;padding:5px 7px;vertical-align:top;font-family:'Malgun Gothic',sans-serif;font-size:12px;mso-number-format:'\\@';} th{background:#fbe7d2;font-weight:bold;} td:nth-child(7),td:nth-child(8){font-family:Consolas,monospace;white-space:pre-wrap;}</style></head><body><h3>한화손보 장기CM · 테크니컬 SEO 태깅 가이드 (개발자 전달용)</h3><table><tr><th>상품</th><th>브랜드</th><th>전달경로</th><th>URL</th><th>우선순위</th><th>태그 항목</th><th>현행(Before)</th><th>권장(After)</th><th>글자수</th></tr>${rows}</table><p>※ 권장(After)은 광고심의 검수 전 초안. H1·alt·OG 원본은 실제 DOM 확인 후 반영.</p></body></html>`;
-  dl(new Blob([html],{type:"application/vnd.ms-excel;charset=utf-8"}), key==="__all"?"한화손보_장기CM_태깅가이드_전체.xls":`태깅가이드_${(list[0].name).replace(/\s/g,"")}.xls`);
-  toast("Excel(.xls) 내려받기");
-}
-function exportText(key){
-  const p=PRODUCTS.find(x=>x.key===key);
-  let s=`[테크니컬 SEO 태깅 가이드 · 개발자 전달용]\n상품: ${p.name} (${p.brand} · ${delText(p.delivery)})\nURL: ${p.url}${p.destUrl?`\n실제 이동(목적지): ${p.destUrl}`:""}\n담당: 한화손보 CM사업부 · 배포 전 광고심의 검수 필요\n────────────────────────`;
-  guideRows(p).forEach((r,i)=>{s+=`\n\n${i+1}. [${r.pri}] ${r.item}${r.count?`  (${r.count})`:""}\n   ▸ 현행: ${r.before.replace(/\n/g,"\n           ")}\n   ▸ 권장: ${r.after.replace(/\n/g,"\n           ")}`;});
-  navigator.clipboard?.writeText(s).then(()=>toast("태깅 가이드 복사됨 — 개발자에게 붙여넣기"),()=>toast("복사 실패"));
-}
-
-/* ── 서브내비 + 화면 ── */
-let cat="장기", curKey=null;
-const catProducts=c=>PRODUCTS.filter(p=>p.cat===c);
-const subnavList=c=>[PRODUCTS.find(p=>p.key==="home")].concat(catProducts(c));
-function screenDone(p){const ts=todosFor(p,COPY[p.key]);const d=ts.filter(t=>isDone(`cm:${p.key}:${t.id}`)).length;return[d,ts.length];}
-function renderSubnav(){
-  $("#subnav").innerHTML=subnavList(cat).map(p=>{
-    const[d,n]=screenDone(p),done=d===n;
-    const col=done?"var(--good)":d>0?"var(--mid)":"var(--faint)";
-    return `<button class="chip${p.key===curKey?" on":""}${p.key==="home"?" pinned":""}" data-screen="${p.key}">
-      <span class="cdot" style="background:${col}"></span>${esc(p.name)}<small>${d}/${n}</small></button>`;
-  }).join("");
-}
-function webStdPanel(){
-  const rows=[
-    ["Redirect(리다이렉트)","JS·meta refresh 이동","서버 HTTP 301/3xx","location.href / &lt;meta http-equiv=&quot;refresh&quot;&gt;","HTTP 301 Location 헤더"],
-    ["Canonical URL","파라미터로 중복 URL 생성","대표 URL 1개 지정","?event=code01 · ?event=none","&lt;link rel=&quot;canonical&quot; href=&quot;…&quot;&gt;"],
-    ["Meta Tag","title·description·og 누락","문서 메타 제공","(태그 없음)","title · description · og"],
-    ["태그 위치","head 전용 태그가 body 안에","head 안에 위치","&lt;body&gt;&lt;title&gt;…","&lt;head&gt;&lt;title&gt;…&lt;/head&gt;"],
-    ["Link Syntax","JS 링크(onclick)","일반 &lt;a href&gt; 링크","&lt;a href=&quot;#&quot; onclick=&quot;goto()&quot;&gt;","&lt;a href=&quot;/ltr/cncr/&quot;&gt;"],
-    ["Frame Tag","frame로 콘텐츠 구성","일반 HTML 마크업","&lt;frame src=&quot;…&quot;&gt;","&lt;main&gt;·&lt;section&gt; 구조"],
-    ["앵커 텍스트","‘여기 클릭’ 등 모호","대표 키워드로 간결","&lt;a&gt;여기&lt;/a&gt;","&lt;a&gt;암보험 보장내용&lt;/a&gt;"],
-    ["이미지 alt","alt 속성 누락","대체 텍스트 필수","&lt;img src=&quot;…&quot;&gt;","&lt;img alt=&quot;…보장내용&quot;&gt;"]
-  ];
-  return `<div class="panel" style="margin-top:16px">
-    <h3>📋 네이버 웹표준 체크리스트 <span style="font-size:11px;color:var(--muted);font-weight:600">· 웹마스터도구 품질 가이드</span></h3>
-    ${rows.map(r=>`<div class="wstd"><div class="wstd-h">${r[0]}</div>
-      <div class="wstd-cols">
-        <div class="bad"><b>✕ ${r[1]}</b><br><code>${r[3]}</code></div>
-        <div class="good"><b>✓ ${r[2]}</b><br><code>${r[4]}</code></div>
-      </div></div>`).join("")}</div>`;
-}
-function renderScreen(){
-  const p=PRODUCTS.find(x=>x.key===curKey);if(!p)return;
-  const g=gScore(p),n=nScore(p),[,gc]=grade(g),[,nc]=grade(n);
-  const ts=todosFor(p,COPY[p.key]).slice().sort((a,b)=>PRIO[a.pri]-PRIO[b.pri]);
-  const done=ts.filter(t=>isDone(`cm:${p.key}:${t.id}`)).length,pct=Math.round(done/ts.length*100);
-  const destLine=p.delivery==="bridge"?`<div class="dest-line">→ 실제 이동(색인·랭킹 주체): <b>${esc(p.destUrl)}</b></div>`:"";
-  $("#v-product").innerHTML=`
-    <div class="scope"><span class="sc-tag">Technical SEO · CM사업부 담당 상품만</span> 제목·메타·OG·H·canonical·robots·분기(리다이렉트) 등 <b>기술 SEO 항목</b> 중심 · <b>네이버 웹마스터도구 가이드 반영</b> · 모바일(m.hanwhadirect.com) 기준 · 네이버 색인 실측(2026-07-18)</div>
-    <div class="scr-hero">
-      <div class="scr-hero-top">
-        <h2>${esc(p.name)}</h2>
-        <span class="delivery ${p.delivery}">${delWord(p.delivery)}</span>
-        <span class="score-chip" style="background:${bgOf(gc)};color:${inkOf(gc)}"><small>구글</small>${g}</span>
-        <span class="score-chip" style="background:${bgOf(nc)};color:${inkOf(nc)}"><small>네이버</small>${n}</span>
-        <span class="spacer"></span>
-        <a class="btn" href="${esc(p.url)}" target="_blank" rel="noopener">화면 열기 ↗</a>
-      </div>
-      ${USP[p.key]?`<div class="usp-line">💡 <b>상품 장점</b> · ${esc(USP[p.key])} <span style="color:var(--muted);font-weight:600">→ 타이틀·카피에 반영</span></div>`:""}
-      <div class="url-line">${esc(p.url)}</div>
-      ${destLine}
-      <div class="cur-grid">
-        <div class="cur-box"><div class="cb-top"><span class="cb-k">현재 Title</span><span class="badge ${p.exTitleV}">${sevWord(p.exTitleV)}</span></div><div class="cb-v ${p.exTitleV==="bad"?"bad":""}">${esc(p.exTitle)}</div></div>
-        <div class="cur-box"><div class="cb-top"><span class="cb-k">현재 Description</span><span class="badge ${p.exDescV}">${sevWord(p.exDescV)}</span></div><div class="cb-v ${p.exDescV==="bad"?"bad":""}">${esc(p.exDesc)}</div></div>
-      </div>
-    </div>
-    <div class="prog"><div class="prog-num">${done}<small>/${ts.length} 완료</small></div>
-      <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
-      <div class="prog-num" style="color:var(--brand-600)">${pct}%</div></div>
-    <div class="handoff"><span class="hf-lbl">📤 개발자 전달용</span>
-      <button class="btn" data-xls="${p.key}">이 상품 Excel(.xls)</button>
-      <button class="btn" data-txt="${p.key}">태깅 텍스트 복사</button>
-      <button class="btn" data-xls="__all">전체 상품 Excel</button></div>
-    <div class="sec-lbl">이 화면에서 할 일 (우선순위 상→하)</div>
-    ${ts.map(t=>todoHtml(p,t)).join("")}
-    ${implSection(p,COPY[p.key],{brand:p.brand})}
-    ${p.delivery==="home"?webStdPanel():""}
-    <div class="foot-note"><b>참고</b> · Before는 네이버 색인 실측값(2026-07-18). 브릿지 상품은 <b>캐롯 목적지 페이지</b> 색인값 기준이며, 브릿지 자체는 색인이 거의 없습니다(분기 처리 To-Do 참고). H1·alt·OG 원본은 사이트 봇차단(403)으로 미수집 → 템플릿 예시이니 실제 DOM에 맞춰 반영. After 카피는 광고심의 검수 후 배포.<br><b>네이버 웹마스터도구 가이드</b> · 제목 15자·설명 45자 이내 권장, 제목=설명·키워드 반복·낚시성 금지, robots.txt와 로봇 메타태그 <b>둘 다 허용</b>, 리다이렉트는 <b>HTTP 301</b>, 사이트맵·RSS 제출.</div>`;
-  $("#pageTitle").textContent=p.name;
-  renderSidebar();
-}
-
-/* ── PRO ── */
-function classifyTitle(t){if(!t.trim())return"bad";if(/[>＞]|고객정보입력|메인&gt;|메인>/.test(t))return"bad";const l=charLen(t);if(l<6||l>34)return"mid";return"good";}
-function classifyDesc(d){if(!d.trim())return"bad";if(/남자|여자|자가용|영업용|직업을 선택|고객정보|확인필-제/.test(d))return"bad";const l=charLen(d);if(l<40)return"mid";if(l>95)return"mid";return"good";}
-function genCopy(f){
-  const b=(f.benefits||"").split(/[,，·]/).map(s=>s.trim()).filter(Boolean);
-  const b0=b[0]||"핵심담보",b1=b[1]||"보장",b2=b[2]||b1;
-  const brand=f.brand||"",prod=f.product||f.keyword||"상품";
-  const clip=(s,n)=>charLen(s)<=n?s:[...s].slice(0,n).join("");
-  return{nt:clip(`${brand} ${prod} | ${b0}·${b1} 보장`.trim(),30),
-    gd:clip(`${b0}·${b1}·${b2} 보장까지. ${brand} ${prod}을(를) 온라인에서 설계하고 보험료를 확인하세요.`.trim(),80),
-    st:clip(`${b0}부터 ${b2}까지 — ${brand} ${prod}`.trim(),30),
-    sd:clip(`${b0}·${b1}·${b2}까지 대비하는 ${prod}. 3분 만에 설계하고 카톡으로 공유해요.`.trim(),80),h1:`${prod}`};
-}
-function renderPro(prefill){
-  const f=prefill||{};
-  $("#v-pro").innerHTML=`
-    <div class="pro-hero"><h2>범용 테크니컬 SEO 제너레이터</h2>
-      <p>담당 외 상품이나 <b>타사·신규 페이지</b>도 크롤링 값만 넣으면 점수·To-Do·코드·카피를 자동 생성합니다. 어떤 회사/상품에도 재사용됩니다.</p></div>
-    <div class="import-card">
-      <div class="ic-top"><b>⚡ unlighthouse / 크롤러 결과 불러오기</b><button class="btn" id="lhSample">샘플 JSON</button></div>
-      <textarea id="lhJson" placeholder='unlighthouse · Lighthouse · python-seo-analyzer 등의 JSON을 붙여넣으세요 (image-alt · meta-description · title 감사 항목 자동 반영)'></textarea>
-      <div class="ic-actions"><button class="btn primary" id="lhLoad">불러와서 폼 채우기 →</button><span class="hint">브라우저에서만 처리 · 외부전송 0</span></div>
-    </div>
-    <div class="form-grid">
-      <div class="ff full"><label>분석 URL</label><input id="f_url" placeholder="https://example.com/product" value="${esc(f.url||"")}"></div>
-      <div class="ff"><label>브랜드/회사</label><input id="f_brand" placeholder="예: 한화 다이렉트" value="${esc(f.brand||"")}"></div>
-      <div class="ff"><label>상품명</label><input id="f_product" placeholder="예: 내가고른 암보험" value="${esc(f.product||"")}"></div>
-      <div class="ff"><label>대표 키워드</label><input id="f_keyword" placeholder="예: 암보험" value="${esc(f.keyword||"")}"></div>
-      <div class="ff"><label>핵심 담보/혜택 <small>쉼표 3개</small></label><input id="f_benefits" placeholder="진단비, 수술비, 입원비" value="${esc(f.benefits||"")}"></div>
-      <div class="ff full"><label>현재 Title</label><input id="f_title" placeholder="현재 <title> 값" value="${esc(f.title||"")}"></div>
-      <div class="ff full"><label>현재 Meta Description</label><textarea id="f_desc" placeholder="현재 meta description (없으면 비워두기)">${esc(f.desc||"")}</textarea></div>
-      <div class="ff"><label>OG 태그 상태</label><select id="f_og"><option value="none">없음</option><option value="partial">일부만</option><option value="yes">설정됨</option></select></div>
-      <div class="ff"><label>H1 개수</label><input id="f_h1" type="number" min="0" placeholder="0 / 1 / 2+" value="${f.h1??""}"></div>
-      <div class="ff"><label>이미지 alt 누락 개수</label><input id="f_alt" type="number" min="0" placeholder="예: 7" value="${f.alt??""}"></div>
-      <div class="ff"><label>우선 타깃</label><select id="f_target"><option value="both">네이버+구글</option><option value="naver">네이버 우선</option><option value="google">구글 우선</option></select></div>
-      <div class="form-actions"><button class="btn primary" id="genBtn">진단 생성 →</button><button class="btn" id="sampleBtn">샘플 채우기</button>
-        <span class="hint">입력값은 브라우저에만 남습니다.</span></div>
-    </div>
-    <div class="pro-result" id="proResult"></div>`;
-  $("#genBtn").addEventListener("click",runPro);
-  $("#sampleBtn").addEventListener("click",()=>renderPro({url:"https://www.hanwhadirect.com/ltr/cncr/",brand:"한화손보다이렉트",product:"내가고른 암보험",keyword:"암보험",benefits:"진단비, 수술비, 입원비",title:"암>고객정보입력 - 메인>다이렉트 홈",desc:"",og:"none",h1:0,alt:6,target:"both"}));
-  $("#lhLoad").addEventListener("click",()=>{const parsed=parseCrawlJson($("#lhJson").value);if(parsed){renderPro(Object.assign(readForm(),parsed));toast("크롤 결과 반영됨");}});
-  $("#lhSample").addEventListener("click",()=>{$("#lhJson").value=JSON.stringify({url:"https://www.hanwhadirect.com/ltr/cncr/",title:"암>고객정보입력 - 메인>다이렉트 홈",description:"",h1Count:0,ogPresent:false,imagesMissingAlt:6},null,2);});
-  if(f.og)$("#f_og").value=f.og; if(f.target)$("#f_target").value=f.target;
-}
-function proCopyCard(t,tg,title,desc){
-  return `<div class="copy-card"><div style="display:flex;justify-content:space-between;align-items:center"><span class="cc-t">${t}</span><span class="cc-tg">${tg}</span></div>
-    <div class="cfield"><span class="cf-lbl">Title<button class="cp" data-copy="${esc(title)}">복사</button></span><div class="cf-text">${esc(title)}</div>${meter(title,30)}</div>
-    <div class="cfield"><span class="cf-lbl">Description<button class="cp" data-copy="${esc(desc)}">복사</button></span><div class="cf-text">${esc(desc)}</div>${meter(desc,80)}</div></div>`;
-}
-function runPro(){
-  const f=readForm();
-  const tv=classifyTitle(f.title),dv=classifyDesc(f.desc);
-  const h1n=f.h1===""?null:parseInt(f.h1,10),altn=f.alt===""?null:parseInt(f.alt,10);
-  const ax={title:tv==="good"?76:tv==="mid"?50:22,meta:dv==="good"?78:dv==="mid"?48:18,
-    semantic:h1n==null?50:h1n===1?70:h1n===0?38:34,url:/[a-z]{3,}/.test((f.url.split("/").pop()||""))?58:48,
-    social:f.og==="yes"?72:f.og==="partial"?46:22,trust:55};
-  const p={key:"pro",name:f.product||f.keyword||"대상 상품",product:f.product||f.keyword||"—",url:f.url||"(URL 미입력)",brand:f.brand,delivery:"direct",path:"/",
-    exTitle:f.title||"(제목 없음)",exTitleV:tv,exDesc:f.desc||"(설명 없음)",exDescV:dv,exOg:f.og==="yes"?"설정":f.og==="partial"?"일부":"없음",ax};
-  const c=genCopy(f),g=gScore(p),n=nScore(p),[,gc]=grade(g),[,nc]=grade(n);
-  const ts=todosFor(p,c).slice().sort((a,b)=>PRIO[a.pri]-PRIO[b.pri]);
-  const R=$("#proResult");
-  R.innerHTML=`
-    <div class="scr-hero"><div class="scr-hero-top"><h2>${esc(p.name)}</h2>
-      <span class="score-chip" style="background:${bgOf(gc)};color:${inkOf(gc)}"><small>구글</small>${g}</span>
-      <span class="score-chip" style="background:${bgOf(nc)};color:${inkOf(nc)}"><small>네이버</small>${n}</span>
-      <span class="spacer"></span><button class="btn" id="csvBtn">To-Do CSV ↓</button></div>
-      <div class="url-line">${esc(p.url)}</div>
-      <div class="cur-grid">
-        <div class="cur-box"><div class="cb-top"><span class="cb-k">입력 Title</span><span class="badge ${tv}">${sevWord(tv)}</span></div><div class="cb-v ${tv==="bad"?"bad":""}">${esc(p.exTitle)}</div></div>
-        <div class="cur-box"><div class="cb-top"><span class="cb-k">입력 Description</span><span class="badge ${dv}">${sevWord(dv)}</span></div><div class="cb-v ${dv==="bad"?"bad":""}">${esc(p.exDesc)}</div></div>
-      </div></div>
-    <div class="sec-lbl">자동 생성된 To-Do (우선순위 상→하)</div>
-    ${ts.map(t=>todoHtml(p,t)).join("")}
-    <div class="sec-lbl">검색엔진별 카피안 (자동 생성 · 심의 검수 전제)</div>
-    <div class="copy-grid">
-      ${proCopyCard("네이버 타깃","상품명+혜택",c.nt,c.gd)}
-      ${proCopyCard("구글 타깃","키워드+해결책",`${f.keyword||p.name} 비교 | ${(f.benefits||"보장").split(/[,，]/)[0].trim()} 보장 - ${f.brand||""}`.trim(),c.gd)}
-      ${proCopyCard("소셜/OG","카톡·블로그 감성",c.st,c.sd)}
-    </div>
-    ${implSection(p,c,{brand:f.brand})}
-    <div class="foot-note"><b>휴리스틱 진단</b> · 점수는 입력값 규칙 기반 추정이며 실제 순위를 보장하지 않습니다. 카피는 초안이므로 광고심의 검수 후 사용하세요.</div>`;
-  $("#csvBtn").addEventListener("click",()=>{
-    const rows=[["url","priority","todo","before","after"]];
-    ts.forEach(t=>rows.push([p.url,t.pri,t.what.replace(/&lt;/g,"<").replace(/&gt;/g,">"),t.before.replace(/\n/g," "),t.after.replace(/\n/g," ")]));
-    const csv="﻿"+rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(",")).join("\n");
-    const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
-    a.download=`seo-todo-${(p.name||"page").replace(/\s/g,"_")}.csv`;a.click();toast("CSV 내려받기 시작");});
-  R.scrollIntoView({behavior:"smooth",block:"start"});
-}
-
-/* ── 대시보드 ── */
-function renderDash(){
-  const rows=PRODUCTS.map(p=>({p,g:gScore(p),n:nScore(p)}));
-  const avgG=Math.round(rows.reduce((s,x)=>s+x.g,0)/rows.length);
-  const avgN=Math.round(rows.reduce((s,x)=>s+x.n,0)/rows.length);
-  let tot=0,done=0;PRODUCTS.forEach(p=>{const ts=todosFor(p,COPY[p.key]);tot+=ts.length;done+=ts.filter(t=>isDone(`cm:${p.key}:${t.id}`)).length;});
-  const pct=Math.round(done/tot*100);
-  const crit=PRODUCTS.filter(p=>p.exTitleV==="bad"||p.exDescV==="bad").length;
-  const bridge=PRODUCTS.filter(p=>p.delivery==="bridge").length;
-  const worst=rows.slice().sort((a,b)=>(a.g+a.n)-(b.g+b.n)).slice(0,5);
-  const gcol=v=>{const[,g]=grade(v);return g==="good"?"var(--good)":g==="mid"?"var(--mid)":"var(--bad)";};
-  const kpi=(num,lbl,sub,col)=>`<div class="kpi"><div class="k-num"${col?` style="color:${col}"`:""}>${num}</div><div class="k-lbl">${lbl}</div>${sub?`<div class="k-sub" style="color:${col||"var(--muted)"}">${sub}</div>`:""}</div>`;
-  $("#v-dash").innerHTML=`
-    <div class="kpi-row">
-      ${kpi(PRODUCTS.length,"담당 상품","장기 7 · 일반 2 · 홈")}
-      ${kpi(avgG,"평균 구글 점수","100점 만점",gcol(avgG))}
-      ${kpi(avgN,"평균 네이버 점수","웹표준 기준",gcol(avgN))}
-      ${kpi(pct+"%","To-Do 완료","전체 "+done+"/"+tot,"var(--brand-600)")}
-    </div>
-    <div class="dash-2">
-      <div class="panel">
-        <h3>⚠️ 우선 조치 상품 <span style="font-size:11px;color:var(--muted);font-weight:600">· 점수 낮은 순</span></h3>
-        ${worst.map((x,i)=>{const avg=Math.round((x.g+x.n)/2),g=grade(avg)[1];return `<div class="rank-item" data-goto="${x.p.key}">
-          <span class="ri-rank">${i+1}</span>
-          <span class="ri-name">${esc(x.p.name)}<small>${esc(x.p.brand)} · ${delText(x.p.delivery)}</small></span>
-          <span class="ri-score" style="background:${bgOf(g)};color:${inkOf(g)}">G${x.g} · N${x.n}</span></div>`;}).join("")}
-      </div>
-      <div class="panel">
-        <h3>⚡ 빠른 작업</h3>
-        <div class="qa">
-          <button data-nav="pro"><span class="qa-ico">🔍</span><span>범용 진단 실행<small>URL·크롤 JSON → To-Do 자동생성</small></span></button>
-          <button data-xls="__all"><span class="qa-ico">📊</span><span>전체 태깅가이드 Excel<small>담당 10상품 통합표 다운로드</small></span></button>
-        </div>
-      </div>
-    </div>
-    <div class="panel" style="margin-top:16px">
-      <h3>📌 핵심 이슈 요약</h3>
-      <div style="font-size:12.5px;color:var(--ink-2);line-height:1.8">
-        · <b style="color:var(--bad-ink)">검색로봇(Yeti)에 HTTP 403</b> — 네이버 가이드상 <b>방화벽 차단 시 검색 제외</b> 위험(최우선, 홈 To-Do 참고)<br>
-        · 제목/설명 <b style="color:var(--bad-ink)">수정필요 ${crit}종</b> — 가입폼 breadcrumb·폼 라벨 유출<br>
-        · <b>분기(carrotBridge) ${bridge}종</b> — 색인·랭킹을 캐롯이 가져감 → HTTP 301·canonical 정리 필요<br>
-        · 라이브 DOM(H·alt·OG)은 봇차단(403)으로 미수집 → <b>범용 진단</b>에 unlighthouse 크롤 JSON 붙여넣어 확정
-      </div>
-    </div>`;
-}
-
-/* ── 네비게이션 (좌측 사이드바) ── */
-let view="dash";
-function renderSidebar(){
-  const prodBtn=p=>{const[d,n]=screenDone(p);const col=d===n?"var(--good)":d>0?"var(--mid)":"var(--faint)";
-    return `<button class="sb-prod${view==="product"&&curKey===p.key?" on":""}" data-screen="${p.key}"><span class="sb-dot" style="background:${col}"></span><span class="sb-pname">${esc(p.name)}</span><span class="sb-cnt">${d}/${n}</span></button>`;};
-  $("#sbNav").innerHTML=
-    `<button class="sb-item${view==="dash"?" on":""}" data-nav="dash"><span class="sb-ico">▦</span>대시보드</button>`+
-    `<div class="sb-cap">사이트</div>`+prodBtn(PRODUCTS.find(p=>p.key==="home"))+
-    `<div class="sb-cap">장기 · 7</div>`+catProducts("장기").map(prodBtn).join("")+
-    `<div class="sb-cap">일반 · 2</div>`+catProducts("일반").map(prodBtn).join("")+
-    `<div class="sb-cap">도구</div>`+
-    `<button class="sb-item${view==="pro"?" on":""}" data-nav="pro"><span class="sb-ico">⚡</span>범용 진단</button>`;
-}
-function setView(v){
-  view=v;
-  ["dash","product","pro"].forEach(x=>$("#v-"+x).classList.remove("on"));
-  if(v==="dash"){$("#v-dash").classList.add("on");$("#pageTitle").textContent="대시보드";renderDash();}
-  else if(v==="pro"){$("#v-pro").classList.add("on");$("#pageTitle").textContent="범용 진단";renderPro();}
-  else if(v==="product"){$("#v-product").classList.add("on");renderScreen();}
-  renderSidebar();
-  window.scrollTo({top:0,behavior:"auto"});
-}
-function selectProduct(k){curKey=k;setView("product");}
-document.addEventListener("click",e=>{
-  const nb=e.target.closest("[data-nav]"); if(nb){setView(nb.dataset.nav);return;}
-  const sp=e.target.closest("[data-screen]"); if(sp){selectProduct(sp.dataset.screen);return;}
-  const gt=e.target.closest("[data-goto]"); if(gt){selectProduct(gt.dataset.goto);return;}
-  const xls=e.target.closest("[data-xls]"); if(xls){exportXls(xls.dataset.xls);return;}
-  const txt=e.target.closest("[data-txt]"); if(txt){exportText(txt.dataset.txt);return;}
-  const cp=e.target.closest(".cp,[data-copy]"); if(cp&&cp.dataset.copy!=null){navigator.clipboard?.writeText(cp.dataset.copy).then(()=>toast("복사됨"),()=>toast("복사 실패"));return;}
-  const tg=e.target.closest("[data-toggle]"); if(tg){const id=tg.getAttribute("data-toggle");setDone(id,!isDone(id));
-    if($("#v-product").classList.contains("on"))renderScreen();
-    else{const el=document.querySelector(`.todo[data-id="${CSS.escape(id)}"]`);if(el)el.classList.toggle("done",isDone(id));}
-    return;}
-});
-$("#themeBtn").addEventListener("click",()=>{
-  const cur=document.documentElement.getAttribute("data-theme");
-  const dark=cur?cur==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
-  document.documentElement.setAttribute("data-theme",dark?"light":"dark");});
-
-/* ── init ── */
-setView("dash");
+document.getElementById("themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");});
 </script>
 
 </body>
