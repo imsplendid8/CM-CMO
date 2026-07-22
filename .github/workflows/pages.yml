@@ -1,0 +1,40 @@
+name: Deploy to GitHub Pages
+
+# main에 push되면 정적 사이트(허브 + 각 도구)를 GitHub Pages로 배포합니다.
+# 최초 1회: 저장소 Settings → Pages → Build and deployment → Source = "GitHub Actions" 로 설정하세요.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 동시 배포 1건만 유지 (진행 중 실행은 취소하지 않고 큐잉)
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # 저장소 루트의 정적 파일(index.html·각 도구·css/js)을 그대로 배포.
+          # scripts/·.env 등은 .gitignore로 커밋되지 않으므로 노출되지 않음.
+          path: .
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
