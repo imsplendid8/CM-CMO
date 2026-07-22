@@ -84,6 +84,15 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .cmp .col select{width:100%;border:none;border-bottom:1px solid var(--line);background:var(--surface);color:var(--ink);font-family:var(--mono);font-size:11.5px;font-weight:700;padding:7px 9px;}
 .cmp .col img{width:100%;display:block;}
 .cmp .col .ph{padding:40px 10px;text-align:center;color:var(--muted);font-size:11px;}
+.diffbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;}
+.diffbar .sens{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px;}
+.diffbar .sens input{accent-color:var(--brand);}
+.diffbar .swatch{font-size:10.5px;color:var(--muted);display:inline-flex;align-items:center;gap:5px;}
+.diffbar .swatch i{width:11px;height:11px;border-radius:3px;background:#ff206e;display:inline-block;}
+.diffmeta{font-size:12px;color:var(--ink-2);font-weight:700;}
+.diffmeta b{color:var(--brand-600);font-family:var(--mono);}
+.diffwrap{margin-top:10px;}
+.diffwrap img{display:block;width:100%;border:1px solid var(--line);border-radius:8px;}
 /* 경쟁사 표 */
 table{width:100%;border-collapse:collapse;font-size:12px;}
 th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line-2);vertical-align:top;}
@@ -266,6 +275,31 @@ function addShot(key,file){const s=safeKey(key);if(!s)return;
 function delShot(key,id){const s=safeKey(key);if(!s||!ARC[s])return;ARC[s]=ARC[s].filter(x=>x.id!==id);saveArc(ARC);render();}
 function editNote(key,id,val){const s=safeKey(key);if(!s||!ARC[s])return;const it=ARC[s].find(x=>x.id===id);if(it){it.note=val;saveArc(ARC);}}
 
+/* 전/후 스크린샷 시각 diff (외부 라이브러리 없이 canvas 픽셀 비교 · pixelmatch 방식) */
+function loadImg(src){return new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>rej(new Error("이미지 로드 실패"));im.src=src;});}
+function imgData(img,W,H){const c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");x.drawImage(img,0,0,W,Math.round(img.height*(W/img.width)));return x.getImageData(0,0,W,H).data;}
+function yiqY(d,i){return 0.29889531*d[i]+0.58662247*d[i+1]+0.11448223*d[i+2];}
+function yiqI(d,i){return 0.59597799*d[i]-0.27417610*d[i+1]-0.32180189*d[i+2];}
+function yiqQ(d,i){return 0.21147017*d[i]-0.52261711*d[i+1]+0.31114694*d[i+2];}
+async function diffImages(srcA,srcB,threshold){
+  const [ia,ib]=await Promise.all([loadImg(srcA),loadImg(srcB)]);
+  const W=Math.max(80,Math.min(ia.width,ib.width,560));
+  const hA=Math.round(ia.height*(W/ia.width)),hB=Math.round(ib.height*(W/ib.width));
+  const H=Math.min(hA,hB);
+  const da=imgData(ia,W,H),db=imgData(ib,W,H);
+  const out=document.createElement("canvas");out.width=W;out.height=H;const ox=out.getContext("2d");
+  const od=ox.createImageData(W,H);
+  const maxDelta=35215*threshold*threshold; let changed=0;
+  for(let p=0;p<W*H;p++){const i=p*4;
+    const dy=yiqY(da,i)-yiqY(db,i),di=yiqI(da,i)-yiqI(db,i),dq=yiqQ(da,i)-yiqQ(db,i);
+    const delta=0.5053*dy*dy+0.2990*di*di+0.1957*dq*dq;
+    if(delta>maxDelta){od.data[i]=255;od.data[i+1]=32;od.data[i+2]=110;od.data[i+3]=255;changed++;}
+    else{const g=Math.round(yiqY(db,i)*0.55+110);od.data[i]=od.data[i+1]=od.data[i+2]=g;od.data[i+3]=255;} // 배경은 최신 화면을 흐리게
+  }
+  ox.putImageData(od,0,0);
+  return {url:out.toDataURL("image/png"),pct:changed/(W*H)*100,hA,hB,W,H};
+}
+
 function renderSidebar(){
   const item=(key,label,cnt,on)=>`<button class="sb-item${on?" on":""}" data-key="${key}"><span>${esc(label)}</span><span class="kc">${cnt}</span></button>`;
   const total=PRODUCTS.reduce((s,p)=>s+shotsOf(p.key).length,0);
@@ -287,7 +321,12 @@ function archiveSection(p){
   const cmp=shots.length>=2?`<div class="cmp">
       <div class="col"><select data-cmp="A">${opts}</select><div class="imgwrap" data-col="A"></div></div>
       <div class="col"><select data-cmp="B">${opts}</select><div class="imgwrap" data-col="B"></div></div>
-    </div>`:"";
+    </div>
+    <div class="diffbar"><button class="btn sm primary" id="diffGo">🔍 전/후 변화 감지</button>
+      <label class="sens">민감도 <input type="range" id="diffSens" min="1" max="30" value="10"></label>
+      <span class="swatch"><i></i>붉은 영역 = 바뀐 부분(신규 광고·순위·문구)</span>
+      <span class="diffmeta" id="diffMeta">두 주차를 고른 뒤 변화 감지를 누르세요.</span></div>
+    <div class="diffwrap" id="diffWrap"></div>`:"";
   return `<div class="sec">
     <div class="sec-h"><span class="t">📸 주간 SERP 스크린샷 아카이브</span><span class="sub">· ${shots.length}주차 · 이 브라우저에 저장</span>
       <a class="serplink" style="margin-left:auto" href="${serpUrl(p.kw)}" target="_blank" rel="noopener">네이버 PC 검색결과 보기 ↗</a></div>
@@ -324,8 +363,27 @@ function renderProduct(){
     const selA=$('select[data-cmp="A"]'),selB=$('select[data-cmp="B"]');
     selA.selectedIndex=1;selB.selectedIndex=0; // A=이전주, B=최신
     setCol("A",selA.value);setCol("B",selB.value);
-    selA.addEventListener("change",()=>setCol("A",selA.value));
-    selB.addEventListener("change",()=>setCol("B",selB.value));
+    const meta=$("#diffMeta"),wrap=$("#diffWrap"),btn=$("#diffGo"),sens=$("#diffSens");
+    const clearDiff=()=>{if(wrap)wrap.innerHTML="";if(meta)meta.textContent="두 주차를 고른 뒤 변화 감지를 누르세요.";};
+    async function doDiff(){
+      const a=shots.find(s=>s.id===selA.value),b=shots.find(s=>s.id===selB.value);
+      if(!a||!b)return;
+      if(a.id===b.id){meta.textContent="같은 주차입니다 — 서로 다른 두 주차를 선택하세요.";wrap.innerHTML="";return;}
+      btn.disabled=true;btn.textContent="분석 중…";
+      try{
+        const th=(31-(+sens.value))/100;                       // 민감도↑ → 임계값↓ → 더 예민
+        const r=await diffImages(a.img,b.img,th);
+        const lenNote=Math.abs(r.hA-r.hB)>r.H*0.06?` · ⚠ 길이 변화(이전 ${r.hA}→최신 ${r.hB}px)`:"";
+        const lvl=r.pct>=25?"큰 변화":r.pct>=8?"뚜렷한 변화":r.pct>=2?"소폭 변화":"거의 동일";
+        meta.innerHTML=`변화율 <b>${r.pct.toFixed(1)}%</b> · ${lvl} <span style="color:var(--muted)">(${esc(a.date)}→${esc(b.date)})</span>${lenNote}`;
+        wrap.innerHTML=`<img src="${r.url}" alt="전/후 변화 감지 결과">`;
+      }catch(e){meta.textContent="변화 감지 실패: "+e.message;wrap.innerHTML="";}
+      btn.disabled=false;btn.textContent="🔍 전/후 변화 감지";
+    }
+    selA.addEventListener("change",()=>{setCol("A",selA.value);clearDiff();});
+    selB.addEventListener("change",()=>{setCol("B",selB.value);clearDiff();});
+    if(btn)btn.addEventListener("click",doDiff);
+    if(sens)sens.addEventListener("change",()=>{if(wrap&&wrap.innerHTML)doDiff();});
   }
 }
 function renderOverview(){
