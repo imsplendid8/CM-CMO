@@ -1,0 +1,36 @@
+name: CI
+
+# push/PR 시 품질 점검: 상품 마스터 드리프트 + 각 도구 JS 문법.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 상품 마스터 동기화 검사
+        run: python3 scripts/check_products_sync.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: 도구 JS 문법 검사
+        run: |
+          node -e '
+            const fs=require("fs");
+            const files=["index.html","seo-audit.html","keyword-tool.html","news-tool.html","serp-tool.html","seasonal-tool.html"];
+            let bad=0;
+            for(const f of files){
+              const html=fs.readFileSync(f,"utf8");
+              const blocks=html.match(/<script>([\s\S]*?)<\/script>/g)||[];
+              const js=blocks.map(s=>s.replace(/<\/?script>/g,"")).join("\n");
+              try{new Function(js);console.log("OK  "+f);}catch(e){console.error("SYNTAX ERROR "+f+": "+e.message);bad++;}
+            }
+            process.exit(bad?1:0);
+          '

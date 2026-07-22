@@ -1,0 +1,26 @@
+name: Daily Brief (Telegram)
+
+# 매일 아침 08:00 KST(=23:00 UTC) 데일리 비서 브리핑을 텔레그램으로 발송.
+# 필요 Secrets: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID (선택: NAVER_CLIENT_ID, NAVER_CLIENT_SECRET)
+# 설정법: docs/daily-brief.md
+
+on:
+  schedule:
+    - cron: "0 23 * * *"
+  workflow_dispatch:
+
+jobs:
+  brief:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Send daily brief
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+        run: python3 scripts/daily_brief.py

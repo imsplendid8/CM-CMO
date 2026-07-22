@@ -16,7 +16,8 @@ _최종 갱신: 2026-07-22 · 진행: 5/10 기능_
 | 4 | 검색결과 주간 아카이브 | `serp-tool.html` | 대표키워드 SERP 스크린샷 주간 저장·전후 비교·경쟁사 소구포인트 | ✅ |
 | 5 | 연간 시즈널 이슈 캘린더 | `seasonal-tool.html` | 상품별 계절 이슈·키워드·선제 대응 시점·히트맵 | ✅ |
 | — | 통합 허브 | `index.html` | 5개 작업공간 진입점 | ✅ |
-| — | 데일리 비서 | 루틴 `trig_01MvXuRQSJXHdwj97mvqSR7S` | 매일 08:00 KST 카카오 브리핑 | ⚠️ 커넥터 연결 필요(§운영) |
+| — | 데일리 비서 | `scripts/daily_brief.py` + `daily-brief.yml` | 매일 08:00 KST **텔레그램** 브리핑 | ⚠️ 텔레그램 Secret 2개 설정 필요(`docs/daily-brief.md`) |
+| — | 상품 마스터 | `data/products.json` + `check_products_sync.py` | 단일 소스 + CI 드리프트 검사(고도화 1순위) | ✅ |
 
 ## 접속 (직접 접속·직접 배포)
 - **Pages(정본, push 시 자동 갱신)**: https://imsplendid8.github.io/CM-CMO/

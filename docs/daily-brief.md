@@ -1,35 +1,39 @@
-# 데일리 카카오 비서 브리핑
+# 데일리 비서 브리핑 (텔레그램)
 
-매일 아침 담당자에게 **카카오톡 '나에게'**로 하루 브리핑을 보냅니다 —
-`오늘의 시즌 이슈(시즌 캘린더) + 주요 뉴스(네이버) + SERP 할일` 을 200자 이내로.
+매일 아침 **08:00 KST**에 담당자에게 텔레그램으로 하루 브리핑을 보냅니다 —
+`오늘의 시즌 이슈(data/seasonal.json) + 주요 뉴스(선택) + SERP 할일`.
 
-## 형식 예시
+## 구성
+- 스크립트: `scripts/daily_brief.py` (표준 라이브러리만, `data/products.json`·`data/seasonal.json`를 읽음)
+- 스케줄: `.github/workflows/daily-brief.yml` (cron `0 23 * * *` = 08:00 KST, 수동 실행도 가능)
+- 미리보기: `python3 scripts/daily_brief.py --dry` (발송 없이 메시지만 출력)
+
+## 발송 예시
 ```
-[Modooflow 비서·7/22 수] ☔시즌: 주택화재 장마 누수/운전자 휴가철/해외여행 성수기.
-📰뉴스: 운전자 '서류없이 자녀할인' 확산·골프 캐롯 홀인원 경쟁.
-🔭할일: 주택화재·골프 SERP 상위노출 갭 점검. → imsplendid8.github.io/CM-CMO
+🗓️ Modooflow 데일리 비서 · 7/22(수)
+
+☔ 오늘의 시즌 이슈
+★ 주택화재보험 — 장마·집중호우·태풍 (누수, 침수, 풍수재)
+★ 운전자보험 — 여름 휴가철·렌터카 (휴가철 운전자보험, 렌터카 운전자보험)
+· 치아보험 — 방학 치과 성수기 (치아보험, 임플란트, 치아교정)
+
+🔭 SERP 할일 · 한화 상위노출 갭 점검: 주택화재보험 · 골프보험 · 해외여행보험
+→ https://imsplendid8.github.io/CM-CMO
 ```
+(★ = 메인 상품군 · 뉴스는 네이버 키 설정 시 자동 포함)
 
-## 현재 상태
-- **루틴 예약 완료**: 매일 **08:00 KST**(cron `0 23 * * *` UTC), 기능 = 매 실행 시 새 세션이 시즌·뉴스를 모아 카카오로 발송.
-- 트리거 ID: `trig_01MvXuRQSJXHdwj97mvqSR7S`
-- ⚠️ **활성화 1단계 필요**: 스케줄로 뜨는 세션에는 **카카오/네이버 커넥터가 자동 연결되지 않습니다**. 아래 방법 중 하나로 연결하세요.
-
-## 활성화 방법 (택1)
-
-### 방법 A — claude.ai 자동화(루틴) UI에서 커넥터 연결 (권장·무설정)
-1. claude.ai → **자동화(Routines)** 에서 위 루틴을 엽니다.
-2. 이 루틴이 쓸 **커넥터에 PlayMCP(카카오톡·네이버 검색)** 를 포함시킵니다.
-   - 편집이 안 되면: 같은 프롬프트로 **새 루틴을 UI에서 생성**하면서 커넥터를 선택(가장 확실). 기존 트리거는 삭제.
-3. 저장하면 매일 아침 자동 발송됩니다. 시간 변경도 UI에서.
-
-### 방법 B — GitHub Actions + 카카오 REST (토큰 방식)
-커넥터 없이 완전 자동화하려면 카카오 개발자 토큰으로 발송:
-1. [카카오 개발자센터](https://developers.kakao.com) 앱 → 카카오톡 메시지(나에게 보내기) 권한 → **REST access/refresh token** 발급.
-2. 저장소 **Settings → Secrets**에 `KAKAO_REFRESH_TOKEN`, `NAVER_CLIENT_ID/SECRET` 등록.
-3. 일일 cron 워크플로우가 브리핑을 만들어 `POST https://kapi.kakao.com/v2/api/talk/memo/default/send` 로 발송.
-   - 사내 `news_watch.py`(카카오 '나에게' 알림) 패턴을 이식하면 됩니다. (미구현 — 요청 시 추가)
+## 설정 (1회) — 텔레그램 봇
+1. 텔레그램에서 **@BotFather** → `/newbot` → 봇 이름 지정 → **봇 토큰** 받기.
+2. 만든 봇과 대화 시작(아무 메시지 전송) → 브라우저에서 `https://api.telegram.org/bot<토큰>/getUpdates` 열어 `chat.id` 확인.
+3. 저장소 **Settings → Secrets and variables → Actions** 에 추가:
+   - `TELEGRAM_BOT_TOKEN` = 봇 토큰
+   - `TELEGRAM_CHAT_ID` = 내 chat id
+   - (선택) `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET` = 네이버 개발자센터 검색 API 키(뉴스 포함용)
+4. **Actions 탭 → Daily Brief → Run workflow** 로 즉시 테스트. 이후 매일 08:00 KST 자동 발송.
 
 ## 시간·내용 바꾸기
-- 시간: 방법 A는 UI, 방법 B는 워크플로우 cron 수정.
-- 내용: 프롬프트(방법 A) 또는 스크립트(방법 B)에서 시즌·뉴스·SERP 비중 조정. 톤은 `cm-news-analysis` 스킬을 따릅니다.
+- 시간: `daily-brief.yml`의 cron 수정(UTC 기준. 08:00 KST=23:00 UTC).
+- 내용: `scripts/daily_brief.py`(시즌·뉴스·SERP 비중), 시즌 데이터는 `data/seasonal.json`.
+
+## 참고 — 카카오톡 경로
+초기엔 카카오 MCP로 테스트했으나(즉석 발송 확인됨), 스케줄 세션의 커넥터 제약으로 **텔레그램(봇 API)** 을 정식 자동화 경로로 채택. 카카오로 받고 싶으면 claude.ai 자동화(Routines) UI에서 카카오 커넥터를 붙인 루틴을 별도로 만들 수 있습니다.

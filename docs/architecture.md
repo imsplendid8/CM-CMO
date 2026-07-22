@@ -13,11 +13,18 @@ keyword-tool.html     2. 검색광고 키워드 추출 (블루)
 news-tool.html        3. 카테고리 뉴스 모니터링 (틸)
 serp-tool.html        4. 검색결과 주간 아카이브 (바이올렛)
 seasonal-tool.html    5. 연간 시즈널 이슈 캘린더 (로즈)
-scripts/              네이버 연동 로컬서버 등
+data/                 상품 마스터(products.json)·시즌(seasonal.json) 캐노니컬 소스
+scripts/              네이버 연동 로컬서버 · 데일리 브리핑 · 드리프트 검사
 .claude/skills/cm-news-analysis/   분석 산출물 톤 스킬
-.github/workflows/pages.yml         Pages 자동 배포
+.github/workflows/    pages.yml(배포) · ci.yml(드리프트·문법) · daily-brief.yml(텔레그램)
 docs/ · STATE.md · CLAUDE.md         문서
 ```
+
+## 상품 마스터 단일화 (data/products.json)
+- `data/products.json`이 상품 10종의 **캐노니컬 소스**(key·name·cat·tier·core·special·serpKw·newsQuery).
+- 자체완결 HTML 원칙상 런타임 fetch는 하지 않고, 각 도구의 인라인 `PRODUCTS`를 이 파일에 맞춰 유지.
+- `scripts/check_products_sync.py`가 CI에서 5개 도구의 key 집합(+표준 도구는 name·cat)이 캐노니컬과 일치하는지 검사 → 드리프트 방지.
+- 상품 추가/변경 시: `data/products.json` + 각 도구 인라인 PRODUCTS를 함께 수정(로컬 `python3 scripts/check_products_sync.py`로 확인).
 
 ## 디자인 시스템
 - 폰트: Pretendard·Noto Sans KR (OFL 계열). 라이트/다크 모두 지원(`prefers-color-scheme` + `data-theme` 토글).

@@ -29,7 +29,7 @@
 | 시즌 | pytrends · 네이버 데이터랩 API · [Prophet](https://github.com/facebook/prophet) | 계절성 실측 자동 검증, 수요 피크 시계열 예측 |
 
 ### B. 크로스커팅(공통) 고도화
-- **단일 상품 마스터**: 현재 `PRODUCTS`가 5개 파일에 중복 → `data/products.json` 단일 소스로 통합(드리프트 방지). ⭐ 우선순위 높음.
+- ✅ **단일 상품 마스터**(1순위 완료): `data/products.json`을 캐노니컬 소스로, `scripts/check_products_sync.py`가 CI(`ci.yml`)에서 5개 도구 인라인 PRODUCTS의 드리프트를 검사. 자체완결 HTML 원칙을 지키면서 단일 기준 확보. (시즌은 `data/seasonal.json`, 데일리 브리핑이 소비)
 - **자동 캡처 파이프라인**: SERP 주간 캡처를 self-hosted 러너/사내 PC의 Playwright로 자동화(네이버 봇차단 회피). 결과를 `serp_archive/`에 커밋 → 도구가 매니페스트로 표시.
 - **회귀 테스트**: Playwright 렌더/문법 체크를 Actions로 상시화.
 - **통합 검색·즐겨찾기**, 산출물 일괄 내보내기(PPT/Excel), 접근 로그.
