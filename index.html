@@ -54,13 +54,13 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
     <div class="logo">◆</div>
     <div class="brand"><h1>Modooflow</h1><p>한화손해보험 다이렉트 · 장기CM 마케팅 콘솔</p></div>
   </div>
-  <p class="lede">CM사업부 담당 상품의 <b>검색 노출(SEO)</b> 과 <b>검색광고(SEM)</b> 를 한 곳에서.
-    진단 → 실행 태그 → 키워드까지, 개발·마케팅이 바로 쓰는 대시보드 모음입니다.</p>
+  <p class="lede">CM사업부 담당 상품의 <b>검색 노출(SEO)</b> · <b>검색광고 키워드</b> · <b>카테고리 뉴스</b> 를 한 곳에서.
+    진단 → 실행 태그 → 키워드 → 시장 동향까지, 개발·마케팅이 바로 쓰는 3개 작업공간입니다.</p>
 
-  <div class="grid">
+  <div class="grid" style="grid-template-columns:1fr 1fr 1fr">
     <a class="card" href="seo-audit.html" style="--accent:#e0850f">
       <div class="ico">🔧</div>
-      <div class="tag">10개 상품</div>
+      <div class="tag">SEO</div>
       <h2>테크니컬 SEO 콘솔</h2>
       <div class="desc">담당 상품의 현행 화면(제목·메타·OG·H·robots·분기)을 실측 진단하고, 화면에 바로 붙여넣는 HTML 태깅 가이드를 제공합니다.</div>
       <ul class="feats">
@@ -73,21 +73,34 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 
     <a class="card" href="keyword-tool.html" style="--accent:#2b6cb0">
       <div class="ico">🔎</div>
-      <div class="tag">네이버 + 구글</div>
+      <div class="tag">키워드검색</div>
       <h2>검색광고 키워드 추출</h2>
-      <div class="desc">상품 시드 × 수식어 조합으로 검색광고 키워드를 대량 추출하고, 인텐트·플랫폼·매치타입으로 분류해 CSV로 내보냅니다.</div>
+      <div class="desc">상품 시드 × 수식어 조합으로 검색광고 키워드를 대량 추출하고, 인텐트·플랫폼·매치타입으로 분류·CSV 내보내기. 네이버 키워드도구 엑셀 병합·검색량 매핑 지원.</div>
       <ul class="feats">
-        <li>거래·정보·브랜드·담보 인텐트 자동 분류</li>
-        <li>네이버 검색광고 / 구글 Ads 플랫폼·매치타입 추천</li>
+        <li>거래·정보·브랜드·담보·AI검색 자동 분류</li>
+        <li>네이버 키워드도구(.xlsx) 병합 · 검색량 매핑</li>
         <li>광고그룹별 CSV 내보내기(업로드용)</li>
       </ul>
       <div class="go">키워드 도구 열기 →</div>
     </a>
+
+    <a class="card" href="news-tool.html" style="--accent:#0e9e8e">
+      <div class="ico">📰</div>
+      <div class="tag">뉴스</div>
+      <h2>카테고리 뉴스 모니터링</h2>
+      <div class="desc">담당 상품과 같은 카테고리 기준으로 경쟁사·시장 뉴스를 모아 동향 요약·마케팅 시사점을 제공하고, 로컬 서버로 최신 헤드라인을 실시간 갱신합니다.</div>
+      <ul class="feats">
+        <li>상품별 동향 요약 + 담당자 참고 시사점</li>
+        <li>이슈-업계영향-참고포인트 관점 분석</li>
+        <li>네이버 검색 API 연동 실시간 갱신</li>
+      </ul>
+      <div class="go">뉴스 콘솔 열기 →</div>
+    </a>
   </div>
 
   <div class="foot">
-    <b>연결 구조</b> · 이 페이지(main)에서 각 대시보드로 이동합니다. 두 도구는 같은 담당 상품 집합(홈·장기7·일반2)을 공유합니다.<br>
-    데이터·카피는 샘플·공개값 기준 · 광고 문구는 배포 전 광고심의 검수 · 검색량/입찰가는 각 광고 플랫폼에서 확정.
+    <b>연결 구조</b> · 이 페이지(main)에서 3개 작업공간(SEO · 키워드검색 · 뉴스)으로 이동합니다. 세 도구는 같은 담당 상품 집합(홈·장기7·일반2)을 공유합니다.<br>
+    데이터·카피는 샘플·공개값 기준 · 광고 문구는 배포 전 광고심의 검수 · 검색량/입찰가는 각 광고 플랫폼에서 확정 · 뉴스 요약/시사점은 마케팅 분석(개인정보·영업비밀 미포함).
   </div>
 </div>
 <script>
