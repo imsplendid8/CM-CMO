@@ -1,12 +1,13 @@
 name: Daily Brief (Telegram)
 
-# 매일 아침 08:00 KST(=23:00 UTC) 데일리 비서 브리핑을 텔레그램으로 발송.
+# 데일리 비서 브리핑을 텔레그램으로 하루 2회(오전 08:00 · 오후 14:00 KST) 발송.
 # 필요 Secrets: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID (선택: NAVER_CLIENT_ID, NAVER_CLIENT_SECRET)
 # 설정법: docs/daily-brief.md
 
 on:
   schedule:
-    - cron: "0 23 * * *"
+    - cron: "0 23 * * *"   # 08:00 KST (오전)
+    - cron: "0 5 * * *"    # 14:00 KST (오후)
   workflow_dispatch:
 
 jobs:

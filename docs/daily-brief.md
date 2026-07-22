@@ -1,7 +1,8 @@
 # 데일리 비서 브리핑 (텔레그램)
 
-매일 아침 **08:00 KST**에 담당자에게 텔레그램으로 하루 브리핑을 보냅니다 —
-`오늘의 시즌 이슈(data/seasonal.json) + 주요 뉴스(선택) + SERP 할일`.
+담당자에게 텔레그램으로 하루 **2회(오전 08:00 · 오후 14:00 KST)** 브리핑을 보냅니다 —
+`오늘의 시즌 이슈(data/seasonal.json) + 주요 뉴스(선택) + SERP 할일`. 제목에 오전/오후 표기.
+주택화재는 뉴스에 **‘대형화재사고’** 키워드를 추가로 감시합니다(`data/products.json`의 `newsExtra`).
 
 ## 구성
 - 스크립트: `scripts/daily_brief.py` (표준 라이브러리만, `data/products.json`·`data/seasonal.json`를 읽음)

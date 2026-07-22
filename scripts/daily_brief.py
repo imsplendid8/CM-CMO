@@ -62,14 +62,18 @@ def build_message():
     # SERP 할일(한화 상위노출 갭 · 메인 위주)
     gaps = ["hrmf", "golf", "overseas"]
     gap_names = " · ".join(products.get(k, {}).get("name", k) for k in gaps)
-    # 뉴스(선택)
+    # 뉴스(선택) — 메인 상품 + 상품별 추가 키워드(예: 주택화재 '대형화재사고')
     news_lines = []
     for key in main:
-        t = naver_news(products[key]["newsQuery"])
-        if t:
-            news_lines.append(f"· {products[key]['name']}: {t[:60]}")
+        p = products[key]
+        for q in [p["newsQuery"]] + p.get("newsExtra", []):
+            t = naver_news(q)
+            if t:
+                tag = "" if q == p["newsQuery"] else f"[{q}] "
+                news_lines.append(f"· {p['name']}: {tag}{t[:54]}")
 
-    parts = [f"🗓️ Modooflow 데일리 비서 · {now.month}/{now.day}({wd})", ""]
+    part = "오전" if now.hour < 12 else "오후"
+    parts = [f"🗓️ Modooflow 데일리 비서 · {now.month}/{now.day}({wd}) {part}", ""]
     parts.append("☔ 오늘의 시즌 이슈")
     parts += (season_lines or ["· 특이 시즌 이슈 없음"])
     if news_lines:

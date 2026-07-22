@@ -145,7 +145,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 /* 담당 상품(카테고리) — 키워드/ SEO 도구와 동일 집합 */
 const PRODUCTS=[
  {key:"home",cat:"사이트",name:"다이렉트 홈(브랜드)",tier:"대형",q:"한화손해보험 다이렉트"},
- {key:"hrmf",cat:"장기",name:"주택화재보험",tier:"대형",q:"주택화재보험"},
+ {key:"hrmf",cat:"장기",name:"주택화재보험",tier:"대형",q:"주택화재보험",extra:["대형화재사고"]},
  {key:"golf",cat:"장기",name:"골프보험",tier:"중형",q:"골프보험"},
  {key:"cncr",cat:"장기",name:"암보험",tier:"중형",q:"암보험"},
  {key:"dntl",cat:"장기",name:"치아보험",tier:"중형",q:"치아보험"},
@@ -236,7 +236,8 @@ function newsPanel(p){
     <div class="nm-top"><span class="t">📰 ${esc(p.name)}</span>
       <span class="asof">${stamp}</span>
       <button class="nm-refresh" data-refresh="${esc(p.key)}" title="로컬 연동 서버로 최신 뉴스 가져오기">🔄 실시간 갱신</button>
-      <a class="more" href="${naverMore(p)}" target="_blank" rel="noopener">네이버 뉴스 ↗</a></div>
+      <a class="more" href="${naverMore(p)}" target="_blank" rel="noopener">네이버 뉴스 ↗</a>
+      ${(p.extra||[]).map(k=>`<a class="more" href="https://search.naver.com/search.naver?where=news&sort=1&query=${encodeURIComponent(k)}" target="_blank" rel="noopener" title="추가 감시 키워드">＋${esc(k)} ↗</a>`).join("")}</div>
     <div class="nm-body">
       <div class="nm-box nm-sum"><span class="lb">동향 요약</span>${esc(n.summary)}</div>
       <div class="nm-box nm-ins"><span class="lb">마케팅 시사점</span>${esc(n.insight)}</div>
@@ -278,9 +279,11 @@ function render(){curKey==="__all"?renderOverview():renderProduct();renderSideba
 function newsCred(){return {id:$("#nwId").value.trim(),sec:$("#nwSec").value.trim()};}
 $("#nwSaveBtn").addEventListener("click",()=>{const c=newsCred();if(!c.id||!c.sec){toast("Client ID/Secret을 입력하세요");return;}
   if($("#nwSave").checked)localStorage.setItem("nv_news",JSON.stringify(c));else localStorage.removeItem("nv_news");toast("뉴스 API 키 저장됨 · 🔄 실시간 갱신 사용 가능");});
-function fetchNews(p){const c=newsCred();
-  return fetch("/news",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({clientId:c.id,clientSecret:c.sec,query:p.q,display:8})})
-    .then(r=>r.json());}
+function fetchNews(p){const c=newsCred();const qs=[p.q].concat(p.extra||[]);   // 추가 키워드(예: 대형화재사고)도 함께 감시
+  return Promise.all(qs.map(q=>fetch("/news",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({clientId:c.id,clientSecret:c.sec,query:q,display:6})}).then(r=>r.json())))
+    .then(rs=>{const e=rs.find(r=>r&&r.error);if(e)return {error:e.error};
+      const seen=new Set(),items=[];rs.forEach(r=>(r.items||[]).forEach(it=>{if(it&&it.url&&!seen.has(it.url)){seen.add(it.url);items.push(it);}}));
+      return {items};});}
 function needCred(){const c=newsCred();if(!c.id||!c.sec){toast("상단 '🔌 뉴스 실시간 갱신 설정'에 Client ID/Secret을 먼저 입력하세요");$("#livePanel").open=true;$("#livePanel").scrollIntoView({behavior:"smooth"});return false;}return true;}
 function applyItems(key,items){const clean=(items||[]).filter(it=>it.t&&it.url);if(!clean.length)return 0;
   NEWSMON[key].items=clean;NEWSMON[key].live=new Date().toLocaleString("ko-KR",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"});return clean.length;}
