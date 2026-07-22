@@ -36,6 +36,18 @@ python3 scripts/naver_local_server.py     # 1) 이 한 줄 실행 (pip 불필요
 ```
 '이 브라우저에 키 저장'을 체크하면 다음부턴 키 입력도 생략됩니다.
 
+### 경로 C. 카테고리 뉴스 실시간 갱신 (같은 로컬 서버) 📰
+상품별 **카테고리 뉴스 모니터링** 패널을 스냅샷이 아닌 **최신 뉴스로 갱신**합니다.
+```bash
+python3 scripts/naver_local_server.py     # 검색량 연동과 동일한 서버 (POST /news 추가됨)
+# http://localhost:8787/keyword-tool.html 열기
+```
+1. [네이버 개발자센터](https://developers.naver.com/apps/#/register)에서 **애플리케이션 등록 → '검색' API 사용** → **Client ID / Client Secret** 발급 (무료 · **검색광고 키와 다름**)
+2. 도구 상단 **🔌 네이버 실시간 연동 → 📰 뉴스 실시간 갱신**에 Client ID/Secret 입력 → **키 저장**
+3. 각 상품의 **카테고리 뉴스** 패널에서 **🔄 실시간 갱신** 클릭 → 최신 헤드라인으로 교체('실시간 MM.DD HH:MM' 표기)
+   - 서버 경로: `POST /news {clientId, clientSecret, query, display}` → `openapi.naver.com/v1/search/news.json`(sort=date) 프록시. 키는 내 PC 밖으로 안 나감.
+   - 요약·마케팅 시사점은 도구 내장 분석(고정), 헤드라인만 실시간 교체.
+
 ### 경로 B. API 자동화 (반복·대량) — 구체 절차
 
 원클릭 실행(키만 넣으면 됨):

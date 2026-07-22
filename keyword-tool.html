@@ -110,6 +110,8 @@ td.kw{font-weight:700;color:var(--ink);white-space:normal;} td.c{text-align:cent
 .nm-top .asof{margin-left:auto;font-size:10.5px;color:var(--muted);font-family:var(--mono);}
 .nm-top .more{font-size:11px;font-weight:700;color:var(--nav-ink);text-decoration:none;white-space:nowrap;}
 .nm-top .more:hover{text-decoration:underline;}
+.nm-refresh{font-family:inherit;font-size:11px;font-weight:800;color:var(--nav-ink);background:var(--nav-bg);border:1px solid var(--nav-ink);border-radius:8px;padding:4px 9px;cursor:pointer;white-space:nowrap;transition:.14s;}
+.nm-refresh:hover{background:var(--nav-ink);color:#fff;} .nm-refresh:disabled{opacity:.55;cursor:default;}
 .nm-body{padding:14px 16px;}
 .nm-box{border-radius:var(--r-sm);padding:11px 13px;font-size:12px;line-height:1.72;}
 .nm-sum{background:var(--brand-tint);border:1px solid var(--brand-50);color:var(--ink-2);}
@@ -167,6 +169,16 @@ td.kw{font-weight:700;color:var(--ink);white-space:normal;} td.c{text-align:cent
           <div class="pfrow"><button class="btn primary" id="nvGo" style="background:linear-gradient(135deg,#03C75A,#37d97e)">네이버 연동 & 검색량 가져오기</button>
             <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px"><input type="checkbox" id="nvSave"> 이 브라우저에 키 저장</label>
             <span class="hint" id="nvStatus">먼저 터미널에서 <b>python3 scripts/naver_local_server.py</b> 실행 → <b>http://localhost:8787/keyword-tool.html</b> 로 이 페이지를 여세요</span></div>
+        </div>
+        <div style="border-top:1px dashed var(--line);margin:13px 0 0;padding-top:13px">
+          <div style="font-size:11.5px;font-weight:800;color:var(--nav-ink);margin-bottom:8px">📰 뉴스 실시간 갱신 — 개발자센터 <b>검색 API</b> Client ID/Secret (위 검색광고 키와 <b>다름</b>)</div>
+          <div class="pform" style="margin-top:0">
+            <input id="nwId" placeholder="Client ID" autocomplete="off">
+            <input id="nwSec" type="password" placeholder="Client Secret" autocomplete="off">
+            <div class="pfrow"><button class="btn" id="nwSave2">키 저장</button>
+              <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px"><input type="checkbox" id="nwSave"> 이 브라우저에 저장</label>
+              <span class="hint">저장 후 각 상품의 <b>카테고리 뉴스</b> 패널에서 <b>🔄 실시간 갱신</b> 클릭 · <a href="https://developers.naver.com/apps/#/register" target="_blank" rel="noopener">개발자센터에서 검색 API 등록</a></span></div>
+          </div>
         </div>
       </div>
     </details>
@@ -411,9 +423,11 @@ function newsSection(p){
   const n=NEWSMON[p.key]; if(!n)return "";
   const more="https://search.naver.com/search.naver?where=news&sort=1&query="+encodeURIComponent(p.core[0]);
   const items=n.items.map(it=>`<li class="nm-item"><a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.t)}<span class="gs">${esc(it.gist)}</span></a><span class="mt">${esc(it.src)}<br>${esc(it.date)}</span></li>`).join("");
+  const stamp=n.live?`실시간 ${esc(n.live)}`:`스냅샷 ${esc(NEWS_ASOF)}`;
   return `<div class="newsmon">
     <div class="nm-top"><span class="t">📰 카테고리 뉴스 모니터링 · ${esc(p.name)}</span>
-      <span class="asof">스냅샷 ${esc(NEWS_ASOF)}</span>
+      <span class="asof">${stamp}</span>
+      <button class="nm-refresh" data-refresh="${esc(p.key)}" title="로컬 연동 서버로 최신 뉴스 가져오기">🔄 실시간 갱신</button>
       <a class="more" href="${esc(more)}" target="_blank" rel="noopener">네이버 뉴스에서 최신 보기 ↗</a></div>
     <div class="nm-body">
       <div class="nm-box nm-sum"><span class="lb">동향 요약</span>${esc(n.summary)}</div>
@@ -565,6 +579,26 @@ $("#nvGo").addEventListener("click",()=>{
       $("#nvStatus").textContent="✔ 네이버 연관키워드 "+Object.keys(kw).length+"개 병합됨";
     }).catch(()=>{$("#nvStatus").innerHTML="연동 서버를 못 찾았어요 — 터미널에서 <b>python3 scripts/naver_local_server.py</b> 실행 후 <b>http://localhost:8787/keyword-tool.html</b> 로 여세요";});
 });
+// ── 뉴스 실시간 갱신 (로컬 연동 서버 /news 경유) ──
+(function(){try{const s=JSON.parse(localStorage.getItem("nv_news")||"null");if(s){$("#nwId").value=s.id||"";if(s.sec)$("#nwSec").value=s.sec;$("#nwSave").checked=true;}}catch(e){}})();
+function newsCred(){return {id:$("#nwId").value.trim(),sec:$("#nwSec").value.trim()};}
+$("#nwSave2").addEventListener("click",()=>{const c=newsCred();if(!c.id||!c.sec){toast("Client ID/Secret을 입력하세요");return;}
+  if($("#nwSave").checked)localStorage.setItem("nv_news",JSON.stringify(c));else localStorage.removeItem("nv_news");toast("뉴스 API 키 저장됨 · 상품 뉴스 패널에서 🔄 실시간 갱신");});
+function refreshNews(key,btn){
+  const p=getP(key)||(key==="__pro"?PROSEED:null); if(!p||!NEWSMON[key])return;
+  const c=newsCred();
+  if(!c.id||!c.sec){toast("상단 '🔌 네이버 실시간 연동 → 📰 뉴스 실시간 갱신'에 Client ID/Secret을 먼저 입력하세요");$("#livePanel").open=true;$("#livePanel").scrollIntoView({behavior:"smooth"});return;}
+  if(btn){btn.disabled=true;btn.textContent="⏳ 가져오는 중…";}
+  fetch("/news",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({clientId:c.id,clientSecret:c.sec,query:p.core[0],display:8})})
+    .then(r=>r.json()).then(d=>{
+      if(d.error){toast("뉴스 오류: "+d.error);if(btn){btn.disabled=false;btn.textContent="🔄 실시간 갱신";}return;}
+      const items=(d.items||[]).filter(it=>it.t&&it.url);
+      if(!items.length){toast("가져온 뉴스가 없습니다");if(btn){btn.disabled=false;btn.textContent="🔄 실시간 갱신";}return;}
+      NEWSMON[key].items=items; NEWSMON[key].live=new Date().toLocaleString("ko-KR",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"});
+      toast("최신 뉴스 "+items.length+"건 갱신됨"); render();
+    }).catch(()=>{toast("연동 서버를 못 찾았어요 — python3 scripts/naver_local_server.py 실행 후 localhost:8787로 여세요");if(btn){btn.disabled=false;btn.textContent="🔄 실시간 갱신";}});
+}
+document.addEventListener("click",e=>{const rb=e.target.closest(".nm-refresh");if(rb){e.stopPropagation();refreshNews(rb.dataset.refresh,rb);}});
 $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");});
 render();
 </script>
