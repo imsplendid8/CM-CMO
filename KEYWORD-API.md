@@ -27,14 +27,49 @@
 3. 키워드 도구 상단 **"📊 실검색량·경쟁도 불러오기"** 열고 붙여넣기 → **적용**
    → 월검색량·경쟁도 열이 붙고 검색량순 정렬됩니다. (컬럼명 자동 인식: 연관키워드/월간검색수/경쟁정도 · Keyword/Avg. monthly searches/Competition)
 
-### 경로 B. API 자동화 (반복·대량)
-1. 키 발급(아래 1·2 참고) → `.env`에 저장(커밋 금지)
-2. 스크립트 실행 → JSON 저장:
-   ```bash
-   python3 scripts/naver_searchad_keywords.py 암보험 운전자보험 > volume.json   # 네이버
-   python3 scripts/google_ads_keywords.py 암보험 운전자보험 > volume_google.json # 구글
+### 경로 B. API 자동화 (반복·대량) — 구체 절차
+
+원클릭 실행(키만 넣으면 됨):
+```bash
+cp scripts/.env.example scripts/.env      # 네이버 키 3개 채우기
+bash scripts/run_keywords.sh              # 네이버(+구글) 조회 → 병합 → volume.json
+# → volume.json 내용을 키워드 도구 '검색량 불러오기'에 붙여넣기
+```
+
+**B-1. 네이버 검색광고 (바로 발급, 무료)**
+1. https://searchad.naver.com 로그인 → 우측 상단 **도구 > API 사용 관리**
+2. **네이버 검색광고 API** 화면에서:
+   - **CUSTOMER ID**(숫자) 확인 → `NAVER_AD_CUSTOMER`
+   - **[액세스라이선스 발급]** → `NAVER_AD_API_KEY`
+   - **[비밀키 발급]** → `NAVER_AD_SECRET`
+3. `scripts/.env`에 3개 입력
+4. 실행: `python3 scripts/naver_searchad_keywords.py 암보험 운전자보험 > volume_naver.json`
+   - 내부적으로 `/keywordstool` 을 시드 5개씩 배치 호출(HMAC 서명은 스크립트가 처리)
+   - 반환: 연관키워드 + `monthlyPcQcCnt`/`monthlyMobileQcCnt`/`compIdx`(낮음·중간·높음)
+
+**B-2. 구글 Ads (개발자 토큰 승인 필요)**
+1. **Google Ads** 계정 + **관리자(MCC) 계정** → 도구 > **API Center** → **개발자 토큰** 신청
+   - 처음엔 *테스트 액세스* → 실데이터는 *Basic 액세스* 신청(폼·승인)
+2. **Google Cloud Console** → OAuth 클라이언트(데스크톱) 생성 → `client_id`/`client_secret` → refresh token 발급
+3. 레포 루트에 **`google-ads.yaml`** 작성:
+   ```yaml
+   developer_token: "..."
+   client_id: "..."
+   client_secret: "..."
+   refresh_token: "..."
+   login_customer_id: "1234567890"   # MCC, 하이픈 제거
    ```
-3. JSON 내용을 도구의 "불러오기"에 붙여넣기 → 적용
+4. `pip install google-ads` 후 실행:
+   `python3 scripts/google_ads_keywords.py 암보험 운전자보험 > volume_google.json`
+   - `KeywordPlanIdeaService.generate_keyword_ideas` (언어=한국어, 지역=대한민국)
+
+**B-3. 병합 → 적용**
+```bash
+python3 scripts/merge_volume.py volume_naver.json volume_google.json > volume.json
+```
+`volume.json` → 도구 상단 **"검색량 불러오기"** 붙여넣기 → 월검색량·경쟁도 열 표시.
+
+> ⚠️ `scripts/.env`·`google-ads.yaml`·`volume*.json` 은 `.gitignore` 로 커밋 차단됨. 자동화(스케줄)는 로컬/사내 서버 또는 GitHub Actions **Secrets** 로.
 
 ---
 
