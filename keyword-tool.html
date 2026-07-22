@@ -135,6 +135,18 @@ td.kw{font-weight:700;color:var(--ink);white-space:normal;} td.c{text-align:cent
           <span class="hint">CSV/JSON 자동 인식 → <b>월검색량·경쟁도</b> 열 추가 · 키·데이터는 브라우저에서만 처리(전송 0)</span></div>
       </div>
     </details>
+    <details class="imp" id="livePanel" style="border-color:var(--nav-ink)"><summary style="color:var(--nav-ink)">🔌 네이버 실시간 연동 — 키 입력하고 버튼만 누르면 검색량이 들어옵니다 (로컬 연동 서버 필요)</summary>
+      <div class="ib">
+        <div class="pform" style="margin-top:0">
+          <input id="nvApi" placeholder="액세스라이선스 (API_KEY)" autocomplete="off">
+          <input id="nvSec" type="password" placeholder="비밀키 (SECRET)" autocomplete="off">
+          <input id="nvCust" placeholder="CUSTOMER ID (숫자)" autocomplete="off">
+          <div class="pfrow"><button class="btn primary" id="nvGo" style="background:linear-gradient(135deg,#03C75A,#37d97e)">네이버 연동 & 검색량 가져오기</button>
+            <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px"><input type="checkbox" id="nvSave"> 이 브라우저에 키 저장</label>
+            <span class="hint" id="nvStatus">먼저 터미널에서 <b>python3 scripts/naver_local_server.py</b> 실행 → <b>http://localhost:8787/keyword-tool.html</b> 로 이 페이지를 여세요</span></div>
+        </div>
+      </div>
+    </details>
     <div class="content" id="content"></div>
   </main>
 </div>
@@ -350,6 +362,22 @@ $("#volLoad").addEventListener("click",()=>{const t=$("#volJson").value.trim();i
   else{map=parseVolCsv(t); if(!map||!Object.keys(map).length){toast("CSV 인식 실패 — 헤더 포함해 붙여넣기");return;}}
   VOL={};Object.keys(map).forEach(k=>{VOL[nk(k)]=map[k];});toast(Object.keys(VOL).length+"개 키워드 검색량 적용");render();});
 $("#volSample").addEventListener("click",()=>{$("#volJson").value=JSON.stringify({keywords:{"암보험":{pc:9000,mobile:76000,comp:"높음"},"암보험 비교":{pc:250,mobile:1900,comp:"중간"},"다이렉트 암보험":{pc:400,mobile:3300,comp:"높음"},"40대 암보험 추천":{pc:60,mobile:520,comp:"낮음"}}},null,2);});
+// 네이버 실시간 연동(로컬 연동 서버 경유)
+(function(){try{const s=JSON.parse(localStorage.getItem("nv_keys")||"null");if(s){$("#nvApi").value=s.api||"";$("#nvCust").value=s.cust||"";if(s.sec)$("#nvSec").value=s.sec;$("#nvSave").checked=true;}}catch(e){}})();
+$("#nvGo").addEventListener("click",()=>{
+  const api=$("#nvApi").value.trim(),sec=$("#nvSec").value.trim(),cust=$("#nvCust").value.trim();
+  if(!api||!sec||!cust){$("#nvStatus").textContent="키 3개(액세스라이선스·비밀키·CUSTOMER ID)를 모두 입력하세요";return;}
+  if($("#nvSave").checked)localStorage.setItem("nv_keys",JSON.stringify({api,cust,sec}));else localStorage.removeItem("nv_keys");
+  const prods = curKey==="__pro"&&PROSEED?[PROSEED] : (curKey==="__all"||curKey==="__pro")?PRODUCTS : [getP(curKey)];
+  const seeds=[...new Set(prods.flatMap(p=>p.core.slice(0,2)))];
+  $("#nvStatus").textContent="네이버 조회 중… (시드 "+seeds.length+"개)";
+  fetch("/naver",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({apiKey:api,secret:sec,customer:cust,seeds})})
+    .then(r=>r.json()).then(d=>{
+      if(d.error){$("#nvStatus").textContent="네이버 오류: "+d.error;return;}
+      const kw=d.keywords||{};VOL={};Object.keys(kw).forEach(k=>VOL[nk(k)]=kw[k]);
+      $("#nvStatus").textContent="✔ "+Object.keys(VOL).length+"개 키워드 검색량 적용됨";render();
+    }).catch(()=>{$("#nvStatus").innerHTML="연동 서버를 못 찾았어요 — 터미널에서 <b>python3 scripts/naver_local_server.py</b> 실행 후 <b>http://localhost:8787/keyword-tool.html</b> 로 여세요";});
+});
 $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");});
 render();
 </script>
