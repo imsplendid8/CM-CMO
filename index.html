@@ -3,135 +3,141 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Modooflow — 한화손보 CM SEO·SEM 마케팅 콘솔 허브">
+<meta name="description" content="Modooflow — 한화손보 CM SEO·SEM 마케팅 콘솔 허브(전 기능 상단 고정)">
 <title>Modooflow · 한화손보 CM 마케팅 콘솔</title>
 <style>
 :root{
   --brand:#e0850f; --brand-600:#b96b08; --brand-50:#fdeee0;
   --grad:linear-gradient(135deg,#e0850f 0%,#f29e67 100%);
-  --grad2:linear-gradient(135deg,#2b6cb0 0%,#4a9fe0 100%);
   --ink:#1e1e2c; --ink-2:#4b4d60; --muted:#8a8ea0; --line:#e6e4dd;
   --bg:#f4f3f0; --surface:#fff; --surface-2:#faf9f6;
   --sh:0 1px 2px rgba(24,20,40,.05),0 8px 26px rgba(24,20,40,.07); --sh-lg:0 18px 50px rgba(24,20,40,.15);
   --sans:'Pretendard','Noto Sans KR','Nanum Gothic','Apple SD Gothic Neo',-apple-system,sans-serif;
-  --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace; --top:56px;
 }
 @media(prefers-color-scheme:dark){:root{--ink:#f2f0f6;--ink-2:#c3c1d0;--muted:#8f8ca0;--line:#2e2b37;--bg:#131118;--surface:#1c1a23;--surface-2:#211f29;--brand-50:#3a2a12;--sh:0 1px 2px rgba(0,0,0,.3),0 8px 26px rgba(0,0,0,.4);--sh-lg:0 18px 50px rgba(0,0,0,.55);}}
 :root[data-theme="dark"]{--ink:#f2f0f6;--ink-2:#c3c1d0;--muted:#8f8ca0;--line:#2e2b37;--bg:#131118;--surface:#1c1a23;--surface-2:#211f29;--brand-50:#3a2a12;--sh:0 1px 2px rgba(0,0,0,.3),0 8px 26px rgba(0,0,0,.4);--sh-lg:0 18px 50px rgba(0,0,0,.55);}
 :root[data-theme="light"]{--ink:#1e1e2c;--ink-2:#4b4d60;--muted:#8a8ea0;--line:#e6e4dd;--bg:#f4f3f0;--surface:#fff;--surface-2:#faf9f6;--brand-50:#fdeee0;--sh:0 1px 2px rgba(24,20,40,.05),0 8px 26px rgba(24,20,40,.07);--sh-lg:0 18px 50px rgba(24,20,40,.15);}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;word-break:keep-all;min-height:100vh;}
-.wrap{max-width:940px;margin:0 auto;padding:56px 24px 80px;}
-.top{display:flex;align-items:center;gap:13px;margin-bottom:8px;}
-.logo{width:46px;height:46px;border-radius:13px;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;box-shadow:0 8px 20px rgba(224,133,15,.42);}
-.brand h1{font-size:22px;font-weight:800;letter-spacing:-.03em;line-height:1.1;}
-.brand p{font-size:12.5px;color:var(--muted);font-weight:600;margin-top:2px;}
-.lede{font-size:14.5px;color:var(--ink-2);margin:20px 0 32px;max-width:660px;line-height:1.7;}
-.lede b{color:var(--ink);font-weight:800;}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
-@media(max-width:720px){.grid{grid-template-columns:1fr;}}
-.card{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:var(--sh);text-decoration:none;color:inherit;transition:.18s;position:relative;overflow:hidden;}
-.card:hover{box-shadow:var(--sh-lg);transform:translateY(-3px);border-color:transparent;}
-.card::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:var(--accent);}
-.card .ico{width:44px;height:44px;border-radius:12px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;margin-bottom:15px;}
-.card h2{font-size:17px;font-weight:800;letter-spacing:-.02em;margin-bottom:6px;}
-.card .desc{font-size:12.5px;color:var(--ink-2);line-height:1.65;flex:1;}
-.card .feats{list-style:none;margin:14px 0 0;display:flex;flex-direction:column;gap:6px;}
-.card .feats li{font-size:11.5px;color:var(--ink-2);display:flex;gap:7px;}
-.card .feats li::before{content:"→";color:var(--accent);font-weight:800;}
-.card .go{margin-top:16px;font-size:12.5px;font-weight:800;color:var(--accent);display:flex;align-items:center;gap:6px;}
-.card.soon{opacity:.6;pointer-events:none;}
-.tag{position:absolute;top:20px;right:20px;font-size:9.5px;font-weight:800;padding:3px 9px;border-radius:99px;background:var(--surface-2);color:var(--muted);letter-spacing:.03em;}
-.foot{margin-top:34px;font-size:11.5px;color:var(--muted);line-height:1.7;}
-.foot b{color:var(--ink-2);font-weight:800;}
-.themebtn{position:fixed;top:20px;right:20px;width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);cursor:pointer;font-size:15px;}
+html,body{height:100%;}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;letter-spacing:-.01em;word-break:keep-all;overflow:hidden;}
+/* 상단 고정 내비 */
+.top{position:fixed;top:0;left:0;right:0;height:var(--top);z-index:30;display:flex;align-items:center;gap:14px;padding:0 16px;background:var(--surface);border-bottom:1px solid var(--line);box-shadow:var(--sh);}
+.logo{display:flex;align-items:center;gap:9px;flex:0 0 auto;text-decoration:none;color:inherit;}
+.logo .m{width:32px;height:32px;border-radius:9px;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;box-shadow:0 6px 16px rgba(224,133,15,.4);}
+.logo b{font-size:15px;font-weight:800;letter-spacing:-.03em;} .logo small{display:block;font-size:9px;color:var(--muted);font-weight:600;}
+.nav{display:flex;align-items:center;gap:4px;overflow-x:auto;flex:1;scrollbar-width:thin;}
+.nav::-webkit-scrollbar{height:5px;} .nav::-webkit-scrollbar-thumb{background:var(--line);border-radius:9px;}
+.navb{display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:10px;border:none;background:none;font-family:inherit;font-size:12.5px;font-weight:700;color:var(--ink-2);cursor:pointer;white-space:nowrap;transition:.14s;position:relative;}
+.navb .ic{font-size:14px;}
+.navb:hover{background:var(--surface-2);color:var(--ink);}
+.navb.on{color:#fff;background:var(--ac,var(--brand));box-shadow:0 5px 14px color-mix(in srgb,var(--ac,var(--brand)) 40%,transparent);}
+.tr{display:flex;align-items:center;gap:8px;flex:0 0 auto;}
+.tr a,.tr button{display:inline-flex;align-items:center;gap:5px;height:34px;padding:0 11px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font-family:inherit;font-size:11.5px;font-weight:700;cursor:pointer;text-decoration:none;}
+.tr a:hover,.tr button:hover{border-color:var(--brand);color:var(--brand-600);}
+.tr .ext{white-space:nowrap;}
+/* 본문 */
+.body{position:fixed;top:var(--top);left:0;right:0;bottom:0;}
+#frame{width:100%;height:100%;border:0;display:none;background:var(--bg);}
+#home{width:100%;height:100%;overflow-y:auto;display:block;}
+.home-wrap{max-width:1080px;margin:0 auto;padding:34px 24px 70px;}
+.hero{display:flex;align-items:flex-start;gap:14px;margin-bottom:8px;}
+.hero h1{font-size:22px;font-weight:800;letter-spacing:-.03em;}
+.hero p{font-size:13.5px;color:var(--ink-2);margin-top:5px;line-height:1.7;max-width:680px;}
+.hero p b{color:var(--ink);font-weight:800;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-top:24px;}
+.card{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--sh);transition:.16s;position:relative;overflow:hidden;cursor:pointer;}
+.card:hover{box-shadow:var(--sh-lg);transform:translateY(-2px);}
+.card::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:var(--ac);}
+.card .ico{width:42px;height:42px;border-radius:12px;background:var(--ac);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:13px;}
+.card h2{font-size:16px;font-weight:800;letter-spacing:-.02em;margin-bottom:5px;}
+.card .desc{font-size:12px;color:var(--ink-2);line-height:1.6;flex:1;}
+.card .feats{list-style:none;margin:12px 0 0;display:flex;flex-direction:column;gap:5px;}
+.card .feats li{font-size:11px;color:var(--ink-2);display:flex;gap:6px;}
+.card .feats li::before{content:"→";color:var(--ac);font-weight:800;}
+.card .go{margin-top:14px;font-size:12px;font-weight:800;color:var(--ac);display:flex;align-items:center;gap:6px;}
+.foot{margin-top:30px;font-size:11.5px;color:var(--muted);line-height:1.7;}
+.foot b{color:var(--ink-2);font-weight:800;} .foot a{color:var(--brand-600);font-weight:800;text-decoration:none;}
+.themebtn{width:34px;height:34px;padding:0!important;justify-content:center;}
+@media(max-width:760px){.hero h1{font-size:19px;} .tr .ext{display:none;} .logo small{display:none;}}
 </style>
 </head>
 <body>
-<button class="themebtn" id="themeBtn" title="테마 전환">◐</button>
-<div class="wrap">
-  <div class="top">
-    <div class="logo">◆</div>
-    <div class="brand"><h1>Modooflow</h1><p>한화손해보험 다이렉트 · 장기CM 마케팅 콘솔</p></div>
+<header class="top">
+  <a class="logo" href="#" data-tool="home"><span class="m">◆</span><span><b>Modooflow</b><small>한화손보 CM 마케팅 콘솔</small></span></a>
+  <nav class="nav" id="nav"></nav>
+  <div class="tr">
+    <a class="ext" id="openTab" href="#" target="_blank" rel="noopener" title="현재 화면을 새 탭에서 열기">↗ 새 탭</a>
+    <button class="themebtn" id="themeBtn" title="테마 전환">◐</button>
   </div>
-  <p class="lede">CM사업부 담당 상품의 <b>검색 노출(SEO)</b> · <b>검색광고 키워드</b> · <b>카테고리 뉴스</b> · <b>SERP 아카이브</b> · <b>시즌 캘린더</b> 를 한 곳에서.
-    진단 → 실행 태그 → 키워드 → 시장 동향 → 검색결과 변화 → 시즌 선제대응까지, 개발·마케팅이 바로 쓰는 작업공간 모음입니다.</p>
-
-  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(250px,1fr))">
-    <a class="card" href="seo-audit.html" style="--accent:#e0850f">
-      <div class="ico">🔧</div>
-      <div class="tag">SEO</div>
-      <h2>테크니컬 SEO 콘솔</h2>
-      <div class="desc">담당 상품의 현행 화면(제목·메타·OG·H·robots·분기)을 실측 진단하고, 화면에 바로 붙여넣는 HTML 태깅 가이드를 제공합니다.</div>
-      <ul class="feats">
-        <li>상품별 우선순위 To-Do + before/after 코드</li>
-        <li>화면 적용용 HTML(head·h1) · robots.txt</li>
-        <li>네이버 웹마스터도구 가이드 반영 · Excel/PPT 전달</li>
-      </ul>
-      <div class="go">콘솔 열기 →</div>
-    </a>
-
-    <a class="card" href="keyword-tool.html" style="--accent:#2b6cb0">
-      <div class="ico">🔎</div>
-      <div class="tag">키워드검색</div>
-      <h2>검색광고 키워드 추출</h2>
-      <div class="desc">상품 시드 × 수식어 조합으로 검색광고 키워드를 대량 추출하고, 인텐트·플랫폼·매치타입으로 분류·CSV 내보내기. 네이버 키워드도구 엑셀 병합·검색량 매핑 지원.</div>
-      <ul class="feats">
-        <li>거래·정보·브랜드·담보·AI검색 자동 분류</li>
-        <li>네이버 키워드도구(.xlsx) 병합 · 검색량 매핑</li>
-        <li>광고그룹별 CSV 내보내기(업로드용)</li>
-      </ul>
-      <div class="go">키워드 도구 열기 →</div>
-    </a>
-
-    <a class="card" href="news-tool.html" style="--accent:#0e9e8e">
-      <div class="ico">📰</div>
-      <div class="tag">뉴스</div>
-      <h2>카테고리 뉴스 모니터링</h2>
-      <div class="desc">담당 상품과 같은 카테고리 기준으로 경쟁사·시장 뉴스를 모아 동향 요약·마케팅 시사점을 제공하고, 로컬 서버로 최신 헤드라인을 실시간 갱신합니다.</div>
-      <ul class="feats">
-        <li>상품별 동향 요약 + 담당자 참고 시사점</li>
-        <li>이슈-업계영향-참고포인트 관점 분석</li>
-        <li>네이버 검색 API 연동 실시간 갱신</li>
-      </ul>
-      <div class="go">뉴스 콘솔 열기 →</div>
-    </a>
-
-    <a class="card" href="serp-tool.html" style="--accent:#7c5cd6">
-      <div class="ico">🔭</div>
-      <div class="tag">SERP</div>
-      <h2>검색결과 주간 아카이브</h2>
-      <div class="desc">상품 대표키워드(PC)의 네이버 검색결과를 매주 스크린샷으로 아카이빙하고, 뉴스와 함께 변화·경쟁사 소구포인트를 분석합니다.</div>
-      <ul class="feats">
-        <li>주간 스크린샷 아카이브(브라우저 저장) + 전/후 비교</li>
-        <li>경쟁사 소구포인트 분석(네이버 검색결과 근거)</li>
-        <li>한화 상위노출 갭·변화 추적 · 백업/복원</li>
-      </ul>
-      <div class="go">SERP 콘솔 열기 →</div>
-    </a>
-
-    <a class="card" href="seasonal-tool.html" style="--accent:#d6456f">
-      <div class="ico">🗓️</div>
-      <div class="tag">시즌</div>
-      <h2>연간 시즈널 이슈 캘린더</h2>
-      <div class="desc">상품별 계절 이슈와 키워드(예: 주택화재 7월 장마 누수)를 연간 캘린더·히트맵으로 정리하고, 피크 전 선제 대응 시점을 안내합니다.</div>
-      <ul class="feats">
-        <li>이번 달 주목 이슈 + 다음 달 선제 대응 예고</li>
-        <li>상품 × 월 연간 히트맵 · 시즌별 이슈 키워드</li>
-        <li>선제 대응 시점(피크 3~4주 전) · 데이터랩 검증</li>
-      </ul>
-      <div class="go">시즌 캘린더 열기 →</div>
-    </a>
-  </div>
-
-  <div class="foot">
-    <b>연결 구조</b> · 이 페이지(main)에서 5개 작업공간(SEO · 키워드검색 · 뉴스 · SERP · 시즌)으로 이동합니다. 도구들은 같은 담당 상품 집합(홈·장기7·일반2)을 공유합니다. · <a href="https://github.com/imsplendid8/CM-CMO/blob/main/docs/README.md" target="_blank" rel="noopener" style="color:var(--brand-600);font-weight:800;text-decoration:none">📖 위키</a><br>
-    데이터·카피는 샘플·공개값 기준 · 광고 문구는 배포 전 광고심의 검수 · 검색량/입찰가는 각 광고 플랫폼에서 확정 · 뉴스 요약/시사점은 마케팅 분석(개인정보·영업비밀 미포함).
-  </div>
+</header>
+<div class="body">
+  <iframe id="frame" title="도구"></iframe>
+  <div id="home"></div>
 </div>
 <script>
-document.getElementById("themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");});
-</script>
+"use strict";
+const WIKI="https://github.com/imsplendid8/CM-CMO/blob/main/docs/README.md";
+const TOOLS=[
+ {id:"seo",icon:"🔧",name:"테크니컬 SEO",tag:"SEO",file:"seo-audit.html",url:"https://claude.ai/code/artifact/8a9868bf-142c-4134-b1e7-d48525ae31b7",ac:"#e0850f",
+  desc:"담당 상품 현행 화면(제목·메타·OG·H·robots·분기)을 실측 진단하고, 화면에 바로 붙이는 HTML 태깅 가이드·robots.txt 제공.",
+  feats:["상품별 우선순위 To-Do + before/after 코드","화면 적용용 HTML(head·h1)·robots.txt","네이버 웹마스터도구 반영·Excel/PPT 전달"]},
+ {id:"kw",icon:"🔎",name:"검색광고 키워드",tag:"키워드",file:"keyword-tool.html",url:"https://claude.ai/code/artifact/42429a9c-b8eb-4175-ae0b-0e72aafd8a7e",ac:"#2b6cb0",
+  desc:"상품 시드 × 수식어로 검색광고 키워드를 대량 추출·분류·CSV. 네이버 키워드도구 엑셀 병합·검색량 매핑 지원.",
+  feats:["거래·정보·브랜드·담보·AI검색 자동 분류","네이버 키워드도구(.xlsx) 병합·검색량 매핑","광고그룹별 CSV 내보내기(업로드용)"]},
+ {id:"news",icon:"📰",name:"카테고리 뉴스",tag:"뉴스",file:"news-tool.html",url:"https://claude.ai/code/artifact/5b1757b0-f0e2-4255-8cdf-bd51a22e1fba",ac:"#0e9e8e",
+  desc:"상품과 같은 카테고리 기준 경쟁·시장 뉴스를 모아 동향 요약·마케팅 시사점 제공, 로컬 서버로 실시간 갱신.",
+  feats:["상품별 동향 요약 + 담당자 참고 시사점","이슈-업계영향-참고포인트 관점 분석","주택화재 ‘대형화재사고’ 추가 감시"]},
+ {id:"serp",icon:"🔭",name:"SERP 아카이브",tag:"SERP",file:"serp-tool.html",url:"https://claude.ai/code/artifact/72a87db9-596e-42b6-9d23-7b40f11d2fa3",ac:"#7c5cd6",
+  desc:"대표키워드(PC) 네이버 검색결과를 매주 스크린샷 아카이빙하고, 전/후 시각 diff로 변화·경쟁사 소구포인트 분석.",
+  feats:["주간 스크린샷 아카이브 + 전/후 비교","전/후 시각 diff 자동 변화감지","경쟁사 소구포인트·한화 상위노출 갭"]},
+ {id:"season",icon:"🗓️",name:"시즌 캘린더",tag:"시즌",file:"seasonal-tool.html",url:"https://claude.ai/code/artifact/c21016a1-80b5-4d36-a68e-d93a1984c2b1",ac:"#d6456f",
+  desc:"상품별 계절 이슈·키워드(예: 주택화재 7월 장마 누수)를 한 장 연간 캘린더로, 피크 전 선제 대응 시점 안내.",
+  feats:["연간 마케팅 이슈 매트릭스(월×이슈)","이번 달 주목 + 다음 달 선제대응 예고","상품 탭 = 월별 이슈 상세"]},
+];
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
+// Pages·로컬·file: → iframe 임베드 / 그 외(아티팩트 샌드박스) → 새 탭
+const LOCAL = location.protocol==="file:" || /github\.io$/.test(location.hostname) || location.hostname==="localhost" || /^127\./.test(location.hostname) || location.hostname==="";
+const frame=document.getElementById("frame"),home=document.getElementById("home"),nav=document.getElementById("nav"),openTab=document.getElementById("openTab");
 
+function renderNav(active){
+  const item=(id,icon,name,ac,on)=>`<button class="navb${on?" on":""}" data-tool="${id}" style="--ac:${ac||"var(--brand)"}"><span class="ic">${icon}</span>${esc(name)}</button>`;
+  let h=item("home","🏠","홈",null,active==="home");
+  TOOLS.forEach(t=>h+=item(t.id,t.icon,t.name,t.ac,active===t.id));
+  h+=`<a class="navb" href="${WIKI}" target="_blank" rel="noopener" style="text-decoration:none"><span class="ic">📖</span>위키</a>`;
+  nav.innerHTML=h;
+}
+function renderHome(){
+  home.innerHTML=`<div class="home-wrap">
+    <div class="hero"><span class="m" style="width:44px;height:44px;border-radius:12px;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;flex:0 0 auto">◆</span>
+      <div><h1>Modooflow 마케팅 콘솔</h1>
+      <p>CM사업부 담당 상품의 <b>검색 노출(SEO)·검색광고 키워드·카테고리 뉴스·SERP 아카이브·시즌 캘린더</b>를 한 곳에서.
+      상단 메뉴는 항상 고정되어 있어 <b>이동 없이</b> 전 기능을 바로 열 수 있습니다.</p></div></div>
+    <div class="grid">${TOOLS.map(t=>`<div class="card" data-tool="${t.id}" style="--ac:${t.ac}">
+      <div class="ico">${t.icon}</div><h2>${esc(t.name)}</h2>
+      <div class="desc">${esc(t.desc)}</div>
+      <ul class="feats">${t.feats.map(f=>`<li>${esc(f)}</li>`).join("")}</ul>
+      <div class="go">열기 →</div></div>`).join("")}</div>
+    <div class="foot"><b>연결 구조</b> · 상단 고정 메뉴에서 5개 작업공간으로 즉시 전환합니다. 도구들은 같은 담당 상품 집합(홈·장기7·일반2)을 공유합니다. · <a href="${WIKI}" target="_blank" rel="noopener">📖 위키</a><br>
+    데이터·카피는 샘플·공개값 기준 · 광고 문구는 배포 전 광고심의 검수 · 검색량/입찰가는 각 광고 플랫폼에서 확정 · 뉴스 요약/시사점은 마케팅 분석(개인정보·영업비밀 미포함).</div>
+  </div>`;
+}
+function show(id){
+  if(id==="home"){home.style.display="block";frame.style.display="none";openTab.href="#";openTab.style.visibility="hidden";renderNav("home");location.hash="";return;}
+  const t=TOOLS.find(x=>x.id===id); if(!t)return;
+  openTab.href=LOCAL?t.file:t.url; openTab.style.visibility="visible";
+  if(LOCAL){ home.style.display="none"; frame.style.display="block"; if(frame.getAttribute("src")!==t.file)frame.src=t.file; }
+  else { window.open(t.url,"_blank","noopener"); }   // 아티팩트에선 iframe이 막히므로 새 탭
+  renderNav(id); location.hash=id;
+}
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-tool]"); if(b){e.preventDefault();show(b.dataset.tool);}
+});
+document.getElementById("themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");});
+renderHome();
+const start=(location.hash||"").replace("#","");
+renderNav("home");
+if(start&&TOOLS.some(t=>t.id===start)&&LOCAL){show(start);} else {show("home");}
+</script>
 </body>
 </html>
