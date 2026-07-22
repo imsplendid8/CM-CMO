@@ -131,7 +131,7 @@ td.kw{font-weight:700;color:var(--ink);white-space:normal;} td.c{text-align:cent
     <details class="imp" id="impPanel" open><summary>➕ 네이버 키워드도구 결과 합치기 — 연관키워드를 지금 키워드셋에 추가 (터미널·키 입력 불필요)</summary>
       <div class="ib">
         <div class="ir" style="margin-top:0;margin-bottom:9px"><label class="btn primary" style="cursor:pointer">📁 네이버 키워드도구 파일 선택<input type="file" id="volFile" accept=".csv,.tsv,.txt" style="display:none"></label>
-          <span class="hint"><b>왼쪽에서 상품을 먼저 선택</b> → 네이버 검색광고 <b>키워드도구 → [다운로드]</b> 한 파일을 고르면 <b>연관키워드가 이 상품 키워드셋에 합쳐집니다</b>(검색량 있으면 함께 반영).</span></div>
+          <span class="hint"><b>왼쪽에서 상품을 먼저 선택</b> → 네이버 검색광고 <b>키워드도구 → [다운로드]</b> 한 파일을 고르면 <b>연관키워드가 전부 합쳐집니다</b> — 운전자보험처럼 <b>수백 개(≈800)</b>도 개수 제한 없이 그대로. (검색량 있으면 함께 반영)</span></div>
         <textarea id="volJson" placeholder='또는 여기에 붙여넣기 — 연관키워드 목록(줄바꿈), 표(엑셀 복사), CSV, API JSON 모두 인식'></textarea>
         <div class="ir"><button class="btn primary" id="volLoad">키워드 합치기</button><button class="btn" id="volSample">샘플</button>
           <span class="hint">출처(도구/네이버)로 구분 표시 · 중복 자동 제거 · 브라우저에서만 처리(전송 0)</span></div>
@@ -171,8 +171,8 @@ const PRODUCTS=[
 ];
 /* 수식어(수식어 조합) · 인텐트 */
 const MODS=[
- {intent:"거래",front:false,words:["보험료","비교","다이렉트","가입","견적","계산기","얼마","추천","순위","저렴한","할인"]},
- {intent:"정보",front:false,words:["보장내용","가입조건","갱신","비갱신","후기","필요성","특약","만기","해지환급금","나이"]},
+ {intent:"거래",front:false,words:["보험료","비교","비교사이트","다이렉트","가입","가입방법","온라인가입","견적","계산기","얼마","추천","순위","저렴한","할인","최저가","무료상담","이벤트","사은품","재가입","갈아타기","리모델링"]},
+ {intent:"정보",front:false,words:["보장내용","보장분석","담보","가입조건","갱신","비갱신","무해지","순수보장형","표준형","후기","필요성","필수담보","특약","만기","해지환급금","단점","나이","20대","30대","50대","60대","여성","남성"]},
  {intent:"브랜드",front:true,words:["한화손보","한화 다이렉트","캐롯"]},
 ];
 const AGES=["20대","30대","40대","50대","60대"];
