@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="한화손보 CM SERP 주간 아카이브 — 대표키워드 네이버 검색결과 스크린샷 아카이빙·변화 추적·경쟁사 소구포인트 분석">
+<title>Modooflow SERP · 검색결과 주간 아카이브·경쟁분석</title>
+<style>
+:root{
+  --brand:#7c5cd6; --brand-600:#6338c4; --brand-50:#efe9fc; --brand-tint:#f4f0fd;
+  --grad:linear-gradient(135deg,#7c5cd6 0%,#a98bec 100%);
+  --ink:#1e1a2c; --ink-2:#4c4760; --muted:#8b86a0; --faint:#c7c2d6;
+  --bg:#f5f3fa; --surface:#ffffff; --surface-2:#faf9fd; --line:#e8e4f0; --line-2:#f0edf7;
+  --nav:#03C75A; --nav-bg:#e6f8ee; --nav-ink:#0a7c3e;
+  --trx:#c47f12; --trx-bg:#fbf1de; --good:#2b8a6b; --good-bg:#e3f5ee; --bad:#c0392b; --bad-bg:#fbe7e4;
+  --r:14px; --r-sm:10px; --sh:0 1px 2px rgba(28,20,50,.05),0 6px 20px rgba(28,20,50,.06); --sh-lg:0 12px 40px rgba(28,20,50,.13);
+  --mono:ui-monospace,"SF Mono","Roboto Mono",Menlo,monospace;
+  --sans:'Pretendard','Noto Sans KR','Nanum Gothic','Apple SD Gothic Neo',-apple-system,sans-serif;
+}
+@media(prefers-color-scheme:dark){:root{
+  --brand:#a98bec; --brand-600:#bda3f2; --brand-50:#241a3a; --brand-tint:#1c1630;
+  --ink:#efecf6; --ink-2:#c2bdd4; --muted:#8781a0; --faint:#4a4560;
+  --bg:#120f1c; --surface:#1a1626; --surface-2:#201b2f; --line:#2e2842; --line-2:#251f36;
+  --nav-bg:#0f2c1c; --trx-bg:#33270f; --good-bg:#0f2c22; --bad-bg:#331817;
+  --sh:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.4); --sh-lg:0 12px 40px rgba(0,0,0,.55);
+}}
+:root[data-theme="dark"]{--brand:#a98bec;--brand-600:#bda3f2;--brand-50:#241a3a;--brand-tint:#1c1630;--ink:#efecf6;--ink-2:#c2bdd4;--muted:#8781a0;--faint:#4a4560;--bg:#120f1c;--surface:#1a1626;--surface-2:#201b2f;--line:#2e2842;--line-2:#251f36;--nav-bg:#0f2c1c;--trx-bg:#33270f;--good-bg:#0f2c22;--bad-bg:#331817;--sh:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.4);--sh-lg:0 12px 40px rgba(0,0,0,.55);}
+:root[data-theme="light"]{--brand:#7c5cd6;--brand-600:#6338c4;--brand-50:#efe9fc;--brand-tint:#f4f0fd;--ink:#1e1a2c;--ink-2:#4c4760;--muted:#8b86a0;--faint:#c7c2d6;--bg:#f5f3fa;--surface:#fff;--surface-2:#faf9fd;--line:#e8e4f0;--line-2:#f0edf7;--nav-bg:#e6f8ee;--trx-bg:#fbf1de;--good-bg:#e3f5ee;--bad-bg:#fbe7e4;--sh:0 1px 2px rgba(28,20,50,.05),0 6px 20px rgba(28,20,50,.06);--sh-lg:0 12px 40px rgba(28,20,50,.13);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;word-break:keep-all;}
+.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh;}
+@media(max-width:820px){.app{grid-template-columns:1fr;}.sidebar{position:static!important;height:auto!important;}}
+.sidebar{background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.sb-brand{display:flex;align-items:center;gap:10px;padding:16px 16px 14px;border-bottom:1px solid var(--line);}
+.brand-logo{width:34px;height:34px;border-radius:9px;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;box-shadow:0 6px 16px rgba(124,92,214,.4);flex:0 0 auto;}
+.bn{font-size:14px;font-weight:800;letter-spacing:-.02em;} .sb-brand small{display:block;font-size:9.5px;color:var(--muted);font-weight:600;margin-top:1px;}
+.sb-nav{flex:1;padding:10px;display:flex;flex-direction:column;gap:2px;}
+.sb-cap{font-size:9.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:13px 8px 5px;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;border:none;background:none;font-family:inherit;font-size:12.5px;font-weight:700;color:var(--ink-2);cursor:pointer;text-align:left;width:100%;transition:.14s;}
+.sb-item:hover{background:var(--surface-2);color:var(--ink);} .sb-item.on{background:var(--brand-50);color:var(--brand-600);}
+.sb-item .kc{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--muted);font-weight:700;} .sb-item.on .kc{color:var(--brand-600);}
+.sb-foot{padding:12px 14px;border-top:1px solid var(--line);font-size:9.5px;color:var(--muted);line-height:1.6;}
+.sb-foot a{color:var(--brand-600);text-decoration:none;font-weight:700;}
+.main{min-width:0;display:flex;flex-direction:column;}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 24px;background:var(--surface);border-bottom:1px solid var(--line);}
+.topbar #pt{font-size:16px;font-weight:800;letter-spacing:-.02em;} .topbar #pts{font-size:11.5px;color:var(--muted);margin-left:2px;}
+.tr{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.btn{padding:8px 13px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:.15s;}
+.btn:hover{border-color:var(--brand);color:var(--brand-600);} .btn.primary{background:var(--grad);color:#fff;border:none;box-shadow:0 4px 12px rgba(124,92,214,.28);}
+.btn.sm{padding:5px 9px;font-size:11px;}
+.icon-btn{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.content{padding:22px 24px 60px;max-width:1120px;}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:18px;}
+@media(max-width:820px){.kpi-row{grid-template-columns:1fr 1fr;}}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:15px 16px;box-shadow:var(--sh);}
+.kpi .n{font-family:var(--mono);font-size:23px;font-weight:800;letter-spacing:-.03em;line-height:1;}
+.kpi .l{font-size:11px;color:var(--muted);font-weight:700;margin-top:6px;}
+.seedbar{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:15px 18px;margin-bottom:18px;box-shadow:var(--sh);}
+.seedbar .st{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.seedbar h2{font-size:17px;font-weight:800;letter-spacing:-.02em;}
+.kwchip{font-family:var(--mono);font-size:12px;font-weight:700;background:var(--brand-50);color:var(--brand-600);padding:3px 10px;border-radius:99px;}
+.serplink{margin-left:auto;font-size:11.5px;font-weight:700;color:var(--nav-ink);text-decoration:none;white-space:nowrap;}
+.serplink:hover{text-decoration:underline;}
+.sec{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:16px;overflow:hidden;}
+.sec-h{display:flex;align-items:center;gap:9px;padding:12px 16px;border-bottom:1px solid var(--line-2);background:var(--surface-2);flex-wrap:wrap;}
+.sec-h .t{font-size:13px;font-weight:800;} .sec-h .sub{font-size:11px;color:var(--muted);font-weight:600;}
+.sec-b{padding:15px 16px;}
+/* 아카이브 */
+.drop{border:1.5px dashed var(--brand);border-radius:var(--r-sm);background:var(--brand-tint);padding:16px;text-align:center;font-size:12px;color:var(--ink-2);cursor:pointer;transition:.14s;}
+.drop:hover,.drop.hot{background:var(--brand-50);}
+.drop b{color:var(--brand-600);}
+.tl{display:flex;gap:12px;overflow-x:auto;padding:14px 2px 4px;}
+.shot{flex:0 0 auto;width:150px;cursor:pointer;}
+.shot img{width:150px;height:104px;object-fit:cover;object-position:top;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);display:block;transition:.14s;}
+.shot:hover img{border-color:var(--brand);box-shadow:var(--sh);}
+.shot .d{font-family:var(--mono);font-size:10.5px;font-weight:700;color:var(--ink-2);margin-top:5px;}
+.shot .note{font-size:10.5px;color:var(--muted);line-height:1.45;margin-top:2px;}
+.shot .del{float:right;color:var(--faint);cursor:pointer;font-weight:800;}
+.shot .del:hover{color:var(--bad);}
+.empty{padding:22px 16px;text-align:center;color:var(--muted);font-size:12px;line-height:1.7;}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;}
+@media(max-width:640px){.cmp{grid-template-columns:1fr;}}
+.cmp .col{border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden;background:var(--surface-2);}
+.cmp .col select{width:100%;border:none;border-bottom:1px solid var(--line);background:var(--surface);color:var(--ink);font-family:var(--mono);font-size:11.5px;font-weight:700;padding:7px 9px;}
+.cmp .col img{width:100%;display:block;}
+.cmp .col .ph{padding:40px 10px;text-align:center;color:var(--muted);font-size:11px;}
+/* 경쟁사 표 */
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line-2);vertical-align:top;}
+th{font-size:10.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;background:var(--surface-2);}
+td.who{font-weight:800;white-space:nowrap;}
+.badge{font-size:10px;font-weight:800;padding:1px 7px;border-radius:99px;white-space:nowrap;}
+.b-ad{background:var(--trx-bg);color:#a56a0e;} .b-org{background:var(--good-bg);color:var(--good);} .b-inf{background:var(--brand-50);color:var(--brand-600);} .b-us{background:#e6efff;color:#2b6cb0;}
+:root[data-theme="dark"] .b-us{background:#16223a;color:#7bb0ee;}
+@media(prefers-color-scheme:dark){.b-us{background:#16223a;color:#7bb0ee;}}
+.box{border-radius:var(--r-sm);padding:11px 13px;font-size:12px;line-height:1.72;margin-top:12px;}
+.box.us{background:#e9f0ff;border:1px solid #cfe0fb;color:#274b86;}
+.box.chg{background:var(--trx-bg);border:1px solid #f0e0bf;color:#7a5610;}
+:root[data-theme="dark"] .box.us{background:#131f33;border-color:#25406a;color:#9cc0f0;}
+:root[data-theme="dark"] .box.chg{background:#2a2110;border-color:#4a3a1a;color:#e6c98a;}
+@media(prefers-color-scheme:dark){.box.us{background:#131f33;border-color:#25406a;color:#9cc0f0;}.box.chg{background:#2a2110;border-color:#4a3a1a;color:#e6c98a;}}
+.box .lb{display:inline-block;font-size:10px;font-weight:800;padding:1px 7px;border-radius:99px;margin-right:7px;}
+.box.us .lb{background:#2b6cb0;color:#fff;} .box.chg .lb{background:#c47f12;color:#fff;}
+.box b{font-weight:800;}
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:14px;}
+.ov-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:15px 16px;box-shadow:var(--sh);cursor:pointer;transition:.15s;}
+.ov-card:hover{border-color:var(--brand);box-shadow:var(--sh-lg);transform:translateY(-1px);}
+.ov-card .ct{font-size:13.5px;font-weight:800;display:flex;align-items:center;gap:7px;justify-content:space-between;}
+.ov-card .cs{font-size:11.5px;color:var(--ink-2);margin-top:7px;line-height:1.6;}
+.ov-card .wk{font-family:var(--mono);font-size:10.5px;color:var(--nav-ink);font-weight:700;}
+.sec-lbl{font-size:11px;font-weight:800;color:var(--ink-2);text-transform:uppercase;letter-spacing:.05em;margin:22px 0 11px;}
+.note{font-size:11.5px;color:var(--ink-2);line-height:1.7;margin-top:18px;padding:13px 15px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);}
+.note b{font-weight:800;} .note a{color:var(--brand-600);font-weight:700;text-decoration:none;}
+.crumb{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--muted);text-decoration:none;}
+.crumb:hover{color:var(--brand-600);}
+.lb-modal{position:fixed;inset:0;background:rgba(10,8,20,.82);display:none;align-items:center;justify-content:center;z-index:100;padding:20px;}
+.lb-modal.show{display:flex;} .lb-modal img{max-width:100%;max-height:92vh;border-radius:8px;box-shadow:var(--sh-lg);}
+.lb-modal .cap{position:absolute;top:16px;left:0;right:0;text-align:center;color:#fff;font-size:12px;font-weight:700;font-family:var(--mono);}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:10px;font-size:12.5px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:110;box-shadow:var(--sh-lg);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sb-brand"><div class="brand-logo">🔭</div>
+      <div><div class="bn">Modooflow SERP</div><small>검색결과 주간 아카이브</small></div></div>
+    <nav class="sb-nav" id="sbNav"></nav>
+    <div class="sb-foot"><a href="index.html">← 통합 콘솔(main)로</a><br>스크린샷은 <b>이 브라우저에만</b> 저장(전송 0) · 백업은 내보내기<br>경쟁사 소구포인트는 네이버 검색결과 근거</div>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <a class="crumb" href="index.html">Modooflow ›</a>
+      <div><div id="pt">전체 개요</div><div id="pts"></div></div>
+      <div class="tr">
+        <button class="btn sm" id="expBtn" title="아카이브 백업(JSON)">⬇ 백업</button>
+        <label class="btn sm" style="cursor:pointer" title="백업 불러오기">⬆ 복원<input type="file" id="impFile" accept=".json" style="display:none"></label>
+        <button class="icon-btn" id="themeBtn" title="테마">◐</button>
+      </div>
+    </header>
+    <div class="content" id="content"></div>
+  </main>
+</div>
+<div class="lb-modal" id="lb"><div class="cap" id="lbCap"></div><img id="lbImg" alt=""></div>
+<div class="toast" id="toast"></div>
+<script>
+"use strict";
+/* 담당 상품 · 대표키워드(PC 기준) — SEO/키워드/뉴스 도구와 동일 상품 집합 */
+const PRODUCTS=[
+ {key:"home",cat:"사이트",name:"다이렉트 홈(브랜드)",kw:"한화손보 다이렉트"},
+ {key:"hrmf",cat:"장기",name:"주택화재보험",kw:"주택화재보험"},
+ {key:"golf",cat:"장기",name:"골프보험",kw:"골프보험"},
+ {key:"cncr",cat:"장기",name:"암보험",kw:"암보험"},
+ {key:"dntl",cat:"장기",name:"치아보험",kw:"치아보험"},
+ {key:"driver",cat:"장기",name:"운전자보험",kw:"운전자보험"},
+ {key:"woman",cat:"장기",name:"여성건강보험",kw:"여성건강보험"},
+ {key:"birth",cat:"장기",name:"임신·출산(태아)보험",kw:"태아보험"},
+ {key:"overseas",cat:"일반",name:"해외여행보험",kw:"해외여행보험"},
+ {key:"overseaslong",cat:"일반",name:"해외장기체류보험",kw:"유학생보험"},
+];
+const INTEL_ASOF="2026-07-22";
+/* 경쟁사 소구포인트 — 네이버 PC 검색결과(대표키워드) 근거 · area: ad(파워링크/상단) / org(상위노출) / inf(정보성) */
+const SERPINTEL={
+ driver:{ours:"한화손보 캐롯 투게더 운전자보험은 노출되나 상단(현대·DB) 대비 담보금액·가격 소구가 약함. 형사합의금·변호사선임비 한도와 다이렉트 가격을 제목·설명에 전면화 필요.",
+   change:"베이스라인(첫 아카이브). 이후 주차별로 상단 광고주 교체·신규 진입·문구(할인율·담보한도) 변화를 기록.",
+   comps:[
+    {who:"현대해상 다이렉트",area:"ad",hook:"형사합의금 최대 2억·스쿨존 벌금 3천만·변호사선임 500만, 자동차보험 고객 7% 할인, 수수료 없이 저렴"},
+    {who:"DB손해보험",area:"org",hook:"‘10년 연속 1등·435만명 선택’ 신뢰 소구 + 비갱신/갱신 차이 안내"},
+    {who:"카카오페이손보",area:"org",hook:"DIY 맞춤·기간 선택(1~3년), 3년납 16.7%+재가입 10% 할인"},
+    {who:"하나손보",area:"org",hook:"원데이(하루) 운전자보험 — 단기·간편"},
+    {who:"카디프/DB(가이드)",area:"inf",hook:"‘자동차보험과 차이’ 정보성 콘텐츠로 상단 점유"}]},
+ hrmf:{ours:"한화 우리주택화재보험(스크린홀인원 담보)이 상위 미노출 → 명확한 갭. 주택유형별 맞춤 + 누수·도난 보장범위 + 스크린홀인원 차별담보를 파워링크·타이틀에 노출해야 함.",
+   change:"베이스라인. 신한 SOL 네이버페이 이벤트(~2026.9.30) 종료 전후 노출 변화 주시.",
+   comps:[
+    {who:"신한 SOL",area:"ad",hook:"네이버페이 이벤트(가입 시 최대 3만P)+계좌이체 5%+장기고객 5% 할인"},
+    {who:"메리츠화재",area:"ad",hook:"누수·일상배상책임·도난까지, 아파트/오피스텔/빌라/원룸 유형별 맞춤"},
+    {who:"현대해상 다이렉트",area:"org",hook:"화재+누수+생활위험, 다이렉트 저렴"},
+    {who:"KB손해보험",area:"org",hook:"다양한 가입유형 + 재계약(갱신) 5% 할인, 가정종합"},
+    {who:"NH농협손보",area:"org",hook:"소방·피난손해·이웃집 재물손해 특약, 건물형태별"}]},
+ golf:{ours:"한화손보 캐롯 투게더 홀인원보험(팀당 1만원 정찰제)은 뉴스엔 언급되나 SERP 상위 미노출 → 브랜드+정찰제(팀 단위) 소구로 검색 선점 필요.",
+   change:"베이스라인. ‘원데이·홀인원’ 단기 상품 광고주 증감과 정찰제 가격 표기 변화 추적.",
+   comps:[
+    {who:"카카오페이손보",area:"ad",hook:"DIY 골프/홀인원, 가입 10%+2명 5%·3명 10% 그룹할인"},
+    {who:"삼성화재 다이렉트 착",area:"ad",hook:"개인형 골프보험 — 홀인원 비용 보장 원포인트"},
+    {who:"NH농협(스크린골프)",area:"org",hook:"24시간·사진없이 골프장명·닉네임 입력만으로 가입, 홀인원 30만원"},
+    {who:"롯데손보 앨리스",area:"org",hook:"스크린골프 4인 7,400원·1회권/N회권/시즌권 정찰제"},
+    {who:"현대해상 다이렉트",area:"org",hook:"홀인원+배상책임 폭넓은 보장, 다이렉트 저렴"}]},
+ cncr:{ours:"진단비·표적항암 등 담보 규모 경쟁이 치열. 한화 상품은 진단비 한도·비갱신 옵션을 전면화하고, 다이렉트 리워드(경쟁사 네이버페이 이벤트) 대응 검토.",
+   change:"베이스라인. 삼성생명 다이렉트 이벤트(뉴스) 기간 광고 노출 변화 주시.",
+   comps:[
+    {who:"라이나생명",area:"ad",hook:"일반암 진단비 최대 4,500만·표적항암 3천만·암 진단시 보험료 면제"},
+    {who:"DB손해보험",area:"org",hook:"진단+치료+생활비, 중입자방사선치료비까지"},
+    {who:"현대해상",area:"org",hook:"치료받을 때마다·전이암까지 계속 보장"},
+    {who:"메리츠화재",area:"org",hook:"올케어(암·뇌·심장) 통합 보장 소구"},
+    {who:"삼성생명 다이렉트",area:"ad",hook:"다이렉트 가입 네이버페이 포인트 이벤트(뉴스)"}]},
+ dntl:{ours:"임플란트·크라운 보장한도와 ‘실속형/고급형’ 가격대 제시가 핵심 소구. 한화 상품은 보장개시(면책)·한도를 명확히 표기해 비교 우위 확보.",
+   change:"베이스라인. 서울시 아동치과주치의 확대(뉴스)로 치아건강 관심 상승 → 정보성 유입 변화 주시.",
+   comps:[
+    {who:"삼성생명 다이렉트",area:"ad",hook:"충치·신경·임플란트, 1만원대 실속형/2만원대 고급형"},
+    {who:"라이나생명",area:"org",hook:"크라운 2천만·소액치과, 보장개시·1년내 50% 안내"},
+    {who:"현대해상(밝게웃는얼굴)",area:"org",hook:"임플란트 10개 보장+3년 관리비 지원+재치료"},
+    {who:"DB손해보험",area:"org",hook:"‘네이버로 보험료 간편확인’ 전환 동선"},
+    {who:"건강보험공단",area:"inf",hook:"스케일링 연1회·임플란트 급여 안내(정보성 상단)"}]},
+ overseas:{ours:"한화손보 해외여행보험은 주로 대면 채널이라 다이렉트 SERP 노출이 약함 → 성수기 ‘항공지연·휴대품·다이렉트 가격’ 롱테일로 노출 강화가 기회.",
+   change:"베이스라인. 여름 성수기 광고 경쟁 심화 · 여행 플랫폼(Trip.com 등) 결합형 노출 증감 추적.",
+   comps:[
+    {who:"현대해상 다이렉트",area:"ad",hook:"질병·상해·휴대품·출국항공기지연, 다이렉트 저렴"},
+    {who:"NH농협손보",area:"ad",hook:"자사 오프라인 대비 20% 저렴한 다이렉트 여행보험"},
+    {who:"Chubb(라이나손보)",area:"org",hook:"24시간 한국어 긴급지원(의료이송·귀국수배)"},
+    {who:"Trip.com",area:"org",hook:"항공권·호텔 예약 결합, 비행기지연·의료비 대비"},
+    {who:"카카오페이손보",area:"org",hook:"필요한 만큼·간편 가입"}]},
+ home:{ours:"브랜드 대표키워드에서 삼성화재 등 상위 대비 인지도 격차. ‘한화손보다이렉트’ 브랜드+상품별 롱테일을 파워링크·타이틀로 방어.",
+   change:"베이스라인. 브랜드 검색 광고주·사칭성 비교사이트 노출 여부 주시.",
+   comps:[
+    {who:"삼성화재 다이렉트",area:"ad",hook:"다이렉트 최강자 브랜드 인지도(K-브랜드지수 1위)"},
+    {who:"각사 비교사이트",area:"ad",hook:"‘다이렉트 비교·보험료 계산’ 제휴/비교 랜딩"},
+    {who:"자사(한화손보다이렉트)",area:"us",hook:"브랜드+상품 롱테일 방어 필요 — 공식 채널 상단 고정"}]},
+ woman:{ours:"직접 상품 경쟁보다 정보성(여성검진·질환) 유입이 큼. 여성암·자궁 담보와 검진 연계 콘텐츠로 정보형 상단을 확보. (상세는 캡처 후 갱신)",
+   change:"베이스라인 — SERP 캡처 축적 후 경쟁 노출 상세화.",
+   comps:[
+    {who:"각 손보사",area:"org",hook:"여성건강보험·여성암 진단비 중심 상품 노출"},
+    {who:"건강검진·정보",area:"inf",hook:"여성 검진·질환 정보성 콘텐츠가 상단 점유"}]},
+ birth:{ours:"‘태아보험 가입시기·비교’ 니치 검색. 가입 적기(출산 전)·서류 간소화(공공 마이데이터)·지자체 지원 연계 콘텐츠로 선점. (상세는 캡처 후 갱신)",
+   change:"베이스라인 — SERP 캡처 축적 후 상세화.",
+   comps:[
+    {who:"각 손보사",area:"org",hook:"태아보험 진단·선천이상 보장 상품 노출"},
+    {who:"카페·후기",area:"inf",hook:"‘태아보험 시기·비교’ 커뮤니티/후기 상단"}]},
+ overseaslong:{ours:"‘유학생·워홀·장기체류보험 비교’ 니치. 예방접종·비자 등 출국 준비 콘텐츠와 묶어 노출. (상세는 캡처 후 갱신)",
+   change:"베이스라인 — SERP 캡처 축적 후 상세화.",
+   comps:[
+    {who:"각 손보사·제휴",area:"org",hook:"유학생보험·장기체류 상품/제휴 랜딩"},
+    {who:"유학원·정보",area:"inf",hook:"출국 준비·예방접종 정보성 콘텐츠 상단"}]},
+};
+
+const $=(s,el=document)=>el.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+function safeKey(k){k=String(k);return (Object.prototype.hasOwnProperty.call(SERPINTEL,k)||PRODUCTS.some(p=>p.key===k))?k:"";}
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1700);}
+const getP=k=>PRODUCTS.find(p=>p.key===k);
+const areaBadge={ad:['b-ad','파워링크·상단'],org:['b-org','상위노출'],inf:['b-inf','정보성'],us:['b-us','자사']};
+let curKey="__all";
+
+/* 아카이브 저장소 (localStorage · 이 브라우저에만) */
+const LS="mf_serp";
+function loadArc(){try{return JSON.parse(localStorage.getItem(LS)||"{}")||{};}catch(e){return {};}}
+function saveArc(a){try{localStorage.setItem(LS,JSON.stringify(a));}catch(e){toast("저장공간 초과 — 오래된 캡처를 지우거나 백업 후 정리하세요");}}
+let ARC=loadArc();
+const shotsOf=k=>{const s=safeKey(k);return s&&Array.isArray(ARC[s])?ARC[s].slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")):[];};
+const todayStr=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
+
+/* 이미지 다운스케일(용량 절약) → dataURL(JPEG) */
+function fileToShot(file,cb){
+  const rd=new FileReader();
+  rd.onload=()=>{const img=new Image();img.onload=()=>{
+    const maxW=1000,scale=Math.min(1,maxW/img.width),w=Math.round(img.width*scale),h=Math.round(img.height*scale);
+    const cv=document.createElement("canvas");cv.width=w;cv.height=h;cv.getContext("2d").drawImage(img,0,0,w,h);
+    let url;try{url=cv.toDataURL("image/jpeg",0.82);}catch(e){url=rd.result;}
+    cb(url);
+  };img.onerror=()=>cb(rd.result);img.src=rd.result;};
+  rd.readAsDataURL(file);
+}
+function addShot(key,file){const s=safeKey(key);if(!s)return;
+  fileToShot(file,url=>{ARC[s]=ARC[s]||[];ARC[s].push({id:Date.now()+"_"+Math.random().toString(36).slice(2,7),date:todayStr(),img:url,note:""});saveArc(ARC);toast("스크린샷 아카이브에 추가됨 · "+todayStr());render();});
+}
+function delShot(key,id){const s=safeKey(key);if(!s||!ARC[s])return;ARC[s]=ARC[s].filter(x=>x.id!==id);saveArc(ARC);render();}
+function editNote(key,id,val){const s=safeKey(key);if(!s||!ARC[s])return;const it=ARC[s].find(x=>x.id===id);if(it){it.note=val;saveArc(ARC);}}
+
+function renderSidebar(){
+  const item=(key,label,cnt,on)=>`<button class="sb-item${on?" on":""}" data-key="${key}"><span>${esc(label)}</span><span class="kc">${cnt}</span></button>`;
+  const total=PRODUCTS.reduce((s,p)=>s+shotsOf(p.key).length,0);
+  let h=item("__all","▦ 전체 개요",total,curKey==="__all");
+  ["사이트","장기","일반"].forEach(cat=>{h+=`<div class="sb-cap">${cat}</div>`;
+    PRODUCTS.filter(p=>p.cat===cat).forEach(p=>{h+=item(p.key,p.name,shotsOf(p.key).length,curKey===p.key);});});
+  $("#sbNav").innerHTML=h;
+}
+function serpUrl(kw){return "https://search.naver.com/search.naver?query="+encodeURIComponent(kw);}
+function archiveSection(p){
+  const shots=shotsOf(p.key);
+  const tl=shots.length?`<div class="tl">${shots.map(s=>`<div class="shot"><span class="del" data-del="${s.id}" title="삭제">✕</span>
+      <img src="${s.img}" data-zoom="${s.id}" alt="${esc(p.kw)} ${esc(s.date)}">
+      <div class="d">${esc(s.date)}</div>
+      <input class="note" data-note="${s.id}" value="${esc(s.note||"")}" placeholder="변화 메모(순위·신규 광고 등)" style="width:150px;border:1px solid var(--line);border-radius:6px;padding:3px 6px;background:var(--surface-2);color:var(--ink);font-family:inherit;margin-top:3px"></div>`).join("")}</div>`
+    : `<div class="empty">아직 저장된 스크린샷이 없습니다.<br><b>네이버 PC 검색결과 보기</b>로 열어 캡처한 뒤, 위 영역에 이번 주 스크린샷을 올리세요.<br>매주 같은 시점(예: 월요일 오전)에 올리면 주간 변화가 쌓입니다.</div>`;
+  // before/after 비교
+  const opts=shots.map(s=>`<option value="${s.id}">${esc(s.date)}${s.note?" · "+esc(s.note.slice(0,14)):""}</option>`).join("");
+  const cmp=shots.length>=2?`<div class="cmp">
+      <div class="col"><select data-cmp="A">${opts}</select><div class="imgwrap" data-col="A"></div></div>
+      <div class="col"><select data-cmp="B">${opts}</select><div class="imgwrap" data-col="B"></div></div>
+    </div>`:"";
+  return `<div class="sec">
+    <div class="sec-h"><span class="t">📸 주간 SERP 스크린샷 아카이브</span><span class="sub">· ${shots.length}주차 · 이 브라우저에 저장</span>
+      <a class="serplink" style="margin-left:auto" href="${serpUrl(p.kw)}" target="_blank" rel="noopener">네이버 PC 검색결과 보기 ↗</a></div>
+    <div class="sec-b">
+      <div class="drop" id="drop"><b>＋ 이번 주 스크린샷 올리기</b> — 파일 선택 또는 여기로 드래그<input type="file" id="shotFile" accept="image/*" multiple style="display:none"></div>
+      ${tl}
+      ${shots.length>=2?`<div class="sec-lbl" style="margin:16px 0 0">전/후 비교 (두 주차 선택)</div>${cmp}`:""}
+    </div></div>`;
+}
+function intelSection(p){
+  const n=SERPINTEL[safeKey(p.key)]; if(!n)return "";
+  const rows=n.comps.map(c=>{const b=areaBadge[c.area]||areaBadge.org;return `<tr><td class="who">${esc(c.who)}</td><td><span class="badge ${b[0]}">${b[1]}</span></td><td>${esc(c.hook)}</td></tr>`;}).join("");
+  return `<div class="sec">
+    <div class="sec-h"><span class="t">🎯 경쟁사 소구포인트</span><span class="sub">· 네이버 검색결과 근거 · 기준 ${esc(INTEL_ASOF)}</span></div>
+    <div class="sec-b">
+      <table><thead><tr><th>경쟁사</th><th>노출</th><th>소구포인트</th></tr></thead><tbody>${rows}</tbody></table>
+      <div class="box us"><span class="lb">우리 대응</span>${esc(n.ours)}</div>
+      <div class="box chg"><span class="lb">변화 분석</span>${esc(n.change)}</div>
+    </div></div>`;
+}
+function renderProduct(){
+  const p=getP(curKey);
+  $("#pt").textContent=p.name; $("#pts").textContent=`· 대표키워드 "${p.kw}"`;
+  $("#content").innerHTML=`
+    <div class="seedbar"><div class="st"><h2>${esc(p.name)}</h2><span class="kwchip">${esc(p.kw)} · PC</span>
+      <a class="serplink" href="${serpUrl(p.kw)}" target="_blank" rel="noopener">네이버 PC 검색결과 열기 ↗</a></div></div>
+    ${archiveSection(p)}
+    ${intelSection(p)}
+    <div class="note"><b>운영 방법</b> · 매주 같은 시점에 <b>네이버 PC 검색결과</b>를 캡처해 올리면 주차별 아카이브가 쌓이고, <b>전/후 비교</b>로 상단 광고주 교체·신규 진입·문구 변화를 한눈에 봅니다. 변화·소구포인트는 <b>뉴스 콘솔</b>의 동향과 함께 해석하세요. 스크린샷은 이 브라우저에만 저장되니 <b>⬇ 백업</b>으로 팀 공유·이관하세요.</div>`;
+  // 비교 초기화
+  const shots=shotsOf(p.key);
+  if(shots.length>=2){
+    const setCol=(which,id)=>{const it=shots.find(s=>s.id===id)||shots[which==="A"?1:0];const w=$(`.imgwrap[data-col="${which}"]`);if(w)w.innerHTML=`<img src="${it.img}" alt="">`;};
+    const selA=$('select[data-cmp="A"]'),selB=$('select[data-cmp="B"]');
+    selA.selectedIndex=1;selB.selectedIndex=0; // A=이전주, B=최신
+    setCol("A",selA.value);setCol("B",selB.value);
+    selA.addEventListener("change",()=>setCol("A",selA.value));
+    selB.addEventListener("change",()=>setCol("B",selB.value));
+  }
+}
+function renderOverview(){
+  $("#pt").textContent="전체 개요"; $("#pts").textContent="· 대표키워드 SERP 아카이브";
+  const totalShots=PRODUCTS.reduce((s,p)=>s+shotsOf(p.key).length,0);
+  const withArc=PRODUCTS.filter(p=>shotsOf(p.key).length).length;
+  const thisWeek=PRODUCTS.filter(p=>shotsOf(p.key).some(s=>s.date===todayStr())).length;
+  const gaps=["hrmf","golf","overseas"].length; // 한화 상위 미노출 주요 갭(메인)
+  const kpi=(n,l)=>`<div class="kpi"><div class="n">${n}</div><div class="l">${l}</div></div>`;
+  const cards=PRODUCTS.map(p=>{const n=SERPINTEL[p.key];const sc=shotsOf(p.key).length;const s=n?(n.ours.length>92?n.ours.slice(0,92)+"…":n.ours):"";
+    return `<div class="ov-card" data-key="${p.key}"><div class="ct">${esc(p.name)}<span class="wk">${sc?sc+"주차":"캡처 0"}</span></div><div class="cs"><b style="color:var(--brand-600)">키워드</b> ${esc(p.kw)} · PC<br>${esc(s)}</div></div>`;}).join("");
+  $("#content").innerHTML=`
+    <div class="kpi-row">${kpi(withArc+"/"+PRODUCTS.length,"아카이브 시작 상품")}${kpi(totalShots,"누적 스크린샷")}${kpi(thisWeek,"이번주 캡처")}${kpi(gaps,"한화 상위노출 갭(메인)")}</div>
+    <div class="note" style="margin-top:0"><b>운영 개요</b> · 각 상품 <b>대표키워드(PC)</b> 네이버 검색결과를 매주 캡처·아카이빙하고, 경쟁사 <b>소구포인트</b>와 <b>변화</b>를 분석합니다. 메인 상품군(운전자·주택화재·골프) 중 <b>주택화재·골프·해외여행</b>은 한화 상품이 상위 미노출로 확인돼 우선 대응 대상입니다. 카드를 클릭해 상세로 이동하세요.</div>
+    <div class="sec-lbl">상품별 대표키워드 · 경쟁 요약</div>
+    <div class="ov-grid">${cards}</div>`;
+}
+function render(){const s=safeKey(curKey);(curKey==="__all"||!s)?renderOverview():renderProduct();renderSidebar();window.scrollTo({top:0});}
+
+/* 이벤트 */
+document.addEventListener("click",e=>{
+  const del=e.target.closest("[data-del]");if(del){delShot(curKey,del.dataset.del);return;}
+  const zoom=e.target.closest("[data-zoom]");if(zoom){const it=shotsOf(curKey).find(s=>s.id===zoom.dataset.zoom);if(it){$("#lbImg").src=it.img;$("#lbCap").textContent=getP(curKey).name+" · "+getP(curKey).kw+" · "+it.date;$("#lb").classList.add("show");}return;}
+  const drop=e.target.closest("#drop");if(drop){$("#shotFile").click();return;}
+  const nav=e.target.closest("[data-key]");if(nav&&nav.dataset.key){curKey=nav.dataset.key;render();return;}
+  if(e.target.closest("#lb")){$("#lb").classList.remove("show");}
+});
+document.addEventListener("change",e=>{if(e.target.id==="shotFile"){[...e.target.files].forEach(f=>addShot(curKey,f));e.target.value="";}});
+document.addEventListener("input",e=>{const n=e.target.closest("[data-note]");if(n)editNote(curKey,n.dataset.note,n.value);});
+// drag-drop
+document.addEventListener("dragover",e=>{if(e.target.closest("#drop")){e.preventDefault();e.target.closest("#drop").classList.add("hot");}});
+document.addEventListener("dragleave",e=>{const d=e.target.closest("#drop");if(d)d.classList.remove("hot");});
+document.addEventListener("drop",e=>{const d=e.target.closest("#drop");if(d){e.preventDefault();d.classList.remove("hot");[...(e.dataTransfer.files||[])].filter(f=>/^image\//.test(f.type)).forEach(f=>addShot(curKey,f));}});
+// 백업/복원
+$("#expBtn").addEventListener("click",()=>{const blob=new Blob([JSON.stringify({app:"modooflow-serp",exportedAt:new Date().toISOString(),archive:ARC},null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="modooflow-serp-archive-"+todayStr()+".json";a.click();toast("아카이브 백업 파일 저장됨");});
+$("#impFile").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();
+  rd.onload=()=>{try{const o=JSON.parse(rd.result);const inc=o.archive||o;let n=0;
+    Object.keys(inc).forEach(k=>{const s=safeKey(k);if(!s||!Array.isArray(inc[k]))return;ARC[s]=ARC[s]||[];const have=new Set(ARC[s].map(x=>x.id));inc[k].forEach(it=>{if(it&&it.img&&!have.has(it.id)){ARC[s].push(it);n++;}});});
+    saveArc(ARC);toast(n+"개 스크린샷 복원됨");render();}catch(err){toast("복원 실패 — 백업 JSON 파일인지 확인");}};
+  rd.readAsText(f);e.target.value="";});
+$("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");});
+render();
+</script>
+</body>
+</html>
