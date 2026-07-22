@@ -130,7 +130,7 @@ td.kw{font-weight:700;color:var(--ink);white-space:normal;} td.c{text-align:cent
     </header>
     <details class="imp" id="impPanel" open><summary>➕ 네이버 키워드도구 결과 합치기 — 연관키워드를 지금 키워드셋에 추가 (터미널·키 입력 불필요)</summary>
       <div class="ib">
-        <div class="ir" style="margin-top:0;margin-bottom:9px"><label class="btn primary" style="cursor:pointer">📁 네이버 키워드도구 파일 선택<input type="file" id="volFile" accept=".csv,.tsv,.txt" style="display:none"></label>
+        <div class="ir" style="margin-top:0;margin-bottom:9px"><label class="btn primary" style="cursor:pointer">📁 네이버 키워드도구 엑셀·CSV 선택<input type="file" id="volFile" accept=".xlsx,.csv,.tsv,.txt" style="display:none"></label>
           <span class="hint"><b>왼쪽에서 상품을 먼저 선택</b> → 네이버 검색광고 <b>키워드도구 → [다운로드]</b> 한 파일을 고르면 <b>연관키워드가 전부 합쳐집니다</b> — 운전자보험처럼 <b>수백 개(≈800)</b>도 개수 제한 없이 그대로. (검색량 있으면 함께 반영)</span></div>
         <textarea id="volJson" placeholder='또는 여기에 붙여넣기 — 연관키워드 목록(줄바꿈), 표(엑셀 복사), CSV, API JSON 모두 인식'></textarea>
         <div class="ir"><button class="btn primary" id="volLoad">키워드 합치기</button><button class="btn" id="volSample">샘플</button>
@@ -376,26 +376,66 @@ document.addEventListener("click",e=>{
   const sg=e.target.closest("#pfSeg button"); if(sg){pf=sg.dataset.pf;document.querySelectorAll("#pfSeg button").forEach(b=>b.classList.toggle("on",b===sg));render();return;}
 });
 $("#exp").addEventListener("click",exportCsv);
-function parseVolCsv(text){
-  const lines=text.split(/\r?\n/).filter(l=>l.trim());
-  let hi=lines.findIndex(l=>/키워드|keyword/i.test(l)&&/(검색수|monthly|searches|볼륨|volume|경쟁)/i.test(l));
+function decodeEntities(s){return String(s).replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'");}
+function colIndex(letters){let n=0;for(let i=0;i<letters.length;i++)n=n*26+(letters.charCodeAt(i)-64);return n-1;}
+// 헤더 자동 인식 → {키워드:{pc,mobile,comp}} (연관키워드·월간검색수·경쟁 컬럼)
+function rowsToVolMap(R){
+  if(!R.length)return {};
+  let hi=R.findIndex(r=>{const j=r.join(" ");return /키워드|keyword/i.test(j)&&/(검색수|monthly|searches|volume|경쟁|competition)/i.test(j);});
   if(hi<0)hi=0;
-  const split=l=>l.split(/\t|,/).map(s=>s.replace(/^"|"$/g,"").trim());
-  const H=split(lines[hi]).map(s=>s.toLowerCase());
+  const H=R[hi].map(s=>String(s||"").toLowerCase());
   const find=(...ks)=>H.findIndex(h=>ks.some(k=>h.includes(k)));
   const iKw=find("연관키워드","키워드","keyword");
-  const iPc=find("pc","월간검색수(pc)"); const iMo=find("모바일","mobile");
-  const iAvg=find("avg. monthly","monthly searches","평균","검색수"); const iComp=find("경쟁","competition");
+  const iPc=find("월간검색수(pc)","pc"),iMo=find("모바일","mobile"),iAvg=find("avg. monthly","monthly searches","평균","검색수"),iComp=find("경쟁","competition");
   const num=x=>{if(x==null)return 0;const n=parseInt(String(x).replace(/[^\d]/g,""));return isNaN(n)?0:n;};
   const out={};
-  for(let i=hi+1;i<lines.length;i++){const c=split(lines[i]);const kw=iKw>=0?c[iKw]:c[0];if(!kw)continue;
-    let pc=iPc>=0?num(c[iPc]):0, mo=iMo>=0?num(c[iMo]):0;
-    if(!pc&&!mo&&iAvg>=0)mo=num(c[iAvg]);        // 구글: 합계만 → mobile칸에
-    out[kw]={pc,mobile:mo,comp:iComp>=0?(c[iComp]||""):""};
+  for(let i=hi+1;i<R.length;i++){const c=R[i]||[];const kw=iKw>=0?c[iKw]:c[0];if(!kw||!String(kw).trim())continue;
+    let pc=iPc>=0?num(c[iPc]):0,mo=iMo>=0?num(c[iMo]):0; if(!pc&&!mo&&iAvg>=0)mo=num(c[iAvg]);
+    out[String(kw).trim()]={pc,mobile:mo,comp:iComp>=0?String(c[iComp]||""):""};
   }
   return out;
 }
-function applyVolFile(f){
+function parseVolCsv(text){
+  const R=text.split(/\r?\n/).filter(l=>l.trim()).map(l=>l.split(/\t|,/).map(s=>s.replace(/^"|"$/g,"").trim()));
+  return rowsToVolMap(R);
+}
+// ── 엑셀(.xlsx) 파서 — 외부 라이브러리 없이 브라우저 내장 압축해제(DecompressionStream) ──
+async function inflateRaw(bytes){
+  const st=new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+  return new Uint8Array(await new Response(st).arrayBuffer());
+}
+async function readXlsx(arrayBuffer){
+  const u8=new Uint8Array(arrayBuffer),dv=new DataView(arrayBuffer);
+  let eo=-1;for(let i=u8.length-22;i>=0;i--){if(dv.getUint32(i,true)===0x06054b50){eo=i;break;}}
+  if(eo<0)throw new Error("ZIP EOCD 없음");
+  const cdOff=dv.getUint32(eo+16,true),cdCnt=dv.getUint16(eo+10,true),entries={};let p=cdOff;
+  for(let n=0;n<cdCnt;n++){if(dv.getUint32(p,true)!==0x02014b50)break;
+    const method=dv.getUint16(p+10,true),compSize=dv.getUint32(p+20,true),nameLen=dv.getUint16(p+28,true),extraLen=dv.getUint16(p+30,true),commLen=dv.getUint16(p+32,true),lho=dv.getUint32(p+42,true);
+    const name=new TextDecoder().decode(u8.subarray(p+46,p+46+nameLen));entries[name]={method,compSize,lho};p+=46+nameLen+extraLen+commLen;}
+  async function read(name){const e=entries[name];if(!e)return null;
+    const lnLen=dv.getUint16(e.lho+26,true),lxLen=dv.getUint16(e.lho+28,true),start=e.lho+30+lnLen+lxLen,data=u8.subarray(start,start+e.compSize);
+    const raw=e.method===8?await inflateRaw(data):data;return new TextDecoder("utf-8").decode(raw);}
+  const ssXml=await read("xl/sharedStrings.xml")||"";const shared=[];
+  ssXml.replace(/<si>([\s\S]*?)<\/si>/g,(m,inner)=>{const txt=(inner.match(/<t[^>]*>([\s\S]*?)<\/t>/g)||[]).map(t=>t.replace(/<[^>]+>/g,"")).join("");shared.push(decodeEntities(txt));return "";});
+  let sheet="xl/worksheets/sheet1.xml";if(!entries[sheet])sheet=Object.keys(entries).find(k=>/^xl\/worksheets\/.*\.xml$/.test(k));
+  const shXml=await read(sheet)||"";const R=[];
+  shXml.replace(/<row[^>]*>([\s\S]*?)<\/row>/g,(m,inner)=>{const cells=[];
+    inner.replace(/<c\b([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g,(mm,attrs,body)=>{const rM=attrs.match(/r="([A-Z]+)\d+"/);if(!rM)return "";
+      const col=colIndex(rM[1]),isS=/t="s"/.test(attrs),vM=body&&body.match(/<v>([\s\S]*?)<\/v>/),tM=body&&body.match(/<t[^>]*>([\s\S]*?)<\/t>/);
+      let val="";if(isS&&vM)val=shared[parseInt(vM[1])]||"";else if(vM)val=vM[1];else if(tM)val=decodeEntities(tM[1]);
+      cells[col]=String(val);return "";});
+    R.push(cells);return "";});
+  return R;
+}
+async function applyVolFile(f){
+  const target=(curKey==="__pro"&&PROSEED)?"__pro":curKey;
+  if(/\.xlsx$/i.test(f.name)){                                                                        // 네이버 키워드도구 다운로드 = 엑셀(.xlsx)
+    try{const R=await readXlsx(await f.arrayBuffer());const map=rowsToVolMap(R);
+      if(!Object.keys(map).length){toast("엑셀에서 키워드를 못 읽었습니다 — 키워드도구 다운로드 파일인지 확인");return;}
+      importMap(map,target);}
+    catch(e){toast("엑셀 읽기 실패: "+e.message);}
+    return;
+  }
   const rd=new FileReader();
   rd.onload=()=>{let t="";
     try{t=new TextDecoder("utf-8",{fatal:true}).decode(rd.result);}                                  // 정상 UTF-8
