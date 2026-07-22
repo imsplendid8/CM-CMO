@@ -359,8 +359,9 @@ function parseVolCsv(text){
 }
 function applyVolFile(f){
   const rd=new FileReader();
-  rd.onload=()=>{let t="";try{t=new TextDecoder("utf-8").decode(rd.result);}catch(e){}
-    if(!t||t.indexOf("�")>=0){try{t=new TextDecoder("euc-kr").decode(rd.result);}catch(e){}}   // 네이버 CSV가 EUC-KR인 경우 자동 처리
+  rd.onload=()=>{let t="";
+    try{t=new TextDecoder("utf-8",{fatal:true}).decode(rd.result);}                                  // 정상 UTF-8
+    catch(e){try{t=new TextDecoder("euc-kr").decode(rd.result);}catch(e2){t=new TextDecoder("utf-8").decode(rd.result);}}  // 실패 시 EUC-KR(네이버 CSV 대응)
     const map=parseVolCsv(t);
     if(!map||!Object.keys(map).length){toast("CSV 인식 실패 — 헤더(연관키워드/월간검색수) 포함 파일인지 확인");return;}
     VOL={};Object.keys(map).forEach(k=>VOL[nk(k)]=map[k]);toast(Object.keys(VOL).length+"개 키워드 검색량 적용");render();};
