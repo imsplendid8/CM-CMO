@@ -18,6 +18,26 @@
 } }
 ```
 
+## 빠른 시작 — 내 계정으로 붙이기 (2가지 경로)
+
+### 경로 A. CSV 다운로드 → 붙여넣기 (개발 불필요, 가장 빠름) ✅
+1. **네이버 검색광고**(searchad.naver.com) → **도구 > 키워드 도구** → 시드 키워드 입력 → 조회 → **[다운로드]**
+   (또는 **구글 Keyword Planner** → 키워드 아이디어 → **[키워드 아이디어 다운로드]**)
+2. 다운로드한 표(엑셀/CSV)를 열어 **헤더 포함 복사**
+3. 키워드 도구 상단 **"📊 실검색량·경쟁도 불러오기"** 열고 붙여넣기 → **적용**
+   → 월검색량·경쟁도 열이 붙고 검색량순 정렬됩니다. (컬럼명 자동 인식: 연관키워드/월간검색수/경쟁정도 · Keyword/Avg. monthly searches/Competition)
+
+### 경로 B. API 자동화 (반복·대량)
+1. 키 발급(아래 1·2 참고) → `.env`에 저장(커밋 금지)
+2. 스크립트 실행 → JSON 저장:
+   ```bash
+   python3 scripts/naver_searchad_keywords.py 암보험 운전자보험 > volume.json   # 네이버
+   python3 scripts/google_ads_keywords.py 암보험 운전자보험 > volume_google.json # 구글
+   ```
+3. JSON 내용을 도구의 "불러오기"에 붙여넣기 → 적용
+
+---
+
 ## 1) 네이버 검색광고 API — 키워드 도구
 - 엔드포인트: `GET https://api.searchad.naver.com/keywordstool` (`hintKeywords`=시드 최대 5개)
 - 반환: `relKeyword`, `monthlyPcQcCnt`, `monthlyMobileQcCnt`, `compIdx`(낮음/중간/높음), 클릭수 등
