@@ -74,6 +74,24 @@ table.hm thead th{font-size:10.5px;font-weight:800;color:var(--muted);padding:7p
 table.hm thead th.mnow{color:var(--brand);}
 table.hm td.pname,table.hm th.pname{text-align:left;font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap;padding:0 12px 0 8px;min-width:130px;}
 table.hm td.pname.main::after{content:"★";color:var(--brand);font-size:9px;margin-left:4px;vertical-align:2px;}
+/* '한 장' 연간 마케팅 이슈 캘린더 매트릭스 */
+.mcal-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);box-shadow:var(--sh);}
+table.mcal{border-collapse:separate;border-spacing:0;min-width:1080px;width:100%;}
+table.mcal th,table.mcal td{border-bottom:1px solid var(--line-2);border-right:1px solid var(--line-2);vertical-align:top;}
+table.mcal thead th{position:sticky;top:0;background:var(--surface-2);font-size:11px;font-weight:800;color:var(--ink-2);padding:8px 4px;text-align:center;z-index:2;}
+table.mcal thead th.mnow{color:var(--brand);background:var(--brand-50);}
+.mcal .rl{position:sticky;left:0;background:var(--surface-2);font-size:11px;font-weight:800;color:var(--ink);padding:8px 10px;white-space:nowrap;z-index:1;min-width:126px;}
+table.mcal thead th.rl{z-index:3;}
+.mcal .rl.pn{cursor:pointer;} .mcal .rl.pn:hover{color:var(--brand-600);} .mcal .rl.pn.main::after{content:" ★";color:var(--brand);}
+.mcal td.mc{padding:4px;min-width:106px;}
+.mcal td.cnow{background:var(--brand-tint);}
+.mcal .theme{font-size:10.5px;font-weight:800;padding:5px 6px;border-radius:6px;text-align:center;line-height:1.3;}
+.mcal .kwcell{font-size:10px;color:var(--ink-2);line-height:1.55;font-weight:600;}
+.mcal .daycell{display:flex;flex-direction:column;gap:2px;} .mcal .daycell span{font-size:9.5px;color:var(--muted);line-height:1.35;}
+.mcal .pcell{font-size:10px;font-weight:700;color:var(--ink-2);padding:5px 7px;border-radius:5px;line-height:1.35;min-height:24px;cursor:pointer;}
+.mcal .pcell.empty{min-height:24px;cursor:default;}
+.mcal .pcell:not(.empty):hover{filter:brightness(.96);}
+.mcal .divrow td{background:var(--surface-2);font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:6px 12px;}
 .cell{height:30px;border:2px solid var(--surface);border-radius:6px;font-size:9px;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1;overflow:hidden;}
 .cell.on{}
 .mcol-now{background:var(--brand-50);}
@@ -184,6 +202,22 @@ const SEASONAL={
   {m:[8,9],tag:"가을학기·워홀 출국",why:"가을학기·워홀 출국 집중.",kws:["유학생보험","워홀보험","해외장기체류보험"],act:"7월 말 세팅"}],
 };
 
+/* 일반 마케팅 캘린더(월별 테마·키워드·공휴일/기념일) — '한 장' 연간 뷰용 (보험 관련 절기 강조) */
+const MONTHCAL=[
+ {season:"winter",theme:"새해·연말정산",kws:["새해다짐","신년운세","연말정산"],days:["1일 신정","연말정산 시즌"]},
+ {season:"winter",theme:"설·겨울방학",kws:["명절선물","겨울방학","졸업"],days:["설 연휴","4일 입춘","14일 밸런타인"]},
+ {season:"spring",theme:"새학기·봄",kws:["신입생","봄맞이","미세먼지"],days:["21일 암예방의 날","14일 화이트데이","신학기"]},
+ {season:"spring",theme:"봄나들이",kws:["벚꽃","피크닉","국내여행"],days:["과학의 날","22일 지구의 날"]},
+ {season:"spring",theme:"가정의 달",kws:["어린이날","어버이날","성년의날"],days:["5일 어린이날","8일 어버이날","성년의 날"]},
+ {season:"summer",theme:"여름대비·월드컵",kws:["여름대비","초복","월드컵"],days:["9일 구강보건의 날","현충일","단오"]},
+ {season:"summer",theme:"여름휴가·장마",kws:["여름휴가","장마","물놀이"],days:["초복·중복","제헌절","여름휴가 시즌"]},
+ {season:"summer",theme:"휴가·물놀이",kws:["백캉스","여름방학","말복"],days:["말복","23일 처서","휴가 피크"]},
+ {season:"fall",theme:"추석·가을",kws:["명절선물","가을","드라이브"],days:["추석 연휴","백로","임산부의 날 대비"]},
+ {season:"fall",theme:"가을행사·마라톤",kws:["단풍","마라톤","가을야구"],days:["10일 임산부의 날","독도의 날","가을 성수기"]},
+ {season:"fall",theme:"수능·김장",kws:["수능","김장","블랙프라이데이"],days:["9일 소방의 날","11일 빼빼로데이","수능"]},
+ {season:"winter",theme:"연말·크리스마스",kws:["홀리데이","송년회","겨울간식"],days:["22일 동지","크리스마스","연말정산 준비"]},
+];
+
 const $=(s,el=document)=>el.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 const getP=k=>PRODUCTS.find(p=>p.key===k);
@@ -222,22 +256,23 @@ function renderOverview(){
     <div class="sec-lbl">📌 이번 달 주목 <span class="now">${MONTHS[CURM-1]}</span> <span style="font-weight:600;color:var(--muted);text-transform:none">· ★ = 메인 상품군</span></div>
     ${now.length?`<div class="now-grid">${nowCards}</div>`:`<div class="note" style="margin-top:0">이번 달 특이 시즌 이슈가 없습니다. 아래 연간 히트맵에서 다가오는 시즌을 확인하세요.</div>`}
     ${next.length?`<div class="note"><b>다음 달(${MONTHS[nextM-1]}) 선제 대응 예고</b> · ${next.map(esc).join(" · ")} → 지금 콘텐츠·검색광고 준비를 시작하세요.</div>`:""}
-    <div class="sec-lbl" style="margin-top:24px">🗓️ 연간 히트맵 <span style="font-weight:600;color:var(--muted);text-transform:none">· 상품 × 월 · 셀 클릭 시 상세</span></div>
-    ${heatmap()}
+    <div class="sec-lbl" style="margin-top:24px">🗓️ 연간 마케팅 이슈 캘린더 <span style="font-weight:600;color:var(--muted);text-transform:none">· 한 장에 총체적으로 · 상품행 클릭 시 세부 탭(월별 이슈)으로</span></div>
+    ${annualMatrix()}
     <div class="lg">${Object.keys(SEASON).map(s=>`<span><i style="background:${SEASON[s][1]}"></i>${SEASON[s][0]}</span>`).join("")}<span style="color:var(--brand);font-weight:700">▮ ${MONTHS[CURM-1]} (이번 달)</span></div>`;
 }
-function heatmap(){
-  let head=`<tr><th class="pname">상품 \\ 월</th>`+MONTHS.map((m,i)=>`<th class="${i+1===CURM?"mnow":""}">${i+1}</th>`).join("")+`</tr>`;
-  let body=PRODUCTS.map(p=>{
-    // 월별 커버 윈도우 찾기
-    const cells=[];for(let m=1;m<=12;m++){
-      const w=winsOf(p.key).find(w=>w.m.includes(m));
-      if(w){const s=seasonOf(w.m),sc=SEASON[s];cells.push(`<td class="${m===CURM?"mcol-now":""}" style="padding:2px"><div class="cell on" data-key="${p.key}" title="${esc(w.tag)} (${esc(mrange(w.m))})" style="background:${sc[1]}">${m===CURM?"●":""}</div></td>`);}
-      else cells.push(`<td class="${m===CURM?"mcol-now":""}" style="padding:2px"><div class="cell" data-key="${p.key}" style="background:var(--surface-2);border-color:var(--line)"></div></td>`);
-    }
-    return `<tr class="rowline"><td class="pname${MAIN.has(p.key)?" main":""}" data-key="${p.key}" style="cursor:pointer">${esc(p.name)}</td>${cells.join("")}</tr>`;
+function annualMatrix(){
+  const monthHead=`<tr><th class="rl">구분 \\ 월</th>`+MONTHS.map((m,i)=>`<th class="${i+1===CURM?"mnow":""}">${m}</th>`).join("")+`</tr>`;
+  const themeRow=`<tr><td class="rl">🗓️ 이달의 테마</td>`+MONTHCAL.map((c,i)=>{const sc=SEASON[c.season];return `<td class="mc${i+1===CURM?" cnow":""}"><div class="theme" style="background:${sc[2]};color:${sc[1]}">${esc(c.theme)}</div></td>`;}).join("")+`</tr>`;
+  const kwRow=`<tr><td class="rl">🔖 마케팅 키워드</td>`+MONTHCAL.map((c,i)=>`<td class="mc${i+1===CURM?" cnow":""}"><div class="kwcell">${c.kws.map(k=>"#"+esc(k)).join(" ")}</div></td>`).join("")+`</tr>`;
+  const dayRow=`<tr><td class="rl">🎗️ 공휴일·기념일</td>`+MONTHCAL.map((c,i)=>`<td class="mc${i+1===CURM?" cnow":""}"><div class="daycell">${c.days.map(d=>`<span>${esc(d)}</span>`).join("")}</div></td>`).join("")+`</tr>`;
+  const prodRows=PRODUCTS.map(p=>{
+    const cells=MONTHS.map((mm,i)=>{const m=i+1;const ws=winsOf(p.key).filter(w=>w.m.includes(m));
+      if(ws.length){const sc=SEASON[seasonOf(ws[0].m)];const label=ws.map(w=>w.tag).join(" · ");
+        return `<td class="mc${m===CURM?" cnow":""}"><div class="pcell" data-key="${p.key}" title="${esc(label)}" style="background:${sc[2]};border-left:3px solid ${sc[1]}">${esc(label)}</div></td>`;}
+      return `<td class="mc${m===CURM?" cnow":""}"><div class="pcell empty" data-key="${p.key}"></div></td>`;}).join("");
+    return `<tr><td class="rl pn${MAIN.has(p.key)?" main":""}" data-key="${p.key}">${esc(p.name)}</td>${cells}</tr>`;
   }).join("");
-  return `<div class="hm-wrap"><table class="hm"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
+  return `<div class="mcal-wrap"><table class="mcal"><thead>${monthHead}</thead><tbody>${themeRow}${kwRow}${dayRow}<tr class="divrow"><td class="rl">보험 상품</td><td class="mc" colspan="12">상품별 시즌 이슈 · 셀/상품명 클릭 → 세부 탭</td></tr>${prodRows}</tbody></table></div>`;
 }
 function renderProduct(){
   const p=getP(curKey);const wins=winsOf(p.key);
