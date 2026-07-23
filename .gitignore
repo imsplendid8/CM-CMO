@@ -1,5 +1,8 @@
 scripts/.env
 .env
 google-ads.yaml
-volume*.json
+/volume*.json
+volume_naver.json
+volume_google.json
 __pycache__/
+# data/volume.json·data/trends.json 은 워크플로우가 커밋하는 산출물이라 추적함(무시하지 않음)
