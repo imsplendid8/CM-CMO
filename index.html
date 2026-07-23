@@ -63,6 +63,30 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 .foot b{color:var(--ink-2);font-weight:700;} .foot a{color:var(--brand-600);font-weight:700;text-decoration:none;}
 .themebtn{width:32px;height:32px;padding:0!important;justify-content:center;font-size:14px;}
 @media(max-width:760px){.hero h1{font-size:20px;} .tr .ext{display:none;} .logo small{display:none;} .home-wrap{padding:28px 18px 60px;}}
+/* 설정(API 키) 모달 */
+.mask{position:fixed;inset:0;z-index:100;background:rgba(15,23,41,.5);backdrop-filter:blur(3px);display:none;align-items:flex-start;justify-content:center;padding:56px 16px;overflow-y:auto;}
+.mask.on{display:flex;}
+.modal{width:100%;max-width:520px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh-lg);overflow:hidden;}
+.modal .mh{display:flex;align-items:center;gap:10px;padding:18px 20px;border-bottom:1px solid var(--line);}
+.modal .mh h3{font-size:15px;font-weight:800;letter-spacing:-.02em;flex:1;}
+.modal .mh .x{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);cursor:pointer;font-size:15px;}
+.modal .mb{padding:16px 20px;max-height:62vh;overflow-y:auto;}
+.ksec{font-size:11px;font-weight:800;color:var(--ink-2);letter-spacing:.02em;margin:14px 0 8px;display:flex;align-items:center;gap:7px;}
+.ksec:first-child{margin-top:0;}
+.ksec .dot{width:7px;height:7px;border-radius:50%;background:var(--ac,var(--brand));}
+.krow{display:flex;flex-direction:column;gap:4px;margin-bottom:9px;}
+.krow label{font-size:11.5px;color:var(--muted);font-weight:600;}
+.krow input{height:36px;padding:0 11px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);color:var(--ink);font-family:inherit;font-size:12.5px;letter-spacing:.02em;}
+.krow input:focus{outline:none;border-color:var(--brand);background:var(--surface);}
+.knote{font-size:11px;color:var(--muted);line-height:1.6;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:6px;}
+.knote b{color:var(--ink-2);}
+.mf{display:flex;gap:8px;padding:14px 20px;border-top:1px solid var(--line);}
+.mf button{height:38px;border-radius:10px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;border:1px solid var(--line);}
+.mf .save{flex:1;background:var(--grad);color:#fff;border:none;box-shadow:0 3px 10px rgba(224,133,15,.3);}
+.mf .clear{background:var(--surface);color:var(--ink-2);}
+.mf .save:hover{filter:brightness(1.05);} .mf .clear:hover{border-color:#e2564a;color:#e2564a;}
+.ktoast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:120;background:var(--ink);color:var(--surface);font-size:12.5px;font-weight:700;padding:11px 18px;border-radius:10px;box-shadow:var(--sh-lg);opacity:0;transition:.25s;pointer-events:none;}
+.ktoast.on{opacity:1;}
 </style>
 </head>
 <body>
@@ -71,6 +95,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
   <nav class="nav" id="nav"></nav>
   <div class="tr">
     <a class="ext" id="openTab" href="#" target="_blank" rel="noopener" title="현재 화면을 새 탭에서 열기">↗ 새 탭</a>
+    <button class="themebtn" id="keyBtn" title="API 키 설정(이 브라우저에만 저장)">⚙</button>
     <button class="themebtn" id="themeBtn" title="테마 전환">◐</button>
   </div>
 </header>
@@ -78,6 +103,15 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
   <iframe id="frame" title="도구"></iframe>
   <div id="home"></div>
 </div>
+<!-- API 키 설정 (이 브라우저 localStorage 에만 저장 · 서버·깃 전송/커밋 0) -->
+<div class="mask" id="keyMask">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="API 키 설정">
+    <div class="mh"><h3>⚙ API 키 설정</h3><button class="x" id="keyClose" aria-label="닫기">✕</button></div>
+    <div class="mb" id="keyBody"></div>
+    <div class="mf"><button class="save" id="keySave">이 브라우저에 저장</button><button class="clear" id="keyClear">전체 지우기</button></div>
+  </div>
+</div>
+<div class="ktoast" id="ktoast"></div>
 <script>
 "use strict";
 const WIKI="https://github.com/imsplendid8/CM-CMO/blob/main/docs/README.md";
@@ -137,6 +171,50 @@ document.addEventListener("click",e=>{
   const b=e.target.closest("[data-tool]"); if(b){e.preventDefault();show(b.dataset.tool);}
 });
 document.getElementById("themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");});
+
+/* ===== API 키 설정 (localStorage 'mf_keys' · 이 브라우저에만) ===== */
+/* 같은 오리진이므로 iframe 안 툴들도 이 키를 그대로 읽어 씀 (파일·Secrets에 키 붙일 필요 X) */
+const KEYS_LS="mf_keys";
+const KEY_SCHEMA=[
+  {sec:"CORS 프록시 (URL에서 바로 쓰려면 필수)",ac:"#0e9e8e",fields:[
+    {k:"proxy",l:"프록시 URL",ph:"https://내워커.<계정>.workers.dev"}]},
+  {sec:"네이버 검색 API (뉴스·데이터랩)",ac:"#e0850f",fields:[
+    {k:"naverId",l:"Client ID",ph:"developers.naver.com"},
+    {k:"naverSecret",l:"Client Secret",ph:"••••••••"}]},
+  {sec:"네이버 검색광고 API (검색량)",ac:"#2b6cb0",fields:[
+    {k:"adKey",l:"API Key",ph:"searchad.naver.com"},
+    {k:"adSecret",l:"Secret Key",ph:"••••••••"},
+    {k:"adCustomer",l:"Customer ID",ph:"숫자"}]},
+  {sec:"텔레그램 (데일리 브리프)",ac:"#7c5cd6",fields:[
+    {k:"tgToken",l:"Bot Token",ph:"@BotFather"},
+    {k:"tgChat",l:"Chat ID",ph:"@userinfobot"}]},
+];
+function loadKeys(){try{return JSON.parse(localStorage.getItem(KEYS_LS)||"{}")||{};}catch(e){return {};}}
+function ktoast(m){const t=document.getElementById("ktoast");t.textContent=m;t.classList.add("on");setTimeout(()=>t.classList.remove("on"),1900);}
+function renderKeys(){
+  const v=loadKeys();
+  document.getElementById("keyBody").innerHTML=KEY_SCHEMA.map(s=>
+    `<div class="ksec" style="--ac:${s.ac}"><span class="dot"></span>${esc(s.sec)}</div>`+
+    s.fields.map(f=>`<div class="krow"><label>${esc(f.l)}</label>
+      <input type="password" autocomplete="off" spellcheck="false" data-k="${f.k}" value="${esc(v[f.k]||"")}" placeholder="${esc(f.ph)}"></div>`).join("")
+  ).join("")+
+  `<div class="knote">🔒 입력한 키는 <b>이 브라우저에만</b> 저장됩니다(localStorage). 서버·깃허브로 <b>전송·커밋되지 않습니다</b>. 다른 PC에선 다시 입력해야 합니다.<br>
+   ▸ 네이버/광고 API는 브라우저에서 직접 호출이 막혀(CORS·서명) 있어, <b>프록시 URL</b>을 넣어야 툴이 실시간 데이터를 URL에서 바로 가져옵니다. 프록시 배포법 → <b>docs/api-from-url.md</b>.</div>`;
+}
+function openKeys(){renderKeys();document.getElementById("keyMask").classList.add("on");}
+function closeKeys(){document.getElementById("keyMask").classList.remove("on");}
+document.getElementById("keyBtn").addEventListener("click",openKeys);
+document.getElementById("keyClose").addEventListener("click",closeKeys);
+document.getElementById("keyMask").addEventListener("click",e=>{if(e.target.id==="keyMask")closeKeys();});
+document.getElementById("keySave").addEventListener("click",()=>{
+  const o={};document.querySelectorAll("#keyBody input[data-k]").forEach(i=>{const val=i.value.trim();if(val)o[i.dataset.k]=val;});
+  try{localStorage.setItem(KEYS_LS,JSON.stringify(o));ktoast("저장됨 · 이 브라우저에만");closeKeys();}catch(e){ktoast("저장 실패 — 저장공간 확인");}
+});
+document.getElementById("keyClear").addEventListener("click",()=>{
+  if(confirm("저장된 API 키를 이 브라우저에서 모두 지울까요?")){localStorage.removeItem(KEYS_LS);renderKeys();ktoast("모두 지움");}
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeKeys();});
+
 renderHome();
 const start=(location.hash||"").replace("#","");
 renderNav("home");

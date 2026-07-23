@@ -1,0 +1,11 @@
+name = "modooflow-naver-proxy"
+main = "naver-proxy-worker.js"
+compatibility_date = "2024-11-01"
+
+# 키를 워커에 직접 넣는 방식(B, 더 안전)을 쓰려면 아래를 wrangler secret 으로 등록:
+#   wrangler secret put NAVER_ID
+#   wrangler secret put NAVER_SECRET
+#   wrangler secret put AD_KEY
+#   wrangler secret put AD_SECRET
+#   wrangler secret put AD_CUSTOMER
+# (설정창 헤더 방식(A)만 쓸 거면 시크릿 등록 불필요)
