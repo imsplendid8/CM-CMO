@@ -1,0 +1,34 @@
+name: Naver Trends (DataLab)
+
+# 매월 1일 05:00 KST(=20:00 UTC 전날) 네이버 데이터랩 검색추세를 받아 data/trends.json 갱신.
+# 필요 Secrets: NAVER_CLIENT_ID, NAVER_CLIENT_SECRET (검색 API와 동일 키). 없으면 샘플 프로필로 대체.
+# 수동 실행: Actions → Naver Trends → Run workflow
+
+on:
+  schedule:
+    - cron: "0 20 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  trends:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fetch DataLab trends
+        env:
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+        run: python3 scripts/naver_trends.py
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/trends.json
+          git diff --staged --quiet || git commit -m "chore: 데이터랩 검색추세 갱신 (data/trends.json)"
+          git push

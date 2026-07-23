@@ -104,6 +104,23 @@ table.mcal thead th.rl{z-index:3;}
 .ytl{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin-top:12px;}
 .ytl .mo{height:26px;border-radius:5px;background:var(--surface-2);border:1px solid var(--line);font-size:9px;font-weight:800;color:var(--muted);display:flex;align-items:center;justify-content:center;position:relative;}
 .ytl .mo.now{outline:2px solid var(--brand);outline-offset:-2px;color:var(--brand);}
+/* 데이터랩 실측 추세 */
+.trend{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:14px 16px;margin-bottom:18px;}
+.trend-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.trend-h .t{font-size:12.5px;font-weight:800;}
+.trend-h .src{font-size:10px;font-weight:800;padding:2px 8px;border-radius:99px;}
+.trend-h .src.datalab{background:var(--good-bg);color:var(--good);} .trend-h .src.sample{background:var(--trx-bg);color:#a56a0e;}
+.trend-h .match{margin-left:auto;font-size:11px;font-weight:800;padding:3px 10px;border-radius:99px;}
+.trend-h .match.ok{background:var(--good-bg);color:var(--good);} .trend-h .match.warn{background:var(--bad-bg);color:var(--bad);}
+.tbars{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;align-items:end;height:74px;}
+.tbar{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:3px;}
+.tbar .bar{width:100%;border-radius:3px 3px 0 0;background:var(--brand);min-height:2px;transition:.2s;}
+.tbar.peak .bar{background:var(--brand);} .tbar:not(.peak) .bar{background:var(--faint);}
+.tbar.now .bar{outline:2px solid var(--ink);outline-offset:1px;}
+.tbar .ml{font-size:8.5px;font-weight:700;color:var(--muted);}
+.tbar.now .ml{color:var(--brand);font-weight:800;}
+.trend-note{font-size:11px;color:var(--ink-2);margin-top:10px;line-height:1.6;}
+.trend-note b{font-weight:800;}
 .wins{display:flex;flex-direction:column;gap:13px;}
 .win{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--sc);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;}
 .win-h{display:flex;align-items:center;gap:9px;padding:12px 16px;background:var(--scb);flex-wrap:wrap;}
@@ -227,6 +244,26 @@ function mrange(ms){const s=ms.slice().sort((a,b)=>a-b);// 연속 구간 표기
 function searchUrl(kw){return "https://search.naver.com/search.naver?query="+encodeURIComponent(kw);}
 const DATALAB="https://datalab.naver.com/keyword/trendSearch.naver";
 let curKey="__all";
+// 인라인 폴백(샘플) — Pages/서버에선 fetch로 실측(datalab) 데이터로 교체됨
+const TRENDS_FALLBACK={"asof":"2026-07-23","source":"sample","products":{"home":{"months":[100,57.7,15.5,15.5,15.5,15.5,15.5,15.5,15.5,15.5,57.7,57.7],"peakMonths":[1]},"hrmf":{"months":[100,100,100,100,26.8,100,100,100,26.8,26.8,100,100],"peakMonths":[1,2,3,4,6,7,8,11,12]},"golf":{"months":[100,100,100,100,100,26.8,26.8,26.8,100,100,100,100],"peakMonths":[1,2,3,4,5,9,10,11,12]},"cncr":{"months":[100,26.8,100,26.8,26.8,26.8,26.8,26.8,26.8,26.8,100,100],"peakMonths":[1,3,11,12]},"dntl":{"months":[100,100,26.8,26.8,26.8,100,100,100,26.8,26.8,26.8,26.8],"peakMonths":[1,2,6,7,8]},"driver":{"months":[100,100,100,26.8,26.8,26.8,100,100,100,100,26.8,100],"peakMonths":[1,2,3,7,8,9,10,12]},"woman":{"months":[26.8,26.8,100,26.8,26.8,26.8,26.8,26.8,26.8,100,100,100],"peakMonths":[3,10,11,12]},"birth":{"months":[100,26.8,100,100,100,26.8,26.8,26.8,26.8,26.8,26.8,26.8],"peakMonths":[1,3,4,5]},"overseas":{"months":[100,100,26.8,26.8,100,26.8,100,100,100,100,26.8,26.8],"peakMonths":[1,2,5,7,8,9,10]},"overseaslong":{"months":[26.8,100,100,26.8,26.8,26.8,26.8,100,100,26.8,26.8,26.8],"peakMonths":[2,3,8,9]}}};
+let TRENDS=TRENDS_FALLBACK;   // data/trends.json 로드 시 실측으로 교체(Pages/서버)
+const MONTHS_SHORT=["1","2","3","4","5","6","7","8","9","10","11","12"];
+function trendSection(p){
+  if(!TRENDS||!TRENDS.products||!TRENDS.products[p.key])return "";
+  const t=TRENDS.products[p.key];const src=TRENDS.source==="datalab"?["datalab","실측(데이터랩)"]:["sample","샘플(근사)"];
+  const peakSet=new Set(t.peakMonths||[]);
+  const toolMonths=new Set(winsOf(p.key).flatMap(w=>w.m));
+  const match=[...toolMonths].some(m=>peakSet.has(m));
+  const bars=(t.months||[]).map((v,i)=>{const m=i+1;const pk=peakSet.has(m);
+    return `<div class="tbar${pk?" peak":""}${m===CURM?" now":""}" title="${MONTHS[i]} · 지수 ${Math.round(v)}"><div class="bar" style="height:${Math.max(2,v)}%"></div><span class="ml">${MONTHS_SHORT[i]}</span></div>`;}).join("");
+  const peakTxt=(t.peakMonths||[]).map(m=>m+"월").join("·")||"—";
+  return `<div class="trend">
+    <div class="trend-h"><span class="t">📈 데이터랩 실측 검색추세</span><span class="src ${src[0]}">${src[1]}</span>
+      <span class="match ${match?"ok":"warn"}">${match?"✓ 시즌 이슈와 일치":"⚠ 재검토(피크 불일치)"}</span></div>
+    <div class="tbars">${bars}</div>
+    <div class="trend-note"><b>실측 피크</b> ${esc(peakTxt)} · 기준 ${esc(TRENDS.asof||"")} · ${TRENDS.source==="datalab"?"네이버 데이터랩 최근 24개월 월별 검색추세를 달력월로 집계":"실측 연동 전 근사값 — trends 워크플로우 실행 시 실측으로 교체"}. 시즌 이슈(카드)의 달과 실측 피크가 맞는지 확인하세요.</div>
+  </div>`;
+}
 
 function renderSidebar(){
   const item=(key,label,cnt,on)=>`<button class="sb-item${on?" on":""}" data-key="${key}"><span>${esc(label)}</span><span class="kc">${cnt}</span></button>`;
@@ -292,6 +329,7 @@ function renderProduct(){
   $("#content").innerHTML=`
     <div class="seedbar"><h2>${esc(p.name)}${MAIN.has(p.key)?' <span style="font-size:11px;color:var(--brand);font-weight:800">★ 메인 상품군</span>':""}</h2>
       <div class="ytl">${tl}</div></div>
+    ${trendSection(p)}
     <div class="sec-lbl">시즌별 이슈 · 키워드 · 선제 대응</div>
     <div class="wins">${cards}</div>
     <div class="note"><b>활용</b> · 각 시즌 <b>선제 대응 시점</b>(보통 피크 3~4주 전)에 맞춰 <b>SEO 태그·검색광고 키워드·뉴스 모니터링</b>을 준비하세요. 키워드 칩은 네이버 검색, <b>데이터랩</b> 링크로 실제 검색 추세를 검증할 수 있습니다.</div>`;
@@ -300,6 +338,8 @@ function render(){curKey==="__all"?renderOverview():renderProduct();renderSideba
 document.addEventListener("click",e=>{const nav=e.target.closest("[data-key]");if(nav&&nav.dataset.key){curKey=nav.dataset.key;render();}});
 $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");});
 render();
+// 데이터랩 실측 추세 로드(Pages/서버 동일출처에서만 · 아티팩트/file은 조용히 생략)
+fetch("data/trends.json").then(r=>r.ok?r.json():null).then(d=>{if(d&&d.products){TRENDS=d;if(curKey!=="__all")render();}}).catch(()=>{});
 </script>
 </body>
 </html>
