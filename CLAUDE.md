@@ -11,11 +11,11 @@
 | 현재 상태·재개 | `STATE.md` (최우선) |
 | 위키(정리 문서) | `docs/` — `README.md`(색인)·`architecture.md`·`tools.md`·`roadmap.md`·`daily-brief.md`·`api-from-url.md`(프록시)·`oss-leverage.md`·`enhancements.md` |
 | 허브 | `index.html` (상단 고정 내비 + ⚙키설정 + API 사용량 위젯) |
-| 도구 5종 | `seo-audit.html` · `keyword-tool.html` · `news-tool.html`(업계·경쟁사+수요 트리거) · `serp-tool.html`(자동 캡쳐) · `seasonal-tool.html` |
+| 도구 6종 | `seo-audit.html` · `keyword-tool.html` · `news-tool.html`(업계·경쟁사+수요 트리거) · `serp-tool.html`(자동 캡쳐) · `seasonal-tool.html` · `terms-tool.html`(약관 용어→쉬운 표현) |
 | 팀 실시간 프록시 | `proxy/naver-proxy-worker.js` (Cloudflare Worker · 키=워커 시크릿) |
 | 폰트 | `fonts/PretendardVariable.woff2` (자체호스팅) |
 | 스크립트 | `scripts/` (workflow용: `naver_searchad_volume`·`naver_trends`·`daily_brief`·`capture_serp`·`check_products_sync`; 로컬 폴백: `naver_local_server`) |
-| 스킬 | `.claude/skills/cm-news-analysis/` |
+| 스킬 3종 | `.claude/skills/` — `cm-news-analysis`(뉴스·동향 분석) · `card-news-summary`(카드뉴스 요약) · `insurance-terms`(약관 용어 순화) |
 | 배포·자동화 | `.github/workflows/` — pages·ci·daily-brief·trends·searchad·serp-capture·technical-seo |
 
 ## 작업 규칙
