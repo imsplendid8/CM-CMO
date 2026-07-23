@@ -593,7 +593,18 @@ function implSection(p,c,opt){
   const canonical = p.delivery==="bridge"
     ? `<link rel="canonical" href="${p.destUrl||url}">`
     : `<link rel="canonical" href="https://www.hanwhadirect.com${p.path||"/"}">\n<link rel="alternate" media="only screen and (max-width: 640px)" href="https://m.hanwhadirect.com${p.path||"/"}">`;
-  const head=`<!-- ① 이 부분을 <head> ... </head> 사이에 붙여넣으세요 -->
+  const head=`<!-- ① 이 부분을 <head> ... <style id="mf-saas-theme">
+/* Clean SaaS Light — 통일 뉴트럴 테마 + Pretendard 자체호스팅 (액센트색은 각 툴 유지) */
+@font-face{font-family:'Pretendard Variable';font-weight:45 920;font-style:normal;font-display:swap;src:url('fonts/PretendardVariable.woff2') format('woff2-variations');}
+:root{--sans:'Pretendard Variable','Pretendard','Noto Sans KR','Apple SD Gothic Neo',system-ui,-apple-system,sans-serif;
+ --ink:#0f1729;--ink-2:#4a5163;--muted:#8b93a3;--faint:#cdd2db;
+ --bg:#f7f8fa;--surface:#ffffff;--surface-2:#f4f6f8;--line:#e8ebef;--line-2:#eef1f4;
+ --sh:0 1px 2px rgba(15,23,41,.04),0 2px 6px rgba(15,23,41,.05);--sh-lg:0 12px 30px rgba(15,23,41,.10);}
+@media(prefers-color-scheme:dark){:root{--ink:#eef1f6;--ink-2:#b7bdc9;--muted:#7f8697;--faint:#4a4f60;--bg:#0e1016;--surface:#171a21;--surface-2:#1d212a;--line:#262b35;--line-2:#20242d;--sh:0 1px 2px rgba(0,0,0,.4),0 2px 6px rgba(0,0,0,.5);--sh-lg:0 14px 34px rgba(0,0,0,.6);}}
+:root[data-theme="dark"]{--ink:#eef1f6;--ink-2:#b7bdc9;--muted:#7f8697;--faint:#4a4f60;--bg:#0e1016;--surface:#171a21;--surface-2:#1d212a;--line:#262b35;--line-2:#20242d;--sh:0 1px 2px rgba(0,0,0,.4),0 2px 6px rgba(0,0,0,.5);--sh-lg:0 14px 34px rgba(0,0,0,.6);}
+:root[data-theme="light"]{--ink:#0f1729;--ink-2:#4a5163;--muted:#8b93a3;--faint:#cdd2db;--bg:#f7f8fa;--surface:#ffffff;--surface-2:#f4f6f8;--line:#e8ebef;--line-2:#eef1f4;--sh:0 1px 2px rgba(15,23,41,.04),0 2px 6px rgba(15,23,41,.05);--sh-lg:0 12px 30px rgba(15,23,41,.10);}
+</style>
+</head> 사이에 붙여넣으세요 -->
 <title>${c.nt}</title>
 <meta name="description" content="${c.gd}">
 <meta property="og:title" content="${c.st}">
