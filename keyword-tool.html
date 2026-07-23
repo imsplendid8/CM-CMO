@@ -148,7 +148,7 @@ td.kw{font-weight:700;color:var(--ink);white-space:normal;} td.c{text-align:cent
           <span class="hint">출처(도구/네이버)로 구분 표시 · 중복 자동 제거 · 브라우저에서만 처리(전송 0)</span></div>
       </div>
     </details>
-    <details class="imp" id="livePanel" style="border-color:var(--nav-ink)"><summary style="color:var(--nav-ink)">🔌 네이버 실시간 연동 <span style="color:var(--muted);font-weight:600">(고급 · 개발자용 — 로컬 연동 서버를 켠 경우에만 동작)</span></summary>
+    <details class="imp" id="livePanel" style="border-color:var(--nav-ink)"><summary style="color:var(--nav-ink)">🔌 네이버 실시간 검색량 <span style="color:var(--muted);font-weight:600">(프록시 연결됨 — 키 입력 없이 바로 · 아래 3칸은 개인 override용)</span></summary>
       <div class="ib">
         <div class="pform" style="margin-top:0">
           <input id="nvApi" placeholder="액세스라이선스 (API_KEY)" autocomplete="off">
@@ -156,7 +156,7 @@ td.kw{font-weight:700;color:var(--ink);white-space:normal;} td.c{text-align:cent
           <input id="nvCust" placeholder="CUSTOMER ID (숫자)" autocomplete="off">
           <div class="pfrow"><button class="btn primary" id="nvGo" style="background:linear-gradient(135deg,#03C75A,#37d97e)">네이버 연동 & 검색량 가져오기</button>
             <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px"><input type="checkbox" id="nvSave"> 이 브라우저에 키 저장</label>
-            <span class="hint" id="nvStatus">먼저 터미널에서 <b>python3 scripts/naver_local_server.py</b> 실행 → <b>http://localhost:8787/keyword-tool.html</b> 로 이 페이지를 여세요</span></div>
+            <span class="hint" id="nvStatus"><b>팀 공유 프록시 연결됨</b> — 상품 선택 후 위 버튼만 누르면 실검색량이 병합됩니다(키 입력 불필요). 워커에 AD_KEY/AD_SECRET/AD_CUSTOMER 시크릿 필요.</span></div>
         </div>
       </div>
     </details>
@@ -480,19 +480,38 @@ $("#volFile").addEventListener("change",e=>{if(e.target.files[0])applyVolFile(e.
   ta.addEventListener("drop",e=>{e.preventDefault();ta.style.borderColor="";if(e.dataTransfer.files[0])applyVolFile(e.dataTransfer.files[0]);});})();
 $("#volLoad").addEventListener("click",()=>importKeywords($("#volJson").value));
 $("#volSample").addEventListener("click",()=>{$("#volJson").value="암보험비교사이트\n40대암보험\n암보험재가입\n유사암진단비\n암보험갱신형\n비갱신암보험\n암보험 순위\n표적항암약물허가치료비";});
-// 네이버 실시간 연동(로컬 연동 서버 경유)
+// 네이버 실시간 연동 — 팀 공유 프록시(기본) 우선, 로컬 서버 폴백
+const DEFAULT_PROXY="https://modooflow-naver-proxy.angle0102.workers.dev";
+function mfKeys(){try{return JSON.parse(localStorage.getItem("mf_keys")||"{}")||{};}catch(e){return {};}}
+function adNum(v){if(v==null)return 0;const s=String(v);if(s.indexOf("<")>=0)return 5;const n=parseInt(s.replace(/[^0-9]/g,""),10);return isNaN(n)?0:n;}
 (function(){try{const s=JSON.parse(localStorage.getItem("nv_keys")||"null");if(s){$("#nvApi").value=s.api||"";$("#nvCust").value=s.cust||"";if(s.sec)$("#nvSec").value=s.sec;$("#nvSave").checked=true;}}catch(e){}})();
 $("#nvGo").addEventListener("click",()=>{
   const api=$("#nvApi").value.trim(),sec=$("#nvSec").value.trim(),cust=$("#nvCust").value.trim();
-  if(!api||!sec||!cust){$("#nvStatus").textContent="키 3개(액세스라이선스·비밀키·CUSTOMER ID)를 모두 입력하세요";return;}
-  if($("#nvSave").checked)localStorage.setItem("nv_keys",JSON.stringify({api,cust,sec}));else localStorage.removeItem("nv_keys");
+  const kk=mfKeys(),proxy=(kk.proxy||DEFAULT_PROXY||"").replace(/\/+$/,"");
+  if(!proxy && (!api||!sec||!cust)){$("#nvStatus").textContent="키 3개(액세스라이선스·비밀키·CUSTOMER ID)를 모두 입력하세요";return;}
+  if($("#nvSave").checked&&(api||sec||cust))localStorage.setItem("nv_keys",JSON.stringify({api,cust,sec}));else if(!$("#nvSave").checked)localStorage.removeItem("nv_keys");
   const prods = curKey==="__pro"&&PROSEED?[PROSEED] : (curKey==="__all"||curKey==="__pro")?PRODUCTS : [getP(curKey)];
   const seeds=[...new Set(prods.flatMap(p=>p.core.slice(0,2)))];
+  const target=(curKey==="__pro"&&PROSEED)?"__pro":curKey;
   $("#nvStatus").textContent="네이버 조회 중… (시드 "+seeds.length+"개)";
+  if(proxy){   // ① 프록시 경유(검색광고 HMAC은 워커가 서명) — 팀은 키 입력 불필요(워커 시크릿)
+    const hd={};if(api)hd["x-mf-ad-key"]=api;if(sec)hd["x-mf-ad-secret"]=sec;if(cust)hd["x-mf-ad-customer"]=cust;
+    const batches=[];for(let i=0;i<seeds.length;i+=5)batches.push(seeds.slice(i,i+5));
+    Promise.all(batches.map(b=>fetch(proxy+"/searchad/keywordstool?showDetail=1&hintKeywords="+encodeURIComponent(b.join(",")),{headers:hd}).then(r=>r.json())))
+      .then(rs=>{const map={};let err=null;
+        rs.forEach(r=>{if(r&&!r.keywordList&&(r.error||r.message||r.title)){err=r.error||r.message||r.title;return;}
+          ((r&&r.keywordList)||[]).forEach(it=>{const k=(it.relKeyword||"").trim();if(!k)return;map[k]={pc:adNum(it.monthlyPcQcCnt),mobile:adNum(it.monthlyMobileQcCnt),comp:it.compIdx||""};});});
+        if(!Object.keys(map).length){$("#nvStatus").textContent="검색광고 오류: "+(err||"결과 없음");return;}
+        importMap(map,target);
+        $("#nvStatus").textContent="✔ 검색광고 실검색량 "+Object.keys(map).length+"개 병합됨(프록시)";
+      }).catch(()=>{$("#nvStatus").innerHTML="실시간 연동 실패 — 허브 ⚙프록시 URL 또는 워커 시크릿(AD_KEY 등)을 확인하세요";});
+    return;
+  }
+  // ② 로컬 연동 서버(폴백)
   fetch("/naver",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({apiKey:api,secret:sec,customer:cust,seeds})})
     .then(r=>r.json()).then(d=>{
       if(d.error){$("#nvStatus").textContent="네이버 오류: "+d.error;return;}
-      const kw=d.keywords||{};importMap(kw,(curKey==="__pro"&&PROSEED)?"__pro":curKey);
+      const kw=d.keywords||{};importMap(kw,target);
       $("#nvStatus").textContent="✔ 네이버 연관키워드 "+Object.keys(kw).length+"개 병합됨";
     }).catch(()=>{$("#nvStatus").innerHTML="연동 서버를 못 찾았어요 — 터미널에서 <b>python3 scripts/naver_local_server.py</b> 실행 후 <b>http://localhost:8787/keyword-tool.html</b> 로 여세요";});
 });
