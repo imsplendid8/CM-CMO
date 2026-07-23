@@ -27,7 +27,9 @@ TODAY = datetime.date.today().isoformat()
 # ── 공공데이터 엔드포인트 ─────────────────────────────
 KMA_WARN = "http://apis.data.go.kr/1360000/WthrWrnInfoService/getWthrWrnList"   # 기상청 기상특보 목록 (JSON)
 # 한국문화관광연구원 출입국관광통계 — 국민 해외관광객(출국, ED_CD=E) = 해외여행보험 수요 지표 (XML)
-TOUR_STATS = "https://openapi.tour.go.kr/openapi/service/EdrcntTourismStatsService/getEdrcntTourismStatsList"
+# openapi.tour.go.kr는 GitHub Actions에서 https가 자주 먹통 → http 우선, https 폴백
+TOUR_BASES = ["http://openapi.tour.go.kr/openapi/service/EdrcntTourismStatsService/getEdrcntTourismStatsList",
+              "https://openapi.tour.go.kr/openapi/service/EdrcntTourismStatsService/getEdrcntTourismStatsList"]
 # 소방청 화재통계는 월별 집계 성격 → 필요 시 확장
 
 def _get(url, params, timeout=20):   # JSON 응답용(기상청)
@@ -66,12 +68,16 @@ def _ym(n_back):
 def fetch_travel():
     """국민 해외관광객(출국) 최근월 총계 → 해외여행보험 수요. (출입국관광통계 · XML · 통계 1~2개월 지연)."""
     last_err = ""
-    for back in (2, 3, 1):   # 통계 지연 감안 최근월 탐색(과다 요청 방지 3회)
+    for back in (2, 3):   # 통계 지연 감안 최근월 탐색
         ym = _ym(back)
-        try:
-            xml = _get_xml(TOUR_STATS, {"YM": ym, "ED_CD": "E", "numOfRows": 100, "pageNo": 1})  # ED_CD=E: 국민 해외관광객
-        except Exception as e:
-            last_err = str(e)[:140]; continue
+        xml = None
+        for base in TOUR_BASES:   # http 우선, https 폴백
+            try:
+                xml = _get_xml(base, {"YM": ym, "ED_CD": "E", "numOfRows": 100, "pageNo": 1}, timeout=30)  # ED_CD=E: 국민 해외관광객
+                break
+            except Exception as e:
+                last_err = str(e)[:140]
+        if xml is None: continue
         try:
             root = ET.fromstring(xml)
         except Exception as e:
