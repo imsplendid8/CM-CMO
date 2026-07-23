@@ -49,4 +49,10 @@ docs/ · STATE.md · CLAUDE.md         문서
 ## ⚠️ 데이터 거버넌스
 - 고객·임직원 개인정보·영업비밀 **금지**. 샘플·공개·비식별/가상 데이터만.
 - 뉴스·SERP는 공개 정보. 요약·시사점은 자체 분석. 광고 문구는 광고심의 검수 전제.
-- API 키·토큰은 코드/커밋 금지 — `.gitignore`, GitHub Secrets, 로컬만.
+- API 키·토큰은 코드/커밋 금지 — **워커 시크릿(팀 공유) · GitHub Secrets(무인 Action) · localStorage(개인)** 3층. 파일/커밋엔 절대 X.
+
+## 실시간 연동·자동화·디자인 (2026-07 갱신)
+- **팀 실시간 연동**: `proxy/naver-proxy-worker.js`(Cloudflare Worker)가 네이버 CORS·HMAC을 대신 처리. 툴은 `DEFAULT_PROXY`로 호출, 키는 워커 시크릿에 있어 팀원은 설정 0. 뉴스(`/naver`)·검색량(`/searchad`) 연결됨. 상세 → `api-from-url.md`.
+- **사용량 위젯**: 워커가 호출수를 KV(`USAGE`)에 일별 집계 → 허브 홈 "오늘 API 사용량"(`/usage`). KV 없으면 숨김.
+- **SERP 자동 캡쳐**: `scripts/capture_serp.mjs` + `serp-capture.yml`(주간). Playwright로 네이버 SERP 캡쳐→`serp/`. serp-tool이 `manifest.json` 로드해 병합.
+- **디자인 시스템**: Clean SaaS Light. 각 도구 `<head>`의 `id="mf-saas-theme"` 블록이 통일 뉴트럴 토큰 + Pretendard 자체호스팅(`fonts/`) 주입. 툴별 액센트색은 유지. 되돌리려면 그 블록만 제거.

@@ -7,7 +7,10 @@
 - **[architecture.md](architecture.md)** — 저장소 구조·디자인 시스템·브랜치/배포·데이터 거버넌스·도구 추가/발행 방법
 - **[tools.md](tools.md)** — 5개 도구별 목적·데이터 모델·사용법
 - **[roadmap.md](roadmap.md)** — 진행 현황(5/10)·다음 후보·**고도화 아이디어(오픈소스 활용 포함)**
-- **[daily-brief.md](daily-brief.md)** — 데일리 카카오 비서 브리핑 설정
+- **[daily-brief.md](daily-brief.md)** — 데일리 텔레그램 비서 브리핑 설정
+- **[api-from-url.md](api-from-url.md)** — **팀 실시간 연동**(Cloudflare 프록시·워커 시크릿·KV 사용량·재배포)
+- **[oss-leverage.md](oss-leverage.md)** — 활용 OSS(Pretendard·Playwright·pixelmatch 등)
+- **[../serp/README.md](../serp/README.md)** — SERP 자동 캡쳐 아카이브
 
 ## 빠른 링크
 - 배포(정본): https://imsplendid8.github.io/CM-CMO/
