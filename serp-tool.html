@@ -285,7 +285,18 @@ const LS="mf_serp";
 function loadArc(){try{return JSON.parse(localStorage.getItem(LS)||"{}")||{};}catch(e){return {};}}
 function saveArc(a){try{localStorage.setItem(LS,JSON.stringify(a));}catch(e){toast("저장공간 초과 — 오래된 캡처를 지우거나 백업 후 정리하세요");}}
 let ARC=loadArc();
-const shotsOf=k=>{const s=safeKey(k);return s&&Array.isArray(ARC[s])?ARC[s].slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")):[];};
+/* 리포 자동 캡쳐(serp/manifest.json) — Playwright 주간 워크플로우가 채움. 읽기전용 */
+let REPO={};
+function loadRepoManifest(){
+  return fetch("serp/manifest.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(m=>{
+    if(!m||!m.shots)return;
+    Object.keys(m.shots).forEach(k=>{const s=safeKey(k);if(!s)return;
+      REPO[s]=(m.shots[k].captures||[]).map(c=>({id:"repo_"+c.file,date:c.date,img:"serp/"+c.file,repo:true,note:"자동 캡쳐"}));});
+  }).catch(()=>{}); // 아티팩트/오프라인에선 404 → 무시(수동 업로드만)
+}
+const shotsOf=k=>{const s=safeKey(k);if(!s)return [];
+  const man=Array.isArray(ARC[s])?ARC[s]:[],rep=Array.isArray(REPO[s])?REPO[s]:[];
+  return man.concat(rep).sort((a,b)=>(b.date||"").localeCompare(a.date||""));};
 const todayStr=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
 
 /* 이미지 다운스케일(용량 절약) → dataURL(JPEG) */
@@ -341,10 +352,10 @@ function renderSidebar(){
 function serpUrl(kw){return "https://search.naver.com/search.naver?query="+encodeURIComponent(kw);}
 function archiveSection(p){
   const shots=shotsOf(p.key);
-  const tl=shots.length?`<div class="tl">${shots.map(s=>`<div class="shot"><span class="del" data-del="${s.id}" title="삭제">✕</span>
+  const tl=shots.length?`<div class="tl">${shots.map(s=>`<div class="shot">${s.repo?`<span class="del" style="background:var(--brand-50);color:var(--brand-600);cursor:default" title="주간 자동 캡쳐">⤓</span>`:`<span class="del" data-del="${s.id}" title="삭제">✕</span>`}
       <img src="${s.img}" data-zoom="${s.id}" alt="${esc(p.kw)} ${esc(s.date)}">
-      <div class="d">${esc(s.date)}</div>
-      <input class="note" data-note="${s.id}" value="${esc(s.note||"")}" placeholder="변화 메모(순위·신규 광고 등)" style="width:150px;border:1px solid var(--line);border-radius:6px;padding:3px 6px;background:var(--surface-2);color:var(--ink);font-family:inherit;margin-top:3px"></div>`).join("")}</div>`
+      <div class="d">${esc(s.date)}${s.repo?` · <span style="color:var(--brand-600);font-weight:700">자동</span>`:""}</div>
+      ${s.repo?`<div class="note" style="width:150px;font-size:11px;color:var(--muted);margin-top:3px">주간 자동 캡쳐(리포)</div>`:`<input class="note" data-note="${s.id}" value="${esc(s.note||"")}" placeholder="변화 메모(순위·신규 광고 등)" style="width:150px;border:1px solid var(--line);border-radius:6px;padding:3px 6px;background:var(--surface-2);color:var(--ink);font-family:inherit;margin-top:3px">`}</div>`).join("")}</div>`
     : `<div class="empty">아직 저장된 스크린샷이 없습니다.<br><b>네이버 PC 검색결과 보기</b>로 열어 캡처한 뒤, 위 영역에 이번 주 스크린샷을 올리세요.<br>매주 같은 시점(예: 월요일 오전)에 올리면 주간 변화가 쌓입니다.</div>`;
   // before/after 비교
   const opts=shots.map(s=>`<option value="${s.id}">${esc(s.date)}${s.note?" · "+esc(s.note.slice(0,14)):""}</option>`).join("");
@@ -457,6 +468,7 @@ $("#impFile").addEventListener("change",e=>{const f=e.target.files[0];if(!f)retu
   rd.readAsText(f);e.target.value="";});
 $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");});
 render();
+loadRepoManifest().then(()=>render()); // 리포 자동 캡쳐 반영(있으면)
 </script>
 </body>
 </html>

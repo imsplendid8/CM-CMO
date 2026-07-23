@@ -1,0 +1,45 @@
+name: SERP Capture
+
+# 상품별 네이버 PC 검색결과를 주간 자동 스크린샷 → serp/ 커밋 (전/후 diff 아카이브)
+on:
+  schedule:
+    - cron: "0 21 * * 1"   # 매주 화요일 06:00 KST (UTC 월 21:00)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: serp-capture
+  cancel-in-progress: false
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Playwright + Chromium
+        run: |
+          npm init -y >/dev/null 2>&1 || true
+          npm install playwright@1.48.0
+          npx playwright install --with-deps chromium
+
+      - name: Capture SERP screenshots
+        run: node scripts/capture_serp.mjs
+
+      - name: Commit new captures
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add serp/
+          if git diff --cached --quiet; then
+            echo "변경 없음 — 커밋 생략"
+          else
+            git commit -m "chore(serp): 주간 네이버 SERP 자동 캡쳐 $(date +%F)"
+            git push
+          fi
