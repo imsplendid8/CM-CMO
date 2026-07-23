@@ -61,6 +61,13 @@ _최종 갱신: 2026-07-23 · 진행: 5/10 기능 + 팀 실시간 연동·자동
 4. 새 기능이면: main에서 짧은 브랜치 → 도구 파일 + `index.html` `TOOLS` 카드 → 검증(Playwright 렌더/`node --check`/`check_products_sync.py`) → main 병합·push(자동 배포).
 5. **데이터 거버넌스 준수**: 실제 개인정보·영업비밀·실키 커밋 금지, 샘플·공개·비식별만. 키는 워커 시크릿/GitHub Secrets/localStorage에만.
 
+## 점검 이력 (2026-07-23)
+- **레거시 제거**: 수동 키워드 파이프라인(`run_keywords.sh`·`naver_searchad_keywords.py`·`google_ads_keywords.py`·`merge_volume.py`) → 자동 Action + 프록시로 대체. `KEYWORD-API.md` 현행화.
+- **보안**: 전 페이지 CSP(default 'self' + 프록시 `*.workers.dev`) + no-referrer. 커밋된 시크릿 없음 확인. 남은 권고=워커 `ALLOW_ORIGIN` 최신본 재배포, (선택) 프록시 공유토큰.
+- **뉴스 고도화**: 업계·경쟁사(INDUSTRY 빅4/5) + 수요 트리거(TRIGGERS) + 카드뉴스.
+- **고도화 후보**: `docs/enhancements.md` (공공데이터 API=소방청·기상청로 트리거 실데이터화 / NaverSearch·Kakao MCP / 스킬 확장).
+- **보류(사용자 검토중)**: #3 실측 검색량 월별 그래프, #2 브랜드·계약(단가표 받아둠 → scratchpad).
+
 ## 핵심 결정 기록 (왜 이렇게 했나)
 - 도구 = **자체완결 단일 HTML**(외부 의존성 0) → 직접접속·Artifact 발행 모두 용이. 폰트만 자체호스팅.
 - 뉴스는 키워드 도구에서 **분리**해 독립 작업공간(사용자 요청).

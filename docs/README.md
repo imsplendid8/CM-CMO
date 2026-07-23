@@ -10,6 +10,7 @@
 - **[daily-brief.md](daily-brief.md)** — 데일리 텔레그램 비서 브리핑 설정
 - **[api-from-url.md](api-from-url.md)** — **팀 실시간 연동**(Cloudflare 프록시·워커 시크릿·KV 사용량·재배포)
 - **[oss-leverage.md](oss-leverage.md)** — 활용 OSS(Pretendard·Playwright·pixelmatch 등)
+- **[enhancements.md](enhancements.md)** — 고도화 검토(공공데이터 API·MCP·OSS·Claude 스킬)
 - **[../serp/README.md](../serp/README.md)** — SERP 자동 캡쳐 아카이브
 
 ## 빠른 링크
