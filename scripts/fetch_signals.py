@@ -25,7 +25,8 @@ TODAY = datetime.date.today().isoformat()
 
 # ── 공공데이터 엔드포인트 (data.go.kr) ─────────────────────────────
 KMA_WARN = "http://apis.data.go.kr/1360000/WthrWrnInfoService/getWthrWrnList"   # 기상청 기상특보 목록
-AIRPORT  = "http://apis.data.go.kr/B551177/StatsAirTransport/getFlightStatsList"  # 인천공항 여객/운항 통계(예시)
+# 한국관광공사 출입국관광통계 — 국민 해외관광객(출국) = 해외여행보험 수요 지표
+TOUR_STATS = "http://apis.data.go.kr/B551011/EdrcntTourismStatsService/getEdrcntTourismStatsList"
 # 소방청 화재통계는 월별 집계 성격 → 필요 시 확장
 
 def _get(url, params, timeout=20):
@@ -49,21 +50,31 @@ def fetch_weather():
     except Exception as e:
         return {"active": [], "error": str(e)[:120]}
 
+def _ym(n_back):
+    y, m = datetime.date.today().year, datetime.date.today().month - n_back
+    while m <= 0: m += 12; y -= 1
+    return f"{y}{m:02d}"
+
 def fetch_travel():
-    """공항 여객 최근 실적(전년비). 스키마는 서비스에 맞춰 조정."""
+    """국민 해외관광객(출국) 최근월 총계 → 해외여행보험 수요. (한국관광공사 출입국관광통계 · 통계는 1~2개월 지연)."""
     try:
-        d = _get(AIRPORT, {"numOfRows": 12, "pageNo": 1})
-        items = (((d or {}).get("response", {}).get("body", {}) or {}).get("items", {}) or {}).get("item", [])
-        if isinstance(items, dict): items = [items]
-        pax = None
-        for it in items:
-            for k in ("pax", "passenger", "여객", "totalPax"):
-                if it.get(k) is not None:
-                    pax = int(str(it[k]).replace(",", "")); break
-            if pax is not None: break
-        return {"airport_pax": pax}
+        for back in (2, 3, 1, 4, 5):   # 최근월 데이터 있는 달 탐색
+            ym = _ym(back)
+            d = _get(TOUR_STATS, {"YM": ym, "ED_CD": "E", "numOfRows": 400, "pageNo": 1})  # ED_CD=E: 국민 해외관광객
+            body = ((d or {}).get("response", {}) or {}).get("body", {}) or {}
+            items = (body.get("items", {}) or {}).get("item", [])
+            if isinstance(items, dict): items = [items]
+            total, cnt = 0, 0
+            for it in items:
+                v = it.get("num")
+                if v in (None, ""): continue
+                try: total += int(str(v).replace(",", "")); cnt += 1
+                except Exception: pass
+            if cnt:
+                return {"outbound_total": total, "ym": ym, "countries": cnt}
+        return {"outbound_total": None, "error": "최근월 데이터 없음(YM/ED_CD 확인)"}
     except Exception as e:
-        return {"airport_pax": None, "error": str(e)[:120]}
+        return {"outbound_total": None, "error": str(e)[:140]}
 
 def build_triggers(weather, travel):
     """상품별 실시간 수요 신호 레벨 산출(정성 규칙)."""
@@ -77,14 +88,14 @@ def build_triggers(weather, travel):
     # 운전자: 대설·강풍(빙판·사고)
     if {"대설", "강풍"} & w:
         trg["driver"] = {"level": "high", "note": "대설·강풍 특보 → 사고 위험·운전자보험 관심↑"}
-    # 해외여행: 공항 여객 신호(있으면)
-    if travel.get("airport_pax"):
-        trg["overseas"] = {"level": "high", "note": f"공항 여객 실적 반영 → 해외여행보험 수요 지표({travel['airport_pax']:,}명)"}
+    # 해외여행: 국민 해외관광객(출국) 신호(있으면)
+    if travel.get("outbound_total"):
+        trg["overseas"] = {"level": "high", "note": f"국민 해외관광객 {travel['outbound_total']:,}명({travel.get('ym','')}) → 해외여행보험 수요"}
     return trg
 
 def sample():
     weather = {"active": ["호우", "폭염"]}
-    travel = {"airport_pax": 1842300, "yoy_pct": 12.3}
+    travel = {"outbound_total": 2384100, "ym": "202605"}
     return {"asof": TODAY, "source": "sample", "weather": weather, "travel": travel,
             "triggers": build_triggers(weather, travel)}
 
