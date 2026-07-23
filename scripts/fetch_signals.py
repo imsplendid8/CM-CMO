@@ -17,23 +17,30 @@
 엔드포인트는 상수로 분리 — 첫 실행에서 응답 스키마에 맞춰 PARSE 부분만 조정하면 됩니다.
 """
 import os, sys, json, datetime, urllib.parse, urllib.request
+import xml.etree.ElementTree as ET
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "data", "signals.json")
 KEY = os.environ.get("DATA_GO_KR_KEY", "").strip()
 TODAY = datetime.date.today().isoformat()
 
-# ── 공공데이터 엔드포인트 (data.go.kr) ─────────────────────────────
-KMA_WARN = "http://apis.data.go.kr/1360000/WthrWrnInfoService/getWthrWrnList"   # 기상청 기상특보 목록
-# 한국관광공사 출입국관광통계 — 국민 해외관광객(출국) = 해외여행보험 수요 지표
-TOUR_STATS = "http://apis.data.go.kr/B551011/EdrcntTourismStatsService/getEdrcntTourismStatsList"
+# ── 공공데이터 엔드포인트 ─────────────────────────────
+KMA_WARN = "http://apis.data.go.kr/1360000/WthrWrnInfoService/getWthrWrnList"   # 기상청 기상특보 목록 (JSON)
+# 한국문화관광연구원 출입국관광통계 — 국민 해외관광객(출국, ED_CD=E) = 해외여행보험 수요 지표 (XML)
+TOUR_STATS = "https://openapi.tour.go.kr/openapi/service/EdrcntTourismStatsService/getEdrcntTourismStatsList"
 # 소방청 화재통계는 월별 집계 성격 → 필요 시 확장
 
-def _get(url, params, timeout=20):
+def _get(url, params, timeout=20):   # JSON 응답용(기상청)
     params = dict(params); params["serviceKey"] = KEY; params.setdefault("dataType", "JSON")
-    q = urllib.parse.urlencode(params, safe="%")  # serviceKey는 이미 인코딩된 경우 그대로
+    q = urllib.parse.urlencode(params, safe="%")
     with urllib.request.urlopen(url + "?" + q, timeout=timeout) as r:
         return json.loads(r.read().decode("utf-8"))
+
+def _get_xml(url, params, timeout=20):   # XML 응답용(출입국관광통계)
+    params = dict(params); params["serviceKey"] = KEY
+    q = urllib.parse.urlencode(params, safe="%")
+    with urllib.request.urlopen(url + "?" + q, timeout=timeout) as r:
+        return r.read().decode("utf-8")
 
 def fetch_weather():
     """발효 중인 기상특보 종류 목록. 스키마: response.body.items.item[].title/other."""
@@ -56,23 +63,24 @@ def _ym(n_back):
     return f"{y}{m:02d}"
 
 def fetch_travel():
-    """국민 해외관광객(출국) 최근월 총계 → 해외여행보험 수요. (한국관광공사 출입국관광통계 · 통계는 1~2개월 지연)."""
+    """국민 해외관광객(출국) 최근월 총계 → 해외여행보험 수요. (출입국관광통계 · XML · 통계 1~2개월 지연)."""
+    last_err = ""
     try:
         for back in (2, 3, 1, 4, 5):   # 최근월 데이터 있는 달 탐색
             ym = _ym(back)
-            d = _get(TOUR_STATS, {"YM": ym, "ED_CD": "E", "numOfRows": 400, "pageNo": 1})  # ED_CD=E: 국민 해외관광객
-            body = ((d or {}).get("response", {}) or {}).get("body", {}) or {}
-            items = (body.get("items", {}) or {}).get("item", [])
-            if isinstance(items, dict): items = [items]
+            xml = _get_xml(TOUR_STATS, {"YM": ym, "ED_CD": "E", "numOfRows": 500, "pageNo": 1})  # ED_CD=E: 국민 해외관광객
+            root = ET.fromstring(xml)
             total, cnt = 0, 0
-            for it in items:
-                v = it.get("num")
-                if v in (None, ""): continue
+            for it in root.iter("item"):
+                v = it.findtext("num")
+                if not v: continue
                 try: total += int(str(v).replace(",", "")); cnt += 1
                 except Exception: pass
             if cnt:
                 return {"outbound_total": total, "ym": ym, "countries": cnt}
-        return {"outbound_total": None, "error": "최근월 데이터 없음(YM/ED_CD 확인)"}
+            msg = root.findtext(".//returnAuthMsg") or root.findtext(".//errMsg") or root.findtext(".//resultMsg") or root.findtext(".//returnReasonCode")
+            if msg: last_err = msg
+        return {"outbound_total": None, "error": last_err or "item 없음(ED_CD/YM 확인)"}
     except Exception as e:
         return {"outbound_total": None, "error": str(e)[:140]}
 
