@@ -94,6 +94,25 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .nm-item a:hover{color:var(--brand-600);text-decoration:underline;}
 .nm-item .mt{font-size:10.5px;color:var(--muted);white-space:nowrap;font-family:var(--mono);padding-top:2px;text-align:right;}
 .nm-item .gs{display:block;font-size:11px;font-weight:500;color:var(--ink-2);margin-top:2px;}
+/* 🔥 수요 트리거 */
+.nm-trg{background:linear-gradient(180deg,color-mix(in srgb,#e2564a 7%,var(--surface)),var(--surface));border:1px solid color-mix(in srgb,#e2564a 30%,var(--line));}
+.nm-trg .lb{background:#fdecea;color:#c23b2e;} .nm-trg .lb small{font-weight:600;color:var(--muted);margin-left:5px;letter-spacing:0;}
+.trg-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:9px;margin-top:10px;}
+.trg{display:flex;flex-direction:column;gap:2px;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;text-decoration:none;transition:.14s;}
+.trg:hover{border-color:#e2564a;transform:translateY(-1px);box-shadow:var(--sh);}
+.trg b{font-size:12.5px;font-weight:800;color:var(--ink);line-height:1.35;} .trg span{font-size:11px;color:var(--ink-2);line-height:1.45;} .trg em{font-size:10.5px;font-style:normal;font-weight:700;color:#c23b2e;margin-top:2px;}
+/* 카드뉴스 */
+.nm-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:12px;margin-top:14px;}
+.nm-card{display:flex;flex-direction:column;gap:7px;padding:14px 15px;background:var(--surface);border:1px solid var(--line);border-radius:12px;text-decoration:none;box-shadow:var(--sh);transition:.15s;position:relative;overflow:hidden;}
+.nm-card:hover{border-color:var(--brand);box-shadow:var(--sh-lg);transform:translateY(-2px);}
+.nm-card.hot{border-color:color-mix(in srgb,#e2564a 45%,var(--line));background:linear-gradient(180deg,color-mix(in srgb,#e2564a 5%,var(--surface)),var(--surface));}
+.nm-card-h{display:flex;align-items:center;gap:7px;font-size:10px;}
+.nm-card-h .num{font-family:var(--mono);font-weight:800;color:var(--faint);font-size:12px;}
+.nm-card-h .mt{margin-left:auto;color:var(--muted);font-family:var(--mono);}
+.hotbadge{font-size:9.5px;font-weight:800;color:#fff;background:#e2564a;padding:2px 7px;border-radius:99px;letter-spacing:.2px;}
+.nm-card-t{font-size:13px;font-weight:800;color:var(--ink);line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.nm-card:hover .nm-card-t{color:var(--brand-600);}
+.nm-card-g{font-size:11px;font-weight:500;color:var(--ink-2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 .ov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
 .ov-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:15px 16px;box-shadow:var(--sh);cursor:pointer;transition:.15s;}
 .ov-card:hover{border-color:var(--brand);box-shadow:var(--sh-lg);transform:translateY(-1px);}
@@ -239,15 +258,53 @@ const NEWSMON={
     {t:"간편심사(유병자) 보험 시장 확대 — 고령·유병력자 가입 문턱 완화",src:"업계 동향",date:"2026-07-22",url:"https://search.naver.com/search.naver?where=news&query=%EC%9C%A0%EB%B3%91%EC%9E%90%EB%B3%B4%ED%97%98",gist:"신규 출시 예정 — SERP·뉴스 축적 후 상세화"}]},
 };
 
+/* 업계·경쟁사 동향 (상품 마스터와 분리 · 드리프트 가드 영향 없음) — 빅4/5 손보사 + 업계 전반 */
+const INDUSTRY=[
+ {key:"ind_biz",cat:"업계·경쟁사",name:"손보업계 전반",tier:"업계",q:"손해보험",extra:["손해율","실손보험","다이렉트 보험"]},
+ {key:"ind_samsung",cat:"업계·경쟁사",name:"삼성화재",tier:"경쟁사",q:"삼성화재",extra:["삼성화재 다이렉트"]},
+ {key:"ind_db",cat:"업계·경쟁사",name:"DB손해보험",tier:"경쟁사",q:"DB손해보험",extra:["DB손보 다이렉트"]},
+ {key:"ind_hyundai",cat:"업계·경쟁사",name:"현대해상",tier:"경쟁사",q:"현대해상",extra:["현대해상 다이렉트"]},
+ {key:"ind_kb",cat:"업계·경쟁사",name:"KB손해보험",tier:"경쟁사",q:"KB손해보험",extra:["KB손보 다이렉트"]},
+ {key:"ind_meritz",cat:"업계·경쟁사",name:"메리츠화재",tier:"경쟁사",q:"메리츠화재",extra:["메리츠 장기인보험"]},
+];
+const _naverNews=q=>"https://search.naver.com/search.naver?where=news&sort=1&query="+encodeURIComponent(q);
+const _seed=q=>[{t:`‘${q}’ 최신 뉴스 — 🔄 실시간 갱신으로 수집`,src:"네이버 뉴스",date:NEWS_ASOF,url:_naverNews(q),gist:"실시간 갱신 시 최신 헤드라인이 채워집니다"}];
+Object.assign(NEWSMON,{
+ ind_biz:{summary:"5세대 실손 대전환·손해율 관리·상생금융 압박 등 손보업계 구조 변화가 동시 진행. 다이렉트(CM) 채널 비중 확대와 소액·원데이 상품 경쟁이 심화되는 국면.",
+   insight:"업계 공통 이슈(실손 전환·서류 간소화·비교공시)를 상품 랜딩 콘텐츠로 연결해 정보성 유입을 흡수. 경쟁사 프로모션 타이밍을 모니터링해 검색광고 소구를 맞대응.",items:_seed("손해보험 다이렉트")},
+ ind_samsung:{summary:"다이렉트·브랜드 인지도 1위. 원데이(골프·여행 등) 소액상품과 다이렉트 이벤트로 온라인 유치를 주도.",
+   insight:"브랜드검색 열세가 큰 상대 — 상품별 롱테일과 담보 차별화로 정면 경쟁을 회피. 원데이 소액상품 키워드(원데이 골프/여행)를 선점 대상으로 감시.",items:_seed("삼성화재 다이렉트")},
+ ind_db:{summary:"주택화재보험 다이렉트 가격소구(‘30%대 저렴’)와 프로미 브랜드로 가격 경쟁을 주도. 자동차·장기 전방위.",
+   insight:"주택화재·운전자 등 가격 소구가 강한 상대 — 한화는 차별 담보(스크린홀인원 등)를 타이틀·H1에 전면화해 가격 단독 경쟁을 회피.",items:_seed("DB손해보험 다이렉트")},
+ ind_hyundai:{summary:"하이카·굿앤굿 등 브랜드 라인업. 자동차·장기 중심으로 다이렉트 전환을 확대.",
+   insight:"자동차 연계 장기상품 소구가 강함 — 운전자보험·자녀할인 등 편의 키워드에서 경쟁. 정보성 콘텐츠로 대응.",items:_seed("현대해상 다이렉트")},
+ ind_kb:{summary:"KB다이렉트로 화재·운전자 등 온라인 소구. 금융그룹 연계 브랜드 신뢰도를 강조.",
+   insight:"파워링크 상단 경쟁이 잦은 상대 — 대표키워드 SERP 아카이브로 카피·순위 변화를 추적.",items:_seed("KB손해보험 다이렉트")},
+ ind_meritz:{summary:"장기인보험 강자. 설계사·다이렉트 병행으로 보장성 상품 경쟁력 유지.",
+   insight:"장기 보장성(암·치아·간편심사) 담보 경쟁에서 비교 대상 — 담보·고지항목 차별화 콘텐츠로 대응.",items:_seed("메리츠화재")},
+});
+/* 🔥 수요 트리거 — 특정 이벤트가 뜨면 해당 상품 검색·가입이 급증하는 조건 */
+const TRIGGERS={
+ hrmf:[{ev:"대형 화재·산불·아파트 화재",why:"‘주택화재보험’ 검색·가입 급증",kw:"대형화재"},{ev:"장마·집중호우 누수·침수",why:"누수·풍수재 담보 문의↑",kw:"장마 누수"},{ev:"겨울 한파·동파·난방 화재",why:"겨울 시즌 화재 수요",kw:"겨울 화재"}],
+ driver:[{ev:"급발진 사고 이슈",why:"운전자보험 관심 급등",kw:"급발진"},{ev:"스쿨존(민식이법) 사고",why:"형사합의금·변호사선임 담보 수요",kw:"스쿨존 사고"},{ev:"휴가철 렌터카 운전",why:"운전자범위 확대 문의",kw:"렌터카 운전자보험"}],
+ golf:[{ev:"홀인원 화제·시즌 개장",why:"홀인원·골프보험 수요",kw:"홀인원"},{ev:"골프장 안전사고",why:"배상책임 담보 관심",kw:"골프장 사고"}],
+ overseas:[{ev:"항공기 결항·지연 대란",why:"여행자보험 항공지연 담보 문의",kw:"항공기 결항"},{ev:"해외 감염병·안전사고",why:"여행자보험 수요↑",kw:"해외 감염병"},{ev:"연휴·휴가 성수기",why:"시즌 피크 검색 폭증",kw:"여행자보험"}],
+ cncr:[{ev:"표적항암·신약 화제",why:"암보험 진단비 관심",kw:"표적항암"}],
+ holeinone:[{ev:"홀인원 이슈·라운딩 시즌",why:"홀인원보험 선물·가입",kw:"홀인원"}],
+};
+
 const $=(s,el=document)=>el.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1600);}
-const getP=k=>PRODUCTS.find(p=>p.key===k);
+const ALLMON=[...PRODUCTS,...INDUSTRY];
+const getP=k=>ALLMON.find(p=>p.key===k);
 let curKey="__all";
 
 function renderSidebar(){
   const item=(key,label,on)=>`<button class="sb-item${on?" on":""}" data-key="${key}"><span>${esc(label)}</span><span class="kc">${NEWSMON[key]?NEWSMON[key].items.length:""}</span></button>`;
   let h=item("__all","▦ 전체 개요",curKey==="__all");
+  h+=`<div class="sb-cap" style="color:var(--brand-600)">🏢 업계·경쟁사</div>`;
+  INDUSTRY.forEach(p=>{h+=item(p.key,p.name,curKey===p.key);});
   [...new Set(PRODUCTS.map(p=>p.cat))].forEach(cat=>{
     h+=`<div class="sb-cap">${cat}</div>`;
     PRODUCTS.filter(p=>p.cat===cat).forEach(p=>{h+=item(p.key,p.name,curKey===p.key);});
@@ -258,17 +315,25 @@ function naverMore(p){return "https://search.naver.com/search.naver?where=news&s
 function newsPanel(p){
   const n=NEWSMON[p.key]; if(!n)return "";
   const stamp=n.live?`실시간 ${esc(n.live)}`:`스냅샷 ${esc(NEWS_ASOF)}`;
-  const items=n.items.map(it=>`<li class="nm-item"><a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.t)}<span class="gs">${esc(it.gist||"")}</span></a><span class="mt">${esc(it.src||"")}<br>${esc(it.date||"")}</span></li>`).join("");
+  const trg=TRIGGERS[p.key]||[];const trgKws=trg.map(t=>t.kw);
+  const hot=title=>trgKws.some(k=>String(title).indexOf(k)>=0);
+  const cards=n.items.map((it,i)=>{const h=hot(it.t);return `<a class="nm-card${h?" hot":""}" href="${esc(it.url)}" target="_blank" rel="noopener">
+      <div class="nm-card-h"><span class="num">${String(i+1).padStart(2,"0")}</span>${h?`<span class="hotbadge">🔥 수요 트리거</span>`:""}<span class="mt">${esc(it.src||"")} · ${esc(it.date||"")}</span></div>
+      <div class="nm-card-t">${esc(it.t)}</div>
+      ${it.gist?`<div class="nm-card-g">${esc(it.gist)}</div>`:""}</a>`;}).join("");
+  const trgBox=trg.length?`<div class="nm-box nm-trg"><span class="lb">🔥 수요 트리거 <small>이 이벤트가 뜨면 검색·가입 급증 → 검색광고·콘텐츠 선제 대응</small></span>
+    <div class="trg-list">${trg.map(t=>`<a class="trg" href="${_naverNews(t.kw)}" target="_blank" rel="noopener"><b>${esc(t.ev)}</b><span>${esc(t.why)}</span><em>＋${esc(t.kw)} 뉴스 ↗</em></a>`).join("")}</div></div>`:"";
+  const extraLinks=!trg.length?(p.extra||[]).map(k=>`<a class="more" href="${_naverNews(k)}" target="_blank" rel="noopener" title="추가 감시 키워드">＋${esc(k)} ↗</a>`).join(""):"";
   return `<div class="newsmon">
     <div class="nm-top"><span class="t">📰 ${esc(p.name)}</span>
       <span class="asof">${stamp}</span>
-      <button class="nm-refresh" data-refresh="${esc(p.key)}" title="로컬 연동 서버로 최신 뉴스 가져오기">🔄 실시간 갱신</button>
-      <a class="more" href="${naverMore(p)}" target="_blank" rel="noopener">네이버 뉴스 ↗</a>
-      ${(p.extra||[]).map(k=>`<a class="more" href="https://search.naver.com/search.naver?where=news&sort=1&query=${encodeURIComponent(k)}" target="_blank" rel="noopener" title="추가 감시 키워드">＋${esc(k)} ↗</a>`).join("")}</div>
+      <button class="nm-refresh" data-refresh="${esc(p.key)}" title="프록시/로컬서버로 최신 뉴스 가져오기">🔄 실시간 갱신</button>
+      <a class="more" href="${naverMore(p)}" target="_blank" rel="noopener">네이버 뉴스 ↗</a>${extraLinks}</div>
     <div class="nm-body">
       <div class="nm-box nm-sum"><span class="lb">동향 요약</span>${esc(n.summary)}</div>
       <div class="nm-box nm-ins"><span class="lb">마케팅 시사점</span>${esc(n.insight)}</div>
-      <ul class="nm-list">${items}</ul>
+      ${trgBox}
+      <div class="nm-cards">${cards}</div>
     </div></div>`;
 }
 function renderProduct(){
@@ -288,16 +353,21 @@ function renderOverview(){
   const all=[];PRODUCTS.forEach(p=>{const n=NEWSMON[p.key];if(n)n.items.forEach(it=>all.push(Object.assign({cat:p.name,key:p.key},it)));});
   all.sort((a,b)=>(b.date||"").localeCompare(a.date||""));
   const top=all.slice(0,6).map(it=>`<li class="nm-item"><a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.t)}<span class="gs">${esc(it.cat)} · ${esc(it.gist||"")}</span></a><span class="mt">${esc(it.src||"")}<br>${esc(it.date||"")}</span></li>`).join("");
-  const cards=PRODUCTS.filter(p=>NEWSMON[p.key]).map(p=>{const n=NEWSMON[p.key];const s=n.summary.length>96?n.summary.slice(0,96)+"…":n.summary;
-    return `<div class="ov-card" data-key="${p.key}"><div class="ct">${esc(p.name)}<span style="font-size:10.5px;color:var(--nav-ink);font-weight:700">${n.live?"실시간":"뉴스 "+n.items.length}</span></div><div class="cs">${esc(s)}</div></div>`;}).join("");
+  const ovcard=p=>{const n=NEWSMON[p.key];if(!n)return "";const s=n.summary.length>96?n.summary.slice(0,96)+"…":n.summary;
+    const trg=(TRIGGERS[p.key]||[]).length;
+    return `<div class="ov-card" data-key="${p.key}"><div class="ct">${esc(p.name)}<span style="font-size:10.5px;color:var(--nav-ink);font-weight:700">${trg?`🔥${trg} · `:""}${n.live?"실시간":"뉴스 "+n.items.length}</span></div><div class="cs">${esc(s)}</div></div>`;};
+  const indCards=INDUSTRY.map(ovcard).join("");
+  const cards=PRODUCTS.filter(p=>NEWSMON[p.key]).map(ovcard).join("");
   const kpi=(n,l)=>`<div class="kpi"><div class="n">${n}</div><div class="l">${l}</div></div>`;
   $("#content").innerHTML=`
-    <div class="kpi-row">${kpi(PRODUCTS.filter(p=>NEWSMON[p.key]).length,"모니터링 카테고리")}${kpi(totalHeads,"수집 헤드라인")}${kpi(live,"실시간 갱신됨")}${kpi(NEWS_ASOF.slice(5),"스냅샷 기준")}</div>
-    <div class="sec-lbl">📰 최신 헤드라인 (전 카테고리)</div>
+    <div class="kpi-row">${kpi(PRODUCTS.filter(p=>NEWSMON[p.key]).length,"상품 카테고리")}${kpi(INDUSTRY.length,"업계·경쟁사")}${kpi(totalHeads,"수집 헤드라인")}${kpi(live,"실시간 갱신됨")}</div>
+    <div class="sec-lbl">🏢 업계·경쟁사 동향 · 손보 빅4/5 + 업계 전반</div>
+    <div class="ov-grid">${indCards}</div>
+    <div class="sec-lbl">📰 최신 헤드라인 (상품 카테고리)</div>
     <div class="newsmon"><div class="nm-body"><ul class="nm-list" style="margin-top:0">${top}</ul></div></div>
-    <div class="sec-lbl">카테고리별 동향 · 카드를 클릭하면 상세</div>
+    <div class="sec-lbl">상품 카테고리별 동향 · 카드를 클릭하면 상세(🔥=수요 트리거)</div>
     <div class="ov-grid">${cards}</div>
-    <div class="note"><b>카테고리 뉴스 모니터링</b> · 담당 상품과 같은 카테고리 기준으로 경쟁사·시장 뉴스를 모아 요약·분석합니다. 헤드라인·링크는 공개 뉴스, 요약·시사점은 마케팅 관점 분석(개인정보·영업비밀 미포함). 실시간 갱신은 로컬 연동 서버(<b>python3 scripts/naver_local_server.py</b>)로 동작합니다.</div>`;
+    <div class="note"><b>카테고리 뉴스 모니터링</b> · 담당 상품 + 업계·경쟁사 동향을 요약·분석합니다. 헤드라인·링크는 공개 뉴스, 요약·시사점은 마케팅 관점 분석(개인정보·영업비밀 미포함). 실시간 갱신은 <b>팀 공유 프록시</b>(허브 ⚙) 또는 로컬 서버로 동작합니다.</div>`;
 }
 function render(){curKey==="__all"?renderOverview():renderProduct();renderSidebar();window.scrollTo({top:0});}
 
@@ -338,7 +408,7 @@ function refreshOne(key,btn){const p=getP(key);if(!p||!NEWSMON[key])return;if(!n
   fetchNews(p).then(d=>{if(d.error){toast("뉴스 오류: "+d.error);return;}const c=applyItems(key,d.items);toast(c?("최신 뉴스 "+c+"건 갱신됨"):"가져온 뉴스가 없습니다");render();})
     .catch(()=>{toast("실시간 연동 실패 — 허브 ⚙프록시 URL·키를 확인하세요(또는 로컬 서버 localhost:8787)");if(btn){btn.disabled=false;btn.textContent="🔄 실시간 갱신";}});}
 $("#refreshAll").addEventListener("click",()=>{if(!needCred())return;const btn=$("#refreshAll");btn.disabled=true;btn.textContent="⏳ 전체 갱신 중…";
-  const keys=PRODUCTS.filter(p=>NEWSMON[p.key]).map(p=>p.key);let i=0,ok=0,fail=false;
+  const keys=ALLMON.filter(p=>NEWSMON[p.key]).map(p=>p.key);let i=0,ok=0,fail=false;
   (function next(){if(i>=keys.length){btn.disabled=false;btn.textContent="🔄 전체 갱신";if(!fail){toast(ok+"개 카테고리 갱신 완료");render();}return;}
     const key=keys[i++];fetchNews(getP(key)).then(d=>{if(d.error){fail=true;toast("뉴스 오류: "+d.error);btn.disabled=false;btn.textContent="🔄 전체 갱신";return;}if(applyItems(key,d.items))ok++;setTimeout(next,120);})
       .catch(()=>{fail=true;toast("실시간 연동 실패 — 허브 ⚙프록시 URL·키를 확인하세요(또는 로컬 서버)");btn.disabled=false;btn.textContent="🔄 전체 갱신";});})();});
