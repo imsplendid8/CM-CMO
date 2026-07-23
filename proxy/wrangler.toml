@@ -2,6 +2,14 @@ name = "modooflow-naver-proxy"
 main = "naver-proxy-worker.js"
 compatibility_date = "2024-11-01"
 
+# 사용량 카운트(대시보드 위젯)를 쓰려면 KV 네임스페이스를 'USAGE' 로 바인딩:
+#   대시보드: Workers & Pages → 워커 → Settings → Bindings → Add → KV namespace
+#            Variable name = USAGE, 새 네임스페이스(예: modooflow-usage) 생성 후 연결 → Deploy
+#   CLI:     wrangler kv namespace create USAGE   → 출력된 id 를 아래에 붙여넣고 주석 해제
+# [[kv_namespaces]]
+# binding = "USAGE"
+# id = "여기에_네임스페이스_id"
+
 # 키를 워커에 직접 넣는 방식(B, 더 안전)을 쓰려면 아래를 wrangler secret 으로 등록:
 #   wrangler secret put NAVER_ID
 #   wrangler secret put NAVER_SECRET

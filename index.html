@@ -59,6 +59,15 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 .card .feats li::before{content:"";flex:0 0 5px;width:5px;height:5px;border-radius:50%;background:var(--ac);margin-top:5px;}
 .card .go{margin-top:15px;font-size:12px;font-weight:700;color:var(--ac);display:flex;align-items:center;gap:6px;}
 .card:hover .go{gap:9px;}
+.usage{display:flex;gap:14px;flex-wrap:wrap;margin-top:24px;padding:16px 18px;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh);}
+.usage .ut{font-size:11.5px;font-weight:800;color:var(--ink-2);letter-spacing:.01em;display:flex;align-items:center;gap:7px;width:100%;}
+.usage .um{flex:1;min-width:160px;}
+.usage .um .l{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-2);font-weight:600;margin-bottom:5px;}
+.usage .um .l b{color:var(--ink);font-weight:800;}
+.usage .um .bar{height:7px;border-radius:5px;background:var(--surface-2);overflow:hidden;}
+.usage .um .fill{height:100%;border-radius:5px;background:var(--brand);transition:width .4s;}
+.usage .um.warn .fill{background:#e2564a;}
+.usage .note{width:100%;font-size:10.5px;color:var(--muted);margin-top:1px;line-height:1.6;}
 .foot{margin-top:32px;padding-top:22px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted);line-height:1.75;}
 .foot b{color:var(--ink-2);font-weight:700;} .foot a{color:var(--brand-600);font-weight:700;text-decoration:none;}
 .themebtn{width:32px;height:32px;padding:0!important;justify-content:center;font-size:14px;}
@@ -133,6 +142,23 @@ const TOOLS=[
   feats:["연간 마케팅 이슈 매트릭스(월×이슈)","이번 달 주목 + 다음 달 선제대응 예고","상품 탭 = 월별 이슈 상세"]},
 ];
 const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
+// 팀 공유 프록시(사용량 위젯·툴 실시간 연동에 사용)
+const DEFAULT_PROXY="https://modooflow-naver-proxy.angle0102.workers.dev";
+function loadUsage(){
+  const box=document.getElementById("usageBox"); if(!box)return;
+  const base=((mfKeysSafe().proxy||DEFAULT_PROXY)||"").replace(/\/+$/,""); if(!base){box.innerHTML="";return;}
+  fetch(base+"/usage",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(u=>{
+    if(!u||!u.tracked){box.innerHTML="";return;}   // KV 미연결 → 위젯 숨김
+    const meter=(name,cat,limit)=>{const used=(u.usage&&u.usage[cat])||0;const pct=limit?Math.min(100,used/limit*100):0;
+      return `<div class="um${limit&&pct>85?" warn":""}"><div class="l"><span>${esc(name)}</span><span><b>${used.toLocaleString()}</b>${limit?" / "+limit.toLocaleString():" 건"}</span></div><div class="bar"><div class="fill" style="width:${limit?pct:8}%"></div></div></div>`;};
+    box.innerHTML=`<div class="usage"><div class="ut">📊 오늘 API 사용량 <span style="color:var(--muted);font-weight:600">· ${esc(u.date)} · 팀 전체 합산(프록시 경유)</span></div>
+      ${meter("네이버 검색","search",u.limits&&u.limits.search)}
+      ${meter("데이터랩 트렌드","datalab",u.limits&&u.limits.datalab)}
+      ${meter("검색광고","searchad",u.limits&&u.limits.searchad)}
+      <div class="note">한도는 네이버 공개 일한도(검색 25,000·데이터랩 1,000)이며 앱별로 다를 수 있습니다. 검색광고는 초당 제한이라 일누계만 표시.</div></div>`;
+  }).catch(()=>{box.innerHTML="";});
+}
+function mfKeysSafe(){try{return JSON.parse(localStorage.getItem("mf_keys")||"{}")||{};}catch(e){return {};}}
 // Pages·로컬·file: → iframe 임베드 / 그 외(아티팩트 샌드박스) → 새 탭
 const LOCAL = location.protocol==="file:" || /github\.io$/.test(location.hostname) || location.hostname==="localhost" || /^127\./.test(location.hostname) || location.hostname==="";
 const frame=document.getElementById("frame"),home=document.getElementById("home"),nav=document.getElementById("nav"),openTab=document.getElementById("openTab");
@@ -150,6 +176,7 @@ function renderHome(){
       <div><h1>Modooflow 마케팅 콘솔</h1>
       <p>CM사업부 담당 상품의 <b>검색 노출(SEO)·검색광고 키워드·카테고리 뉴스·SERP 아카이브·시즌 캘린더</b>를 한 곳에서.
       상단 메뉴는 항상 고정되어 있어 <b>이동 없이</b> 전 기능을 바로 열 수 있습니다.</p></div></div>
+    <div id="usageBox"></div>
     <div class="grid">${TOOLS.map(t=>`<div class="card" data-tool="${t.id}" style="--ac:${t.ac}">
       <div class="ico">${t.icon}</div><h2>${esc(t.name)}</h2>
       <div class="desc">${esc(t.desc)}</div>
@@ -160,7 +187,7 @@ function renderHome(){
   </div>`;
 }
 function show(id){
-  if(id==="home"){home.style.display="block";frame.style.display="none";openTab.href="#";openTab.style.visibility="hidden";renderNav("home");location.hash="";return;}
+  if(id==="home"){home.style.display="block";frame.style.display="none";openTab.href="#";openTab.style.visibility="hidden";renderNav("home");location.hash="";loadUsage();return;}
   const t=TOOLS.find(x=>x.id===id); if(!t)return;
   openTab.href=LOCAL?t.file:t.url; openTab.style.visibility="visible";
   if(LOCAL){ home.style.display="none"; frame.style.display="block"; if(frame.getAttribute("src")!==t.file)frame.src=t.file; }
@@ -216,6 +243,7 @@ document.getElementById("keyClear").addEventListener("click",()=>{
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeKeys();});
 
 renderHome();
+loadUsage();
 const start=(location.hash||"").replace("#","");
 renderNav("home");
 if(start&&TOOLS.some(t=>t.id===start)&&LOCAL){show(start);} else {show("home");}

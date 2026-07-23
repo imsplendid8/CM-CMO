@@ -37,6 +37,28 @@ async function hmacSha256B64(secret, msg) {
   return btoa(String.fromCharCode(...new Uint8Array(sig)));
 }
 
+// ── 사용량 카운트 (KV 'USAGE' 바인딩 있을 때만 · 없으면 조용히 생략) ──
+const today = () => new Date().toISOString().slice(0, 10);            // UTC 기준일
+const DAILY_LIMIT = { search: 25000, datalab: 1000, searchad: null }; // 네이버 공개 일한도
+async function bump(env, cat) {
+  if (!env || !env.USAGE) return;
+  try {
+    const k = `u:${cat}:${today()}`;
+    const n = parseInt((await env.USAGE.get(k)) || "0", 10) + 1;
+    await env.USAGE.put(k, String(n), { expirationTtl: 172800 }); // 2일 후 자동 만료
+  } catch (e) {}
+}
+async function usageReport(env) {
+  const date = today();
+  const out = { date, tracked: !!(env && env.USAGE), limits: DAILY_LIMIT, usage: { search: 0, datalab: 0, searchad: 0 } };
+  if (env && env.USAGE) {
+    for (const cat of ["search", "datalab", "searchad"]) {
+      out.usage[cat] = parseInt((await env.USAGE.get(`u:${cat}:${date}`)) || "0", 10);
+    }
+  }
+  return out;
+}
+
 export default {
   async fetch(req, env) {
     if (req.method === "OPTIONS") return new Response(null, { headers: cors() });
@@ -58,6 +80,7 @@ export default {
         if (req.method === "POST") { init.headers["Content-Type"] = "application/json"; init.body = await req.text(); }
         const r = await fetch(target, init);
         const body = await r.text();
+        await bump(env, p.includes("/datalab") ? "datalab" : "search");
         return new Response(body, { status: r.status, headers: cors({ "content-type": "application/json; charset=utf-8" }) });
       }
 
@@ -85,8 +108,12 @@ export default {
         if (method === "POST") init.body = await req.text();
         const r = await fetch(target, init);
         const body = await r.text();
+        await bump(env, "searchad");
         return new Response(body, { status: r.status, headers: cors({ "content-type": "application/json; charset=utf-8" }) });
       }
+
+      // ── 사용량 조회 (대시보드 위젯) ───────────────────────
+      if (p === "/usage") return json(await usageReport(env));
 
       if (p === "/" || p === "/health") return json({ ok: true, service: "modooflow-naver-proxy" });
       return json({ error: "unknown route" }, 404);
