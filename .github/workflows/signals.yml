@@ -24,6 +24,8 @@ jobs:
       - name: Fetch demand signals
         env:
           DATA_GO_KR_KEY: ${{ secrets.DATA_GO_KR_KEY }}
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
         run: python3 scripts/fetch_signals.py
       - name: Commit signals
         run: |
