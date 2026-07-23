@@ -103,6 +103,9 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .trg{display:flex;flex-direction:column;gap:2px;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;text-decoration:none;transition:.14s;}
 .trg:hover{border-color:#e2564a;transform:translateY(-1px);box-shadow:var(--sh);}
 .trg b{font-size:12.5px;font-weight:800;color:var(--ink);line-height:1.35;} .trg span{font-size:11px;color:var(--ink-2);line-height:1.45;} .trg em{font-size:10.5px;font-style:normal;font-weight:700;color:#c23b2e;margin-top:2px;}
+.sig-live{margin:9px 0 2px;padding:8px 12px;border-radius:9px;background:#fff4f2;border:1px solid #f3b7ad;color:#a5291b;font-size:11.5px;font-weight:600;line-height:1.5;}
+.sig-live b{font-weight:800;color:#8f1d10;} .sig-live .src{color:var(--muted);font-weight:600;}
+@media(prefers-color-scheme:dark){.sig-live{background:#2a1512;border-color:#5a231c;color:#f3b7ad;} .sig-live b{color:#f7c9c1;}}
 /* 카드뉴스 */
 .nm-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:12px;margin-top:14px;}
 .nm-card{display:flex;flex-direction:column;gap:7px;padding:14px 15px;background:var(--surface);border:1px solid var(--line);border-radius:12px;text-decoration:none;box-shadow:var(--sh);transition:.15s;position:relative;overflow:hidden;}
@@ -294,6 +297,8 @@ const TRIGGERS={
  cncr:[{ev:"표적항암·신약 화제",why:"암보험 진단비 관심",kw:"표적항암"}],
  holeinone:[{ev:"홀인원 이슈·라운딩 시즌",why:"홀인원보험 선물·가입",kw:"홀인원"}],
 };
+/* 실시간 수요 신호 (data/signals.json · 공공데이터 Action이 채움 · 없으면 정성 트리거만 표시) */
+let SIGNALS={triggers:{}};
 
 const $=(s,el=document)=>el.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
@@ -323,7 +328,9 @@ function newsPanel(p){
       <div class="nm-card-h"><span class="num">${String(i+1).padStart(2,"0")}</span>${h?`<span class="hotbadge">🔥 수요 트리거</span>`:""}<span class="mt">${esc(it.src||"")} · ${esc(it.date||"")}</span></div>
       <div class="nm-card-t">${esc(it.t)}</div>
       ${it.gist?`<div class="nm-card-g">${esc(it.gist)}</div>`:""}</a>`;}).join("");
-  const trgBox=trg.length?`<div class="nm-box nm-trg"><span class="lb">🔥 수요 트리거 <small>이 이벤트가 뜨면 검색·가입 급증 → 검색광고·콘텐츠 선제 대응</small></span>
+  const sig=(SIGNALS.triggers||{})[p.key];
+  const sigBanner=(sig&&sig.level==="high")?`<div class="sig-live">🔴 <b>실시간 수요 신호</b> ${esc(sig.note||"")} <span class="src">· 공공데이터 ${esc(SIGNALS.asof||"")}</span></div>`:"";
+  const trgBox=trg.length?`<div class="nm-box nm-trg"><span class="lb">🔥 수요 트리거 <small>이 이벤트가 뜨면 검색·가입 급증 → 검색광고·콘텐츠 선제 대응</small></span>${sigBanner}
     <div class="trg-list">${trg.map(t=>`<a class="trg" href="${_naverNews(t.kw)}" target="_blank" rel="noopener"><b>${esc(t.ev)}</b><span>${esc(t.why)}</span><em>＋${esc(t.kw)} 뉴스 ↗</em></a>`).join("")}</div></div>`:"";
   const extraLinks=!trg.length?(p.extra||[]).map(k=>`<a class="more" href="${_naverNews(k)}" target="_blank" rel="noopener" title="추가 감시 키워드">＋${esc(k)} ↗</a>`).join(""):"";
   return `<div class="newsmon">
@@ -421,6 +428,7 @@ document.addEventListener("click",e=>{
 });
 $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");});
 render();
+fetch("data/signals.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(s=>{if(s&&s.triggers){SIGNALS=s;render();}}).catch(()=>{}); // 실시간 수요 신호(있으면)
 </script>
 </body>
 </html>
