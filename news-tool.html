@@ -143,7 +143,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
           <input id="nwSec" type="password" placeholder="Client Secret" autocomplete="off">
           <div class="pfrow"><button class="btn primary" id="nwSaveBtn">키 저장</button>
             <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px"><input type="checkbox" id="nwSave"> 이 브라우저에 저장</label>
-            <span class="hint">터미널 <b>python3 scripts/naver_local_server.py</b> 실행 → <b>localhost:8787/news-tool.html</b> 로 열기 · <a href="https://developers.naver.com/apps/#/register" target="_blank" rel="noopener">개발자센터에서 검색 API 등록</a></span></div>
+            <span class="hint"><b>권장:</b> 허브 우상단 <b>⚙설정창</b>에 프록시 URL + 네이버 키 입력 시 서버 없이 바로 동작 · 또는 로컬 <b>python3 scripts/naver_local_server.py</b> → <b>localhost:8787</b> · <a href="https://developers.naver.com/apps/#/register" target="_blank" rel="noopener">검색 API 등록</a></span></div>
         </div>
       </div>
     </details>
@@ -306,23 +306,38 @@ function render(){curKey==="__all"?renderOverview():renderProduct();renderSideba
 function newsCred(){return {id:$("#nwId").value.trim(),sec:$("#nwSec").value.trim()};}
 $("#nwSaveBtn").addEventListener("click",()=>{const c=newsCred();if(!c.id||!c.sec){toast("Client ID/Secret을 입력하세요");return;}
   if($("#nwSave").checked)localStorage.setItem("nv_news",JSON.stringify(c));else localStorage.removeItem("nv_news");toast("뉴스 API 키 저장됨 · 🔄 실시간 갱신 사용 가능");});
-function fetchNews(p){const c=newsCred();const qs=[p.q].concat(p.extra||[]);   // 추가 키워드(예: 대형화재사고)도 함께 감시
-  return Promise.all(qs.map(q=>fetch("/news",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({clientId:c.id,clientSecret:c.sec,query:q,display:6})}).then(r=>r.json())))
+/* 허브 ⚙설정창 키(같은 오리진 localStorage) — 프록시 경유 실시간에 사용 */
+function mfKeys(){try{return JSON.parse(localStorage.getItem("mf_keys")||"{}")||{};}catch(e){return {};}}
+function naverCreds(){const k=mfKeys(),c=newsCred();return {id:k.naverId||c.id,sec:k.naverSecret||c.sec,proxy:(k.proxy||"").replace(/\/+$/,"")};}
+function stripTag(s){return String(s||"").replace(/<[^>]*>/g,"").replace(/&quot;/g,'"').replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#39;/g,"'").trim();}
+function hostOf(u){try{return new URL(u).hostname.replace(/^www\./,"");}catch(e){return "";}}
+function fetchNews(p){const {id,sec,proxy}=naverCreds();const qs=[p.q].concat(p.extra||[]);   // 추가 키워드(예: 대형화재사고)도 함께 감시
+  if(proxy&&id&&sec){   // ① 프록시 경유 = 로컬 서버 없이 URL에서 바로 (권장)
+    return Promise.all(qs.map(q=>fetch(proxy+"/naver/v1/search/news.json?display=6&sort=date&query="+encodeURIComponent(q),
+        {headers:{"x-mf-naver-id":id,"x-mf-naver-secret":sec}}).then(r=>r.json())))
+      .then(rs=>{const e=rs.find(r=>r&&(r.error||r.errorMessage));if(e)return {error:e.error||e.errorMessage};
+        const seen=new Set(),items=[];
+        rs.forEach(r=>((r&&r.items)||[]).forEach(it=>{const url=it.link||it.originallink;if(url&&!seen.has(url)){seen.add(url);
+          items.push({t:stripTag(it.title),url:url,src:hostOf(it.originallink||it.link),date:it.pubDate?new Date(it.pubDate).toISOString().slice(0,10):""});}}));
+        return {items};});
+  }
+  // ② 로컬 연동 서버(기존 폴백)
+  return Promise.all(qs.map(q=>fetch("/news",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({clientId:id,clientSecret:sec,query:q,display:6})}).then(r=>r.json())))
     .then(rs=>{const e=rs.find(r=>r&&r.error);if(e)return {error:e.error};
       const seen=new Set(),items=[];rs.forEach(r=>(r.items||[]).forEach(it=>{if(it&&it.url&&!seen.has(it.url)){seen.add(it.url);items.push(it);}}));
       return {items};});}
-function needCred(){const c=newsCred();if(!c.id||!c.sec){toast("상단 '🔌 뉴스 실시간 갱신 설정'에 Client ID/Secret을 먼저 입력하세요");$("#livePanel").open=true;$("#livePanel").scrollIntoView({behavior:"smooth"});return false;}return true;}
+function needCred(){const c=naverCreds();if(!c.id||!c.sec){toast("허브 ⚙설정창(또는 아래 실시간 갱신 설정)에 네이버 Client ID/Secret을 먼저 입력하세요");$("#livePanel").open=true;$("#livePanel").scrollIntoView({behavior:"smooth"});return false;}return true;}
 function applyItems(key,items){const clean=(items||[]).filter(it=>it.t&&it.url);if(!clean.length)return 0;
   NEWSMON[key].items=clean;NEWSMON[key].live=new Date().toLocaleString("ko-KR",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"});return clean.length;}
 function refreshOne(key,btn){const p=getP(key);if(!p||!NEWSMON[key])return;if(!needCred())return;
   if(btn){btn.disabled=true;btn.textContent="⏳ 가져오는 중…";}
   fetchNews(p).then(d=>{if(d.error){toast("뉴스 오류: "+d.error);return;}const c=applyItems(key,d.items);toast(c?("최신 뉴스 "+c+"건 갱신됨"):"가져온 뉴스가 없습니다");render();})
-    .catch(()=>{toast("연동 서버를 못 찾았어요 — python3 scripts/naver_local_server.py 실행 후 localhost:8787로 여세요");if(btn){btn.disabled=false;btn.textContent="🔄 실시간 갱신";}});}
+    .catch(()=>{toast("실시간 연동 실패 — 허브 ⚙프록시 URL·키를 확인하세요(또는 로컬 서버 localhost:8787)");if(btn){btn.disabled=false;btn.textContent="🔄 실시간 갱신";}});}
 $("#refreshAll").addEventListener("click",()=>{if(!needCred())return;const btn=$("#refreshAll");btn.disabled=true;btn.textContent="⏳ 전체 갱신 중…";
   const keys=PRODUCTS.filter(p=>NEWSMON[p.key]).map(p=>p.key);let i=0,ok=0,fail=false;
   (function next(){if(i>=keys.length){btn.disabled=false;btn.textContent="🔄 전체 갱신";if(!fail){toast(ok+"개 카테고리 갱신 완료");render();}return;}
     const key=keys[i++];fetchNews(getP(key)).then(d=>{if(d.error){fail=true;toast("뉴스 오류: "+d.error);btn.disabled=false;btn.textContent="🔄 전체 갱신";return;}if(applyItems(key,d.items))ok++;setTimeout(next,120);})
-      .catch(()=>{fail=true;toast("연동 서버를 못 찾았어요 — 로컬 서버를 켜고 localhost:8787로 여세요");btn.disabled=false;btn.textContent="🔄 전체 갱신";});})();});
+      .catch(()=>{fail=true;toast("실시간 연동 실패 — 허브 ⚙프록시 URL·키를 확인하세요(또는 로컬 서버)");btn.disabled=false;btn.textContent="🔄 전체 갱신";});})();});
 
 document.addEventListener("click",e=>{
   const rb=e.target.closest(".nm-refresh");if(rb){e.stopPropagation();refreshOne(rb.dataset.refresh,rb);return;}
