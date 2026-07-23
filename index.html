@@ -198,8 +198,8 @@ function renderKeys(){
     s.fields.map(f=>`<div class="krow"><label>${esc(f.l)}</label>
       <input type="password" autocomplete="off" spellcheck="false" data-k="${f.k}" value="${esc(v[f.k]||"")}" placeholder="${esc(f.ph)}"></div>`).join("")
   ).join("")+
-  `<div class="knote">🔒 입력한 키는 <b>이 브라우저에만</b> 저장됩니다(localStorage). 서버·깃허브로 <b>전송·커밋되지 않습니다</b>. 다른 PC에선 다시 입력해야 합니다.<br>
-   ▸ 네이버/광고 API는 브라우저에서 직접 호출이 막혀(CORS·서명) 있어, <b>프록시 URL</b>을 넣어야 툴이 실시간 데이터를 URL에서 바로 가져옵니다. 프록시 배포법 → <b>docs/api-from-url.md</b>.</div>`;
+  `<div class="knote">👥 <b>팀 전원이 쓰려면</b> — 키를 <b>여기 말고 워커(Cloudflare) 시크릿</b>에 넣으세요. 그러면 팀원은 <b>설정 없이</b> 대시보드만 열면 실시간 데이터가 나옵니다. (프록시 URL은 이미 툴에 기본 내장). 방법 → <b>docs/api-from-url.md</b><br>
+   🔒 아래 입력값은 <b>이 브라우저에만</b> 저장되는 <b>개인 override</b>일 뿐(서버·깃 전송/커밋 0) — 워커 시크릿이 없을 때 나 혼자 임시로 쓰거나, 팀 기본값을 덮어쓸 때만 사용합니다.</div>`;
 }
 function openKeys(){renderKeys();document.getElementById("keyMask").classList.add("on");}
 function closeKeys(){document.getElementById("keyMask").classList.remove("on");}

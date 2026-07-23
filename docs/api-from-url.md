@@ -1,7 +1,7 @@
 # API를 URL에서 바로 — 키를 폴더에 안 붙이는 방법
 
-기존엔 실시간 데이터를 받으려면 **키를 파일/GitHub Secrets에 붙이고 스크립트/Action을 돌려야** 했습니다.
-이제 **① 허브 ⚙설정창에 키 1회 입력(브라우저에만 저장) + ② 프록시 워커 1회 배포** 로, 툴이 URL에서 바로 실시간 데이터를 가져옵니다.
+**팀 전원이 설정 없이** 대시보드에서 실시간 데이터를 쓰게 만드는 방법입니다.
+핵심: **키는 각자 브라우저가 아니라 프록시 워커(Cloudflare)에 서버 저장** → 팀원은 아무 입력 없이 사이트만 열면 동작. (프록시 URL은 이미 툴에 기본 내장되어 있음)
 
 ## 왜 프록시가 필요한가
 네이버 API는 브라우저에서 **직접 호출이 막혀** 있습니다.
@@ -10,40 +10,29 @@
 
 그래서 **본인 소유의 초경량 프록시(Cloudflare Worker · 무료)** 하나가 대신 호출합니다.
 
-## 1) ⚙ 설정창에 키 입력 (30초)
-허브 우상단 **⚙** → 키 입력 → **이 브라우저에 저장**.
-- 저장 위치: **이 브라우저 localStorage 뿐**. 서버·깃허브로 전송/커밋되지 않습니다.
-- 같은 오리진이라 5개 툴이 이 키를 공유해서 씁니다.
+## 팀 공유 설정 (권장) — 키를 워커에 넣기, 코드 X
 
-## 2) 프록시 워커 배포 (1회, 약 3분)
-[Cloudflare 무료 계정](https://dash.cloudflare.com/sign-up) 후, 로컬 터미널에서:
+프록시 워커는 이미 배포돼 있습니다: `https://modooflow-naver-proxy.angle0102.workers.dev`
+(이 주소는 툴에 기본 내장되어 있어 팀원이 따로 입력할 필요 없음)
 
-```bash
-npm install -g wrangler
-cd proxy
-wrangler login
-wrangler deploy          # → https://modooflow-naver-proxy.<계정>.workers.dev
-```
+Cloudflare 대시보드에서 **폼 입력만** 하면 됩니다:
 
-배포되면 나온 주소를 **⚙설정창 › 프록시 URL** 에 붙여넣고 저장.
+1. **Workers & Pages → `modooflow-naver-proxy` → Settings → Variables and Secrets**
+2. **Add** → 아래를 **Secret(Encrypt)** 로 등록:
+   - `NAVER_ID`, `NAVER_SECRET` (검색·데이터랩 · developers.naver.com)
+   - (검색량도 쓰면) `AD_KEY`, `AD_SECRET`, `AD_CUSTOMER` (searchad.naver.com)
+3. 저장 → **Deploy**
 
-### 키를 어디에 둘지 두 방식
-- **(A) 설정창 방식(기본)** — 브라우저(localStorage)에 키를 두고, 매 요청 헤더로 워커에 전달. 추가 설정 없음.
-- **(B) 워커 시크릿 방식(더 안전)** — 키를 브라우저에 안 두고 워커에만:
-  ```bash
-  wrangler secret put NAVER_ID
-  wrangler secret put NAVER_SECRET
-  wrangler secret put AD_KEY
-  wrangler secret put AD_SECRET
-  wrangler secret put AD_CUSTOMER
-  ```
-  이 경우 설정창엔 **프록시 URL만** 넣으면 됩니다.
+이제 **팀원 누구든** `imsplendid8.github.io/CM-CMO/` 를 열고 툴의 **실시간 갱신**을 누르면, 아무 키 입력 없이 데이터가 들어옵니다.
 
-> 보안 팁: `naver-proxy-worker.js` 의 `ALLOW_ORIGIN` 을 본인 Pages 도메인(`https://<계정>.github.io`)으로 좁히면, 남이 내 워커를 못 씁니다.
+> 보안: 워커 코드의 `ALLOW_ORIGIN` 이 `https://imsplendid8.github.io` 로 설정돼 있어 **우리 사이트에서만** 이 워커를 쓸 수 있습니다. (커스텀 도메인을 쓰면 그 값으로 바꾸세요)
 
-## 3) 확인
-- `https://<워커주소>/health` → `{"ok":true}` 나오면 배포 성공.
-- 툴에서 실시간 연동 버튼을 누르면 프록시를 통해 데이터가 들어옵니다.
+### (선택) 개인 override — ⚙ 설정창
+워커 시크릿을 안 쓰고 나 혼자 임시로 쓰거나 팀 기본값을 덮어쓸 때만: 허브 **⚙** 에 키 입력 → **이 브라우저에만** 저장(서버·깃 전송 0). 팀 공유는 안 됩니다.
+
+## 확인
+- `https://modooflow-naver-proxy.angle0102.workers.dev/health` → `{"ok":true}` (배포 성공)
+- 워커 시크릿 등록 후, 툴의 **실시간 갱신** → 데이터가 들어오면 완료.
 
 ## 라우트 요약 (툴이 호출하는 경로)
 | 경로 | 대상 | 용도 |

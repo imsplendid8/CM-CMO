@@ -19,7 +19,7 @@
  * 보안: ALLOW_ORIGIN 을 본인 Pages 도메인으로 좁히세요(기본은 * — 데모용).
  */
 
-const ALLOW_ORIGIN = "*"; // 예: "https://imsplendid8.github.io"
+const ALLOW_ORIGIN = "https://imsplendid8.github.io"; // 팀 Pages 도메인만 허용(남이 내 워커 못 씀). 로컬 테스트 땐 잠시 "*"
 
 const cors = (extra = {}) => ({
   "Access-Control-Allow-Origin": ALLOW_ORIGIN,
