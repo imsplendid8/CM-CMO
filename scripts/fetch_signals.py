@@ -36,10 +36,11 @@ def _get(url, params, timeout=20):   # JSON 응답용(기상청)
     with urllib.request.urlopen(url + "?" + q, timeout=timeout) as r:
         return json.loads(r.read().decode("utf-8"))
 
-def _get_xml(url, params, timeout=20):   # XML 응답용(출입국관광통계)
+def _get_xml(url, params, timeout=45):   # XML 응답용(출입국관광통계 · openapi.tour.go.kr는 느릴 수 있음)
     params = dict(params); params["serviceKey"] = KEY
     q = urllib.parse.urlencode(params, safe="%")
-    with urllib.request.urlopen(url + "?" + q, timeout=timeout) as r:
+    req = urllib.request.Request(url + "?" + q, headers={"User-Agent": "Mozilla/5.0 (Modooflow signals)"})
+    with urllib.request.urlopen(req, timeout=timeout) as r:
         return r.read().decode("utf-8")
 
 def fetch_weather():
@@ -65,24 +66,27 @@ def _ym(n_back):
 def fetch_travel():
     """국민 해외관광객(출국) 최근월 총계 → 해외여행보험 수요. (출입국관광통계 · XML · 통계 1~2개월 지연)."""
     last_err = ""
-    try:
-        for back in (2, 3, 1, 4, 5):   # 최근월 데이터 있는 달 탐색
-            ym = _ym(back)
-            xml = _get_xml(TOUR_STATS, {"YM": ym, "ED_CD": "E", "numOfRows": 500, "pageNo": 1})  # ED_CD=E: 국민 해외관광객
+    for back in (2, 3, 1):   # 통계 지연 감안 최근월 탐색(과다 요청 방지 3회)
+        ym = _ym(back)
+        try:
+            xml = _get_xml(TOUR_STATS, {"YM": ym, "ED_CD": "E", "numOfRows": 100, "pageNo": 1})  # ED_CD=E: 국민 해외관광객
+        except Exception as e:
+            last_err = str(e)[:140]; continue
+        try:
             root = ET.fromstring(xml)
-            total, cnt = 0, 0
-            for it in root.iter("item"):
-                v = it.findtext("num")
-                if not v: continue
-                try: total += int(str(v).replace(",", "")); cnt += 1
-                except Exception: pass
-            if cnt:
-                return {"outbound_total": total, "ym": ym, "countries": cnt}
-            msg = root.findtext(".//returnAuthMsg") or root.findtext(".//errMsg") or root.findtext(".//resultMsg") or root.findtext(".//returnReasonCode")
-            if msg: last_err = msg
-        return {"outbound_total": None, "error": last_err or "item 없음(ED_CD/YM 확인)"}
-    except Exception as e:
-        return {"outbound_total": None, "error": str(e)[:140]}
+        except Exception as e:
+            last_err = "XML 파싱 실패: " + str(e)[:80]; continue
+        total, cnt = 0, 0
+        for it in root.iter("item"):
+            v = it.findtext("num")
+            if not v: continue
+            try: total += int(str(v).replace(",", "")); cnt += 1
+            except Exception: pass
+        if cnt:
+            return {"outbound_total": total, "ym": ym, "countries": cnt}
+        msg = root.findtext(".//returnAuthMsg") or root.findtext(".//errMsg") or root.findtext(".//resultMsg") or root.findtext(".//returnReasonCode")
+        if msg: last_err = msg
+    return {"outbound_total": None, "error": last_err or "item 없음(ED_CD/YM 확인)"}
 
 def build_triggers(weather, travel):
     """상품별 실시간 수요 신호 레벨 산출(정성 규칙)."""
