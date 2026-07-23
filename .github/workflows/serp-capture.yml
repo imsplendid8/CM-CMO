@@ -3,7 +3,7 @@ name: SERP Capture
 # 상품별 네이버 PC 검색결과를 주간 자동 스크린샷 → serp/ 커밋 (전/후 diff 아카이브)
 on:
   schedule:
-    - cron: "0 21 * * 1"   # 매주 화요일 06:00 KST (UTC 월 21:00)
+    - cron: "0 21 * * 0"   # 매주 월요일 06:00 KST (UTC 일 21:00)
   workflow_dispatch:
 
 permissions:
