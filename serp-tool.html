@@ -167,6 +167,9 @@ const PRODUCTS=[
  {key:"birth",cat:"장기",name:"임신·출산(태아)보험",kw:"태아보험"},
  {key:"overseas",cat:"일반",name:"해외여행보험",kw:"해외여행보험"},
  {key:"overseaslong",cat:"일반",name:"해외장기체류보험",kw:"유학생보험"},
+ {key:"holeinone",cat:"일반",name:"홀인원보험",kw:"홀인원보험"},
+ {key:"event",cat:"일반",name:"행사배상책임보험",kw:"행사보험"},
+ {key:"chronic",cat:"간편심사",name:"유병자 간편보험",kw:"유병자보험"},
 ];
 const INTEL_ASOF="2026-07-22";
 /* 경쟁사 소구포인트 — 네이버 PC 검색결과(대표키워드) 근거 · area: ad(파워링크/상단) / org(상위노출) / inf(정보성) */
@@ -240,6 +243,22 @@ const SERPINTEL={
    comps:[
     {who:"각 손보사·제휴",area:"org",hook:"유학생보험·장기체류 상품/제휴 랜딩"},
     {who:"유학원·정보",area:"inf",hook:"출국 준비·예방접종 정보성 콘텐츠 상단"}]},
+ holeinone:{ours:"캐롯 투게더 홀인원보험(4인 1만원·1인 154.3만원 축하비용·선물하기)이 자사 강점. ‘홀인원보험/원데이 골프보험’ 상단에 4인 정찰제·선물 USP를 노출해 소액·단기 검색을 선점.",
+   change:"베이스라인. 삼성 원데이·카카오페이 DIY 등 소액 경쟁 노출 변화 추적.",
+   comps:[
+    {who:"삼성화재 다이렉트 착",area:"ad",hook:"개인형 홀인원 비용 보장 원포인트"},
+    {who:"카카오페이손보",area:"org",hook:"DIY 골프/홀인원, 그룹 할인"},
+    {who:"자사(캐롯 투게더)",area:"us",hook:"4인 1만원 정찰제·선물하기·154.3만원 축하비용"}]},
+ event:{ours:"캐롯 행사배상책임보험은 ‘내일 행사도 오늘 가입’ 24시간 즉시성이 강점. 행사 유형별(공연·체육·불꽃놀이) 랜딩과 즉시가입 USP로 니치 롱테일을 확보.",
+   change:"베이스라인 — 행사보험 광고주·즉시가입 문구 변화 추적.",
+   comps:[
+    {who:"각 손보사·제휴",area:"org",hook:"행사보험·행사배상책임 견적 랜딩"},
+    {who:"자사(캐롯)",area:"us",hook:"전날·당일 24시간 가입·행사유형별 보장"}]},
+ chronic:{ours:"유병자(간편심사) 시장 성장. 고지항목(3.5.5·5.10.5)·가입가능 질환을 쉬운 언어로 설명하는 콘텐츠가 상단 점유의 핵심. (신규 출시 예정)",
+   change:"베이스라인 — 출시 후 SERP·경쟁 노출 상세화.",
+   comps:[
+    {who:"각 손보사",area:"ad",hook:"간편심사·유병자 실손/건강 상품 광고 경쟁 심화"},
+    {who:"비교·정보",area:"inf",hook:"‘유병자보험 비교·고지’ 정보성 콘텐츠 상단"}]},
 };
 
 const $=(s,el=document)=>el.querySelector(s);
@@ -304,7 +323,7 @@ function renderSidebar(){
   const item=(key,label,cnt,on)=>`<button class="sb-item${on?" on":""}" data-key="${key}"><span>${esc(label)}</span><span class="kc">${cnt}</span></button>`;
   const total=PRODUCTS.reduce((s,p)=>s+shotsOf(p.key).length,0);
   let h=item("__all","▦ 전체 개요",total,curKey==="__all");
-  ["사이트","장기","일반"].forEach(cat=>{h+=`<div class="sb-cap">${cat}</div>`;
+  [...new Set(PRODUCTS.map(p=>p.cat))].forEach(cat=>{h+=`<div class="sb-cap">${cat}</div>`;
     PRODUCTS.filter(p=>p.cat===cat).forEach(p=>{h+=item(p.key,p.name,shotsOf(p.key).length,curKey===p.key);});});
   $("#sbNav").innerHTML=h;
 }

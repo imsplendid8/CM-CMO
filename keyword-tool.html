@@ -168,6 +168,9 @@ const PRODUCTS=[
  {key:"birth",cat:"장기",name:"임신·출산(태아)보험",tier:"니치",core:["태아보험","임신보험","출산보험"],special:["태아","선천이상","미숙아","산모","제왕절개"]},
  {key:"overseas",cat:"일반",name:"해외여행보험",tier:"중형",core:["해외여행보험","여행자보험","다이렉트 여행자보험"],special:["실손","휴대품","항공기지연","여권분실"]},
  {key:"overseaslong",cat:"일반",name:"해외장기체류보험",tier:"니치",core:["해외장기체류보험","장기여행보험","유학생보험"],special:["유학","장기체류","워홀","어학연수","주재원"]},
+ {key:"holeinone",cat:"일반",name:"홀인원보험",tier:"니치",core:["홀인원보험","캐롯 홀인원보험","골프 홀인원보험"],special:["홀인원축하비용","기념품","라운딩","동반플레이어"]},
+ {key:"event",cat:"일반",name:"행사배상책임보험",tier:"니치",core:["행사배상책임보험","행사보험","캐롯 행사보험"],special:["공연행사","체육행사","불꽃놀이","수상활동","배상책임"]},
+ {key:"chronic",cat:"간편심사",name:"유병자 간편보험",tier:"니치",core:["유병자보험","간편심사보험","유병력자보험"],special:["간편심사","고혈압","당뇨","3.5.5","5.10.5"]},
 ];
 /* 수식어(수식어 조합) · 인텐트 */
 const MODS=[
@@ -283,7 +286,7 @@ function renderSidebar(){
   const total=PRODUCTS.reduce((s,p)=>s+rowsOf(p.key).length,0);
   const item=(key,label,cnt,on)=>`<button class="sb-item${on?" on":""}" data-key="${key}"><span>${esc(label)}</span><span class="kc">${cnt}</span></button>`;
   let h=item("__all",`▦ 전체 개요`,total,curKey==="__all");
-  ["사이트","장기","일반"].forEach(cat=>{
+  [...new Set(PRODUCTS.map(p=>p.cat))].forEach(cat=>{
     h+=`<div class="sb-cap">${cat}</div>`;
     PRODUCTS.filter(p=>p.cat===cat).forEach(p=>h+=item(p.key,p.name,rowsOf(p.key).length,curKey===p.key));
   });
