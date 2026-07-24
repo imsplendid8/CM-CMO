@@ -50,15 +50,15 @@ def fetch_weather():
         return {"active": [], "error": str(e)[:120]}
 
 def fetch_travel():
-    """해외여행보험 수요 = 네이버 데이터랩 '여행자보험' 월별 검색수요(상대지수). 최근월 vs 12개월 평균으로 상승 판정.
+    """해외여행보험 수요 = 네이버 데이터랩 '여행자보험' 일간 검색수요(상대지수). 최근 7일 평균 vs 90일 평균으로 성수기 상승 판정.
     (출입국관광통계 openapi.tour.go.kr는 GitHub Actions에서 불통 → 확실히 닿는 네이버 DataLab로 대체.)"""
     nid = os.environ.get("NAVER_CLIENT_ID", "").strip()
     nsec = os.environ.get("NAVER_CLIENT_SECRET", "").strip()
     if not (nid and nsec):
         return {"overseas_ratio": None, "error": "NAVER_CLIENT_ID/SECRET 없음(데이터랩)"}
-    end = datetime.date.today().replace(day=1) - datetime.timedelta(days=1)   # 지난달 말
-    start = end.replace(day=1) - datetime.timedelta(days=400)                 # 약 13개월 전
-    body = json.dumps({"startDate": start.isoformat(), "endDate": end.isoformat(), "timeUnit": "month",
+    end = datetime.date.today() - datetime.timedelta(days=1)                  # 어제(오늘은 미완)
+    start = end - datetime.timedelta(days=95)                                 # 약 90일
+    body = json.dumps({"startDate": start.isoformat(), "endDate": end.isoformat(), "timeUnit": "date",
                        "keywordGroups": [{"groupName": "여행자보험", "keywords": ["여행자보험", "해외여행보험", "여행보험"]}]}).encode("utf-8")
     try:
         req = urllib.request.Request("https://openapi.naver.com/v1/datalab/search", data=body,
@@ -69,9 +69,10 @@ def fetch_travel():
         if not data:
             return {"overseas_ratio": None, "error": "데이터랩 결과 없음"}
         ratios = [x["ratio"] for x in data]
-        latest = data[-1]
+        recent = ratios[-7:] or ratios
+        r7 = round(sum(recent) / len(recent), 1)
         avg = round(sum(ratios) / len(ratios), 1)
-        return {"overseas_ratio": round(latest["ratio"], 1), "period": latest["period"], "avg": avg, "peak": round(max(ratios), 1)}
+        return {"overseas_ratio": r7, "period": data[-1]["period"], "avg": avg, "peak": round(max(ratios), 1), "basis": "최근 7일 평균 vs 90일"}
     except Exception as e:
         return {"overseas_ratio": None, "error": str(e)[:140]}
 
@@ -95,7 +96,7 @@ def build_triggers(weather, travel):
 
 def sample():
     weather = {"active": ["호우", "폭염"]}
-    travel = {"overseas_ratio": 88.0, "period": "2026-07-01", "avg": 61.0, "peak": 100.0}
+    travel = {"overseas_ratio": 88.0, "period": "2026-07-23", "avg": 61.0, "peak": 100.0, "basis": "최근 7일 평균 vs 90일"}
     return {"asof": TODAY, "source": "sample", "weather": weather, "travel": travel,
             "triggers": build_triggers(weather, travel)}
 
