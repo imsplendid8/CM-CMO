@@ -32,6 +32,9 @@ jobs:
       - name: Capture SERP screenshots
         run: node scripts/capture_serp.mjs
 
+      - name: Capture competitor brand searches (PC + mobile)
+        run: node scripts/capture_brand.mjs
+
       - name: Commit new captures
         run: |
           git config user.name  "github-actions[bot]"
