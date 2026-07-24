@@ -109,8 +109,12 @@ def main():
     if not new:
         print("신규 논문 없음 — 변경 없음"); return
 
-    block = f"\n### ▪ {TODAY}\n\n" + "\n".join(entry_md(p) for p in new)
-    md = md.replace(FOOTER_MARK, block + FOOTER_MARK, 1)
+    entries = "\n".join(entry_md(p) for p in new)
+    today_h = f"### ▪ {TODAY}"
+    if today_h in md:   # 같은 날 재실행 → 기존 소제목 아래로 이어붙임(중복 소제목 방지)
+        md = md.replace(today_h + "\n\n", today_h + "\n\n" + entries + "\n", 1)
+    else:
+        md = md.replace(FOOTER_MARK, f"\n{today_h}\n\n{entries}" + FOOTER_MARK, 1)
     open(ARCHIVE, "w", encoding="utf-8").write(md)
     print(f"신규 {len(new)}편 적립({TODAY}):")
     for p in new:
