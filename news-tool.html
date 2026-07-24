@@ -136,6 +136,17 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .clip-it .dt{font-size:10px;color:var(--muted);font-family:var(--mono);white-space:nowrap;flex:0 0 76px;}
 .clip-it .tt{flex:1;font-size:12.5px;font-weight:700;color:var(--ink);line-height:1.45;} .clip-it:hover .tt{color:var(--brand-600);}
 .clip-it .ss{font-size:10.5px;color:var(--muted);white-space:nowrap;} .muted{color:var(--muted);font-size:12px;}
+/* 경쟁사 통합 카드 */
+.ci-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:13px;}
+.ci-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:14px 16px;display:flex;flex-direction:column;gap:8px;}
+.ci-h{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;letter-spacing:-.02em;}
+.ci-h .nm-refresh{margin-left:auto;}
+.ci-sum{font-size:12px;color:var(--ink-2);line-height:1.6;}
+.ci-ins{font-size:11.5px;color:var(--ink-2);line-height:1.55;background:var(--surface-2);border-radius:8px;padding:8px 10px;} .ci-ins b{color:var(--brand-600);font-weight:800;}
+.ci-items{display:flex;flex-direction:column;gap:5px;}
+.ci-it{font-size:12px;font-weight:700;color:var(--ink);text-decoration:none;line-height:1.4;border-top:1px solid var(--line-2);padding-top:6px;}
+.ci-it:first-child{border-top:0;padding-top:0;} .ci-it:hover{color:var(--brand-600);}
+.ci-it span{display:block;font-size:10px;color:var(--muted);font-weight:500;font-family:var(--mono);margin-top:1px;}
 .ov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
 .ov-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:15px 16px;box-shadow:var(--sh);cursor:pointer;transition:.15s;}
 .ov-card:hover{border-color:var(--brand);box-shadow:var(--sh-lg);transform:translateY(-1px);}
@@ -332,8 +343,7 @@ function renderSidebar(){
   const item=(key,label,on)=>`<button class="sb-item${on?" on":""}" data-key="${key}"><span>${esc(label)}</span><span class="kc">${NEWSMON[key]?NEWSMON[key].items.length:""}</span></button>`;
   let h=item("__all","▦ 전체 개요",curKey==="__all");
   h+=item("__clips","📎 클리핑 아카이브",curKey==="__clips");
-  h+=`<div class="sb-cap" style="color:var(--brand-600)">🏢 업계·경쟁사</div>`;
-  INDUSTRY.forEach(p=>{h+=item(p.key,p.name,curKey===p.key);});
+  h+=item("ind_biz","🏢 손보업계·경쟁사",curKey==="ind_biz"||curKey.startsWith("ind_"));
   [...new Set(PRODUCTS.map(p=>p.cat))].forEach(cat=>{
     h+=`<div class="sb-cap">${cat}</div>`;
     PRODUCTS.filter(p=>p.cat===cat).forEach(p=>{h+=item(p.key,p.name,curKey===p.key);});
@@ -400,7 +410,28 @@ function renderOverview(){
     <div class="ov-grid">${cards}</div>
     <div class="note"><b>카테고리 뉴스 모니터링</b> · 담당 상품 + 업계·경쟁사 동향을 요약·분석합니다. 헤드라인·링크는 공개 뉴스, 요약·시사점은 마케팅 관점 분석(개인정보·영업비밀 미포함). 실시간 갱신은 <b>팀 공유 프록시</b>(허브 ⚙) 또는 로컬 서버로 동작합니다.</div>`;
 }
-function render(){curKey==="__all"?renderOverview():curKey==="__clips"?renderClips():renderProduct();renderSidebar();window.scrollTo({top:0});}
+function render(){curKey==="__all"?renderOverview():curKey==="__clips"?renderClips():curKey.startsWith("ind_")?renderIndustry():renderProduct();renderSidebar();window.scrollTo({top:0});}
+
+/* 손보업계·경쟁사 통합 뷰 — 업계 전반 + 빅4/5를 한 화면에 */
+function renderIndustry(){
+  const biz=getP("ind_biz");
+  $("#pt").textContent="손보업계·경쟁사"; $("#pts").textContent=`· 빅4/5 + 업계 전반`;
+  const comps=INDUSTRY.filter(p=>p.key!=="ind_biz");
+  const compCard=p=>{const n=NEWSMON[p.key];if(!n)return "";
+    const top=(n.items||[]).slice(0,2).map(it=>`<a class="ci-it" href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.t)}<span>${esc(it.src||"")} · ${esc(it.date||"")}</span></a>`).join("");
+    return `<div class="ci-card"><div class="ci-h">${esc(p.name)}<button class="nm-refresh" data-refresh="${esc(p.key)}" title="실시간 갱신">🔄</button></div>
+      <div class="ci-sum">${esc(n.summary)}</div>
+      <div class="ci-ins"><b>시사점</b> ${esc(n.insight)}</div>
+      ${top?`<div class="ci-items">${top}</div>`:""}
+      <a class="more" href="${naverMore(p)}" target="_blank" rel="noopener">${esc(p.q)} 뉴스 ↗</a></div>`;};
+  $("#content").innerHTML=`
+    <div class="seedbar"><div class="st"><h2>🏢 손보업계·경쟁사</h2><span class="tier">업계 전반 + 빅4/5</span>
+      <span style="margin-left:auto;font-size:11.5px;color:var(--muted)">한 화면에서 통합 확인</span></div></div>
+    ${newsPanel(biz)}
+    <div class="sec-lbl">경쟁사 동향 · 삼성·DB·현대·KB·메리츠</div>
+    <div class="ci-grid">${comps.map(compCard).join("")}</div>
+    <div class="note"><b>활용</b> · 업계 전반 동향과 빅4/5 경쟁사를 한 곳에서 비교하세요. 각 카드의 <b>🔄</b>로 실시간 갱신, <b>뉴스 ↗</b>로 최신 헤드라인 확인.</div>`;
+}
 
 /* 클리핑 아카이브 (data/clips/ · 하루 2회 자동 수집 · 날짜검색·일/월 요약) */
 let CLIPS_INDEX=null,CLIP_DAY={},clipDate="",clipQ="";
