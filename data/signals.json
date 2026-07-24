@@ -7,15 +7,20 @@
     ]
   },
   "travel": {
-    "overseas_ratio": 51.2,
-    "period": "2026-06-01",
-    "avg": 72.2,
-    "peak": 100
+    "overseas_ratio": 88.2,
+    "period": "2026-07-23",
+    "avg": 77.6,
+    "peak": 100,
+    "basis": "최근 7일 평균 vs 90일"
   },
   "triggers": {
     "hrmf": {
       "level": "high",
       "note": "호우·태풍 특보 발효 → 누수·침수 담보 수요 급증"
+    },
+    "overseas": {
+      "level": "high",
+      "note": "‘여행자보험’ 검색수요 상승(2026-07-23 지수 88.2/평균 77.6) → 성수기 해외여행보험 대응"
     }
   }
 }
