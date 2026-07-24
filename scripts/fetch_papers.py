@@ -24,14 +24,25 @@ KST = datetime.timezone(datetime.timedelta(hours=9))
 TODAY = datetime.datetime.now(KST).strftime("%Y-%m-%d")
 MAX_ADD = 6  # 이번 회차 최대 적립 편수
 
-# CM·디지털 마케팅 검색 쿼리
+# CM·디지털 마케팅 검색 쿼리 (손보 다이렉트 맥락으로 좁힘)
 QUERIES = [
-    "디지털 마케팅 보험",
-    "다이렉트 보험 마케팅",
-    "디지털 마케팅 소비자 구매의도",
-    "인슈어테크 마케팅",
-    "보험 디지털 전환 구매의도",
+    "다이렉트보험 마케팅",
+    "손해보험 디지털 마케팅",
+    "자동차보험 다이렉트",
+    "인슈어테크",
+    "보험 온라인 구매의도",
+    "보험 디지털 전환 소비자",
 ]
+
+# 노이즈 제거: 제목에 아래 단어가 있으면 제외(도메인 밖 '보험')
+BLOCK = ["무역보험", "재보험", "신에너지", "어학원", "인도네시아", "디지털콘텐츠", "콘텐츠 산업", "화장품", "관광", "농산물"]
+
+def relevant(title):
+    """보험 도메인 + 노이즈 컷: 제목이 보험(保險)/인슈어테크 관련이고 블록 단어가 없어야 통과."""
+    t = title or ""
+    if any(b in t for b in BLOCK):
+        return False
+    return ("보험" in t) or ("保險" in t) or ("인슈어" in t) or ("insurtech" in t.lower())
 
 def strip(s):
     s = re.sub(r"<[^>]*>", "", str(s or ""))
@@ -54,6 +65,8 @@ def naver_doc(q, display=5):
         link = it.get("link") or ""
         title = strip(it.get("title"))
         if not link or not title:
+            continue
+        if not relevant(title):
             continue
         out.append({"title": title, "link": link,
                     "desc": strip(it.get("description"))[:90], "q": q})
