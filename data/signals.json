@@ -1,7 +1,21 @@
 {
-  "asof": null,
-  "source": "pending",
-  "weather": { "active": [] },
-  "travel": { "overseas_ratio": null },
-  "triggers": {}
+  "asof": "2026-07-24",
+  "source": "data.go.kr",
+  "weather": {
+    "active": [
+      "호우"
+    ]
+  },
+  "travel": {
+    "overseas_ratio": 51.2,
+    "period": "2026-06-01",
+    "avg": 72.2,
+    "peak": 100
+  },
+  "triggers": {
+    "hrmf": {
+      "level": "high",
+      "note": "호우·태풍 특보 발효 → 누수·침수 담보 수요 급증"
+    }
+  }
 }
