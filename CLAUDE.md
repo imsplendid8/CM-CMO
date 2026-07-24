@@ -3,20 +3,21 @@
 이 파일은 Claude Code가 이 저장소에서 작업할 때 참고하는 가이드입니다. **새 세션은 먼저 `STATE.md`를 읽으세요** (지금까지의 작업과 재개 절차).
 
 ## 프로젝트
-**Modooflow** — 한화손해보험 장기CM 마케팅 콘솔. 담당 상품(홈·장기7·일반2·간편심사, 13종)의 검색·마케팅을 돕는 **정적 웹 도구 모음**. 진행 5/10 기능 + 팀 실시간 연동·자동화. 디자인=Clean SaaS Light(흰 배경·Pretendard 자체호스팅).
+**Modooflow** — 한화손해보험 장기CM 마케팅 콘솔. 담당 상품(홈·장기7·일반2·간편심사, 13종)의 검색·마케팅을 돕는 **정적 웹 도구 모음**. 7개 도구(SEO·키워드·뉴스·SERP·시즌·약관·검색광고 소재) + 팀 실시간 연동 + 자동화(뉴스클리핑·SERP캡쳐·수요신호·논문 월간) + 별도 BSA 계약검수 CLI. 디자인=Clean SaaS Light(흰 배경·Pretendard 자체호스팅).
 
 ## 저장소 지도
 | 구분 | 위치 |
 |---|---|
 | 현재 상태·재개 | `STATE.md` (최우선) |
-| 위키(정리 문서) | `docs/` — `README.md`(색인)·`architecture.md`·`tools.md`·`roadmap.md`·`daily-brief.md`·`api-from-url.md`(프록시)·`oss-leverage.md`·`enhancements.md` |
-| 허브 | `index.html` (상단 고정 내비 + ⚙키설정 + API 사용량 위젯) |
-| 도구 6종 | `seo-audit.html` · `keyword-tool.html` · `news-tool.html`(업계·경쟁사+수요 트리거) · `serp-tool.html`(자동 캡쳐) · `seasonal-tool.html` · `terms-tool.html`(약관 용어→쉬운 표현) |
+| 위키(정리 문서) | `docs/` — `README.md`(색인)·`architecture.md`·`tools.md`·`검색광고-BSA-로드맵.md`·`roadmap.md`·`daily-brief.md`·`api-from-url.md`(프록시)·`oss-leverage.md`·`논문-아카이브.md` |
+| 허브 | `index.html` (상단 고정 내비 + ⚙키설정 + API 사용량 위젯) · 전체 안내 `overview.html` |
+| 도구 7종 | `seo-audit.html` · `keyword-tool.html`(+네이버 대량등록 파일) · `news-tool.html`(업계·경쟁사+수요 트리거) · `serp-tool.html`(자동 캡쳐+브랜드검색) · `seasonal-tool.html` · `terms-tool.html`(약관 용어→쉬운 표현) · `adcopy-tool.html`(검색광고 소재·파워링크 규격·심의·시즌·근거) |
+| 별도 도구 | `naver-searchad-bsa-monitor/` — 검색광고 관리 API로 BSA on/off·계약 재계약 판단(Python CLI, 대시보드와 독립) |
 | 팀 실시간 프록시 | `proxy/naver-proxy-worker.js` (Cloudflare Worker · 키=워커 시크릿) |
 | 폰트 | `fonts/PretendardVariable.woff2` (자체호스팅) |
 | 스크립트 | `scripts/` (workflow용: `naver_searchad_volume`·`naver_trends`·`daily_brief`·`capture_serp`·`check_products_sync`; 로컬 폴백: `naver_local_server`) |
 | 스킬 3종 | `.claude/skills/` — `cm-news-analysis`(뉴스·동향 분석) · `card-news-summary`(카드뉴스 요약) · `insurance-terms`(약관 용어 순화) |
-| 배포·자동화 | `.github/workflows/` — pages·ci·daily-brief·trends·searchad·serp-capture·technical-seo |
+| 배포·자동화 | `.github/workflows/` — pages·ci·daily-brief·trends·searchad·serp-capture(브랜드검색)·news-clip(하루 2회)·signals(수요 신호)·papers(논문 월간)·technical-seo |
 
 ## 작업 규칙
 - **트렁크 기반**: main에서 짧은 브랜치 → 검증 → 바로 병합·push(자동 배포). 롱리브 브랜치 금지.

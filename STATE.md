@@ -2,7 +2,7 @@
 
 > **이 문서의 목적**: 대화 세션이 끊겨도 다음 세션(사람이든 Claude든)이 **이 파일 하나만 읽으면** 지금까지 뭘 만들었고 어디를 이어가면 되는지 즉시 파악하도록. 새 작업을 시작하기 전에 항상 먼저 읽으세요.
 
-_최종 갱신: 2026-07-23 · 진행: 5/10 기능 + 팀 실시간 연동·자동화 완비_
+_최종 갱신: 2026-07-24 · 도구 7개(SEO·키워드·뉴스·SERP·시즌·약관·검색광고 소재) + 팀 실시간 연동 + 자동화(뉴스클리핑·SERP·수요신호·논문 월간) + 별도 BSA 계약검수 CLI_
 
 ## 한 줄 요약
 한화손보 장기CM 마케팅 콘솔 **Modooflow** — 담당 상품(홈·장기7·일반2, 13종)의 SEO·키워드·뉴스·SERP·시즌을 다루는 **정적 웹 도구 모음**. 단일 레포·트렁크(main), GitHub Pages 자동 배포. **디자인=Clean SaaS Light(흰 배경·Pretendard 자체호스팅)**. 실시간 데이터는 **팀 공유 Cloudflare 프록시**로, 키 입력 없이 팀 전원 사용.
@@ -15,7 +15,11 @@ _최종 갱신: 2026-07-23 · 진행: 5/10 기능 + 팀 실시간 연동·자동
 | 3 | 카테고리 뉴스 모니터링 | `news-tool.html` | **뉴스=프록시** `/naver/v1/search/news.json` | ✅ |
 | 4 | 검색결과 주간 아카이브 | `serp-tool.html` | **자동 캡쳐**(주간 Action) + 수동 업로드 + 전/후 diff | ✅ |
 | 5 | 연간 시즈널 이슈 캘린더 | `seasonal-tool.html` | 트렌드=월간 Action(`data/trends.json`) | ✅ |
-| — | 통합 허브 | `index.html` | ⚙키설정 + **오늘 API 사용량 위젯** | ✅ |
+| 6 | 약관 용어 변환 | `terms-tool.html` | (정적, 표준약관→소비자 표현·난이도) | ✅ |
+| 7 | 검색광고 소재 | `adcopy-tool.html` | 파워링크 규격·심의 린트 + 시즌 이슈 + 뉴스/SERP 근거 | ✅ |
+| — | 통합 허브 | `index.html` | ⚙키설정 + **오늘 API 사용량 위젯** · 전체 안내 `overview.html` | ✅ |
+| — | BSA 계약검수(별도 CLI) | `naver-searchad-bsa-monitor/` | 검색광고 관리 API on/off + 계약 D-day·재계약 판단(`NAVER_SEARCHAD_*`) | ✅ |
+| — | 논문 아카이브 | `docs/논문-아카이브.md` + `papers.yml` | 월 1회 네이버 전문자료 자동 적립 | ✅ |
 | — | 데일리 비서 | `scripts/daily_brief.py` + `daily-brief.yml` | 매일 08:00·14:00 KST **텔레그램** | ✅ 작동 확인 |
 | — | 상품 마스터 | `data/products.json` + `check_products_sync.py` | 단일 소스 + CI 드리프트 | ✅ |
 
@@ -65,8 +69,9 @@ _최종 갱신: 2026-07-23 · 진행: 5/10 기능 + 팀 실시간 연동·자동
 - **레거시 제거**: 수동 키워드 파이프라인(`run_keywords.sh`·`naver_searchad_keywords.py`·`google_ads_keywords.py`·`merge_volume.py`) → 자동 Action + 프록시로 대체. `KEYWORD-API.md` 현행화.
 - **보안**: 전 페이지 CSP(default 'self' + 프록시 `*.workers.dev`) + no-referrer. 커밋된 시크릿 없음 확인. 남은 권고=워커 `ALLOW_ORIGIN` 최신본 재배포, (선택) 프록시 공유토큰.
 - **뉴스 고도화**: 업계·경쟁사(INDUSTRY 빅4/5) + 수요 트리거(TRIGGERS) + 카드뉴스.
-- **고도화 후보**: `docs/enhancements.md` (공공데이터 API=소방청·기상청로 트리거 실데이터화 / NaverSearch·Kakao MCP / 스킬 확장).
-- **보류(사용자 검토중)**: #3 실측 검색량 월별 그래프, #2 브랜드·계약(단가표 받아둠 → scratchpad).
+- **고도화 실현분(구 enhancements.md → 삭제, 여기로 흡수)**: 공공데이터(기상)·검색 기반 수요 신호(`signals.yml`), NaverSearch MCP+`cm-news-analysis` 뉴스 자동화, 스킬 3종, 논문 월간 자동 적립(`papers.yml`).
+- **검색광고(SA)·BSA 솔루션**: `docs/검색광고-BSA-로드맵.md` 참조. 완료=A1(키워드 대량등록)·A2(문구 소재+시즌+근거)·B2(BSA on/off)·B3(재계약 판단, `naver-searchad-bsa-monitor/`).
+- **보류(사용자 검토중)**: #3 실측 검색량 월별 그래프. (#2 브랜드·계약 판단은 BSA CLI로 구현 완료)
 
 ## 핵심 결정 기록 (왜 이렇게 했나)
 - 도구 = **자체완결 단일 HTML**(외부 의존성 0) → 직접접속·Artifact 발행 모두 용이. 폰트만 자체호스팅.
