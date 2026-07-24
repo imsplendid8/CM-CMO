@@ -172,6 +172,7 @@ function renderNav(active){
   const item=(id,icon,name,ac,on)=>`<button class="navb${on?" on":""}" data-tool="${id}" style="--ac:${ac||"var(--brand)"}"><span class="ic">${icon}</span>${esc(name)}</button>`;
   let h=item("home","🏠","홈",null,active==="home");
   TOOLS.forEach(t=>h+=item(t.id,t.icon,t.name,t.ac,active===t.id));
+  h+=`<a class="navb" href="overview.html" style="text-decoration:none"><span class="ic">🗂️</span>전체 안내</a>`;
   h+=`<a class="navb" href="${WIKI}" target="_blank" rel="noopener" style="text-decoration:none"><span class="ic">📖</span>위키</a>`;
   nav.innerHTML=h;
 }
