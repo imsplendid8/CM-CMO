@@ -1,0 +1,39 @@
+name: Papers Archive
+
+# CM·디지털 마케팅 논문을 매월 1일 네이버 전문자료 검색으로 자동 적립 → docs/논문-아카이브.md
+on:
+  schedule:
+    - cron: "0 0 1 * *"   # 매월 1일 09:00 KST (UTC 00:00)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: papers-archive
+  cancel-in-progress: false
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fetch & append papers
+        env:
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+        run: python3 scripts/fetch_papers.py
+      - name: Commit new papers
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/논문-아카이브.md
+          if git diff --cached --quiet; then
+            echo "신규 논문 없음 — 커밋 생략"
+          else
+            git commit -m "chore(papers): 월간 논문 자동 적립 $(TZ=Asia/Seoul date '+%F')"
+            git push
+          fi
