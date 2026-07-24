@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="검색광고 문구 소재 제작 — 네이버 파워링크 규격(제목15·설명45) 강제 + 금지표현 린트 + 광고심의 전제">
+<title>Modooflow · 검색광고 문구 소재</title>
+<style>
+:root{
+  --brand:#e8553d; --brand-600:#c53d28; --brand-50:#fdeae5; --brand-tint:#fef4f1;
+  --grad:linear-gradient(135deg,#f0714f 0%,#e8553d 100%);
+  --ink:#241a17; --ink-2:#584c47; --muted:#948a84; --faint:#d4cbc6;
+  --bg:#f8f5f3; --surface:#fff; --surface-2:#faf7f5; --line:#ece4e0; --line-2:#f4efec;
+  --good:#2b8a6b; --good-bg:#e3f5ee; --bad:#c0392b; --bad-bg:#fbe7e4; --warn:#c47f12; --warn-bg:#fbf1de;
+  --r:14px; --r-sm:10px; --sh:0 1px 2px rgba(40,20,10,.05),0 6px 20px rgba(40,20,10,.06); --sh-lg:0 12px 40px rgba(40,20,10,.12);
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  --sans:'Pretendard','Noto Sans KR','Nanum Gothic','Apple SD Gothic Neo',-apple-system,sans-serif;
+}
+@media(prefers-color-scheme:dark){:root{
+  --ink:#f3ece9;--ink-2:#cabfb9;--muted:#968a84;--faint:#4d453f;--bg:#160f0d;--surface:#1e1613;--surface-2:#241b17;--line:#332721;--line-2:#28201b;
+  --brand:#f0714f;--brand-600:#f4906f;--brand-50:#2c1710;--brand-tint:#20130e;--good-bg:#0f2c22;--bad-bg:#331817;--warn-bg:#33270f;
+  --sh:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.4);--sh-lg:0 12px 40px rgba(0,0,0,.55);}}
+:root[data-theme="dark"]{--ink:#f3ece9;--ink-2:#cabfb9;--muted:#968a84;--faint:#4d453f;--bg:#160f0d;--surface:#1e1613;--surface-2:#241b17;--line:#332721;--line-2:#28201b;--brand:#f0714f;--brand-600:#f4906f;--brand-50:#2c1710;--brand-tint:#20130e;--good-bg:#0f2c22;--bad-bg:#331817;--warn-bg:#33270f;--sh:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.4);--sh-lg:0 12px 40px rgba(0,0,0,.55);}
+:root[data-theme="light"]{--ink:#241a17;--ink-2:#584c47;--muted:#948a84;--faint:#d4cbc6;--bg:#f8f5f3;--surface:#fff;--surface-2:#faf7f5;--line:#ece4e0;--line-2:#f4efec;--brand:#e8553d;--brand-600:#c53d28;--brand-50:#fdeae5;--brand-tint:#fef4f1;--good-bg:#e3f5ee;--bad-bg:#fbe7e4;--warn-bg:#fbf1de;--sh:0 1px 2px rgba(40,20,10,.05),0 6px 20px rgba(40,20,10,.06);--sh-lg:0 12px 40px rgba(40,20,10,.12);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;word-break:keep-all;}
+.app{display:grid;grid-template-columns:230px 1fr;min-height:100vh;}
+@media(max-width:820px){.app{grid-template-columns:1fr;}.sidebar{position:static!important;height:auto!important;}}
+.sidebar{background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.sb-brand{display:flex;align-items:center;gap:10px;padding:16px 16px 14px;border-bottom:1px solid var(--line);}
+.brand-logo{width:34px;height:34px;border-radius:9px;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;box-shadow:0 6px 16px rgba(232,85,61,.4);flex:0 0 auto;}
+.bn{font-size:14px;font-weight:800;letter-spacing:-.02em;} .sb-brand small{display:block;font-size:9.5px;color:var(--muted);font-weight:600;margin-top:1px;}
+.sb-nav{flex:1;padding:10px;display:flex;flex-direction:column;gap:2px;}
+.sb-cap{font-size:9.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:12px 8px 5px;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;border:none;background:none;font-family:inherit;font-size:12.5px;font-weight:700;color:var(--ink-2);cursor:pointer;text-align:left;width:100%;transition:.14s;}
+.sb-item:hover{background:var(--surface-2);color:var(--ink);} .sb-item.on{background:var(--brand-50);color:var(--brand-600);}
+.sb-foot{padding:12px 14px;border-top:1px solid var(--line);font-size:9.5px;color:var(--muted);line-height:1.6;}
+.sb-foot a{color:var(--brand-600);text-decoration:none;font-weight:700;}
+.main{min-width:0;display:flex;flex-direction:column;}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 24px;background:var(--surface);border-bottom:1px solid var(--line);}
+.topbar #pt{font-size:16px;font-weight:800;letter-spacing:-.02em;} .topbar #pts{font-size:11.5px;color:var(--muted);}
+.tr{margin-left:auto;display:flex;gap:8px;}
+.btn{padding:8px 13px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:.15s;}
+.btn:hover{border-color:var(--brand);color:var(--brand-600);} .btn.sm{padding:5px 9px;font-size:11px;}
+.icon-btn{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);cursor:pointer;font-size:14px;}
+.crumb{font-size:12px;color:var(--muted);text-decoration:none;font-weight:700;} .crumb:hover{color:var(--brand-600);}
+.content{padding:20px 24px 60px;max-width:1080px;}
+.banner{background:var(--warn-bg);border:1px solid color-mix(in srgb,var(--warn) 30%,var(--line));border-radius:var(--r);padding:11px 15px;font-size:11.5px;color:var(--ink-2);margin-bottom:16px;line-height:1.6;}
+.banner b{color:var(--warn);}
+.specbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+.spec{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:8px 13px;font-size:11.5px;color:var(--ink-2);box-shadow:var(--sh);}
+.spec b{color:var(--brand-600);font-family:var(--mono);}
+.sec-lbl{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:20px 0 10px;}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:720px){.grid{grid-template-columns:1fr;}}
+.cand{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh);display:flex;align-items:flex-start;gap:10px;}
+.cand .tx{flex:1;font-size:13.5px;font-weight:600;color:var(--ink);line-height:1.5;}
+.cand .len{font-family:var(--mono);font-size:11px;font-weight:800;padding:2px 7px;border-radius:99px;white-space:nowrap;background:var(--good-bg);color:var(--good);}
+.cand .len.warn{background:var(--warn-bg);color:var(--warn);}
+.cand .cp{border:1px solid var(--line);background:var(--surface-2);color:var(--ink-2);border-radius:7px;padding:3px 8px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.cand .cp:hover{border-color:var(--brand);color:var(--brand-600);}
+.cand.flag{border-color:color-mix(in srgb,var(--bad) 40%,var(--line));}
+.flagmsg{font-size:10.5px;color:var(--bad);font-weight:700;margin-top:4px;}
+.editor{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--sh);margin-top:8px;}
+.editor .row{margin-bottom:14px;}
+.editor label{display:block;font-size:12px;font-weight:800;margin-bottom:6px;color:var(--ink);}
+.editor label span{font-weight:600;color:var(--muted);}
+.editor input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);color:var(--ink);font-family:inherit;font-size:14px;}
+.editor input:focus{outline:none;border-color:var(--brand);background:var(--surface);box-shadow:0 0 0 3px var(--brand-50);}
+.meta{display:flex;align-items:center;gap:10px;margin-top:6px;font-size:11.5px;}
+.meta .len{font-family:var(--mono);font-weight:800;}
+.meta .ok{color:var(--good);} .meta .no{color:var(--bad);}
+.lint{font-size:11px;color:var(--bad);font-weight:700;}
+.note{background:var(--surface);border:1px dashed var(--brand);border-radius:var(--r);padding:13px 15px;font-size:12px;color:var(--ink-2);line-height:1.7;margin-top:16px;box-shadow:var(--sh);}
+.note b{color:var(--brand-600);}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:12.5px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:60;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sb-brand"><div class="brand-logo">✍️</div>
+      <div><div class="bn">검색광고 소재</div><small>파워링크 문구 제작</small></div></div>
+    <nav class="sb-nav" id="sbNav"></nav>
+    <div class="sb-foot"><a href="index.html">← 통합 콘솔(main)로</a><br>규격: 제목 15자 · 설명 20~45자<br><b>광고심의 검수 전 초안</b> · 문구는 손해보험협회 심의 대상</div>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <a class="crumb" href="index.html">Modooflow ›</a>
+      <div><div id="pt">검색광고 문구 소재</div><div id="pts"></div></div>
+      <div class="tr"><button class="icon-btn" id="themeBtn" title="테마">◐</button></div>
+    </header>
+    <div class="content" id="content"></div>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+"use strict";
+const $=(s,el=document)=>el.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const clen=s=>[...String(s).trim()].length;               // 글자수(공백 포함, 코드포인트)
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1600);}
+
+/* 네이버 파워링크 규격 */
+const SPEC={ titleMax:15, descMin:20, descMax:45 };
+/* 광고심의·네이버 자제 표현(최상급·절대·확정) — 보험광고 민감 */
+const BAN=["최고","최상","최저가","최저","제일","1위","일등","넘버원","넘버1","무조건","100%","완벽","절대","확정","무심사","누구나","전원","공짜","완전무료","보장 확정","원금보장","평생보장"];
+function lintBan(s){return BAN.filter(w=>String(s).replace(/\s/g,"").includes(w.replace(/\s/g,"")));}
+
+/* 상품별 소구 토큰 — 제목용 short(짧게), 설명용 usp(문장 조각), 담보 covers */
+const PRODUCTS=[
+ {key:"home",cat:"사이트",name:"다이렉트 홈",brand:"한화손보 다이렉트",short:["공식","간편가입","보험료"],usp:["필요한 담보만 골라 다이렉트로 간편하게","공식 채널에서 보험료 확인하고 바로"],covers:["자동차·장기 다이렉트"]},
+ {key:"hrmf",cat:"장기",name:"주택화재보험",short:["누수·도난","주택맞춤","화재"],usp:["화재·누수·도난·배상책임까지","아파트·빌라·오피스텔 유형별 맞춤으로"],covers:["화재","누수","도난","일상배상책임"]},
+ {key:"golf",cat:"장기",name:"골프보험",short:["홀인원","정찰제","선물하기"],usp:["홀인원 축하비용·골프용품까지","팀 단위 정찰제로 부담 없이"],covers:["홀인원 축하비용","골프용품손해","배상책임"]},
+ {key:"cncr",cat:"장기",name:"암보험",short:["진단비","표적항암","비갱신"],usp:["암진단비·표적항암까지 든든하게","갱신·비갱신 골라 필요한 담보만"],covers:["암진단비","표적항암약물","항암방사선"]},
+ {key:"dntl",cat:"장기",name:"치아보험",short:["임플란트","크라운","실속형"],usp:["임플란트·크라운·충전치료까지","실속형·고급형 골라 부담 없이"],covers:["임플란트","크라운","충전치료"]},
+ {key:"driver",cat:"장기",name:"운전자보험",short:["형사합의금","변호사선임","다이렉트"],usp:["형사합의금·변호사선임·벌금까지","다이렉트로 저렴하게 든든하게"],covers:["교통사고처리지원금","변호사선임비용","벌금"]},
+ {key:"woman",cat:"장기",name:"여성건강보험",short:["여성암","검진연계"],usp:["여성암·주요 질환까지 촘촘하게","검진 시기에 맞춰 미리 준비"],covers:["여성암진단비","자궁·난소 질환"]},
+ {key:"birth",cat:"장기",name:"태아보험",short:["출산전가입","서류간편"],usp:["출산 전 가입 적기, 서류는 간편하게","선천이상·신생아 질환까지 미리"],covers:["선천이상","신생아 질환"]},
+ {key:"overseas",cat:"일반",name:"해외여행보험",short:["항공지연","휴대품","다이렉트"],usp:["해외의료비·항공지연·휴대품까지","여행 기간만큼 다이렉트로 간편하게"],covers:["해외의료비","항공지연","휴대품손해"]},
+ {key:"holeinone",cat:"일반",name:"홀인원보험",short:["4인정찰제","축하비용","선물"],usp:["홀인원 축하비용·선물하기까지","팀 단위 정찰제로 소액·단기 준비"],covers:["홀인원 축하비용","선물하기"]},
+ {key:"event",cat:"일반",name:"행사배상책임보험",short:["당일가입","행사맞춤"],usp:["공연·체육·행사 배상책임을 폭넓게","전날·당일도 바로 가입해 든든하게"],covers:["행사 중 배상책임"]},
+ {key:"chronic",cat:"간편심사",name:"유병자 간편보험",short:["간편심사","3가지고지"],usp:["몇 가지만 답하면 간편하게","지병이 있어도 간편심사로 준비"],covers:["유병자 실손·건강"]},
+];
+/* 시즌 각도(카테고리/상품 키 기반) — 카테고리별 시즌 문구 훅 */
+const SEASON={ hrmf:"겨울철 난방·화재 대비", golf:"봄·가을 라운딩 시즌", overseas:"여름 휴가·성수기 여행", holeinone:"골프 시즌 홀인원", driver:"명절 장거리 운전", cncr:"건강검진 시즌", dntl:"치과 검진 시즌" };
+
+let curKey=PRODUCTS[0].key;
+const getP=k=>PRODUCTS.find(p=>p.key===k);
+const uniq=a=>[...new Set(a)];
+
+function genTitles(p){
+  const n=p.name, b=p.brand;
+  let t=[
+    `${n} 다이렉트`, `다이렉트 ${n}`, `${n} 보험료 비교`, `${n} 간편가입`,
+    ...(b?[`${b}`]:[]),
+    ...p.short.map(s=>`${s} ${n}`), ...p.short.map(s=>`${n} ${s}`),
+    ...(SEASON[p.key]?[`${SEASON[p.key].split(" ")[0]} ${n}`]:[]),
+  ];
+  return uniq(t).map(x=>({tx:x,len:clen(x),ban:lintBan(x)}))
+    .filter(o=>o.len>=2 && o.len<=SPEC.titleMax);
+}
+function genDescs(p){
+  const n=p.name;
+  let d=[
+    `${p.usp[0]} 준비하세요.`,
+    `${p.usp[1]} 준비하세요.`,
+    `${p.covers.slice(0,3).join("·")} 보장, 다이렉트로 간편하게.`,
+    `${n}, 온라인으로 보험료 확인하고 바로 가입하세요.`,
+    `${p.short[0]} 중심으로 필요한 담보만 골라 준비하세요.`,
+    ...(SEASON[p.key]?[`${SEASON[p.key]}, ${n} 미리 준비하세요.`]:[]),
+  ];
+  return uniq(d).map(x=>({tx:x,len:clen(x),ban:lintBan(x)}))
+    .filter(o=>o.len>=SPEC.descMin && o.len<=SPEC.descMax);
+}
+
+function renderSidebar(){
+  const item=(k,label,on)=>`<button class="sb-item${on?" on":""}" data-key="${k}"><span>${esc(label)}</span></button>`;
+  let h="";
+  [...new Set(PRODUCTS.map(p=>p.cat))].forEach(cat=>{h+=`<div class="sb-cap">${esc(cat)}</div>`;
+    PRODUCTS.filter(p=>p.cat===cat).forEach(p=>{h+=item(p.key,p.name,curKey===p.key);});});
+  $("#sbNav").innerHTML=h;
+}
+function candCard(o,kind){
+  const warn=(kind==="desc"&&o.len>SPEC.descMax)||(kind==="title"&&o.len>SPEC.titleMax);
+  const max=kind==="title"?SPEC.titleMax:SPEC.descMax;
+  return `<div class="cand${o.ban.length?" flag":""}">
+    <div class="tx">${esc(o.tx)}${o.ban.length?`<div class="flagmsg">⚠ 심의 주의 표현: ${o.ban.map(esc).join(", ")}</div>`:""}</div>
+    <span class="len${warn?" warn":""}">${o.len}/${max}</span>
+    <button class="cp" data-copy="${esc(o.tx)}">복사</button>
+  </div>`;
+}
+function render(){
+  const p=getP(curKey);
+  $("#pt").textContent=p.name+" · 문구 소재"; $("#pts").textContent="· 네이버 파워링크 규격";
+  const titles=genTitles(p), descs=genDescs(p);
+  $("#content").innerHTML=`
+    <div class="banner"><b>광고심의 전제</b> · 아래 문구는 <b>초안</b>입니다. 보험 광고 문구는 <b>손해보험협회 광고심의</b> 대상이며, 사실 근거 없는 최상급·확정 표현은 사용할 수 없습니다. 담보·보험료·조건은 약관 기준으로 검수 후 게재하세요.</div>
+    <div class="specbar">
+      <div class="spec">제목 <b>≤ ${SPEC.titleMax}자</b></div>
+      <div class="spec">설명 <b>${SPEC.descMin}~${SPEC.descMax}자</b></div>
+      <div class="spec">특수문자·최상급 표현 <b>자제</b></div>
+      ${SEASON[p.key]?`<div class="spec">시즌 각도 <b>${esc(SEASON[p.key])}</b></div>`:""}
+    </div>
+
+    <div class="sec-lbl">제목 후보 (${titles.length}) · ≤${SPEC.titleMax}자</div>
+    <div class="grid">${titles.map(o=>candCard(o,"title")).join("")||'<div class="spec">생성된 후보 없음</div>'}</div>
+
+    <div class="sec-lbl">설명 후보 (${descs.length}) · ${SPEC.descMin}~${SPEC.descMax}자</div>
+    <div class="grid">${descs.map(o=>candCard(o,"desc")).join("")||'<div class="spec">생성된 후보 없음</div>'}</div>
+
+    <div class="sec-lbl">직접 작성 · 실시간 글자수·심의 체크</div>
+    <div class="editor">
+      <div class="row"><label>제목 <span>(≤ ${SPEC.titleMax}자)</span></label>
+        <input id="edT" maxlength="40" placeholder="예: ${esc(p.name)} 다이렉트">
+        <div class="meta"><span class="len" id="edTlen">0/${SPEC.titleMax}</span><span class="lint" id="edTlint"></span></div></div>
+      <div class="row"><label>설명 <span>(${SPEC.descMin}~${SPEC.descMax}자)</span></label>
+        <input id="edD" maxlength="80" placeholder="예: ${esc(p.usp[0])} 준비하세요.">
+        <div class="meta"><span class="len" id="edDlen">0/${SPEC.descMax}</span><span class="lint" id="edDlint"></span></div></div>
+    </div>
+
+    <div class="note"><b>사용법</b> · 후보를 <b>복사</b>해 네이버 검색광고 소재 등록에 붙여넣거나, <b>직접 작성</b>란에서 글자수·심의 표현을 확인하며 다듬으세요. 시즌 각도는 <b>시즌 캘린더</b>, 소구 근거는 <b>SERP·뉴스</b> 콘솔과 함께 보면 좋습니다. 문구·담보 표현은 <b>최종 광고심의 검수 후</b> 게재하세요.</div>`;
+
+  const bind=(inp,lenEl,lintEl,max,min)=>{
+    const el=$(inp);
+    const upd=()=>{const v=el.value,n=clen(v);const L=$(lenEl);L.textContent=`${n}/${max}`;
+      L.className="len "+((n>=(min||1)&&n<=max)?"ok":"no");
+      const b=lintBan(v);$(lintEl).textContent=b.length?("⚠ "+b.join(", ")):"";};
+    el.addEventListener("input",upd);upd();
+  };
+  bind("#edT","#edTlen","#edTlint",SPEC.titleMax,1);
+  bind("#edD","#edDlen","#edDlint",SPEC.descMax,SPEC.descMin);
+  renderSidebar();
+}
+document.addEventListener("click",e=>{
+  const nav=e.target.closest("[data-key]"); if(nav){curKey=nav.dataset.key;render();window.scrollTo({top:0});return;}
+  const cp=e.target.closest("[data-copy]"); if(cp){const t=cp.dataset.copy;
+    (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast("복사됨 · "+clen(t)+"자")).catch(()=>{
+      const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("복사됨");}catch(_){}ta.remove();});
+  }});
+$("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");});
+render();
+</script>
+</body>
+</html>
