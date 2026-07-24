@@ -11,7 +11,7 @@ _최종 갱신: 2026-07-23 · 진행: 5/10 기능 + 팀 실시간 연동·자동
 | # | 작업공간 | 파일 | 실시간 연동 | 상태 |
 |---|---|---|---|---|
 | 1 | 테크니컬 SEO 콘솔 | `seo-audit.html` | (정적 진단) | ✅ |
-| 2 | 검색광고 키워드 추출 | `keyword-tool.html` | **검색량=프록시** `/searchad/keywordstool` + .xlsx 병합 | ✅ |
+| 2 | 검색광고 키워드 추출 | `keyword-tool.html` | **검색량=프록시** `/searchad/keywordstool`(실시간) | ✅ |
 | 3 | 카테고리 뉴스 모니터링 | `news-tool.html` | **뉴스=프록시** `/naver/v1/search/news.json` | ✅ |
 | 4 | 검색결과 주간 아카이브 | `serp-tool.html` | **자동 캡쳐**(주간 Action) + 수동 업로드 + 전/후 diff | ✅ |
 | 5 | 연간 시즈널 이슈 캘린더 | `seasonal-tool.html` | 트렌드=월간 Action(`data/trends.json`) | ✅ |

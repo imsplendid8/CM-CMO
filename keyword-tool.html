@@ -141,15 +141,6 @@ td.kw{font-weight:700;color:var(--ink);white-space:normal;} td.c{text-align:cent
         <button class="icon-btn" id="themeBtn" title="테마">◐</button>
       </div>
     </header>
-    <details class="imp" id="impPanel" open><summary>➕ 네이버 키워드도구 결과 합치기 — 연관키워드를 지금 키워드셋에 추가 (터미널·키 입력 불필요)</summary>
-      <div class="ib">
-        <div class="ir" style="margin-top:0;margin-bottom:9px"><label class="btn primary" style="cursor:pointer">📁 네이버 키워드도구 엑셀·CSV 선택<input type="file" id="volFile" accept=".xlsx,.csv,.tsv,.txt" style="display:none"></label>
-          <span class="hint"><b>왼쪽에서 상품을 먼저 선택</b> → 네이버 검색광고 <b>키워드도구 → [다운로드]</b> 한 파일을 고르면 <b>연관키워드가 전부 합쳐집니다</b> — 운전자보험처럼 <b>수백 개(≈800)</b>도 개수 제한 없이 그대로. (검색량 있으면 함께 반영)</span></div>
-        <textarea id="volJson" placeholder='또는 여기에 붙여넣기 — 연관키워드 목록(줄바꿈), 표(엑셀 복사), CSV, API JSON 모두 인식'></textarea>
-        <div class="ir"><button class="btn primary" id="volLoad">키워드 합치기</button><button class="btn" id="volSample">샘플</button>
-          <span class="hint">출처(도구/네이버)로 구분 표시 · 중복 자동 제거 · 브라우저에서만 처리(전송 0)</span></div>
-      </div>
-    </details>
     <details class="imp" id="livePanel" style="border-color:var(--nav-ink)"><summary style="color:var(--nav-ink)">🔌 네이버 실시간 검색량 <span style="color:var(--muted);font-weight:600">(프록시 연결됨 — 키 입력 없이 바로 · 아래 3칸은 개인 override용)</span></summary>
       <div class="ib">
         <div class="pform" style="margin-top:0">
@@ -352,7 +343,7 @@ function productBody(p){
   const trows=rows2.map(r=>{const v=volOf(r.kw);const vol=v?(v.pc||0)+(v.mobile||0):null;
     return `<tr><td class="kw">${esc(r.kw)}</td><td class="c"><span class="src ${r.src||"도구"}">${r.src||"도구"}</span></td><td class="c gram">${r.gram}단어</td><td class="c"><span class="pill ${r.intent}">${r.intent}</span></td><td class="c"><span class="pill ${r.pf}">${r.pf}</span></td><td class="c gram">${r.mt}</td>`+(vh?`<td class="c" style="font-family:var(--mono);font-weight:700">${vol!=null?fmtVol(vol):"—"}</td><td class="c gram">${v?esc(v.comp||"—"):"—"}</td>`:"")+`</tr>`;}).join("");
   return `<div class="kpi-row">${kpi(rows.length,"총 키워드")}${kpi(nvCnt,"네이버 도구 추가","var(--nav-ink)")}${kpi(ic.거래+ic.담보,"거래·담보형","var(--trx)")}${kpi(pc.구글+pc.공통+ic.AI,"구글·AI","var(--goo-ink)")}</div>
-    <div class="sec-lbl">키워드셋 <span style="font-weight:600;color:var(--muted);text-transform:none">· 도구 생성 + 네이버 키워드도구 병합 · 인텐트·플랫폼 자동 분류</span></div>
+    <div class="sec-lbl">키워드셋 <span style="font-weight:600;color:var(--muted);text-transform:none">· 도구 생성 + 네이버 실시간 검색량(프록시) · 인텐트·플랫폼 자동 분류</span></div>
     <div class="tbl-wrap"><table><thead><tr><th>키워드</th><th class="c">출처</th><th class="c">구성</th><th class="c">인텐트</th><th class="c">추천 플랫폼</th><th class="c">매치타입</th>${vh?'<th class="c">월검색량</th><th class="c">경쟁도</th>':''}</tr></thead><tbody>${trows}</tbody></table></div>`;
 }
 function renderProduct(){
@@ -476,12 +467,6 @@ async function applyVolFile(f){
     importKeywords(t);};
   rd.readAsArrayBuffer(f);
 }
-$("#volFile").addEventListener("change",e=>{if(e.target.files[0])applyVolFile(e.target.files[0]);e.target.value="";});
-(function(){const ta=$("#volJson");if(!ta)return;["dragover","dragenter"].forEach(ev=>ta.addEventListener(ev,e=>{e.preventDefault();ta.style.borderColor="var(--brand)";}));
-  ta.addEventListener("dragleave",()=>ta.style.borderColor="");
-  ta.addEventListener("drop",e=>{e.preventDefault();ta.style.borderColor="";if(e.dataTransfer.files[0])applyVolFile(e.dataTransfer.files[0]);});})();
-$("#volLoad").addEventListener("click",()=>importKeywords($("#volJson").value));
-$("#volSample").addEventListener("click",()=>{$("#volJson").value="암보험비교사이트\n40대암보험\n암보험재가입\n유사암진단비\n암보험갱신형\n비갱신암보험\n암보험 순위\n표적항암약물허가치료비";});
 // 네이버 실시간 연동 — 팀 공유 프록시(기본) 우선, 로컬 서버 폴백
 const DEFAULT_PROXY="https://modooflow-naver-proxy.angle0102.workers.dev";
 function mfKeys(){try{return JSON.parse(localStorage.getItem("mf_keys")||"{}")||{};}catch(e){return {};}}

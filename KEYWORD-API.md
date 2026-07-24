@@ -25,8 +25,6 @@
   } } } }
 ```
 
-## 엑셀 병합 (오프라인 보조)
-네이버 키워드도구에서 내려받은 `.xlsx`는 키워드 도구의 **엑셀·CSV 병합**으로 바로 반영됩니다(브라우저 파싱, 전송 0).
 
 ---
 > 이전의 수동 CLI 파이프라인(`run_keywords.sh`·`naver_searchad_keywords.py`·`google_ads_keywords.py`·`merge_volume.py`)은
