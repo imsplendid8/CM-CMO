@@ -141,6 +141,16 @@ td.who{font-weight:800;white-space:nowrap;}
 @media(prefers-color-scheme:dark){:root{--ink:#eef1f6;--ink-2:#b7bdc9;--muted:#7f8697;--faint:#4a4f60;--bg:#0e1016;--surface:#171a21;--surface-2:#1d212a;--line:#262b35;--line-2:#20242d;--sh:0 1px 2px rgba(0,0,0,.4),0 2px 6px rgba(0,0,0,.5);--sh-lg:0 14px 34px rgba(0,0,0,.6);}}
 :root[data-theme="dark"]{--ink:#eef1f6;--ink-2:#b7bdc9;--muted:#7f8697;--faint:#4a4f60;--bg:#0e1016;--surface:#171a21;--surface-2:#1d212a;--line:#262b35;--line-2:#20242d;--sh:0 1px 2px rgba(0,0,0,.4),0 2px 6px rgba(0,0,0,.5);--sh-lg:0 14px 34px rgba(0,0,0,.6);}
 :root[data-theme="light"]{--ink:#0f1729;--ink-2:#4a5163;--muted:#8b93a3;--faint:#cdd2db;--bg:#f7f8fa;--surface:#ffffff;--surface-2:#f4f6f8;--line:#e8ebef;--line-2:#eef1f4;--sh:0 1px 2px rgba(15,23,41,.04),0 2px 6px rgba(15,23,41,.05);--sh-lg:0 12px 30px rgba(15,23,41,.10);}
+/* 경쟁사 브랜드검색 갤러리 (serp/brand) */
+.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.bcard{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);overflow:hidden;}
+.bcard-h{font-size:12.5px;font-weight:800;color:var(--ink);padding:9px 12px;border-bottom:1px solid var(--line);}
+.bshots{display:flex;gap:8px;padding:10px;}
+.bshot{flex:1;margin:0;text-align:center;}
+.bshot img{width:100%;height:150px;object-fit:cover;object-position:top center;border:1px solid var(--line);border-radius:8px;cursor:zoom-in;background:#fff;}
+.bshot img:hover{border-color:var(--brand);}
+.bshot figcaption{font-size:10.5px;color:var(--muted);font-weight:600;margin-top:4px;}
+.bshot.empty2{display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:11px;border:1px dashed var(--line);border-radius:8px;min-height:150px;}
 </style>
 </head>
 <body>
@@ -296,6 +306,15 @@ function loadRepoManifest(){
       REPO[s]=(m.shots[k].captures||[]).map(c=>({id:"repo_"+c.file,date:c.date,img:"serp/"+c.file,repo:true,note:"자동 캡쳐"}));});
   }).catch(()=>{}); // 아티팩트/오프라인에선 404 → 무시(수동 업로드만)
 }
+/* 경쟁사 브랜드검색 자동 캡쳐(serp/brand/manifest.json) — capture_brand.mjs 주간 워크플로우가 채움. 읽기전용 */
+let BRAND={asof:null,brands:{}};
+const BRAND_ORDER=[["samsung","삼성화재 다이렉트"],["kb","KB손해보험 다이렉트"],["hyundai","현대해상 다이렉트"],["db","DB손해보험 다이렉트"]];
+function loadBrandManifest(){
+  return fetch("serp/brand/manifest.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(m=>{
+    if(m&&m.brands)BRAND=m;
+  }).catch(()=>{});
+}
+function brandCount(){let n=0;const bs=BRAND.brands||{};Object.keys(bs).forEach(co=>{const ps=bs[co].products||{};Object.keys(ps).forEach(pk=>{n+=(ps[pk].captures||[]).length;});});return n;}
 const shotsOf=k=>{const s=safeKey(k);if(!s)return [];
   const man=Array.isArray(ARC[s])?ARC[s]:[],rep=Array.isArray(REPO[s])?REPO[s]:[];
   return man.concat(rep).sort((a,b)=>(b.date||"").localeCompare(a.date||""));};
@@ -347,6 +366,7 @@ function renderSidebar(){
   const item=(key,label,cnt,on)=>`<button class="sb-item${on?" on":""}" data-key="${key}"><span>${esc(label)}</span><span class="kc">${cnt}</span></button>`;
   const total=PRODUCTS.reduce((s,p)=>s+shotsOf(p.key).length,0);
   let h=item("__all","▦ 전체 개요",total,curKey==="__all");
+  h+=item("__brand","🏷 경쟁사 브랜드검색",brandCount(),curKey==="__brand");
   [...new Set(PRODUCTS.map(p=>p.cat))].forEach(cat=>{h+=`<div class="sb-cap">${cat}</div>`;
     PRODUCTS.filter(p=>p.cat===cat).forEach(p=>{h+=item(p.key,p.name,shotsOf(p.key).length,curKey===p.key);});});
   $("#sbNav").innerHTML=h;
@@ -444,11 +464,50 @@ function renderOverview(){
     <div class="sec-lbl">상품별 대표키워드 · 경쟁 요약</div>
     <div class="ov-grid">${cards}</div>`;
 }
-function render(){const s=safeKey(curKey);(curKey==="__all"||!s)?renderOverview():renderProduct();renderSidebar();window.scrollTo({top:0});}
+function renderBrand(){
+  $("#pt").textContent="경쟁사 브랜드검색"; $("#pts").textContent="· 삼성·KB·현대·DB × 상품 · PC/모바일 주간";
+  const bs=BRAND.brands||{};const total=brandCount();
+  if(!total){
+    $("#content").innerHTML=`<div class="note" style="margin-top:0"><b>아직 브랜드검색 캡쳐가 없습니다.</b><br>
+      GitHub <b>Actions → SERP Capture → Run workflow</b>를 실행하면 경쟁사 다이렉트 브랜드검색(삼성·KB·현대·DB × 5개 상품)을
+      <b>PC·모바일</b>로 자동 캡쳐해 <code>serp/brand/</code>에 커밋하고 여기에 표시됩니다.
+      매주 <b>월요일 06:00(KST)</b> 자동 실행도 예약돼 있습니다. · 네이버 검색결과(공개) → PII 없음.</div>`;
+    return;
+  }
+  const brandsN=BRAND_ORDER.filter(([co])=>bs[co]).length;
+  const asof=BRAND.asof||"—";
+  const thisWeek=(()=>{let n=0;Object.keys(bs).forEach(co=>{const ps=bs[co].products||{};Object.keys(ps).forEach(pk=>{(ps[pk].captures||[]).forEach(c=>{if(c.date===asof)n++;});});});return n;})();
+  const kpi=(n,l)=>`<div class="kpi"><div class="n">${n}</div><div class="l">${l}</div></div>`;
+  const thumb=(c,lbl,coName,prName)=>c
+    ? `<figure class="bshot"><img src="serp/brand/${esc(c.file)}" data-bzoom="serp/brand/${esc(c.file)}" data-bcap="${esc(coName+" · "+prName+" · "+lbl+" · "+c.date)}" alt="${esc(coName+" "+prName+" "+lbl)}"><figcaption>${lbl} · ${esc(c.date)}</figcaption></figure>`
+    : `<figure class="bshot empty2">${lbl}<br>—</figure>`;
+  const sections=BRAND_ORDER.filter(([co])=>bs[co]).map(([co,coName])=>{
+    const b=bs[co];const ps=b.products||{};
+    const cards=Object.keys(ps).map(pk=>{
+      const pr=ps[pk];const caps=pr.captures||[];
+      const pc=caps.filter(c=>c.dev==="pc").sort((a,b)=>(b.date||"").localeCompare(a.date||""))[0];
+      const mo=caps.filter(c=>c.dev==="mo").sort((a,b)=>(b.date||"").localeCompare(a.date||""))[0];
+      return `<div class="bcard"><div class="bcard-h">${esc(pr.name)}</div><div class="bshots">${thumb(pc,"PC",coName,pr.name)}${thumb(mo,"모바일",coName,pr.name)}</div></div>`;
+    }).join("");
+    return `<div class="sec"><div class="sec-h"><span class="t">🏷 ${esc(b.name||coName)}</span><span class="sub">· ${Object.keys(ps).length}개 상품 · 최신 ${esc(asof)}</span>
+      <a class="serplink" style="margin-left:auto" href="https://search.naver.com/search.naver?query=${encodeURIComponent((b.name||coName))}" target="_blank" rel="noopener">네이버에서 열기 ↗</a></div>
+      <div class="sec-b"><div class="bgrid">${cards}</div></div></div>`;
+  }).join("");
+  $("#content").innerHTML=`
+    <div class="kpi-row">${kpi(brandsN+"/4","감시 경쟁사")}${kpi(total,"누적 캡쳐")}${kpi(thisWeek,"이번주 캡쳐")}${kpi(esc(asof),"최신 기준일")}</div>
+    <div class="note" style="margin-top:0"><b>경쟁사 브랜드검색 모니터링</b> · 각 경쟁사 <b>다이렉트 브랜드 + 상품명</b> 네이버 검색결과를 <b>PC·모바일</b>로 매주 캡쳐해,
+      브랜드검색 전용 광고·파워링크 구성·소구 문구를 비교합니다. 썸네일을 클릭하면 원본 크기로 봅니다. 매주 월요일 자동 실행.</div>
+    ${sections}`;
+}
+function render(){
+  if(curKey==="__brand"){renderBrand();renderSidebar();window.scrollTo({top:0});return;}
+  const s=safeKey(curKey);(curKey==="__all"||!s)?renderOverview():renderProduct();renderSidebar();window.scrollTo({top:0});
+}
 
 /* 이벤트 */
 document.addEventListener("click",e=>{
   const del=e.target.closest("[data-del]");if(del){delShot(curKey,del.dataset.del);return;}
+  const bz=e.target.closest("[data-bzoom]");if(bz){$("#lbImg").src=bz.dataset.bzoom;$("#lbCap").textContent=bz.dataset.bcap||"";$("#lb").classList.add("show");return;}
   const zoom=e.target.closest("[data-zoom]");if(zoom){const it=shotsOf(curKey).find(s=>s.id===zoom.dataset.zoom);if(it){$("#lbImg").src=it.img;$("#lbCap").textContent=getP(curKey).name+" · "+getP(curKey).kw+" · "+it.date;$("#lb").classList.add("show");}return;}
   const drop=e.target.closest("#drop");if(drop){$("#shotFile").click();return;}
   const nav=e.target.closest("[data-key]");if(nav&&nav.dataset.key){curKey=nav.dataset.key;render();return;}
@@ -470,7 +529,7 @@ $("#impFile").addEventListener("change",e=>{const f=e.target.files[0];if(!f)retu
   rd.readAsText(f);e.target.value="";});
 $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");});
 render();
-loadRepoManifest().then(()=>render()); // 리포 자동 캡쳐 반영(있으면)
+Promise.all([loadRepoManifest(),loadBrandManifest()]).then(()=>render()); // 리포 자동 캡쳐(상품 SERP + 경쟁사 브랜드검색) 반영(있으면)
 </script>
 </body>
 </html>
