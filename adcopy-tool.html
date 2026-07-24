@@ -73,6 +73,12 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .meta .len{font-family:var(--mono);font-weight:800;}
 .meta .ok{color:var(--good);} .meta .no{color:var(--bad);}
 .lint{font-size:11px;color:var(--bad);font-weight:700;}
+.issue{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:14px 15px;margin-bottom:14px;}
+.issue-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px;}
+.issue-h .tag{font-size:13px;font-weight:800;color:var(--ink);}
+.issue-h .prox{font-size:10.5px;font-weight:800;background:var(--brand);color:#fff;padding:2px 8px;border-radius:99px;}
+.issue-h .mon{font-size:10.5px;color:var(--muted);font-family:var(--mono);margin-left:auto;}
+.issue-why{font-size:11.5px;color:var(--ink-2);line-height:1.5;margin-bottom:10px;}
 .note{background:var(--surface);border:1px dashed var(--brand);border-radius:var(--r);padding:13px 15px;font-size:12px;color:var(--ink-2);line-height:1.7;margin-top:16px;box-shadow:var(--sh);}
 .note b{color:var(--brand-600);}
 .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:12.5px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:60;}
@@ -125,8 +131,63 @@ const PRODUCTS=[
  {key:"event",cat:"일반",name:"행사배상책임보험",short:["당일가입","행사맞춤"],usp:["공연·체육·행사 배상책임을 폭넓게","전날·당일도 바로 가입해 든든하게"],covers:["행사 중 배상책임"]},
  {key:"chronic",cat:"간편심사",name:"유병자 간편보험",short:["간편심사","3가지고지"],usp:["몇 가지만 답하면 간편하게","지병이 있어도 간편심사로 준비"],covers:["유병자 실손·건강"]},
 ];
-/* 시즌 각도(카테고리/상품 키 기반) — 카테고리별 시즌 문구 훅 */
-const SEASON={ hrmf:"겨울철 난방·화재 대비", golf:"봄·가을 라운딩 시즌", overseas:"여름 휴가·성수기 여행", holeinone:"골프 시즌 홀인원", driver:"명절 장거리 운전", cncr:"건강검진 시즌", dntl:"치과 검진 시즌" };
+/* 시즌 캘린더 이슈(seasonal-tool과 동일 데이터) — m:월배열, tag:이슈, why:설명, kws:키워드 */
+const SEASONAL={
+ home:[{m:[11,12,1],tag:"연말정산·보험료 소득공제",why:"보장성보험료 세액공제 관심 급증 — 브랜드·상품 검색 동반 상승.",kws:["보험료 소득공제","연말정산 보험","보장성보험 세액공제"]},
+  {m:[1,2],tag:"신년 보험 리모델링",why:"새해 재무점검으로 보험 재정비·비교 수요 증가.",kws:["보험 리모델링","보험 점검","다이렉트 보험 비교"]}],
+ hrmf:[{m:[6,7,8],tag:"장마·집중호우·태풍",why:"장마·호우로 누수·침수·풍수재 사고 급증(대표 예: 7월 장마 누수).",kws:["누수","침수","풍수재","벽지 곰팡이"]},
+  {m:[11,12,1,2],tag:"겨울 난방화재·동파",why:"전기장판·난로 등 난방기구 화재와 한파 동파 피해 증가.",kws:["전기장판 화재","동파","난방 화재"]},
+  {m:[3,4],tag:"봄철 건조·산불",why:"건조기 화재·산불 위험 상승.",kws:["봄철 화재","건조 화재","산불"]}],
+ golf:[{m:[3,4,5],tag:"봄 개장 시즌",why:"라운딩 재개·신규 골퍼 유입으로 가입 수요 시작.",kws:["봄 골프","골프보험","홀인원보험"]},
+  {m:[9,10,11],tag:"가을 최성수기",why:"골프 최성수기·홀인원 이벤트 증가.",kws:["가을 골프","홀인원보험","원데이 골프보험"]},
+  {m:[12,1,2],tag:"겨울 스크린골프",why:"실내 스크린골프로 이동 — 스크린 홀인원 수요.",kws:["스크린골프보험","스크린 홀인원","실내 골프"]}],
+ cncr:[{m:[1],tag:"신년 건강계획",why:"새해 건강·보장 점검 수요 집중.",kws:["암보험 추천","암보험 비교","건강보험 점검"]},
+  {m:[3],tag:"암예방의 날(3.21)",why:"암 예방·조기검진 관심 상승.",kws:["암 예방","유사암","암 진단비"]},
+  {m:[11,12],tag:"연말정산 소득공제",why:"보장성보험 세액공제 문의 증가.",kws:["암보험 소득공제","보장성보험 공제"]}],
+ dntl:[{m:[1,2,7,8],tag:"방학 치과 성수기",why:"방학철 임플란트·교정·치료 집중으로 치아보험 관심 상승.",kws:["임플란트","치아교정","치아보험 비교"]},
+  {m:[6],tag:"구강보건의 날(6.9)",why:"구강건강 인식 캠페인으로 관심 상승.",kws:["스케일링","치아 건강","치아보험"]}],
+ driver:[{m:[2,9,10],tag:"명절 장거리 운전",why:"설·추석 귀성 장거리 운전으로 사고·검색 급증.",kws:["명절 운전","장거리 운전","원데이 운전자보험"]},
+  {m:[7,8],tag:"여름 휴가철·렌터카",why:"휴가 장거리·렌터카 운전 증가.",kws:["휴가철 운전","렌터카 운전자보험","여름 운전"]},
+  {m:[3],tag:"신학기 스쿨존",why:"개학·어린이보호구역 사고 경각심 — 스쿨존 벌금 담보 소구.",kws:["스쿨존","어린이보호구역 벌금","운전자보험 벌금"]},
+  {m:[12,1],tag:"겨울 빙판·눈길",why:"결빙·폭설로 눈길 사고 증가.",kws:["빙판길 사고","눈길 운전","겨울 운전"]}],
+ woman:[{m:[3],tag:"여성의 날(3.8)",why:"여성건강 인식 상승 — 여성 특화 담보 관심.",kws:["여성건강보험","여성암보험"]},
+  {m:[10],tag:"유방암 예방의 달(핑크리본)",why:"유방암 인식·검진 캠페인으로 관심 급증.",kws:["유방암보험","여성암 진단비","여성건강검진"]},
+  {m:[11,12],tag:"연말 건강검진",why:"연말 미룬 검진 몰림 — 검진 연계 수요.",kws:["여성건강검진","자궁 초음파"]}],
+ birth:[{m:[3,4,5],tag:"봄 결혼·임신 시즌 여파",why:"결혼·임신 계획 증가 후 태아보험 가입 관심 상승.",kws:["임신보험","태아보험 시기"]},
+  {m:[1],tag:"신년 가족계획",why:"새해 출산·가족계획 수립.",kws:["출산 준비","자녀보험","태아보험 추천"]}],
+ overseas:[{m:[7,8],tag:"여름 휴가 성수기",why:"해외여행 최성수기 — 여행자보험 수요 폭증.",kws:["여행자보험","항공기지연","휴대품 손해"]},
+  {m:[1,2],tag:"겨울·설 연휴 여행",why:"연말연시·설 해외여행 수요.",kws:["겨울 여행자보험","설 연휴 해외여행"]},
+  {m:[5,9,10],tag:"봄·가을 황금연휴/추석",why:"연휴·추석 단기 해외여행 집중.",kws:["황금연휴 여행보험","추석 해외여행보험","단기 여행자보험"]}],
+ overseaslong:[{m:[2,3],tag:"봄학기 유학·어학연수 출국",why:"봄학기 출국 준비 — 장기체류·유학생보험 수요.",kws:["유학생보험","어학연수 보험","장기체류보험"]},
+  {m:[8,9],tag:"가을학기·워홀 출국",why:"가을학기·워홀 출국 집중.",kws:["워홀보험","유학생보험"]}],
+ holeinone:[{m:[3,4,5],tag:"봄 개장 라운딩",why:"봄 골프 시즌 개장 — 홀인원보험 단기 가입 수요.",kws:["캐롯 홀인원","원데이 골프보험"]},
+  {m:[9,10,11],tag:"가을 골프 성수기",why:"가을 최성수기 라운딩 급증 — 홀인원·선물하기 수요.",kws:["투게더 홀인원","골프 선물","홀인원보험"]}],
+ event:[{m:[4,5],tag:"봄 축제·체육행사",why:"봄 지역축제·체육대회·야외행사 집중 — 행사배상책임 수요.",kws:["체육행사 보험","행사배상책임보험"]},
+  {m:[9,10],tag:"가을 축제·불꽃놀이",why:"가을 지역축제·불꽃놀이·공연 성수기.",kws:["불꽃놀이 보험","축제 배상책임"]},
+  {m:[12],tag:"연말 행사·공연",why:"송년·연말 공연·행사 집중.",kws:["공연 배상책임","행사보험"]}],
+ chronic:[{m:[1],tag:"신년 건강계획",why:"새해 건강·보장 점검 — 유병력자 간편심사 관심 상승.",kws:["간편심사보험","유병력자 실손"]},
+  {m:[11,12],tag:"연말정산·보장 점검",why:"연말 보장 재점검 시즌 — 고령·유병자 가입 수요.",kws:["간편심사","보험 리모델링"]}],
+};
+const CM=new Date().getMonth()+1;
+const monthDist=o=>Math.min(...o.m.map(m=>(m-CM+12)%12));
+const proxLabel=o=>{const d=monthDist(o);return d===0?"이번 달":d===1?"다음 달":d+"개월 뒤";};
+const shortWord=tag=>tag.split(/[·,()]/)[0].trim();
+function nearestIssue(p){const a=(SEASONAL[p.key]||[]).slice().sort((x,y)=>monthDist(x)-monthDist(y));return a[0];}
+function genSeasonTitles(p,iss){
+  const sw=shortWord(iss.tag), n=p.name;
+  const pool=[...iss.kws, ...iss.kws.map(k=>k.includes(n)?k:`${k} ${n}`), `${sw} ${n}`, `${n} ${sw}`];
+  return uniq(pool).map(x=>({tx:x,len:clen(x),ban:lintBan(x)})).filter(o=>o.len>=2&&o.len<=SPEC.titleMax);
+}
+function genSeasonDescs(p,iss){
+  const sw=shortWord(iss.tag), n=p.name, k2=iss.kws.slice(0,2).join("·");
+  const pool=[
+    `${iss.tag} 대비, ${n} 미리 준비하세요.`,
+    `${sw} 시즌 ${n}, 다이렉트로 간편하게 준비하세요.`,
+    `${k2} 걱정될 때, ${n}으로 든든하게 대비하세요.`,
+    `${sw}으로 늘어나는 위험, ${n}으로 미리 챙기세요.`,
+  ];
+  return uniq(pool).map(x=>({tx:x,len:clen(x),ban:lintBan(x)})).filter(o=>o.len>=SPEC.descMin&&o.len<=SPEC.descMax);
+}
 
 let curKey=PRODUCTS[0].key;
 const getP=k=>PRODUCTS.find(p=>p.key===k);
@@ -138,7 +199,6 @@ function genTitles(p){
     `${n} 다이렉트`, `다이렉트 ${n}`, `${n} 보험료 비교`, `${n} 간편가입`,
     ...(b?[`${b}`]:[]),
     ...p.short.map(s=>`${s} ${n}`), ...p.short.map(s=>`${n} ${s}`),
-    ...(SEASON[p.key]?[`${SEASON[p.key].split(" ")[0]} ${n}`]:[]),
   ];
   return uniq(t).map(x=>({tx:x,len:clen(x),ban:lintBan(x)}))
     .filter(o=>o.len>=2 && o.len<=SPEC.titleMax);
@@ -151,7 +211,6 @@ function genDescs(p){
     `${p.covers.slice(0,3).join("·")} 보장, 다이렉트로 간편하게.`,
     `${n}, 온라인으로 보험료 확인하고 바로 가입하세요.`,
     `${p.short[0]} 중심으로 필요한 담보만 골라 준비하세요.`,
-    ...(SEASON[p.key]?[`${SEASON[p.key]}, ${n} 미리 준비하세요.`]:[]),
   ];
   return uniq(d).map(x=>({tx:x,len:clen(x),ban:lintBan(x)}))
     .filter(o=>o.len>=SPEC.descMin && o.len<=SPEC.descMax);
@@ -177,13 +236,23 @@ function render(){
   const p=getP(curKey);
   $("#pt").textContent=p.name+" · 문구 소재"; $("#pts").textContent="· 네이버 파워링크 규격";
   const titles=genTitles(p), descs=genDescs(p);
+  const issues=(SEASONAL[p.key]||[]).slice().sort((a,b)=>monthDist(a)-monthDist(b));
+  const seasonBlocks = issues.length ? issues.map(o=>{
+    const st=genSeasonTitles(p,o).slice(0,4), sd=genSeasonDescs(p,o).slice(0,3);
+    return `<div class="issue">
+      <div class="issue-h"><span class="tag">${esc(o.tag)}</span><span class="prox">${esc(proxLabel(o))}</span><span class="mon">${o.m.map(m=>m+"월").join("·")}</span></div>
+      <div class="issue-why">${esc(o.why)}</div>
+      <div class="grid">${st.map(x=>candCard(x,"title")).join("")||'<div class="spec">제목 후보 없음</div>'}</div>
+      <div class="grid" style="margin-top:8px">${sd.map(x=>candCard(x,"desc")).join("")||'<div class="spec">설명 후보 없음</div>'}</div>
+    </div>`;
+  }).join("") : '<div class="spec">이 상품은 등록된 시즌 이슈가 없습니다.</div>';
   $("#content").innerHTML=`
     <div class="banner"><b>광고심의 전제</b> · 아래 문구는 <b>초안</b>입니다. 보험 광고 문구는 <b>손해보험협회 광고심의</b> 대상이며, 사실 근거 없는 최상급·확정 표현은 사용할 수 없습니다. 담보·보험료·조건은 약관 기준으로 검수 후 게재하세요.</div>
     <div class="specbar">
       <div class="spec">제목 <b>≤ ${SPEC.titleMax}자</b></div>
       <div class="spec">설명 <b>${SPEC.descMin}~${SPEC.descMax}자</b></div>
       <div class="spec">특수문자·최상급 표현 <b>자제</b></div>
-      ${SEASON[p.key]?`<div class="spec">시즌 각도 <b>${esc(SEASON[p.key])}</b></div>`:""}
+      ${nearestIssue(p)?`<div class="spec">이번 시즌 <b>${esc(nearestIssue(p).tag)}</b> · ${esc(proxLabel(nearestIssue(p)))}</div>`:""}
     </div>
 
     <div class="sec-lbl">제목 후보 (${titles.length}) · ≤${SPEC.titleMax}자</div>
@@ -191,6 +260,9 @@ function render(){
 
     <div class="sec-lbl">설명 후보 (${descs.length}) · ${SPEC.descMin}~${SPEC.descMax}자</div>
     <div class="grid">${descs.map(o=>candCard(o,"desc")).join("")||'<div class="spec">생성된 후보 없음</div>'}</div>
+
+    <div class="sec-lbl">🗓️ 시즌 이슈별 문구 · 시즌 캘린더 연동 (가까운 순)</div>
+    ${seasonBlocks}
 
     <div class="sec-lbl">직접 작성 · 실시간 글자수·심의 체크</div>
     <div class="editor">
