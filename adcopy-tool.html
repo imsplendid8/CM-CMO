@@ -73,6 +73,13 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .meta .len{font-family:var(--mono);font-weight:800;}
 .meta .ok{color:var(--good);} .meta .no{color:var(--bad);}
 .lint{font-size:11px;color:var(--bad);font-weight:700;}
+.ev{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--brand);border-radius:var(--r);padding:13px 15px;margin-bottom:16px;box-shadow:var(--sh);}
+.ev-row{display:flex;gap:10px;padding:6px 0;border-top:1px solid var(--line-2);}
+.ev-row:first-child{border-top:0;padding-top:0;}
+.ev-lb{flex:0 0 120px;font-size:11px;font-weight:800;white-space:nowrap;}
+.ev-lb.news{color:#0a7c3e;} .ev-lb.comp{color:var(--bad);} .ev-lb.ours{color:var(--good);}
+.ev-tx{flex:1;font-size:11.5px;color:var(--ink-2);line-height:1.55;} .ev-tx b{color:var(--ink);font-weight:800;}
+.ev-links{margin-top:8px;font-size:11px;} .ev-links a{color:var(--brand-600);font-weight:700;text-decoration:none;} .ev-links a:hover{text-decoration:underline;}
 .issue{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:14px 15px;margin-bottom:14px;}
 .issue-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px;}
 .issue-h .tag{font-size:13px;font-weight:800;color:var(--ink);}
@@ -189,6 +196,46 @@ function genSeasonDescs(p,iss){
   return uniq(pool).map(x=>({tx:x,len:clen(x),ban:lintBan(x)})).filter(o=>o.len>=SPEC.descMin&&o.len<=SPEC.descMax);
 }
 
+/* 근거 — 뉴스 동향(news-tool insight) + 경쟁사 소구포인트·우리 대응(serp-tool SERPINTEL) */
+const EVIDENCE={
+ home:{news:"브랜드검색 열세 → 상품별 롱테일('한화손보다이렉트 OO보험')+시즌 이슈 랜딩으로 유입 각도 확장.",
+   comps:[{who:"삼성화재 다이렉트",hook:"브랜드 인지도 1위(K-브랜드지수)"},{who:"비교사이트",hook:"'다이렉트 비교·보험료 계산' 제휴 랜딩"}],
+   ours:"브랜드+상품 롱테일을 공식 채널 상단 고정, '공식' 인증으로 사칭성 비교 방어."},
+ hrmf:{news:"대형화재·아파트 화재 이슈가 수요 환기 — 누수·풍수재·잔존물제거 등 보장범위·차별담보 전면화(가격 단독경쟁 회피).",
+   comps:[{who:"신한 SOL",hook:"네이버페이 이벤트+계좌이체·장기고객 할인"},{who:"메리츠화재",hook:"누수·일상배상·도난, 주택유형별 맞춤"}],
+   ours:"스크린홀인원 등 차별담보 + 주택유형별 맞춤을 타이틀·H1에 노출."},
+ golf:{news:"'홀인원·원데이 골프보험' 단기·소액·선물 키워드 선점 + 골프플랫폼 임베디드 경쟁 대응.",
+   comps:[{who:"카카오페이손보",hook:"DIY 골프/홀인원, 그룹 할인"},{who:"롯데 앨리스",hook:"스크린골프 4인 7,400원 정찰제"}],
+   ours:"캐롯 투게더 4인 1만원 정찰제·선물하기 USP를 검색광고·브랜드검색 전면화."},
+ cncr:{news:"경쟁사 '다이렉트+리워드'로 온라인 전환 공략 → 비교/다이렉트/비갱신 검색 경쟁 심화.",
+   comps:[{who:"라이나생명",hook:"일반암 진단비 4,500만·표적항암 3천만·면제"},{who:"DB손해보험",hook:"진단+치료+생활비, 중입자치료까지"}],
+   ours:"진단비 한도·비갱신 옵션 전면화 + 유사암·표적항암 담보 차별화, 리워드 대응."},
+ dntl:{news:"공공 구강검진 정책이 '치아보험' 관심 견인, 경쟁사 프로모션 노출 증가.",
+   comps:[{who:"삼성생명 다이렉트",hook:"1만원대 실속형/2만원대 고급형"},{who:"라이나생명",hook:"크라운 2천만·소액치과, 보장개시 안내"}],
+   ours:"'실속형/고급형' 2트랙 + 임플란트·크라운 한도·면책기간을 명확히 표기."},
+ driver:{news:"'자전거 사고·과실·형사합의' 이슈로 필요성 환기, 쏘카×AXA 등 플랫폼 임베디드 진입.",
+   comps:[{who:"현대해상 다이렉트",hook:"형사합의금 2억·스쿨존 벌금 3천만·변호사 500만, 7% 할인"},{who:"DB손해보험",hook:"'10년 연속 1등·435만명' 신뢰 소구"}],
+   ours:"형사합의금·변호사선임·벌금 한도 배지 + 다이렉트가 비교로 상단 열세 보완."},
+ woman:{news:"직접 상품경쟁 뉴스는 적으나 여성건강검진·유방암보험 정보성 검색을 견인.",
+   comps:[{who:"각 손보사",hook:"여성암 진단비 중심 상품 노출"},{who:"건강검진·정보",hook:"여성 검진·질환 정보성 상단 점유"}],
+   ours:"여성암·자궁 담보를 검진 시기와 연계, '내 검진주기' 셀프체크로 유입."},
+ birth:{news:"'태아보험 비교/가입시기/서류없이' 편의성 키워드 수요, 지자체 지원 관심.",
+   comps:[{who:"각 손보사",hook:"태아 진단·선천이상 보장"},{who:"카페·후기",hook:"'시기·비교' 커뮤니티 상단"}],
+   ours:"가입 적기(출산 전) D-day + 공공 마이데이터 서류 간소화를 전면화."},
+ overseas:{news:"시즌 피크로 '해외여행자보험 비교/추천/항공지연' 검색 폭증 — 다이렉트 노출 강화가 기회.",
+   comps:[{who:"현대해상 다이렉트",hook:"질병·상해·휴대품·항공지연"},{who:"NH농협손보",hook:"오프라인 대비 20% 저렴"}],
+   ours:"여행일자→담보 자동추천 + '항공지연·휴대품·다이렉트가' 롱테일 시즌 노출."},
+ holeinone:{news:"'홀인원/원데이/투게더 홀인원' 단기·소액·선물 키워드 선점.",
+   comps:[{who:"삼성화재 착",hook:"개인형 홀인원 비용 보장"},{who:"카카오페이손보",hook:"DIY 골프/홀인원, 그룹 할인"}],
+   ours:"4인 1만원 정찰제·선물하기·축하비용을 히어로·검색광고 전면화."},
+ event:{news:"'행사보험/행사배상책임/불꽃놀이' 니치·즉시가입 키워드.",
+   comps:[{who:"각 손보사·제휴",hook:"행사보험·행사배상책임 견적 랜딩"}],
+   ours:"'내일 행사도 오늘 가입' 24시간 즉시성 + 행사유형별 랜딩으로 롱테일."},
+ chronic:{news:"'유병자/간편심사/유병력자 실손' 정보·비교 키워드 급증.",
+   comps:[{who:"각 손보사",hook:"간편심사·유병자 실손/건강 광고 경쟁"},{who:"비교·정보",hook:"'유병자보험 비교·고지' 정보성 상단"}],
+   ours:"고지항목을 '3가지만 답하면 끝'으로 간소화, 가입가능 질환을 쉬운 언어로."},
+};
+
 let curKey=PRODUCTS[0].key;
 const getP=k=>PRODUCTS.find(p=>p.key===k);
 const uniq=a=>[...new Set(a)];
@@ -246,6 +293,13 @@ function render(){
       <div class="grid" style="margin-top:8px">${sd.map(x=>candCard(x,"desc")).join("")||'<div class="spec">설명 후보 없음</div>'}</div>
     </div>`;
   }).join("") : '<div class="spec">이 상품은 등록된 시즌 이슈가 없습니다.</div>';
+  const ev=EVIDENCE[p.key];
+  const evPanel = ev ? `<div class="ev">
+    <div class="ev-row"><span class="ev-lb news">📰 뉴스 동향</span><div class="ev-tx">${esc(ev.news)}</div></div>
+    <div class="ev-row"><span class="ev-lb comp">🎯 경쟁사 소구(SERP)</span><div class="ev-tx">${ev.comps.map(c=>`<b>${esc(c.who)}</b> ${esc(c.hook)}`).join("<br>")}</div></div>
+    <div class="ev-row"><span class="ev-lb ours">✅ 우리 대응 각도</span><div class="ev-tx">${esc(ev.ours)}</div></div>
+    <div class="ev-links"><a href="news-tool.html" target="_blank" rel="noopener">뉴스 콘솔 ↗</a> · <a href="serp-tool.html" target="_blank" rel="noopener">SERP 아카이브 ↗</a></div>
+  </div>` : "";
   $("#content").innerHTML=`
     <div class="banner"><b>광고심의 전제</b> · 아래 문구는 <b>초안</b>입니다. 보험 광고 문구는 <b>손해보험협회 광고심의</b> 대상이며, 사실 근거 없는 최상급·확정 표현은 사용할 수 없습니다. 담보·보험료·조건은 약관 기준으로 검수 후 게재하세요.</div>
     <div class="specbar">
@@ -254,6 +308,9 @@ function render(){
       <div class="spec">특수문자·최상급 표현 <b>자제</b></div>
       ${nearestIssue(p)?`<div class="spec">이번 시즌 <b>${esc(nearestIssue(p).tag)}</b> · ${esc(proxLabel(nearestIssue(p)))}</div>`:""}
     </div>
+
+    <div class="sec-lbl">📌 근거 · 뉴스 동향 · 경쟁사 SERP 소구포인트</div>
+    ${evPanel}
 
     <div class="sec-lbl">제목 후보 (${titles.length}) · ≤${SPEC.titleMax}자</div>
     <div class="grid">${titles.map(o=>candCard(o,"title")).join("")||'<div class="spec">생성된 후보 없음</div>'}</div>
