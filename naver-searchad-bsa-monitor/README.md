@@ -76,6 +76,19 @@ python3 bsa_contract_review.py --warn-days 21   # 만료임박 기준일 조정
 `bsa_contract_review.py`의 "액션" 컬럼이 3개월 재계약 vs 취소 후 재계약 판단의
 출발점입니다 — 만료임박 항목을 검색량 추이(3번 항목 예정)와 같이 보고 결정하세요.
 
+## 사내 자동 실행 (권장) — GitHub Actions 금지
+
+키(`NAVER_SEARCHAD_*`)를 발급받았으면 **사내 PC/서버에서** 정기 실행하세요. 편의 러너·cron 샘플 포함:
+
+```bash
+export NAVER_SEARCHAD_API_KEY=... NAVER_SEARCHAD_SECRET_KEY=... NAVER_SEARCHAD_CUSTOMER_ID=...
+export KAKAO_ACCESS_TOKEN=...          # (선택) on/off 변경 카카오 알림
+./run_bsa.sh                            # on/off → (원장 있으면) 계약검수·키워드·검색량 우선순위 일괄
+#  cron 등록: crontab.sample 참고 (매일 09:10 등)
+```
+
+> ⚠️ **이 저장소는 public이라 GitHub Actions에서 돌리지 마세요.** 캠페인명·계약이 **공개 Actions 로그/산출물에 노출**됩니다. BSA 도구는 실제 영업 데이터(계약 원장)와 계정 캠페인명을 다루므로 **반드시 사내 환경**에서 실행합니다.
+
 ## 커밋되는 것 / 안 되는 것
 
 - 커밋: 스크립트, `bsa_contracts_sample.csv`(가상 예시 데이터)
