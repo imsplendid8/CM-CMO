@@ -74,7 +74,7 @@ python3 bsa_contract_review.py --warn-days 21   # 만료임박 기준일 조정
 ```
 
 `bsa_contract_review.py`의 "액션" 컬럼이 3개월 재계약 vs 취소 후 재계약 판단의
-출발점입니다 — 만료임박 항목을 검색량 추이(2번 항목 예정)와 같이 보고 결정하세요.
+출발점입니다 — 만료임박 항목을 검색량 추이(3번 항목 예정)와 같이 보고 결정하세요.
 
 ## 커밋되는 것 / 안 되는 것
 
@@ -90,8 +90,20 @@ python3 bsa_contract_review.py --warn-days 21   # 만료임박 기준일 조정
 | `bsa_onoff_monitor.py` | BSA 캠페인/광고그룹 on/off 자동 모니터링 · 변경 감지 · 카카오 알림 |
 | `bsa_contracts_sample.csv` | 계약 원장 템플릿(가상 예시 데이터) |
 | `bsa_contract_review.py` | 계약기간 D-day 계산 + on/off 교차검증 → 검수 시트 |
+| `bsa_keyword_suggest.py` | **원장 사업부·보종 재사용 → 브랜드검색 후보 키워드 제안 시트**(2번) |
+
+## BSA 키워드 제안 (2번 항목)
+
+```bash
+python3 bsa_keyword_suggest.py                    # bsa_contracts.csv(없으면 샘플)의 보종별 브랜드검색 후보
+python3 bsa_keyword_suggest.py --brand "한화손보 다이렉트"
+#  → bsa_keyword_suggest_YYYYMMDD.csv (사업부·보종·제안키워드·유형·현재계약키워드)
+```
+
+브랜드검색은 **브랜드명이 포함된 검색어만** 집행되므로 '브랜드 + 보종(+수식어: 다이렉트·보험료·비교·가입)'
+조합으로 제안합니다. 어느 보종을 우선 집행/재계약할지는 **검색량 추이(3번)** 와 함께 판단하세요.
 
 ## 다음 항목과의 연결
 
-- 2번(BSA 키워드 제안 시트): 이 원장의 사업부(TM/CM장기/CM자동차)·보종 구조를 그대로 재사용 예정
-- 3번(검색량 모니터링): 여기서 나온 "만료임박" 리스트에 검색량 추이를 붙여 재계약 판단 근거로 사용 예정
+- ✅ 2번(BSA 키워드 제안 시트): `bsa_keyword_suggest.py` — 원장의 사업부(TM/CM장기/CM자동차)·보종 구조 재사용.
+- 3번(검색량 모니터링): "만료임박" 리스트 + 키워드 제안에 **검색량 추이**를 붙여 재계약·집행 우선순위 판단(대시보드 #9 실측 검색량과 연계 예정).
