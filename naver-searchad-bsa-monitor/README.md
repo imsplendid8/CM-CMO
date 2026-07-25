@@ -91,6 +91,7 @@ python3 bsa_contract_review.py --warn-days 21   # 만료임박 기준일 조정
 | `bsa_contracts_sample.csv` | 계약 원장 템플릿(가상 예시 데이터) |
 | `bsa_contract_review.py` | 계약기간 D-day 계산 + on/off 교차검증 → 검수 시트 |
 | `bsa_keyword_suggest.py` | **원장 사업부·보종 재사용 → 브랜드검색 후보 키워드 제안 시트**(2번) |
+| `bsa_volume_priority.py` | **보종 검색량 + 계약 D-day → 재계약·집행 우선순위 시트**(3번) |
 
 ## BSA 키워드 제안 (2번 항목)
 
@@ -103,7 +104,21 @@ python3 bsa_keyword_suggest.py --brand "한화손보 다이렉트"
 브랜드검색은 **브랜드명이 포함된 검색어만** 집행되므로 '브랜드 + 보종(+수식어: 다이렉트·보험료·비교·가입)'
 조합으로 제안합니다. 어느 보종을 우선 집행/재계약할지는 **검색량 추이(3번)** 와 함께 판단하세요.
 
-## 다음 항목과의 연결
+## 검색량 우선순위 (3번 항목)
 
-- ✅ 2번(BSA 키워드 제안 시트): `bsa_keyword_suggest.py` — 원장의 사업부(TM/CM장기/CM자동차)·보종 구조 재사용.
-- 3번(검색량 모니터링): "만료임박" 리스트 + 키워드 제안에 **검색량 추이**를 붙여 재계약·집행 우선순위 판단(대시보드 #9 실측 검색량과 연계 예정).
+```bash
+python3 bsa_volume_priority.py                 # 원장(없으면 샘플) × 보종 실검색량 → 우선순위 시트
+python3 bsa_volume_priority.py --warn-days 21
+python3 bsa_volume_priority.py --sample         # API 키 없이 가상 검색량으로 로직·정렬 확인
+#  → bsa_volume_priority_YYYYMMDD.csv (사업부·보종·D-day·월검색량·수요등급·권고, 검색량 내림차순)
+```
+
+보종 카테고리 월검색량(키워드도구 API)에 계약 D-day를 결합해 권고를 냅니다:
+**만료/임박 + 수요 높음 → 재계약·집행 우선 / 수요 낮음 → 취소·축소 검토 / 중간 → 단가 대비 효율 검토.**
+검색량 소스는 BSA 모니터와 동일한 `NAVER_SEARCHAD_*` 키.
+
+## 3단계 계획 상태
+
+- ✅ 1번 BSA on/off·계약검수: `bsa_onoff_monitor.py` + `bsa_contract_review.py`
+- ✅ 2번 BSA 키워드 제안: `bsa_keyword_suggest.py`
+- ✅ 3번 검색량 우선순위: `bsa_volume_priority.py` (실검색량엔 검색광고 관리 API 키 필요)
