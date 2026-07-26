@@ -8,14 +8,3 @@ __pycache__/
 # data/volume.json·data/trends.json 은 워크플로우가 커밋하는 산출물이라 추적함(무시하지 않음)
 node_modules/
 package-lock.json
-
-# 네이버 검색광고 BSA 모니터링(naver-searchad-bsa-monitor/) — 실제 계약/광고 산출물·원장은
-# 커밋 금지. 샘플 템플릿(bsa_contracts_sample.csv)만 커밋.
-naver-searchad-bsa-monitor/bsa_contracts.csv
-naver-searchad-bsa-monitor/bsa_onoff_snapshot.json
-naver-searchad-bsa-monitor/bsa_onoff_*.csv
-naver-searchad-bsa-monitor/bsa_contract_review_*.csv
-naver-searchad-bsa-monitor/bsa_keyword_suggest_*.csv
-naver-searchad-bsa-monitor/bsa_volume_priority_*.csv
-naver-searchad-bsa-monitor/bsa_raw_dump.json
-naver-searchad-bsa-monitor/*.log

@@ -33,7 +33,8 @@ _각 기능을 "목표·입력·출력규격·연동·제약·검증" 6요소로
 | B3 | **3개월 재계약 판단**(계약 D-day·on/off 교차검증·단가 원장) | ✅ 완료 | 실제 계약 원장(`bsa_contracts.csv`) |
 | B3+ | **BSA 사용 키워드 제안** 시트 | ✅ 완료 | (우선순위 판단엔 #9 검색량 연계) |
 
-### B2·B3 상세 (완료 · `naver-searchad-bsa-monitor/`)
+### B2·B3 상세 (완료 · **부서 전용 private 저장소 `imsplendid8/Private`**)
+> 계약·단가 등 민감데이터라 공개 CM-CMO에서 분리해 부서 전용 private 저장소로 이관. 아래는 도구 설명(코드는 private에 있음).
 Codex 고도화 검토분을 이식. 네이버 **검색광고 Open API**(관리 API, `/ncc/*`)를 stdlib만으로 연동:
 - `searchad_client.py` — HMAC-SHA256 인증 + GET 헬퍼(캠페인/광고그룹 조회).
 - `bsa_onoff_monitor.py` — BSA 캠페인·광고그룹 **on/off 자동 모니터링** + 스냅샷 대비 **변경 감지** + changelog + 카카오 '나에게' 알림. (BSA 판별은 `campaignTp`/이름 키워드, 첫 실행 `--dump-raw`로 필드 검수)
@@ -49,7 +50,7 @@ Codex 고도화 검토분을 이식. 네이버 **검색광고 Open API**(관리 
 
 ## 진행 요약
 - 완료: **A1**(키워드 벌크) · **A2**(문구 소재+시즌+근거) · **B2**(BSA on/off·계약현황) · **B3**(재계약 판단) · **B3+**(BSA 키워드 제안) · **B3++**(검색량 우선순위, `bsa_volume_priority.py` — 보종 검색량+D-day→재계약·집행 권고)
-- BSA 3단계 계획(Codex) **1·2·3 전부 완료** (`naver-searchad-bsa-monitor/`)
+- BSA 3단계 계획(Codex) **1·2·3 전부 완료** — 부서 전용 private 저장소 `imsplendid8/Private`(매일 자동 실행 포함)
 - 다음 제안: **A5**(심의→소재 딸깍) · **A3**(파워컨텐츠) · **A6**(광고그룹 예산 on/off) · 대시보드 #9 실측 검색량 그래프(웹 시각화)
 
 > B2·B3는 `NAVER_SEARCHAD_*` 관리 API 키가 있어야 실데이터로 동작합니다(없으면 샘플 원장으로 검수 로직만 확인). 매일 자동 실행은 키 발급 후 GitHub Actions로 확장 가능.

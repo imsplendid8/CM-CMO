@@ -27,7 +27,7 @@
 - **뉴스 클리핑** 하루 2회(09·13시) · **SERP 캡쳐** 주간(경쟁사 브랜드검색 포함) · **수요 신호**(기상·검색) · **논문 월간 적립** · **데일리 브리핑**(텔레그램) · **트렌드**(데이터랩 월간) · **검색량**(검색광고 주간) · **Pages 배포**
 
 ## 별도 도구 (대시보드와 독립)
-- **`naver-searchad-bsa-monitor/`** — 네이버 검색광고 **관리 API**로 BSA on/off 모니터링 + 계약 D-day·**재계약 판단**(Python CLI). 키(`NAVER_SEARCHAD_*`)는 환경변수, 실계약 원장은 `.gitignore`.
+- **BSA(브랜드검색) 운영 CLI** — 계약·단가 등 민감데이터라 **부서 전용 private 저장소 `imsplendid8/Private`** 로 분리(공개 대시보드와 독립). on/off 모니터링·계약 재계약 판단·키워드 제안·검색량 우선순위 + 매일 자동 실행(private Actions).
 
 ## 빠른 링크
 - 배포(정본): https://imsplendid8.github.io/CM-CMO/ (전체 안내: `/overview.html`)
