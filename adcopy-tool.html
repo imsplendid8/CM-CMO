@@ -95,7 +95,10 @@ table.sheet .cp:hover{border-color:var(--brand);color:var(--brand-600);}
 .ev-row{display:flex;gap:10px;padding:6px 0;border-top:1px solid var(--line-2);}
 .ev-row:first-child{border-top:0;padding-top:0;}
 .ev-lb{flex:0 0 120px;font-size:11px;font-weight:800;white-space:nowrap;}
-.ev-lb.news{color:#0a7c3e;} .ev-lb.comp{color:var(--bad);} .ev-lb.ours{color:var(--good);}
+.ev-lb.news{color:#0a7c3e;} .ev-lb.comp{color:var(--bad);} .ev-lb.ours{color:var(--good);} .ev-lb.vol{color:var(--brand-600);}
+.volkw{display:inline-block;margin:0 6px 5px 0;font-size:11.5px;}
+.volkw b{color:var(--ink);font-weight:800;} .volkw i{font-style:normal;font-size:9.5px;font-weight:800;padding:1px 5px;border-radius:99px;vertical-align:middle;}
+.cbadge.hi{background:var(--bad-bg);color:var(--bad);} .cbadge.mid{background:var(--warn-bg);color:var(--warn);} .cbadge.lo{background:var(--good-bg);color:var(--good);}
 .ev-tx{flex:1;font-size:11.5px;color:var(--ink-2);line-height:1.55;} .ev-tx b{color:var(--ink);font-weight:800;}
 .ev-links{margin-top:8px;font-size:11px;} .ev-links a{color:var(--brand-600);font-weight:700;text-decoration:none;} .ev-links a:hover{text-decoration:underline;}
 .issue{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:14px 15px;margin-bottom:14px;}
@@ -345,17 +348,20 @@ function genDescs(p){
   ];
   return wrap(pool,SPEC.descMin,SPEC.descMax);
 }
-/* ④ 홍보문구 (≤15자) — 시트 5번 */
+/* ④ 홍보문구 (≤15자) — 시트 5번 · 상품 소구 반영 */
 function genPromos(p){
-  const a=al(p);
-  const pool=["24시간 간편 보험료 조회","지금 바로 보험료 확인","온라인 전용 다이렉트가","필요한 담보만 골라 가입","비교하고 바로 가입하기",`${a} 다이렉트 조회`];
+  const a=al(p), c0=p.covers[0];
+  const pool=[
+    "24시간 간편 보험료 조회","지금 바로 보험료 확인","온라인 전용 다이렉트가","비교하고 바로 가입하기",
+    `${a} 보험료 3분 조회`, `${p.short[0]} 담보 골라 가입`, `${c0} 포함 확인`, `${a} 다이렉트 조회`,
+  ];
   return wrap(pool,2,SPEC.promoMax);
 }
-/* ⑤ 서브링크 (≤6자, 택4) — 시트 6번 */
+/* ⑤ 서브링크 (≤6자, 택4) — 시트 6번 · 상품 담보·소구 토큰 우선 */
 function genSubs(p){
   const short=s=>String(s).replace(/\s/g,"").slice(0,SPEC.subMax);
-  const pool=["보험료계산","보장내용","간편가입","24시간가입","할인확인","상품안내","가입하기","보험료조회",
-    short(al(p)), ...p.covers.map(short)];
+  const pool=["보험료계산","보장내용", short(al(p)), ...p.covers.map(short), ...p.short.map(short),
+    "간편가입","24시간가입","할인확인","가입하기"];
   return wrap(pool,2,SPEC.subMax);
 }
 
@@ -416,6 +422,15 @@ function copyTSV(p){
   (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast("표 복사됨 · 엑셀에 붙여넣기(Ctrl+V)")).catch(()=>{
     const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("표 복사됨");}catch(_){}ta.remove();});
 }
+/* ── 실측 월검색량(data/volume.json · 검색광고 API 주간 갱신) ── */
+let VOL={asof:null,products:{}};
+function loadVolume(){return fetch("data/volume.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(m=>{if(m&&m.products)VOL=m;}).catch(()=>{});}
+function topVol(pkey,n){const kw=(VOL.products&&VOL.products[pkey]&&VOL.products[pkey].keywords)||{};
+  return Object.keys(kw).map(k=>{const o=kw[k]||{},pc=+o.pc||0,mo=+o.mobile||0;return {kw:k,total:pc+mo,comp:o.comp||""};})
+    .filter(v=>v.total>0).sort((a,b)=>b.total-a.total).slice(0,n||6);}
+const compCls=c=>c==="높음"?"hi":c==="낮음"?"lo":"mid";
+const fmtN=n=>n.toLocaleString("ko-KR");
+
 /* ── 경쟁사 브랜드검색(serp/brand) 이식 ── */
 let BRAND={asof:null,brands:{}};
 const BRAND_ORDER=[["samsung","삼성화재 다이렉트"],["kb","KB손해보험 다이렉트"],["hyundai","현대해상 다이렉트"],["db","DB손해보험 다이렉트"]];
@@ -511,6 +526,10 @@ function render(){
     <div class="ev-row"><span class="ev-lb ours">✅ 우리 대응 각도</span><div class="ev-tx">${esc(ev.ours)}</div></div>
     <div class="ev-links"><a href="news-tool.html" target="_blank" rel="noopener">뉴스 콘솔 ↗</a> · <a href="serp-tool.html" target="_blank" rel="noopener">SERP 아카이브 ↗</a></div>
   </div>` : "";
+  const vols=topVol(p.key,6);
+  const volPanel = vols.length ? `<div class="ev">
+    <div class="ev-row"><span class="ev-lb vol">📊 실측 월검색량</span><div class="ev-tx">기준 ${esc(VOL.asof||"—")} · 검색광고 API(PC+모바일) — <b>수요 높은 키워드</b>를 제목·소구에 우선 반영<br>${vols.map(v=>`<span class="volkw"><b>${esc(v.kw)}</b> ${fmtN(v.total)}회 <i class="cbadge ${compCls(v.comp)}">${esc(v.comp||"-")}</i></span>`).join(" ")}</div></div>
+  </div>` : "";
   const seasonChips = s.issues.length ? s.issues.map(o=>`<span class="spec">🗓 <b>${esc(shortWord(o.tag))}</b> · ${esc(proxLabel(o))}</span>`).join("") : "";
   $("#content").innerHTML=`
     <div class="banner"><b>광고심의 전제</b> · 아래 문구는 <b>초안</b>입니다. 보험 광고 문구는 <b>손해보험협회 광고심의</b> 대상이며, 사실 근거 없는 최상급·확정 표현은 사용할 수 없습니다. 담보·보험료·조건은 약관 기준으로 검수 후 게재하세요.</div>
@@ -527,7 +546,8 @@ function render(){
       ${seasonChips}
     </div>
 
-    <div class="sec-lbl">📌 근거 · 뉴스 동향 · 경쟁사 SERP 소구포인트</div>
+    <div class="sec-lbl">📌 근거 · 실측 검색량 · 뉴스 동향 · 경쟁사 SERP</div>
+    ${volPanel}
     ${evPanel}
 
     ${block("① 광고 제목 (브랜드형)",s.brand,SPEC.titleMax)}
@@ -571,7 +591,7 @@ document.addEventListener("click",e=>{
   }});
 $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");});
 render();
-loadBrandManifest().then(()=>{renderSidebar();if(curKey==="__brand"||curKey==="__cal")render();}); // 경쟁사 브랜드검색 매니페스트(있으면)
+Promise.all([loadBrandManifest(),loadVolume()]).then(()=>{renderSidebar();render();}); // 경쟁사 브랜드검색 + 실측 검색량(있으면)
 </script>
 </body>
 </html>
