@@ -67,6 +67,9 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .sec-h{display:flex;align-items:center;gap:9px;padding:12px 16px;border-bottom:1px solid var(--line-2);background:var(--surface-2);flex-wrap:wrap;}
 .sec-h .t{font-size:13px;font-weight:800;} .sec-h .sub{font-size:11px;color:var(--muted);font-weight:600;}
 .sec-b{padding:15px 16px;}
+.filebanner{margin:0 0 16px;padding:12px 15px;border:1px solid #f0c36b;border-radius:var(--r-sm);background:#fff7e6;color:#8a5a00;font-size:12.5px;line-height:1.6;}
+.filebanner a{color:#8a5a00;font-weight:800;}
+[data-theme=dark] .filebanner{background:#3a2f14;border-color:#6b5320;color:#f0d590;}[data-theme=dark] .filebanner a{color:#f0d590;}
 /* 아카이브 */
 .drop{border:1.5px dashed var(--brand);border-radius:var(--r-sm);background:var(--brand-tint);padding:16px;text-align:center;font-size:12px;color:var(--ink-2);cursor:pointer;transition:.14s;}
 .drop:hover,.drop.hot{background:var(--brand-50);}
@@ -171,6 +174,11 @@ td.who{font-weight:800;white-space:nowrap;}
         <button class="icon-btn" id="themeBtn" title="테마">◐</button>
       </div>
     </header>
+    <div class="filebanner" id="fileBanner" hidden>
+      ⚠️ <b>로컬 파일(ZIP)로 열었습니다.</b> 이렇게 열면 <b>자동 캡쳐(상품 SERP·경쟁사 브랜드검색)가 보이지 않고</b>, 아래 "개인 업로드"만 나타납니다.
+      팀 공유 캡쳐를 보려면 배포 주소로 여세요 →
+      <a href="https://imsplendid8.github.io/CM-CMO/serp-tool.html" target="_blank" rel="noopener">imsplendid8.github.io/CM-CMO/serp-tool.html</a>
+    </div>
     <div class="content" id="content"></div>
   </main>
 </div>
@@ -394,7 +402,8 @@ function archiveSection(p){
     <div class="sec-h"><span class="t">📸 주간 SERP 스크린샷 아카이브</span><span class="sub">· ${shots.length}주차 · 이 브라우저에 저장</span>
       <a class="serplink" style="margin-left:auto" href="${serpUrl(p.kw)}" target="_blank" rel="noopener">네이버 PC 검색결과 보기 ↗</a></div>
     <div class="sec-b">
-      <div class="drop" id="drop"><b>＋ 이번 주 스크린샷 올리기</b> — 파일 선택 또는 여기로 드래그<input type="file" id="shotFile" accept="image/*" multiple style="display:none"></div>
+      <div class="drop" id="drop"><b>＋ 개인 스크린샷 올리기</b> — 이 브라우저에만 저장 · 팀 공유 아님 (파일 선택 또는 드래그)<input type="file" id="shotFile" accept="image/*" multiple style="display:none"></div>
+      <div class="note" style="margin:8px 0 0;font-size:11px;color:var(--muted)">※ 팀 공유용 자동 캡쳐는 <b>배포 주소</b>에서 자동 표시됩니다(별도 업로드 불필요). 위 업로드는 개인 메모용입니다.</div>
       ${tl}
       ${shots.length>=2?`<div class="sec-lbl" style="margin:16px 0 0">전/후 비교 (두 주차 선택)</div>${cmp}`:""}
     </div></div>`;
@@ -528,6 +537,7 @@ $("#impFile").addEventListener("change",e=>{const f=e.target.files[0];if(!f)retu
     saveArc(ARC);toast(n+"개 스크린샷 복원됨");render();}catch(err){toast("복원 실패 — 백업 JSON 파일인지 확인");}};
   rd.readAsText(f);e.target.value="";});
 $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");});
+if(location.protocol==="file:"){$("#fileBanner").hidden=false;} // 로컬(ZIP) 열람 시 자동 캡쳐 미표시 안내
 render();
 Promise.all([loadRepoManifest(),loadBrandManifest()]).then(()=>render()); // 리포 자동 캡쳐(상품 SERP + 경쟁사 브랜드검색) 반영(있으면)
 </script>
