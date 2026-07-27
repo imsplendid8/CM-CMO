@@ -70,11 +70,12 @@ def _check_one(base_dir, name, rel, field, max_age, today):
         item["state"] = "unknown"          # 시각 필드 없음/불명 → 정상 아님
         return item
     age = (today - d).days
-    if age < 0:
-        age = 0
     item["date"] = d.isoformat()
     item["age_days"] = age
-    item["state"] = "healthy" if age <= max_age else "stale"
+    if age < 0:
+        item["state"] = "unknown"          # 미래 날짜 = 신뢰 불가 → 정상으로 오인 금지
+    else:
+        item["state"] = "healthy" if age <= max_age else "stale"
     return item
 
 
@@ -106,18 +107,25 @@ def compute_health(now=None, base_dir=ROOT, automations=AUTOMATIONS):
 
 
 def format_lines(health):
-    """브리프에 넣을 '[데이터 상태]' 텍스트 라인들."""
+    """브리프에 넣을 '[데이터 상태]' 텍스트 라인들. missing(누락)과 unknown(확인 불가)은 구분해서 표시."""
     if not health.get("ok"):
         return ["[데이터 상태]", "· 상태 확인 불가",
                 "· 자동수집이 정상이라고 단정할 수 없음"]
     s = health["summary"]
     items = health["items"]
-    stale = [it["name"] for it in items if it["state"] == "stale"]
-    na = [it["name"] for it in items if it["state"] in ("missing", "unknown")]
-    lines = ["[데이터 상태]", f"· 정상 {s['healthy']}건"]
-    lines.append(f"· 갱신 필요 {s['stale']}건" + (f": {', '.join(stale)}" if stale else ""))
-    lines.append(f"· 누락/확인 불가 {s['missing'] + s['unknown']}건"
-                 + (f": {', '.join(na)}" if na else ""))
+
+    def names(state):
+        return [it["name"] for it in items if it["state"] == state]
+
+    def line(label, cnt, nm):
+        return f"· {label} {cnt}건" + (f": {', '.join(nm)}" if nm else "")
+
+    lines = ["[데이터 상태]",
+             f"· 정상 {s['healthy']}건",
+             line("갱신 필요", s["stale"], names("stale")),
+             line("누락", s["missing"], names("missing"))]
+    if s["unknown"]:
+        lines.append(line("확인 불가", s["unknown"], names("unknown")))
     lines.append(f"· 기준 시각: {health['asof']} KST")
     return lines
 

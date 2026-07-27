@@ -132,6 +132,70 @@ class TestAutomationHealth(unittest.TestCase):
             self.assertIn("상태 확인 불가", text)
             self.assertNotIn("정상", text.split("상태 확인 불가")[0] if "상태 확인 불가" in text else text)
 
+    def test_future_date_not_healthy(self):
+        # 미래 날짜는 신뢰 불가 → healthy 로 오인하지 않는다(unknown).
+        with tempfile.TemporaryDirectory() as tmp:
+            make_repo(tmp, overrides={"data/signals.json": "2026-12-31"})
+            h = cah.compute_health(NOW, base_dir=tmp)
+            states = {it["name"]: it["state"] for it in h["items"]}
+            self.assertEqual(states["수요 신호"], "unknown")
+            self.assertNotEqual(states["수요 신호"], "healthy")
+
+    def test_bad_date_string_is_unknown(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            make_repo(tmp, overrides={"data/papers.json": "어제쯤"})
+            h = cah.compute_health(NOW, base_dir=tmp)
+            states = {it["name"]: it["state"] for it in h["items"]}
+            self.assertEqual(states["논문 아카이브"], "unknown")
+
+    def test_timezone_and_iso_formats_no_exception(self):
+        # tz 없는 날짜 / Z(UTC) / 오프셋 / 날짜+시각이 섞여도 예외 없이 날짜로 인식.
+        with tempfile.TemporaryDirectory() as tmp:
+            make_repo(tmp, overrides={
+                "data/clips/index.json": "2026-07-27",              # tz 없음
+                "data/signals.json":     "2026-07-27T00:00:00Z",    # Z(UTC)
+                "data/volume.json":      "2026-07-27 15:55",        # 날짜+시각(공백)
+                "data/trends.json":      "2026-07-27T09:00:00+09:00",  # KST 오프셋
+            })
+            h = cah.compute_health(NOW, base_dir=tmp)   # 예외 없이 완료
+            self.assertTrue(h["ok"])
+            states = {it["name"]: it["state"] for it in h["items"]}
+            for nm in ("뉴스 클리핑", "수요 신호", "실측 검색량", "데이터랩 트렌드"):
+                self.assertEqual(states[nm], "healthy")
+
+    def test_missing_and_unknown_distinguished_in_output(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            make_repo(tmp, omit=("data/signals.json",),          # missing
+                      garbage=("data/volume.json",))             # unknown
+            text = "\n".join(cah.format_lines(cah.compute_health(NOW, base_dir=tmp)))
+            self.assertIn("누락 1건: 수요 신호", text)
+            self.assertIn("확인 불가 1건: 실측 검색량", text)
+
+    def test_partial_failure_mix(self):
+        # 일부만 실패해도 나머지는 정상 계산, ok=True, 합계 일치.
+        with tempfile.TemporaryDirectory() as tmp:
+            make_repo(tmp, omit=("data/trends.json",),
+                      overrides={"data/clips/index.json": "2026-07-01"})  # stale
+            h = cah.compute_health(NOW, base_dir=tmp)
+            self.assertTrue(h["ok"])
+            s = h["summary"]
+            self.assertEqual(s["missing"], 1)
+            self.assertEqual(s["stale"], 1)
+            self.assertEqual(sum(s.values()), len(cah.AUTOMATIONS))
+
+    def test_daily_brief_builds_even_if_health_fails(self):
+        # 상태 계산이 예외를 던져도 브리프 메시지는 생성되고 '상태 확인 불가'가 표시된다.
+        import importlib
+        db = importlib.import_module("daily_brief")
+        orig = cah.compute_health
+        try:
+            cah.compute_health = lambda *a, **k: (_ for _ in ()).throw(RuntimeError("boom"))
+            msg = db.build_message()
+            self.assertIsInstance(msg, str)
+            self.assertIn("상태 확인 불가", msg)
+        finally:
+            cah.compute_health = orig
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
