@@ -3,7 +3,7 @@
 이 파일은 Claude Code가 이 저장소에서 작업할 때 참고하는 가이드입니다. **새 세션은 먼저 `STATE.md`를 읽으세요** (지금까지의 작업과 재개 절차).
 
 ## 프로젝트
-**Modooflow** — 한화손해보험 장기CM 마케팅 콘솔. 담당 상품(홈·장기7·일반2·간편심사, 13종)의 검색·마케팅을 돕는 **정적 웹 도구 모음**. 7개 도구(SEO·키워드·뉴스·SERP·시즌·약관·검색광고 소재) + 팀 실시간 연동 + 자동화(뉴스클리핑·SERP캡쳐·수요신호·논문 월간). BSA(브랜드검색) 운영 CLI는 민감데이터라 **부서 전용 private 저장소**로 분리. 디자인=Clean SaaS Light(흰 배경·Pretendard 자체호스팅).
+**Modooflow** — 한화손해보험 장기CM 마케팅 콘솔. 담당 상품(홈·장기7·일반2·간편심사, 13종)의 검색·마케팅을 돕는 **정적 웹 도구 모음**. 8개 도구(SEO·키워드·뉴스·SERP·시즌·약관·검색광고 소재·논문) + 팀 실시간 연동 + 자동화(뉴스클리핑·SERP캡쳐·수요신호·논문 월간). BSA(브랜드검색) 운영 CLI는 민감데이터라 **부서 전용 private 저장소**로 분리. 디자인=Clean SaaS Light(흰 배경·Pretendard 자체호스팅).
 
 ## 저장소 지도
 | 구분 | 위치 |
@@ -11,7 +11,7 @@
 | 현재 상태·재개 | `STATE.md` (최우선) |
 | 위키(정리 문서) | `docs/` — `README.md`(색인)·`architecture.md`·`tools.md`·`검색광고-BSA-로드맵.md`·`roadmap.md`·`daily-brief.md`·`api-from-url.md`(프록시)·`oss-leverage.md`·`논문-아카이브.md` |
 | 허브 | `index.html` (상단 고정 내비 + ⚙키설정 + API 사용량 위젯) · 전체 안내 `overview.html` |
-| 도구 7종 | `seo-audit.html` · `keyword-tool.html`(+네이버 대량등록 파일) · `news-tool.html`(업계·경쟁사+수요 트리거) · `serp-tool.html`(자동 캡쳐+브랜드검색) · `seasonal-tool.html` · `terms-tool.html`(약관 용어→쉬운 표현) · `adcopy-tool.html`(검색광고 소재·파워링크 규격·심의·시즌·근거) |
+| 도구 8종 | `seo-audit.html` · `keyword-tool.html`(+네이버 대량등록 파일) · `news-tool.html`(업계·경쟁사+수요 트리거) · `serp-tool.html`(자동 캡쳐+브랜드검색) · `seasonal-tool.html` · `terms-tool.html`(약관 용어→쉬운 표현) · `adcopy-tool.html`(파워링크 등록 양식 5블록·엑셀+주차별 캘린더+경쟁사 브랜드검색 탭) · `papers-tool.html`(논문 아카이브·주제 필터·검색) |
 | 별도 도구(부서 전용) | BSA(브랜드검색) 운영 CLI는 **부서 전용 private 저장소 `imsplendid8/Private`** 로 분리(계약·단가 등 민감데이터). 공개 CM-CMO엔 포함하지 않음 |
 | 팀 실시간 프록시 | `proxy/naver-proxy-worker.js` (Cloudflare Worker · 키=워커 시크릿) |
 | 폰트 | `fonts/PretendardVariable.woff2` (자체호스팅) |

@@ -2,7 +2,7 @@
 
 > **이 문서의 목적**: 대화 세션이 끊겨도 다음 세션(사람이든 Claude든)이 **이 파일 하나만 읽으면** 지금까지 뭘 만들었고 어디를 이어가면 되는지 즉시 파악하도록. 새 작업을 시작하기 전에 항상 먼저 읽으세요.
 
-_최종 갱신: 2026-07-24 · 도구 7개(SEO·키워드·뉴스·SERP·시즌·약관·검색광고 소재) + 팀 실시간 연동 + 자동화(뉴스클리핑·SERP·수요신호·논문 월간) · BSA 운영 CLI는 부서 전용 private 저장소로 분리_
+_최종 갱신: 2026-07-27 · 도구 8개(SEO·키워드·뉴스·SERP·시즌·약관·검색광고 소재·논문) + 팀 실시간 연동 + 자동화(뉴스클리핑·SERP·수요신호·논문 월간) · BSA 운영 CLI는 부서 전용 private 저장소로 분리_
 
 ## 한 줄 요약
 한화손보 장기CM 마케팅 콘솔 **Modooflow** — 담당 상품(홈·장기7·일반2, 13종)의 SEO·키워드·뉴스·SERP·시즌을 다루는 **정적 웹 도구 모음**. 단일 레포·트렁크(main), GitHub Pages 자동 배포. **디자인=Clean SaaS Light(흰 배경·Pretendard 자체호스팅)**. 실시간 데이터는 **팀 공유 Cloudflare 프록시**로, 키 입력 없이 팀 전원 사용.
@@ -16,11 +16,11 @@ _최종 갱신: 2026-07-24 · 도구 7개(SEO·키워드·뉴스·SERP·시즌·
 | 4 | 검색결과 주간 아카이브 | `serp-tool.html` | **자동 캡쳐**(주간 Action) + 수동 업로드 + 전/후 diff | ✅ |
 | 5 | 연간 시즈널 이슈 캘린더 | `seasonal-tool.html` | 트렌드=월간 Action(`data/trends.json`) | ✅ |
 | 6 | 약관 용어 변환 | `terms-tool.html` | (정적, 표준약관→소비자 표현·난이도) | ✅ |
-| 7 | 검색광고 소재 | `adcopy-tool.html` | 파워링크 규격·심의 린트 + 시즌 이슈 + 뉴스/SERP 근거 | ✅ |
+| 7 | 검색광고 소재 | `adcopy-tool.html` | 파워링크 등록 양식 5블록·엑셀 + **주차별 소재 캘린더**·**경쟁사 브랜드검색** 탭 | ✅ |
+| 8 | 논문 아카이브 | `papers-tool.html` | `data/papers.json` ← 월 1회 네이버 학술 자동 적립(`papers.yml`) · 주제 필터·검색 | ✅ |
 | — | 통합 허브 | `index.html` | ⚙키설정 + **오늘 API 사용량 위젯** · 전체 안내 `overview.html` | ✅ |
 | — | BSA 운영(부서 전용) | **private `imsplendid8/Private`** | 검색광고 관리 API on/off·계약·키워드·검색량 — 민감데이터라 공개 CM-CMO에서 분리 | ✅ |
-| — | 논문 아카이브 | `docs/논문-아카이브.md` + `papers.yml` | 월 1회 네이버 전문자료 자동 적립 | ✅ |
-| — | 데일리 비서 | `scripts/daily_brief.py` + `daily-brief.yml` | 매일 08:00·14:00 KST **텔레그램** | ✅ 작동 확인 |
+| — | 데일리 비서 | `scripts/daily_brief.py` + `daily-brief.yml` | 매일 08:00·14:00 KST **텔레그램 · 오늘 할 일 판단형**(신호·시즌·클리핑·SERP→액션) | ✅ 작동 확인 |
 | — | 상품 마스터 | `data/products.json` + `check_products_sync.py` | 단일 소스 + CI 드리프트 | ✅ |
 
 ## 팀 실시간 연동 구조 (이번 세션 신설 · 핵심)
@@ -64,6 +64,14 @@ _최종 갱신: 2026-07-24 · 도구 7개(SEO·키워드·뉴스·SERP·시즌·
 3. 실시간/프록시 관련이면 `docs/api-from-url.md`, 자동캡쳐면 `serp/README.md` 확인.
 4. 새 기능이면: main에서 짧은 브랜치 → 도구 파일 + `index.html` `TOOLS` 카드 → 검증(Playwright 렌더/`node --check`/`check_products_sync.py`) → main 병합·push(자동 배포).
 5. **데이터 거버넌스 준수**: 실제 개인정보·영업비밀·실키 커밋 금지, 샘플·공개·비식별만. 키는 워커 시크릿/GitHub Secrets/localStorage에만.
+
+## 점검 이력 (2026-07-27)
+- **검색광고 소재 재구성**: 카드형 후보 → 네이버 파워링크 **실제 등록 양식 5블록**(광고제목·추가제목·설명·홍보문구·서브링크) 롤링 소재 + 글자수 자동 + **엑셀(.xls)/TSV 내보내기**. **주차별 소재 캘린더** 탭(6주×집중 이슈+경쟁사 참고) + **경쟁사 브랜드검색** 탭(serp/brand 이식) 통합.
+- **논문 아카이브 대시보드화**: `papers-tool.html`(주제 필터·검색) + `data/papers.json`(← MD 정본, `papers_to_json.py`로 동기화, `papers.yml`이 함께 커밋).
+- **데일리 비서 판단형 전환**: 헤드라인 나열 → **오늘 할 일**(수요신호·시즌·클리핑·SERP를 액션 우선순위로) + 뉴스는 행동가치 키워드만 선별.
+- **홈 '연말정산' 제거**: 보험 뉴스 아님 → adcopy·seasonal-tool·`data/seasonal.json` 홈 항목 삭제.
+- **SERP 로컬(ZIP) 안내**: `file://`로 열면 자동 캡쳐 미표시 배너 + 개인 업로드 라벨 명확화.
+- **문서 현행화**: tools.md(5개→8개 도구·serp 자동캡쳐 정정)·README·CLAUDE·roadmap·overview(캡쳐 수치).
 
 ## 점검 이력 (2026-07-23)
 - **레거시 제거**: 수동 키워드 파이프라인(`run_keywords.sh`·`naver_searchad_keywords.py`·`google_ads_keywords.py`·`merge_volume.py`) → 자동 Action + 프록시로 대체. `KEYWORD-API.md` 현행화.
