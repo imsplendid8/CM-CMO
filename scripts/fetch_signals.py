@@ -77,17 +77,20 @@ def fetch_travel():
         return {"overseas_ratio": None, "error": str(e)[:140]}
 
 def build_triggers(weather, travel):
-    """상품별 실시간 수요 신호 레벨 산출(정성 규칙)."""
+    """상품별 실시간 수요 신호 레벨 산출(정성 규칙). 여러 특보가 동시 발효면 사유를 누적."""
     w = set(weather.get("active", []))
     trg = {}
-    # 주택화재: 호우·태풍(누수·침수) / 한파·대설(동파)
-    if {"호우", "태풍"} & w:
-        trg["hrmf"] = {"level": "high", "note": "호우·태풍 특보 발효 → 누수·침수 담보 수요 급증"}
-    elif {"한파", "대설"} & w:
-        trg["hrmf"] = {"level": "high", "note": "한파·대설 특보 → 동파·난방화재 담보 수요"}
-    # 운전자: 대설·강풍(빙판·사고)
-    if {"대설", "강풍"} & w:
-        trg["driver"] = {"level": "high", "note": "대설·강풍 특보 → 사고 위험·운전자보험 관심↑"}
+    # 주택화재: 특보별 위험을 누적(호우·태풍=누수/침수, 한파·대설=동파/난방화재, 건조=발화/산불, 폭염=전기과부하 화재)
+    hrmf = []
+    if {"호우", "태풍"} & w: hrmf.append("호우·태풍 → 누수·침수·풍수재")
+    if {"한파", "대설"} & w: hrmf.append("한파·대설 → 동파·난방화재")
+    if "건조" in w:          hrmf.append("건조 특보 → 전선·콘센트 발화·산불 위험")
+    if "폭염" in w:          hrmf.append("폭염 → 전기과부하·에어컨 화재")
+    if hrmf:
+        trg["hrmf"] = {"level": "high", "note": "기상특보 발효 → " + " / ".join(hrmf) + " 담보 수요", "kinds": sorted(w & {"호우","태풍","한파","대설","건조","폭염"})}
+    # 운전자: 대설·강풍·한파(빙판·사고)
+    if {"대설", "강풍", "한파"} & w:
+        trg["driver"] = {"level": "high", "note": "대설·강풍·한파 특보 → 빙판·사고 위험·운전자보험 관심↑", "kinds": sorted(w & {"대설","강풍","한파"})}
     # 해외여행: '여행자보험' 검색수요가 평균 대비 상승(성수기)하면 high
     lr, avg = travel.get("overseas_ratio"), travel.get("avg") or 0
     if lr is not None and avg and (lr >= avg * 1.15 or lr >= 75):

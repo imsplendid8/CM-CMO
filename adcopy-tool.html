@@ -99,6 +99,13 @@ table.sheet .cp:hover{border-color:var(--brand);color:var(--brand-600);}
 .volkw{display:inline-block;margin:0 6px 5px 0;font-size:11.5px;}
 .volkw b{color:var(--ink);font-weight:800;} .volkw i{font-style:normal;font-size:9.5px;font-weight:800;padding:1px 5px;border-radius:99px;vertical-align:middle;}
 .cbadge.hi{background:var(--bad-bg);color:var(--bad);} .cbadge.mid{background:var(--warn-bg);color:var(--warn);} .cbadge.lo{background:var(--good-bg);color:var(--good);}
+.wx-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;} @media(max-width:720px){.wx-wrap{grid-template-columns:1fr;}}
+.wx-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh);}
+.wx-card.on{border-color:var(--bad);box-shadow:0 0 0 2px var(--bad-bg);}
+.wx-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:9px;}
+.wx-k{font-size:13px;font-weight:800;} .wx-live{font-size:10px;font-weight:800;color:#fff;background:var(--bad);padding:1px 8px;border-radius:99px;}
+.wx-why{font-size:10.5px;color:var(--muted);font-weight:600;flex-basis:100%;}
+.wx-len{font-family:var(--mono);font-size:10.5px;font-weight:800;color:var(--good);white-space:nowrap;} .wx-len.over{color:var(--bad);}
 .ev-tx{flex:1;font-size:11.5px;color:var(--ink-2);line-height:1.55;} .ev-tx b{color:var(--ink);font-weight:800;}
 .ev-links{margin-top:8px;font-size:11px;} .ev-links a{color:var(--brand-600);font-weight:700;text-decoration:none;} .ev-links a:hover{text-decoration:underline;}
 .issue{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:14px 15px;margin-bottom:14px;}
@@ -423,6 +430,43 @@ function copyTSV(p){
   (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast("표 복사됨 · 엑셀에 붙여넣기(Ctrl+V)")).catch(()=>{
     const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("표 복사됨");}catch(_){}ta.remove();});
 }
+/* ── 날씨 대응(기상특보 data/signals.json 연동) ── */
+let SIG={weather:{active:[]},triggers:{}};
+function loadSignals(){return fetch("data/signals.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(m=>{if(m)SIG=m;}).catch(()=>{});}
+// 기상특보 → 상품 날씨 대응 소구(제목 ≤15 · 설명 20~45)
+const WEATHER=[
+ {k:"건조",ico:"🌤",prods:["hrmf"],why:"건조한 날씨 = 전선·콘센트 발화·산불 위험↑(봄·가을 건조기)",
+   t:"건조한 날씨 화재 대비",d:"건조한 날씨엔 전선·콘센트 발화 위험↑. 주택화재보험으로 미리 대비하세요."},
+ {k:"호우",ico:"🌧",prods:["hrmf"],why:"장마·집중호우 = 누수·침수·풍수재 피해",
+   t:"장마 누수 걱정 화재보험",d:"장마·집중호우로 누수·침수 걱정될 때, 주택화재보험 특약으로 든든하게 대비하세요."},
+ {k:"태풍",ico:"🌀",prods:["hrmf"],why:"태풍 = 풍수재·낙하물·누수 피해",
+   t:"태풍 풍수재 대비 보험",d:"태풍 시즌 풍수재·누수 피해, 주택화재보험 특약으로 미리 챙기세요."},
+ {k:"폭염",ico:"🔥",prods:["hrmf"],why:"폭염 = 에어컨·전기과부하 화재 위험",
+   t:"폭염 전기 화재 대비",d:"폭염철 에어컨·전기과부하 화재 위험, 주택화재보험으로 미리 대비하세요."},
+ {k:"한파",ico:"❄️",prods:["hrmf","driver"],why:"한파 = 동파·난방기구 화재 / 빙판 사고",
+   t:"한파 동파·난방화재 대비",d:"한파엔 동파·난방기구 화재 위험↑. 주택화재보험으로 겨울 위험 대비하세요."},
+ {k:"대설",ico:"🌨",prods:["driver","hrmf"],why:"대설 = 빙판·눈길 사고 / 지붕 적설",
+   t:"눈길 빙판 사고 대비",d:"대설·빙판길 사고 위험이 커지는 겨울, 운전자보험으로 미리 대비하세요."},
+ {k:"강풍",ico:"💨",prods:["driver"],why:"강풍 = 운전 중 사고 위험",
+   t:"강풍 운전 사고 대비",d:"강풍으로 운전 위험이 커질 때, 운전자보험으로 든든하게 대비하세요."},
+];
+const wxActive=k=>((SIG.weather&&SIG.weather.active)||[]).includes(k);
+function weatherSection(p){
+  const rows=WEATHER.filter(w=>w.prods.includes(p.key));
+  if(!rows.length)return "";
+  const anyActive=rows.some(w=>wxActive(w.k));
+  const cards=rows.map(w=>{
+    const on=wxActive(w.k), tL=clen(w.t), dL=clen(w.d);
+    return `<div class="wx-card${on?" on":""}">
+      <div class="wx-h"><span class="wx-k">${w.ico} ${esc(w.k)}</span>${on?`<span class="wx-live">지금 발효중</span>`:""}<span class="wx-why">${esc(w.why)}</span></div>
+      <div class="wk-copy"><span class="k">제목</span><span class="v">${esc(w.t)}</span><span class="wx-len${tL>SPEC.titleMax?" over":""}">${tL}/${SPEC.titleMax}</span><button class="cp" data-copy="${esc(w.t)}">복사</button></div>
+      <div class="wk-copy"><span class="k">설명</span><span class="v">${esc(w.d)}</span><span class="wx-len${dL>SPEC.descMax?" over":""}">${dL}/${SPEC.descMax}</span><button class="cp" data-copy="${esc(w.d)}">복사</button></div>
+    </div>`;
+  }).join("");
+  return `<div class="sec-lbl">🌦 날씨 대응 소구 · 기상특보 연동${anyActive?` <span class="sscount" style="background:var(--bad-bg);color:var(--bad)">특보 발효중</span>`:` <span style="color:var(--muted);font-weight:600">(현재 발효 특보 없음 — 발효 시 자동 강조)</span>`}</div>
+    <div class="wx-wrap">${cards}</div>`;
+}
+
 /* ── 실측 월검색량(data/volume.json · 검색광고 API 주간 갱신) ── */
 let VOL={asof:null,products:{}};
 function loadVolume(){return fetch("data/volume.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(m=>{if(m&&m.products)VOL=m;}).catch(()=>{});}
@@ -566,6 +610,8 @@ function render(){
     ${block("④ 홍보문구",s.promo,SPEC.promoMax)}
     ${block("⑤ 서브링크 (택4)",s.sub,SPEC.subMax)}
 
+    ${weatherSection(p)}
+
     <div class="sec-lbl">직접 작성 · 실시간 글자수·심의 체크</div>
     <div class="editor">
       <div class="row"><label>제목 <span>(≤ ${SPEC.titleMax}자)</span></label>
@@ -601,7 +647,7 @@ document.addEventListener("click",e=>{
   }});
 $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");});
 render();
-Promise.all([loadBrandManifest(),loadVolume()]).then(()=>{renderSidebar();render();}); // 경쟁사 브랜드검색 + 실측 검색량(있으면)
+Promise.all([loadBrandManifest(),loadVolume(),loadSignals()]).then(()=>{renderSidebar();render();}); // 경쟁사 브랜드검색 + 실측 검색량 + 기상특보(있으면)
 </script>
 </body>
 </html>
