@@ -183,6 +183,23 @@ class TestAutomationHealth(unittest.TestCase):
             self.assertEqual(s["stale"], 1)
             self.assertEqual(sum(s.values()), len(cah.AUTOMATIONS))
 
+    def test_papers_json_refreshed_on_noop(self):
+        # 신규 논문 0건(성공적 no-op)이어도 papers.json 의 updated 가 오늘로 갱신돼야
+        # 자동화 상태가 계속 노화(stale)되지 않는다. (Codex 리뷰 P2 대응)
+        import importlib
+        from datetime import timezone as _tz, timedelta as _td
+        fp = importlib.import_module("fetch_papers")
+        with tempfile.TemporaryDirectory() as tmp:
+            os.makedirs(os.path.join(tmp, "data"), exist_ok=True)
+            data = fp.sync_papers_json(root=tmp)     # no-op 경로가 호출하는 바로 그 함수
+            self.assertIsNotNone(data)
+            out = os.path.join(tmp, "data", "papers.json")
+            self.assertTrue(os.path.exists(out))
+            with open(out, encoding="utf-8") as f:
+                j = json.load(f)
+            today = datetime.now(_tz(_td(hours=9))).strftime("%Y-%m-%d")
+            self.assertEqual(j["updated"], today)
+
     def test_daily_brief_builds_even_if_health_fails(self):
         # 상태 계산이 예외를 던져도 브리프 메시지는 생성되고 '상태 확인 불가'가 표시된다.
         import importlib
