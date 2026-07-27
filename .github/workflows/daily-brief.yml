@@ -6,9 +6,13 @@ name: Daily Brief (Telegram)
 
 on:
   schedule:
-    - cron: "0 23 * * *"   # 08:00 KST (오전)
-    - cron: "0 5 * * *"    # 14:00 KST (오후)
+    - cron: "0 23 * * *"   # 08:00 KST (오전) — signals 06:00·news 07:30 수집 뒤
+    - cron: "0 5 * * *"    # 14:00 KST (오후) — news 13:00 수집 뒤
   workflow_dispatch:
+
+# 브리프는 커밋/푸시하지 않고 텔레그램만 발송 → 최소 권한(read).
+permissions:
+  contents: read
 
 jobs:
   brief:

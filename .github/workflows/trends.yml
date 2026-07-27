@@ -6,11 +6,15 @@ name: Naver Trends (DataLab)
 
 on:
   schedule:
-    - cron: "0 20 1 * *"
+    - cron: "10 20 1 * *"   # 매월 1일 05:10 KST(=20:10 UTC 전날) — 1일이 일요일일 때 searchad(20:00 UTC)와 분 분리
   workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: cm-cmo-data-writers   # 커밋 워크플로 공유 레인 → main 동시 push 직렬화(P0-2)
+  cancel-in-progress: false
 
 jobs:
   trends:
@@ -30,5 +34,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/trends.json
-          git diff --staged --quiet || git commit -m "chore: 데이터랩 검색추세 갱신 (data/trends.json)"
-          git push
+          if git diff --staged --quiet; then echo "변경 없음"; else
+            git commit -m "chore: 데이터랩 검색추세 갱신 (data/trends.json)"
+            for i in 1 2 3; do
+              git pull --rebase --autostash origin main && git push && break
+              echo "push 재시도 $i (main 갱신 감지)"; sleep $((i*5))
+              [ "$i" = 3 ] && { echo "::error::main push 실패 — 재시도 소진, 수동 확인 필요"; exit 1; }
+            done
+          fi
