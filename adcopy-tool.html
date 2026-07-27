@@ -129,6 +129,7 @@ table.sheet .cp:hover{border-color:var(--brand);color:var(--brand-600);}
 .wk-b{padding:13px 15px;}
 .wk-focus-lb{font-size:10px;font-weight:800;color:var(--brand-600);letter-spacing:.04em;margin-bottom:4px;}
 .wk-focus-t{font-size:13.5px;font-weight:800;margin-bottom:9px;}
+.wk-vol{display:inline-block;margin-left:8px;font-size:10.5px;font-weight:700;color:var(--brand-600);background:var(--brand-50);padding:1px 8px;border-radius:99px;vertical-align:middle;}
 .wk-copy{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;font-size:12.5px;}
 .wk-copy .k{flex:0 0 34px;font-size:10.5px;font-weight:800;color:var(--muted);padding-top:2px;}
 .wk-copy .v{flex:1;color:var(--ink);}
@@ -425,9 +426,17 @@ function copyTSV(p){
 /* ── 실측 월검색량(data/volume.json · 검색광고 API 주간 갱신) ── */
 let VOL={asof:null,products:{}};
 function loadVolume(){return fetch("data/volume.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(m=>{if(m&&m.products)VOL=m;}).catch(()=>{});}
-function topVol(pkey,n){const kw=(VOL.products&&VOL.products[pkey]&&VOL.products[pkey].keywords)||{};
+function volList(pkey){const kw=(VOL.products&&VOL.products[pkey]&&VOL.products[pkey].keywords)||{};
   return Object.keys(kw).map(k=>{const o=kw[k]||{},pc=+o.pc||0,mo=+o.mobile||0;return {kw:k,total:pc+mo,comp:o.comp||""};})
-    .filter(v=>v.total>0).sort((a,b)=>b.total-a.total).slice(0,n||6);}
+    .filter(v=>v.total>0).sort((a,b)=>b.total-a.total);}
+// 상품 관련 토큰(별칭·이름·담보·소구)으로 노이즈 키워드(무관 경쟁사 브랜드 등) 제거
+function volTokens(p){return uniq([al(p),p.name,...(p.short||[]),...(p.covers||[])]
+  .flatMap(t=>String(t).split(/[·\s/]/)).filter(w=>w.length>=2));}
+function topVol(pkey,n){const p=getP(pkey),toks=p?volTokens(p):[];
+  const all=volList(pkey), rel=toks.length?all.filter(v=>toks.some(t=>v.kw.includes(t))):all;
+  return (rel.length?rel:all).slice(0,n||6);}
+function relVol(pkey){const p=getP(pkey);if(!p)return null;const toks=volTokens(p);
+  return volList(pkey).find(v=>toks.some(t=>v.kw.includes(t)))||null;}   // 관련 키워드 없으면 null(힌트 생략)
 const compCls=c=>c==="높음"?"hi":c==="낮음"?"lo":"mid";
 const fmtN=n=>n.toLocaleString("ko-KR");
 
@@ -496,12 +505,13 @@ function renderCalendar(){
     const d=(genSeasonDescs(fp,fi)[0]||{}).tx||"";
     const ev=EVIDENCE[fp.key];
     const comp=ev?ev.comps.slice(0,2).map(c=>`<b>${esc(c.who)}</b> ${esc(c.hook)}`).join(" · "):"";
+    const fv=relVol(fp.key);   // 상품 관련 키워드만(노이즈면 힌트 생략)
     const others=active.filter(x=>x!==focus).slice(0,4).map(x=>`<span class="wk-chip">${esc(x.p.name)} · ${esc(shortWord(x.iss.tag))}</span>`).join("");
     cards.push(`<div class="wk-card${i===0?" now":""}">
       <div class="wk-h"><span class="wk-date">${fmtMD(s)}~${fmtMD(e)}</span><span class="wk-prox${i?" soon":""}">${prox}</span><span class="wk-mon">${mon}월</span></div>
       <div class="wk-b">
         <div class="wk-focus-lb">이 주 집중 ${MAIN.includes(fp.key)?"★":""}</div>
-        <div class="wk-focus-t">${esc(fp.name)} · ${esc(fi.tag)}</div>
+        <div class="wk-focus-t">${esc(fp.name)} · ${esc(fi.tag)}${fv?`<span class="wk-vol">📊 '${esc(fv.kw)}' ${fmtN(fv.total)}회/월 · 경쟁 ${esc(fv.comp||"-")}</span>`:""}</div>
         ${t?`<div class="wk-copy"><span class="k">제목</span><span class="v">${esc(t)}</span><button class="cp" data-copy="${esc(t)}">복사</button></div>`:""}
         ${d?`<div class="wk-copy"><span class="k">설명</span><span class="v">${esc(d)}</span><button class="cp" data-copy="${esc(d)}">복사</button></div>`:""}
         <div class="wk-copy" style="margin-top:2px"><span class="k">할 일</span><span class="v" style="color:var(--muted)">${esc(fp.name)} 시즌 소재 등록·랜딩 점검 → <b>상품별 소재</b> 탭에서 전체 세트 받기</span></div>
