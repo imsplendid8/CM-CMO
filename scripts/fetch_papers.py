@@ -133,5 +133,16 @@ def main():
     for p in new:
         print("  -", p["title"])
 
+    # 대시보드용 구조화본(data/papers.json) 동기화
+    try:
+        import papers_to_json  # 같은 scripts/ 폴더
+        data = papers_to_json.build()
+        json.dump(data, open(os.path.join(ROOT, "data", "papers.json"), "w", encoding="utf-8"),
+                  ensure_ascii=False, indent=1)
+        print(f"  → data/papers.json 갱신({data['count']}편)")
+    except Exception as e:
+        print("  ! papers.json 동기화 실패:", e, file=sys.stderr)
+
 if __name__ == "__main__":
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     main()
