@@ -1,10 +1,10 @@
 # NEXT — CM-CMO 다음 구현
 
-## P0-1 — 브리프 자동화 상태 오표시 수정
+## P0-1 — 브리프 자동화 상태 오표시 수정 ✅ 완료
 
-> 상태(2026-07-27): **이 PR에서 구현 완료** — `scripts/check_automation_health.py`(순수 함수) +
-> `scripts/daily_brief.py` 연동 + `tests/test_automation_health.py`. 원천 파일이 main에 없어
-> "수정"이 아니라 신규 구현했다(아래 구현 요구사항 충족). 다음 항목은 P0-2.
+> 상태: **완료 · main 병합됨(PR #1, squash `11272fc`)**. `scripts/check_automation_health.py`(순수 함수) +
+> `scripts/daily_brief.py` 연동 + `tests/test_automation_health.py`(15개) + `ci.yml` 반영.
+> Codex 리뷰 P2 2건 반영(미래 날짜 unknown, 논문 no-op 시 papers.json updated 갱신).
 
 ### 현재 문제
 
@@ -91,15 +91,16 @@ scripts/daily_brief.py가 저장된 data/automation_health.json의 summary를 �
   SERP 캡쳐(`serp/manifest.json`). 허용 기간=cron 주기+여유(일간 2·주간 9·월간 35일).
 - `compute_health()`는 읽기 전용. `data/automation_health.json`은 만들지 않는다(저장 요약을 신뢰하지 않으므로 불필요).
 
-## P0-2 — 다음 작업, 이번 PR에서는 구현하지 않음
+## P0-2 — GitHub Actions 실행 순서·write 충돌 정리 🔶 진행(별도 PR)
 
-뉴스 수집과 automation-health가 같은 시각에 실행되는 충돌을 제거한다.
+> 상태: 별도 브랜치 `p0-2/actions-ordering`에서 구현. 상세는 `docs/automation-runbook.md`.
 
-- 수집 완료 후 상태 점검이 실행되도록 workflow_run 또는 명시적인 의존관계 사용
-- write workflow concurrency group 통일
-- 자동 커밋 전에 pull --rebase 적용
-- 같은 시각 cron 제거
-- 오전 브리프 전에 상태 점검 완료
+- **공유 concurrency 레인** `cm-cmo-data-writers` — 커밋 워크플로 6종 직렬화(동시 push 방지)
+- **분(minute) 분리 cron** — 같은 UTC 분 겹침 제거(signals/serp, searchad/trends, news/papers)
+- **안전 push** — `git pull --rebase --autostash` + 3회 재시도, 소진 시 실패(각 워크플로는 겹치지 않는 경로만 커밋)
+- **실행 순서** — signals(06:00)→news(07:30)→브리프(08:00) / news(13:00)→브리프(14:00)
+- **workflow_run 미사용** — 두 수집 fan-in 불가·중복 위험. P0-1 실시간 신선도 계산으로 하드 순서 불필요(늦으면 stale 표시)
+- **정적 회귀 테스트** `tests/test_workflows.py` — 중복 write cron·concurrency 누락·workflow_dispatch·workflow_run 대상 검사
 
 ## P0-3 — 다음 작업, 이번 PR에서는 구현하지 않음
 
