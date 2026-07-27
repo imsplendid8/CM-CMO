@@ -52,7 +52,25 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .specbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
 .spec{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:8px 13px;font-size:11.5px;color:var(--ink-2);box-shadow:var(--sh);}
 .spec b{color:var(--brand-600);font-family:var(--mono);}
-.sec-lbl{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:20px 0 10px;}
+.sec-lbl{font-size:12px;font-weight:800;color:var(--ink-2);letter-spacing:.02em;margin:22px 0 9px;}
+.sec-lbl b{color:var(--brand-600);}
+.sscount{font-size:10.5px;font-weight:800;color:var(--bad);background:var(--bad-bg);padding:1px 7px;border-radius:99px;}
+.xbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+.xbtn{background:var(--grad);color:#fff;border:none;font-weight:800;box-shadow:0 6px 16px rgba(232,85,61,.3);}
+.xbtn:hover{color:#fff;filter:brightness(1.05);}
+.xnote{font-size:11px;color:var(--muted);}
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-sm);box-shadow:var(--sh);}
+table.sheet{width:100%;border-collapse:collapse;font-size:12.5px;background:var(--surface);}
+table.sheet th{background:var(--surface-2);color:var(--ink-2);font-size:10.5px;font-weight:800;text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);white-space:nowrap;}
+table.sheet th small{color:var(--muted);font-weight:700;}
+table.sheet td{padding:7px 12px;border-bottom:1px solid var(--line-2);color:var(--ink);vertical-align:middle;}
+table.sheet tr:last-child td{border-bottom:none;}
+table.sheet .c{text-align:center;width:1%;white-space:nowrap;} table.sheet .mono{font-family:var(--mono);font-weight:800;color:var(--ink-2);}
+table.sheet .muted{color:var(--muted);}
+table.sheet tr.ss td{background:var(--bad-bg);color:var(--bad);} table.sheet tr.ss .mono{color:var(--bad);}
+.ssb{display:inline-block;margin-left:7px;font-size:9.5px;font-weight:800;color:#fff;background:var(--bad);padding:1px 6px;border-radius:99px;vertical-align:middle;}
+table.sheet .cp{border:1px solid var(--line);background:var(--surface-2);color:var(--ink-2);border-radius:6px;padding:3px 9px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;}
+table.sheet .cp:hover{border-color:var(--brand);color:var(--brand-600);}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 @media(max-width:720px){.grid{grid-template-columns:1fr;}}
 .cand{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh);display:flex;align-items:flex-start;gap:10px;}
@@ -117,26 +135,26 @@ const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"
 const clen=s=>[...String(s).trim()].length;               // 글자수(공백 포함, 코드포인트)
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1600);}
 
-/* 네이버 파워링크 규격 */
-const SPEC={ titleMax:15, descMin:20, descMax:45 };
+/* 네이버 파워링크 규격 (제목/추가제목 15자 · 설명 20~45자 · 홍보문구 15자 · 서브링크 6자×4) */
+const SPEC={ titleMax:15, descMin:20, descMax:45, promoMax:15, subMax:6, subCount:4 };
 /* 광고심의·네이버 자제 표현(최상급·절대·확정) — 보험광고 민감 */
 const BAN=["최고","최상","최저가","최저","제일","1위","일등","넘버원","넘버1","무조건","100%","완벽","절대","확정","무심사","누구나","전원","공짜","완전무료","보장 확정","원금보장","평생보장"];
 function lintBan(s){return BAN.filter(w=>String(s).replace(/\s/g,"").includes(w.replace(/\s/g,"")));}
 
 /* 상품별 소구 토큰 — 제목용 short(짧게), 설명용 usp(문장 조각), 담보 covers */
 const PRODUCTS=[
- {key:"home",cat:"사이트",name:"다이렉트 홈",brand:"한화손보 다이렉트",short:["공식","간편가입","보험료"],usp:["필요한 담보만 골라 다이렉트로 간편하게","공식 채널에서 보험료 확인하고 바로"],covers:["자동차·장기 다이렉트"]},
- {key:"hrmf",cat:"장기",name:"주택화재보험",short:["누수·도난","주택맞춤","화재"],usp:["화재·누수·도난·배상책임까지","아파트·빌라·오피스텔 유형별 맞춤으로"],covers:["화재","누수","도난","일상배상책임"]},
+ {key:"home",cat:"사이트",name:"다이렉트 홈",al:"다이렉트",brand:"한화손보 다이렉트",short:["공식","간편가입","보험료"],usp:["필요한 담보만 골라 다이렉트로 간편하게","공식 채널에서 보험료 확인하고 바로"],covers:["자동차·장기 다이렉트"]},
+ {key:"hrmf",cat:"장기",name:"주택화재보험",al:"화재보험",short:["누수·도난","주택맞춤","화재"],usp:["화재·누수·도난·배상책임까지","아파트·빌라·오피스텔 유형별 맞춤으로"],covers:["화재","누수","도난","일상배상책임"]},
  {key:"golf",cat:"장기",name:"골프보험",short:["홀인원","정찰제","선물하기"],usp:["홀인원 축하비용·골프용품까지","팀 단위 정찰제로 부담 없이"],covers:["홀인원 축하비용","골프용품손해","배상책임"]},
  {key:"cncr",cat:"장기",name:"암보험",short:["진단비","표적항암","비갱신"],usp:["암진단비·표적항암까지 든든하게","갱신·비갱신 골라 필요한 담보만"],covers:["암진단비","표적항암약물","항암방사선"]},
  {key:"dntl",cat:"장기",name:"치아보험",short:["임플란트","크라운","실속형"],usp:["임플란트·크라운·충전치료까지","실속형·고급형 골라 부담 없이"],covers:["임플란트","크라운","충전치료"]},
  {key:"driver",cat:"장기",name:"운전자보험",short:["형사합의금","변호사선임","다이렉트"],usp:["형사합의금·변호사선임·벌금까지","다이렉트로 저렴하게 든든하게"],covers:["교통사고처리지원금","변호사선임비용","벌금"]},
- {key:"woman",cat:"장기",name:"여성건강보험",short:["여성암","검진연계"],usp:["여성암·주요 질환까지 촘촘하게","검진 시기에 맞춰 미리 준비"],covers:["여성암진단비","자궁·난소 질환"]},
+ {key:"woman",cat:"장기",name:"여성건강보험",al:"여성보험",short:["여성암","검진연계"],usp:["여성암·주요 질환까지 촘촘하게","검진 시기에 맞춰 미리 준비"],covers:["여성암진단비","자궁·난소 질환"]},
  {key:"birth",cat:"장기",name:"태아보험",short:["출산전가입","서류간편"],usp:["출산 전 가입 적기, 서류는 간편하게","선천이상·신생아 질환까지 미리"],covers:["선천이상","신생아 질환"]},
- {key:"overseas",cat:"일반",name:"해외여행보험",short:["항공지연","휴대품","다이렉트"],usp:["해외의료비·항공지연·휴대품까지","여행 기간만큼 다이렉트로 간편하게"],covers:["해외의료비","항공지연","휴대품손해"]},
+ {key:"overseas",cat:"일반",name:"해외여행보험",al:"여행보험",short:["항공지연","휴대품","다이렉트"],usp:["해외의료비·항공지연·휴대품까지","여행 기간만큼 다이렉트로 간편하게"],covers:["해외의료비","항공지연","휴대품손해"]},
  {key:"holeinone",cat:"일반",name:"홀인원보험",short:["4인정찰제","축하비용","선물"],usp:["홀인원 축하비용·선물하기까지","팀 단위 정찰제로 소액·단기 준비"],covers:["홀인원 축하비용","선물하기"]},
- {key:"event",cat:"일반",name:"행사배상책임보험",short:["당일가입","행사맞춤"],usp:["공연·체육·행사 배상책임을 폭넓게","전날·당일도 바로 가입해 든든하게"],covers:["행사 중 배상책임"]},
- {key:"chronic",cat:"간편심사",name:"유병자 간편보험",short:["간편심사","3가지고지"],usp:["몇 가지만 답하면 간편하게","지병이 있어도 간편심사로 준비"],covers:["유병자 실손·건강"]},
+ {key:"event",cat:"일반",name:"행사배상책임보험",al:"행사보험",short:["당일가입","행사맞춤"],usp:["공연·체육·행사 배상책임을 폭넓게","전날·당일도 바로 가입해 든든하게"],covers:["행사 중 배상책임"]},
+ {key:"chronic",cat:"간편심사",name:"유병자 간편보험",al:"간편보험",short:["간편심사","3가지고지"],usp:["몇 가지만 답하면 간편하게","지병이 있어도 간편심사로 준비"],covers:["유병자 실손·건강"]},
 ];
 /* 시즌 캘린더 이슈(seasonal-tool과 동일 데이터) — m:월배열, tag:이슈, why:설명, kws:키워드 */
 const SEASONAL={
@@ -181,19 +199,20 @@ const proxLabel=o=>{const d=monthDist(o);return d===0?"이번 달":d===1?"다음
 const shortWord=tag=>tag.split(/[·,()]/)[0].trim();
 function nearestIssue(p){const a=(SEASONAL[p.key]||[]).slice().sort((x,y)=>monthDist(x)-monthDist(y));return a[0];}
 function genSeasonTitles(p,iss){
-  const sw=shortWord(iss.tag), n=p.name;
-  const pool=[...iss.kws, ...iss.kws.map(k=>k.includes(n)?k:`${k} ${n}`), `${sw} ${n}`, `${n} ${sw}`];
-  return uniq(pool).map(x=>({tx:x,len:clen(x),ban:lintBan(x)})).filter(o=>o.len>=2&&o.len<=SPEC.titleMax);
+  const sw=shortWord(iss.tag), a=al(p);
+  const pool=[...iss.kws, ...iss.kws.map(k=>k.includes(a)?k:`${k} ${a}`), `${sw} ${a}`, `${a} ${sw}`, `${sw} 미리 대비`];
+  return wrap(pool,2,SPEC.titleMax,true);
 }
 function genSeasonDescs(p,iss){
-  const sw=shortWord(iss.tag), n=p.name, k2=iss.kws.slice(0,2).join("·");
+  const sw=shortWord(iss.tag), n=p.name, a=al(p), k2=iss.kws.slice(0,2).join("·");
   const pool=[
-    `${iss.tag} 대비, ${n} 미리 준비하세요.`,
-    `${sw} 시즌 ${n}, 다이렉트로 간편하게 준비하세요.`,
-    `${k2} 걱정될 때, ${n}으로 든든하게 대비하세요.`,
-    `${sw}으로 늘어나는 위험, ${n}으로 미리 챙기세요.`,
+    `${iss.tag} 대비, ${a} 미리 준비하세요.`,
+    `${sw} 시즌 ${a}, 다이렉트로 간편하게 준비하세요.`,
+    `${k2} 걱정될 때, ${josa(a,"으로","로")} 든든하게 대비하세요.`,
+    `${josa(sw,"으로","로")} 늘어나는 위험, ${josa(a,"으로","로")} 미리 챙기세요.`,
+    `${sw} 뉴스가 늘어나는 요즘, ${a} 다이렉트로 대비하세요.`,
   ];
-  return uniq(pool).map(x=>({tx:x,len:clen(x),ban:lintBan(x)})).filter(o=>o.len>=SPEC.descMin&&o.len<=SPEC.descMax);
+  return wrap(pool,SPEC.descMin,SPEC.descMax,true);
 }
 
 /* 근거 — 뉴스 동향(news-tool insight) + 경쟁사 소구포인트·우리 대응(serp-tool SERPINTEL) */
@@ -239,28 +258,59 @@ const EVIDENCE={
 let curKey=PRODUCTS[0].key;
 const getP=k=>PRODUCTS.find(p=>p.key===k);
 const uniq=a=>[...new Set(a)];
+const al=p=>p.al||p.name;                 // 제목/서브링크용 짧은 상품명
+// 받침 유무에 따른 조사(으로/로, 은/는 등)
+function josa(w,c,v){const ch=String(w).trim().slice(-1),code=ch.charCodeAt(0);const jong=(code>=0xAC00&&code<=0xD7A3)?(code-0xAC00)%28:0;return w+(jong?c:v);}
+// 인접 중복/접두 단어 정리("다이렉트 다이렉트로"→"다이렉트로")
+function dw(s){const out=[];for(const t of String(s).split(" ")){const p=out[out.length-1];if(p&&(p===t||t.startsWith(p)||p.startsWith(t))){if(t.length>p.length)out[out.length-1]=t;continue;}out.push(t);}return out.join(" ");}
+const wrap=(arr,mn,mx,ss)=>uniq(arr.map(dw)).map(x=>({tx:x,len:clen(x),ban:lintBan(x),ss:!!ss})).filter(o=>o.len>=mn&&o.len<=mx&&!o.ban.length);
 
-function genTitles(p){
-  const n=p.name, b=p.brand;
-  let t=[
-    `${n} 다이렉트`, `다이렉트 ${n}`, `${n} 보험료 비교`, `${n} 간편가입`,
-    ...(b?[`${b}`]:[]),
-    ...p.short.map(s=>`${s} ${n}`), ...p.short.map(s=>`${n} ${s}`),
-  ];
-  return uniq(t).map(x=>({tx:x,len:clen(x),ban:lintBan(x)}))
-    .filter(o=>o.len>=2 && o.len<=SPEC.titleMax);
+/* ① 광고 제목 (브랜드형, ≤15자) — 실제 시트 2번 컬럼 */
+const BRANDS=["한화손보 다이렉트","한화다이렉트 대표","한화다이렉트 공식","한화손보 공식","한화 다이렉트","한화손보"];
+function genBrandTitles(p){
+  const a=al(p);
+  const pool=[...BRANDS.map(b=>`${b} ${a}`), ...BRANDS.map(b=>`${b} ${p.name}`)];
+  return wrap(pool,4,SPEC.titleMax);
 }
+/* ② 추가제목 롤링 (소구형, ≤15자) — 실제 시트 3번 컬럼(롤링) */
+const T_CONV=["24시간 인터넷 간편가입","전화 없이 빠른 가입","전화 없이 24시간 가입","전화 통화 없는 간편 가입","비대면 간편 가입 가능","클릭만 해도 가입 가능","직접 비교하고 간편 가입","모바일로 3분 간편가입","상담 없이 바로 가입","보험료 확인하고 바로 가입"];
+function genSubTitles(p){
+  const a=al(p), covs=p.covers||[];
+  const pool=[
+    ...T_CONV,
+    `${a} 보험료 비교`, `${a} 다이렉트 가입`, `필요한 담보만 골라 가입`, `${p.short[0]} 중심 맞춤 설계`,
+    ...covs.map(c=>`${c}까지 (특약)`), ...covs.map(c=>`${c} 걱정 완벽 대비`), ...covs.map(c=>`${c} 미리 확인`),
+    ...p.short.map(s=>`${s} ${a}`),
+  ];
+  return wrap(pool,4,SPEC.titleMax);
+}
+/* ③ 설명 롤링 (20~45자) — 실제 시트 4번 컬럼(롤링) */
 function genDescs(p){
-  const n=p.name;
-  let d=[
+  const n=p.name, a=al(p), c3=p.covers.slice(0,3).join("·");
+  const pool=[
     `${p.usp[0]} 준비하세요.`,
     `${p.usp[1]} 준비하세요.`,
-    `${p.covers.slice(0,3).join("·")} 보장, 다이렉트로 간편하게.`,
+    `${c3} 보장, 다이렉트로 간편하게 준비하세요.`,
     `${n}, 온라인으로 보험료 확인하고 바로 가입하세요.`,
     `${p.short[0]} 중심으로 필요한 담보만 골라 준비하세요.`,
+    `전화 통화 없이 24시간 언제든 ${a} 간편하게 가입하세요.`,
+    `${p.covers[0]}부터 ${p.covers[p.covers.length-1]}까지, ${josa(a,"으로","로")} 든든하게 대비하세요.`,
+    `복잡한 상담 없이 비교하고, ${a} 다이렉트로 합리적으로 준비하세요.`,
   ];
-  return uniq(d).map(x=>({tx:x,len:clen(x),ban:lintBan(x)}))
-    .filter(o=>o.len>=SPEC.descMin && o.len<=SPEC.descMax);
+  return wrap(pool,SPEC.descMin,SPEC.descMax);
+}
+/* ④ 홍보문구 (≤15자) — 시트 5번 */
+function genPromos(p){
+  const a=al(p);
+  const pool=["24시간 간편 보험료 조회","지금 바로 보험료 확인","온라인 전용 다이렉트가","필요한 담보만 골라 가입","비교하고 바로 가입하기",`${a} 다이렉트 조회`];
+  return wrap(pool,2,SPEC.promoMax);
+}
+/* ⑤ 서브링크 (≤6자, 택4) — 시트 6번 */
+function genSubs(p){
+  const short=s=>String(s).replace(/\s/g,"").slice(0,SPEC.subMax);
+  const pool=["보험료계산","보장내용","간편가입","24시간가입","할인확인","상품안내","가입하기","보험료조회",
+    short(al(p)), ...p.covers.map(short)];
+  return wrap(pool,2,SPEC.subMax);
 }
 
 function renderSidebar(){
@@ -270,29 +320,57 @@ function renderSidebar(){
     PRODUCTS.filter(p=>p.cat===cat).forEach(p=>{h+=item(p.key,p.name,curKey===p.key);});});
   $("#sbNav").innerHTML=h;
 }
-function candCard(o,kind){
-  const warn=(kind==="desc"&&o.len>SPEC.descMax)||(kind==="title"&&o.len>SPEC.titleMax);
-  const max=kind==="title"?SPEC.titleMax:SPEC.descMax;
-  return `<div class="cand${o.ban.length?" flag":""}">
-    <div class="tx">${esc(o.tx)}${o.ban.length?`<div class="flagmsg">⚠ 심의 주의 표현: ${o.ban.map(esc).join(", ")}</div>`:""}</div>
-    <span class="len${warn?" warn":""}">${o.len}/${max}</span>
-    <button class="cp" data-copy="${esc(o.tx)}">복사</button>
-  </div>`;
+function buildSheet(p){
+  const issues=(SEASONAL[p.key]||[]).slice().sort((a,b)=>monthDist(a)-monthDist(b));
+  const sT=[],sD=[];
+  issues.forEach(o=>{genSeasonTitles(p,o).forEach(x=>sT.push(x));genSeasonDescs(p,o).forEach(x=>sD.push(x));});
+  const dd=arr=>{const m=new Map();arr.forEach(o=>{if(!m.has(o.tx))m.set(o.tx,o);});return [...m.values()];};
+  return { issues,
+    brand: genBrandTitles(p),
+    subt:  dd([...genSubTitles(p), ...sT]),   // 추가제목(롤링): 소구 + 시즌·뉴스
+    desc:  dd([...genDescs(p), ...sD]),        // 설명(롤링): 기본 + 시즌·뉴스
+    promo: genPromos(p),
+    sub:   genSubs(p).slice(0,12) };
+}
+/* 시트형 표 (문구 | 글자수 | 복사) — 시즌·뉴스 반영분은 ss 하이라이트 */
+function tbl(rows,max){
+  return `<div class="tblwrap"><table class="sheet"><thead><tr><th>문구</th><th class="c">글자수 <small>≤${max}</small></th><th class="c">복사</th></tr></thead><tbody>${
+    rows.length?rows.map(o=>`<tr class="${o.ss?"ss":""}"><td>${esc(o.tx)}${o.ss?'<span class="ssb">시즌·뉴스</span>':""}</td><td class="c mono">${o.len}</td><td class="c"><button class="cp" data-copy="${esc(o.tx)}">복사</button></td></tr>`).join("")
+      :`<tr><td colspan="3" class="c muted">규격에 맞는 후보 없음</td></tr>`}</tbody></table></div>`;
+}
+function block(lbl,rows,max,ss){
+  return `<div class="sec-lbl">${lbl} <b>(${rows.length})</b>${ss?` · <span class="sscount">시즌·뉴스 ${rows.filter(o=>o.ss).length}</span>`:""}</div>${tbl(rows,max)}`;
+}
+const todayStr=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
+/* 등록 양식 5블록을 병렬 컬럼으로 배치 — 실제 시트 레이아웃 그대로 */
+function sheetCols(p){const s=buildSheet(p);return [
+  [`광고 제목(≤${SPEC.titleMax})`,s.brand],[`추가제목·롤링(≤${SPEC.titleMax})`,s.subt],[`설명·롤링(${SPEC.descMin}~${SPEC.descMax})`,s.desc],[`홍보문구(≤${SPEC.promoMax})`,s.promo],[`서브링크(≤${SPEC.subMax})`,s.sub]];}
+function exportXls(p){
+  const cols=sheetCols(p), N=Math.max(...cols.map(c=>c[1].length),1);
+  const eX=v=>String(v).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]));
+  const head="<tr>"+cols.map(c=>`<th colspan="2" style="background:#e8553d;color:#fff;padding:4px 6px">${eX(c[0])}</th>`).join("")+"</tr>";
+  const sub="<tr>"+cols.map(()=>`<th style="background:#faf2ef">문구</th><th style="background:#faf2ef">글자수</th>`).join("")+"</tr>";
+  let body="";
+  for(let i=0;i<N;i++){body+="<tr>"+cols.map(c=>{const o=c[1][i];if(!o)return "<td></td><td></td>";
+    const st=o.ss?' style="color:#c0392b"':"";return `<td${st}>${eX(o.tx)}</td><td align="center"${st}>${o.len}</td>`;}).join("")+"</tr>";}
+  const html=`<html><head><meta charset="utf-8"></head><body><table border="1" cellspacing="0" cellpadding="2">${head}${sub}${body}</table>`
+    +`<p>한화손보 다이렉트 · ${eX(p.name)} · 네이버 파워링크 소재 <b>초안</b>(광고심의 검수 전) · <span style="color:#c0392b">빨강 = 시즌·뉴스 반영</span> · ${todayStr()}</p></body></html>`;
+  const blob=new Blob(["﻿"+html],{type:"application/vnd.ms-excel;charset=utf-8"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`${p.name}_파워링크소재_${todayStr()}.xls`;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+  toast("엑셀(.xls) 다운로드 · 빨강=시즌·뉴스");
+}
+function copyTSV(p){
+  const cols=sheetCols(p), N=Math.max(...cols.map(c=>c[1].length),1), lines=[];
+  lines.push(cols.flatMap(c=>[c[0],"글자수"]).join("\t"));
+  for(let i=0;i<N;i++){lines.push(cols.flatMap(c=>{const o=c[1][i];return o?[o.tx,o.len]:["",""];}).join("\t"));}
+  const t=lines.join("\n");
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast("표 복사됨 · 엑셀에 붙여넣기(Ctrl+V)")).catch(()=>{
+    const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("표 복사됨");}catch(_){}ta.remove();});
 }
 function render(){
-  const p=getP(curKey);
-  $("#pt").textContent=p.name+" · 문구 소재"; $("#pts").textContent="· 네이버 파워링크 규격";
-  const titles=genTitles(p), descs=genDescs(p);
-  const issues=(SEASONAL[p.key]||[]).slice().sort((a,b)=>monthDist(a)-monthDist(b));
-  const seasonBlocks = issues.length ? issues.map(o=>{
-    const st=genSeasonTitles(p,o).slice(0,4), sd=genSeasonDescs(p,o).slice(0,3);
-    return `<div class="issue">
-      <div class="issue-h"><span class="tag">${esc(o.tag)}</span><span class="prox">${esc(proxLabel(o))}</span><span class="mon">${o.m.map(m=>m+"월").join("·")}</span></div>
-      <div class="issue-why">${esc(o.why)}</div>
-      <div class="grid">${st.map(x=>candCard(x,"title")).join("")||'<div class="spec">제목 후보 없음</div>'}</div>
-      <div class="grid" style="margin-top:8px">${sd.map(x=>candCard(x,"desc")).join("")||'<div class="spec">설명 후보 없음</div>'}</div>
-    </div>`;
-  }).join("") : '<div class="spec">이 상품은 등록된 시즌 이슈가 없습니다.</div>';
+  const p=getP(curKey), s=buildSheet(p);
+  $("#pt").textContent=p.name+" · 파워링크 소재"; $("#pts").textContent="· 롤링 T&D + 시즌·뉴스";
   const ev=EVIDENCE[p.key];
   const evPanel = ev ? `<div class="ev">
     <div class="ev-row"><span class="ev-lb news">📰 뉴스 동향</span><div class="ev-tx">${esc(ev.news)}</div></div>
@@ -300,26 +378,30 @@ function render(){
     <div class="ev-row"><span class="ev-lb ours">✅ 우리 대응 각도</span><div class="ev-tx">${esc(ev.ours)}</div></div>
     <div class="ev-links"><a href="news-tool.html" target="_blank" rel="noopener">뉴스 콘솔 ↗</a> · <a href="serp-tool.html" target="_blank" rel="noopener">SERP 아카이브 ↗</a></div>
   </div>` : "";
+  const seasonChips = s.issues.length ? s.issues.map(o=>`<span class="spec">🗓 <b>${esc(shortWord(o.tag))}</b> · ${esc(proxLabel(o))}</span>`).join("") : "";
   $("#content").innerHTML=`
     <div class="banner"><b>광고심의 전제</b> · 아래 문구는 <b>초안</b>입니다. 보험 광고 문구는 <b>손해보험협회 광고심의</b> 대상이며, 사실 근거 없는 최상급·확정 표현은 사용할 수 없습니다. 담보·보험료·조건은 약관 기준으로 검수 후 게재하세요.</div>
+    <div class="xbar">
+      <button class="btn xbtn" id="xExcel">⬇ 엑셀(.xls) 다운로드 — 등록 양식 그대로</button>
+      <button class="btn" id="xTsv">⧉ 표 복사 (엑셀 붙여넣기)</button>
+      <span class="xnote">광고제목·추가제목·설명·홍보문구·서브링크 5블록 · <span style="color:var(--bad);font-weight:800">빨강=시즌·뉴스 반영</span></span>
+    </div>
     <div class="specbar">
-      <div class="spec">제목 <b>≤ ${SPEC.titleMax}자</b></div>
-      <div class="spec">설명 <b>${SPEC.descMin}~${SPEC.descMax}자</b></div>
-      <div class="spec">특수문자·최상급 표현 <b>자제</b></div>
-      ${nearestIssue(p)?`<div class="spec">이번 시즌 <b>${esc(nearestIssue(p).tag)}</b> · ${esc(proxLabel(nearestIssue(p)))}</div>`:""}
+      <div class="spec">제목·추가제목 <b>≤${SPEC.titleMax}</b></div>
+      <div class="spec">설명 <b>${SPEC.descMin}~${SPEC.descMax}</b></div>
+      <div class="spec">홍보문구 <b>≤${SPEC.promoMax}</b></div>
+      <div class="spec">서브링크 <b>≤${SPEC.subMax}</b>·택${SPEC.subCount}</div>
+      ${seasonChips}
     </div>
 
     <div class="sec-lbl">📌 근거 · 뉴스 동향 · 경쟁사 SERP 소구포인트</div>
     ${evPanel}
 
-    <div class="sec-lbl">제목 후보 (${titles.length}) · ≤${SPEC.titleMax}자</div>
-    <div class="grid">${titles.map(o=>candCard(o,"title")).join("")||'<div class="spec">생성된 후보 없음</div>'}</div>
-
-    <div class="sec-lbl">설명 후보 (${descs.length}) · ${SPEC.descMin}~${SPEC.descMax}자</div>
-    <div class="grid">${descs.map(o=>candCard(o,"desc")).join("")||'<div class="spec">생성된 후보 없음</div>'}</div>
-
-    <div class="sec-lbl">🗓️ 시즌 이슈별 문구 · 시즌 캘린더 연동 (가까운 순)</div>
-    ${seasonBlocks}
+    ${block("① 광고 제목 (브랜드형)",s.brand,SPEC.titleMax)}
+    ${block("② 추가제목 · 롤링 (소구·시즌)",s.subt,SPEC.titleMax,true)}
+    ${block("③ 설명 · 롤링 (소구·시즌)",s.desc,SPEC.descMax,true)}
+    ${block("④ 홍보문구",s.promo,SPEC.promoMax)}
+    ${block("⑤ 서브링크 (택4)",s.sub,SPEC.subMax)}
 
     <div class="sec-lbl">직접 작성 · 실시간 글자수·심의 체크</div>
     <div class="editor">
@@ -331,8 +413,10 @@ function render(){
         <div class="meta"><span class="len" id="edDlen">0/${SPEC.descMax}</span><span class="lint" id="edDlint"></span></div></div>
     </div>
 
-    <div class="note"><b>사용법</b> · 후보를 <b>복사</b>해 네이버 검색광고 소재 등록에 붙여넣거나, <b>직접 작성</b>란에서 글자수·심의 표현을 확인하며 다듬으세요. 시즌 각도는 <b>시즌 캘린더</b>, 소구 근거는 <b>SERP·뉴스</b> 콘솔과 함께 보면 좋습니다. 문구·담보 표현은 <b>최종 광고심의 검수 후</b> 게재하세요.</div>`;
+    <div class="note"><b>사용법</b> · 상단 <b>엑셀 다운로드</b>로 등록 양식(광고제목·추가제목·설명·홍보문구·서브링크)을 한 번에 받아 네이버 검색광고 소재에 등록하세요. 개별 문구는 <b>복사</b>, 세밀 조정은 <b>직접 작성</b>란에서 글자수·심의 확인. <span style="color:var(--bad);font-weight:800">빨강 행</span>은 <b>시즌 캘린더·뉴스</b> 반영분입니다. 문구·담보 표현은 <b>최종 광고심의 검수 후</b> 게재하세요.</div>`;
 
+  $("#xExcel").addEventListener("click",()=>exportXls(p));
+  $("#xTsv").addEventListener("click",()=>copyTSV(p));
   const bind=(inp,lenEl,lintEl,max,min)=>{
     const el=$(inp);
     const upd=()=>{const v=el.value,n=clen(v);const L=$(lenEl);L.textContent=`${n}/${max}`;
