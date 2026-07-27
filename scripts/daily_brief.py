@@ -14,6 +14,9 @@
 import os, json, sys, urllib.parse, urllib.request
 from datetime import datetime, timezone, timedelta
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import check_automation_health as cah   # 자동화 상태를 브리프 직전 재계산(저장 요약 미신뢰)
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HUB = "imsplendid8.github.io/CM-CMO"
 
@@ -134,6 +137,8 @@ def build_message():
     parts += ["✅ 오늘 할 일 (우선순위)"] + (action_lines or ["· 오늘 특이 액션 없음 — 정기 점검만"])
     if news_lines:
         parts += ["", "📰 주목할 뉴스"] + news_lines
+    # 자동화 수집 상태 — 저장된 요약을 믿지 않고 지금 다시 계산해 표시
+    parts += [""] + cah.format_lines(cah.compute_health(now))
     parts += ["", f"🔭 전체 대시보드 → https://{HUB}"]
     return "\n".join(parts)
 
