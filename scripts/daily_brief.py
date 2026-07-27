@@ -14,15 +14,20 @@
 import os, json, sys, urllib.parse, urllib.request
 from datetime import datetime, timezone, timedelta
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import check_automation_health as cah   # 자동화 상태를 브리프 직전 재계산(저장 요약 미신뢰)
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HUB = "imsplendid8.github.io/CM-CMO"
 
 def load(p):
-    return json.load(open(os.path.join(ROOT, p), encoding="utf-8"))
+    with open(os.path.join(ROOT, p), encoding="utf-8") as f:
+        return json.load(f)
 
 def load_opt(p, default=None):
     try:
-        return json.load(open(os.path.join(ROOT, p), encoding="utf-8"))
+        with open(os.path.join(ROOT, p), encoding="utf-8") as f:
+            return json.load(f)
     except Exception:
         return default
 
@@ -134,6 +139,13 @@ def build_message():
     parts += ["✅ 오늘 할 일 (우선순위)"] + (action_lines or ["· 오늘 특이 액션 없음 — 정기 점검만"])
     if news_lines:
         parts += ["", "📰 주목할 뉴스"] + news_lines
+    # 자동화 수집 상태 — 저장된 요약을 믿지 않고 지금 다시 계산해 표시.
+    # 상태 계산이 실패해도 브리프 전체가 중단되지 않도록 방어(실패 시 '상태 확인 불가').
+    try:
+        parts += [""] + cah.format_lines(cah.compute_health(now))
+    except Exception:
+        parts += ["", "[데이터 상태]", "· 상태 확인 불가",
+                  "· 자동수집이 정상이라고 단정할 수 없음"]
     parts += ["", f"🔭 전체 대시보드 → https://{HUB}"]
     return "\n".join(parts)
 
@@ -143,6 +155,8 @@ def send_telegram(text):
     if not (token and chat):
         print("TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID 미설정", file=sys.stderr)
         sys.exit(2)
+    if len(text) > 4000:                      # 텔레그램 메시지 한도(4096) 보호
+        text = text[:3980] + "\n…(생략)"
     data = urllib.parse.urlencode({"chat_id": chat, "text": text, "disable_web_page_preview": "true"}).encode()
     req = urllib.request.Request(f"https://api.telegram.org/bot{token}/sendMessage", data=data)
     with urllib.request.urlopen(req, timeout=15) as r:

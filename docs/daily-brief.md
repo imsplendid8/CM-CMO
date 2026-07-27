@@ -7,8 +7,17 @@
 - **SERP 상위노출 갭** → 메인 상품 중 요일 순환 1건 점검
 - **주목할 뉴스**는 클리핑(`data/clips/`)에서 **행동가치 키워드**(출시·개편·인상·손해율·적자·사고·호우 등)가 있는 것만 2~3건 — 경쟁사 움직임 가중, 단순 헤드라인 노이즈 제외
 
+## 데이터 상태(자동화 수집 점검)
+브리프 하단에 **[데이터 상태]** 를 붙입니다. **저장된 요약을 신뢰하지 않고**, 브리프 생성 직전에
+`scripts/check_automation_health.py`의 `compute_health()`가 각 자동화 산출물 파일의 날짜 필드로
+`healthy/stale/missing/unknown` 을 매번 새로 계산합니다(읽기 전용·git 불필요·결정론적).
+- 대상 6종: 뉴스 클리핑·수요 신호·실측 검색량·데이터랩 트렌드·논문 아카이브·SERP 캡쳐
+- 허용 기간 = 각 cron 주기 + 여유(일간 2·주간 9·월간 35일). 시각을 읽을 수 없으면 **정상으로 단정하지 않고** stale/unknown/미상으로 표시.
+- 소스를 전혀 읽을 수 없으면 "상태 확인 불가"로 표시(정상 오표시 방지).
+- 단독 확인: `python3 scripts/check_automation_health.py` (또는 `--json`). 테스트: `python3 -m unittest tests.test_automation_health`.
+
 ## 구성
-- 스크립트: `scripts/daily_brief.py` (표준 라이브러리만; `products.json`·`seasonal.json`·`signals.json`·`clips/`를 읽음)
+- 스크립트: `scripts/daily_brief.py` (표준 라이브러리만; `products.json`·`seasonal.json`·`signals.json`·`clips/` + `check_automation_health` 를 읽음)
 - 스케줄: `.github/workflows/daily-brief.yml` (cron `0 23 * * *` = 08:00 KST, 수동 실행도 가능)
 - 미리보기: `python3 scripts/daily_brief.py --dry` (발송 없이 메시지만 출력)
 

@@ -17,6 +17,8 @@ jobs:
           python-version: "3.12"
       - name: 상품 마스터 동기화 검사
         run: python3 scripts/check_products_sync.py
+      - name: 파이썬 단위 테스트
+        run: python3 -m unittest discover -s tests -p 'test_*.py' -v
       - uses: actions/setup-node@v4
         with:
           node-version: "20"

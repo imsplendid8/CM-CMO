@@ -15,6 +15,7 @@
 import os, sys, re, json, datetime, urllib.parse, urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # papers_to_json import 용
 ARCHIVE = os.path.join(ROOT, "docs", "논문-아카이브.md")
 SECTION_H = "## 4. 디지털 마케팅·CM 채널 — 정기 자동 적립 (월 1회)"
 FOOTER_MARK = "\n---\n\n_수집 경로:"
@@ -101,6 +102,23 @@ def collect():
             picks.append(it)
     return picks
 
+def sync_papers_json(root=ROOT):
+    """docs/논문-아카이브.md 기준으로 data/papers.json 재생성(updated=오늘).
+    신규가 없어도(성공적 no-op) 호출해 신선도(updated)를 갱신 → 자동화 상태 오판 방지."""
+    try:
+        import papers_to_json  # 같은 scripts/ 폴더
+        data = papers_to_json.build()
+        out = os.path.join(root, "data", "papers.json")
+        os.makedirs(os.path.dirname(out), exist_ok=True)
+        with open(out, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=1)
+        print(f"  → data/papers.json 갱신(updated={data['updated']}, {data['count']}편)")
+        return data
+    except Exception as e:  # noqa: BLE001
+        print("  ! papers.json 동기화 실패:", e, file=sys.stderr)
+        return None
+
+
 def main():
     if not os.path.exists(ARCHIVE):
         print("아카이브 파일 없음:", ARCHIVE); sys.exit(1)
@@ -120,7 +138,11 @@ def main():
 
     new = [p for p in found if doc_key(p["link"]) not in have][:MAX_ADD]
     if not new:
-        print("신규 논문 없음 — 변경 없음"); return
+        # 성공적 no-op(신규 0건)도 '실행됨'이므로 papers.json 의 updated 를 오늘로 갱신한다.
+        # (안 하면 신규 논문이 없는 달이 이어질 때 신선도가 계속 노화돼 '갱신 필요'로 오표시됨)
+        print("신규 논문 없음 — papers.json updated 만 갱신(성공적 no-op)")
+        sync_papers_json()
+        return
 
     entries = "\n".join(entry_md(p) for p in new)
     today_h = f"### ▪ {TODAY}"
@@ -132,17 +154,7 @@ def main():
     print(f"신규 {len(new)}편 적립({TODAY}):")
     for p in new:
         print("  -", p["title"])
-
-    # 대시보드용 구조화본(data/papers.json) 동기화
-    try:
-        import papers_to_json  # 같은 scripts/ 폴더
-        data = papers_to_json.build()
-        json.dump(data, open(os.path.join(ROOT, "data", "papers.json"), "w", encoding="utf-8"),
-                  ensure_ascii=False, indent=1)
-        print(f"  → data/papers.json 갱신({data['count']}편)")
-    except Exception as e:
-        print("  ! papers.json 동기화 실패:", e, file=sys.stderr)
+    sync_papers_json()
 
 if __name__ == "__main__":
-    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     main()
