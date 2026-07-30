@@ -37,11 +37,15 @@ COOLDOWN_DAYS = 14      # 같은 fingerprint 재추천 금지 기간
 RECENT_NEWS_DAYS = 10   # follow_up 판정용 뉴스 최신성 임계(일) — 오래된 기사로 follow_up 승격 방지
 STATES = ("upcoming", "emerging", "active", "cooling", "ended", "follow_up")
 
-# 가드레일: 생성 금지 표현(공포 조장 / 사건 이용 압박 / 담보·보험금 단정)
+# 가드레일: 생성 금지 표현(공포 조장 / 사건 이용 압박 / 담보·보험금 단정 / 과장·최상급)
+# 주의: 정상 표현("보장 내용/보장 범위 확인")까지 막지 않도록, 담보 단정은 다어절로만 지정한다.
 AVOID_FEAR = ["끔찍", "참사", "비극", "당신도", "큰일", "불행", "공포", "눈앞의 위험", "지금 안 하면"]
-AVOID_PRESSURE = ["이 사고 보고도", "더 늦기 전에 가입", "안 하면 후회", "지금 가입 안 하면", "서둘러 가입"]
-AVOID_GUARANTEE = ["무조건 보상", "전액 보장", "100% 지급", "보험금 확정", "보상 확정", "무조건 지급", "보장 확정"]
-AVOID_ALL = AVOID_FEAR + AVOID_PRESSURE + AVOID_GUARANTEE
+AVOID_PRESSURE = ["이 사고 보고도", "더 늦기 전에 가입", "안 하면 후회", "지금 가입 안 하면", "서둘러 가입",
+                  "꼭 가입", "즉시 가입", "사고 전에 가입", "피해 전에 가입", "안 들면 손해", "누구나 가입"]
+AVOID_GUARANTEE = ["무조건", "반드시", "전액", "100%", "완벽 보장", "모두 보장", "가입 보장",
+                   "보험금 확정", "보상 확정", "보장 확정", "즉시 보상", "최대 보장"]
+AVOID_SUPERLATIVE = ["최저가", "업계 최고", "가장 저렴", "제일 싸", "필수 보험"]
+AVOID_ALL = AVOID_FEAR + AVOID_PRESSURE + AVOID_GUARANTEE + AVOID_SUPERLATIVE
 
 # 긴급 뉴스 키워드 → 관련 상품(예방·점검 안내 톤)
 EMERGENCY_MAP = {
@@ -141,8 +145,9 @@ def build_events(bundle, today):
     """calendar + seasonal + 기상(signals) + 긴급뉴스(clips) → 이벤트 목록(상태 포함)."""
     events = []
 
-    # 1) 예정 이벤트(calendar)
-    for ev in bundle.get("calendar", []):
+    # 1) 예정 이벤트(calendar) — 누락 필드는 기본값으로 정규화(불완전 행에도 안전)
+    for raw in bundle.get("calendar", []):
+        ev = {"id": "", "type": "", "name": "", "keywords": [], "products": [], **raw}
         s, e = _d(ev.get("start")), _d(ev.get("end"))
         st = state_from_dates(today, s, e, ev.get("follow_up_days", 0),
                               ongoing=_has_recent_news(bundle, ev.get("keywords", []), today))
@@ -166,7 +171,7 @@ def build_events(bundle, today):
 
     # 4) 긴급 뉴스(clips) — 매핑되는 것만 active(예방·점검 안내)
     for it, pk, topic in _emergency_news(bundle):
-        events.append({"id": f"news-{_slug(it['t'])}", "type": "긴급뉴스", "name": topic,
+        events.append({"id": f"news-{_slug(it.get('t', ''))}", "type": "긴급뉴스", "name": topic,
                        "products": [pk], "keywords": [topic], "source": "news",
                        "state": "active", "news": it})
     return events
@@ -179,13 +184,20 @@ def _clip_items(bundle):
     return out
 
 
+def _kw_hit(text, keywords):
+    """텍스트가 키워드 중 하나를 포함하는지. 빈 문자열 키워드는 무시한다.
+    (빈 키워드는 `"" in text` 가 항상 참이라 모든 뉴스를 매칭시켜, 미분류 큐를
+    통째로 비우거나 잘못된 follow_up 승격을 일으키므로 반드시 걸러낸다.)"""
+    return any(k and k in text for k in keywords)
+
+
 def _has_recent_news(bundle, keywords, today):
     """이벤트 키워드에 매칭되면서 '최근(RECENT_NEWS_DAYS 이내)' 기사가 있는지.
     오래된 스냅샷 기사로 follow_up 승격되는 것을 막기 위해 날짜를 확인한다."""
     if not keywords:
         return False
     for it in _clip_items(bundle):
-        if any(k in it.get("t", "") for k in keywords):
+        if _kw_hit(it.get("t", ""), keywords):
             d = _d(it.get("date"))
             if d and 0 <= (today - d).days <= RECENT_NEWS_DAYS:
                 return True
@@ -228,7 +240,7 @@ def gather_facts(ev, product_key, bundle):
         used.append("clips")
     # 관련 뉴스(키워드 매칭)
     for it in _clip_items(bundle):
-        if any(k in it.get("t", "") for k in ev.get("keywords", [])):
+        if _kw_hit(it.get("t", ""), ev.get("keywords", [])):
             facts.append(f"뉴스: '{it.get('t','')[:40]}' ({it.get('src','')} {it.get('date','')})")
             used.append("clips")
             break
@@ -397,8 +409,7 @@ def classify_news(bundle):
         if url in seen:
             continue
         seen.add(url)
-        matched = any(k and k in t for k in prod_kws) or any(k in t for k in ev_kws) \
-            or any(k in t for k in EMERGENCY_MAP)
+        matched = _kw_hit(t, prod_kws) or _kw_hit(t, ev_kws) or _kw_hit(t, EMERGENCY_MAP)
         if not matched:
             out.append({"title": t, "src": it.get("src", ""), "date": it.get("date", ""),
                         "url": url, "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"})
@@ -432,9 +443,9 @@ def run(bundle, today=None):
         "asof": today.isoformat(),
         "counts": {"events": len(events), "recommendations": len(uniq),
                    "suppressed_cooldown": suppressed, "unclassified": len(unclassified)},
-        "events": [{"id": e["id"], "name": e["name"], "type": e["type"],
-                    "state": e["state"], "products": e.get("products", []),
-                    "source": e["source"]} for e in events],
+        "events": [{"id": e.get("id", ""), "name": e.get("name", ""), "type": e.get("type", ""),
+                    "state": e.get("state", ""), "products": e.get("products", []),
+                    "source": e.get("source", "")} for e in events],
         "recommendations": uniq,
         "unclassified": unclassified,
     }

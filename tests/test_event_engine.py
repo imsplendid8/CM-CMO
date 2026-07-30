@@ -189,6 +189,44 @@ class TestReviewFixes(unittest.TestCase):
         self.assertGreater(out["counts"]["unclassified"], 0)
 
 
+class TestRobustness(unittest.TestCase):
+    """불완전·악의적 입력에 대한 방어(조용히 정상처리하지 않고 skip/미분류)."""
+    def test_calendar_event_missing_name_does_not_crash(self):
+        # name/type 이 없는 캘린더 행이 있어도 run() 이 예외 없이 동작
+        cal = [{"id": "x"}, {"id": "y", "start": "2026-07-01", "end": "2026-08-30",
+                             "products": ["hrmf"], "keywords": ["y"]}]
+        out = ee.run(bundle(calendar=cal), TODAY)          # 예외가 나면 실패
+        self.assertEqual(out["counts"]["events"], 2)
+        self.assertEqual(out["counts"]["unclassified"], len(out["unclassified"]))
+
+    def test_empty_keyword_does_not_swallow_review_queue(self):
+        # 이벤트 키워드에 빈 문자열이 섞여도 무관 뉴스는 미분류 큐로 가야 함
+        cal = [{"id": "e", "type": "휴가", "name": "E", "start": "2026-07-01",
+                "end": "2026-08-30", "products": ["hrmf"], "keywords": [""]}]
+        cd = clip("아무 상품과도 무관한 지역 소식")
+        out = ee.run(bundle(calendar=cal, clip_data=cd), TODAY)
+        self.assertIn("아무 상품과도 무관한 지역 소식",
+                      [u["title"] for u in out["unclassified"]])
+
+    def test_empty_keyword_no_spurious_follow_up(self):
+        # 빈 키워드가 모든 기사를 최근 뉴스로 오인해 follow_up 시키지 않음
+        start, end = date(2026, 6, 1), date(2026, 6, 5)
+        cal = [{"id": "z", "type": "명절", "name": "Z", "start": start.isoformat(),
+                "end": end.isoformat(), "products": ["driver"], "keywords": [""],
+                "follow_up_days": 90}]
+        cd = clip("전혀 무관한 뉴스")
+        events = ee.build_events(bundle(calendar=cal, clip_data=cd), TODAY)
+        self.assertEqual({e["id"]: e["state"] for e in events}["z"], "ended")
+
+    def test_expanded_guardrail_blocks_absolute_claims(self):
+        # 과장·단정 표현이 이벤트명에 있으면 추천을 만들지 않음
+        for bad_name in ("무조건 보장 이벤트", "업계 최고 캠페인", "100% 환급 행사"):
+            cal = [{"id": "g", "type": "캠페인일", "name": bad_name, "start": "2026-07-20",
+                    "end": "2026-08-20", "products": ["hrmf"], "keywords": ["g"]}]
+            r = ee.run(bundle(calendar=cal), TODAY)["recommendations"]
+            self.assertFalse([x for x in r if x["event_id"] == "g"], bad_name)
+
+
 class TestUnclassified(unittest.TestCase):
     def test_ambiguous_news_goes_to_queue_no_copy(self):
         cd = clip("아무 상품과도 무관한 지역 축구 소식", "주택화재보험 신상품 출시")

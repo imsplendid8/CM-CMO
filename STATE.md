@@ -18,6 +18,7 @@ _최종 갱신: 2026-07-27 · 도구 8개(SEO·키워드·뉴스·SERP·시즌·
 | 6 | 약관 용어 변환 | `terms-tool.html` | (정적, 표준약관→소비자 표현·난이도) | ✅ |
 | 7 | 검색광고 소재 | `adcopy-tool.html` | 파워링크 등록 양식 5블록·엑셀 + **주차별 소재 캘린더**·**경쟁사 브랜드검색** 탭 | ✅ |
 | 8 | 논문 아카이브 | `papers-tool.html` | `data/papers.json` ← 월 1회 네이버 학술 자동 적립(`papers.yml`) · 주제 필터·검색 | ✅ |
+| 9 | 뉴스·시즌 이벤트 캘린더 | `event-calendar.html` | `data/events/recommendations.json` ← `scripts/event_engine.py`(규칙 기반·결정론) · 캘린더+시즌+기상+뉴스+검색량 결합 | ✅ **P0-EVENT Phase 1**(문구 엔진) · 전체는 진행 중 |
 | — | 통합 허브 | `index.html` | ⚙키설정 + **오늘 API 사용량 위젯** · 전체 안내 `overview.html` | ✅ |
 | — | BSA 운영(부서 전용) | **private `imsplendid8/Private`** | 검색광고 관리 API on/off·계약·키워드·검색량 — 민감데이터라 공개 CM-CMO에서 분리 | ✅ |
 | — | 데일리 비서 | `scripts/daily_brief.py` + `daily-brief.yml` | 매일 08:00·14:00 KST **텔레그램 · 오늘 할 일 판단형**(신호·시즌·클리핑·SERP→액션) | ✅ 작동 확인 |
