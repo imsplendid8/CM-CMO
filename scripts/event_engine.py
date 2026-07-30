@@ -34,6 +34,7 @@ KST = timezone(timedelta(hours=9))
 LEAD_DAYS = 21          # upcoming→emerging 경계(예정일 앞)
 TAIL_DAYS = 7           # active→cooling 경계(종료일 뒤)
 COOLDOWN_DAYS = 14      # 같은 fingerprint 재추천 금지 기간
+RECENT_NEWS_DAYS = 10   # follow_up 판정용 뉴스 최신성 임계(일) — 오래된 기사로 follow_up 승격 방지
 STATES = ("upcoming", "emerging", "active", "cooling", "ended", "follow_up")
 
 # 가드레일: 생성 금지 표현(공포 조장 / 사건 이용 압박 / 담보·보험금 단정)
@@ -144,7 +145,7 @@ def build_events(bundle, today):
     for ev in bundle.get("calendar", []):
         s, e = _d(ev.get("start")), _d(ev.get("end"))
         st = state_from_dates(today, s, e, ev.get("follow_up_days", 0),
-                              ongoing=_has_recent_news(bundle, ev.get("keywords", [])))
+                              ongoing=_has_recent_news(bundle, ev.get("keywords", []), today))
         events.append({**ev, "source": "calendar", "state": st})
 
     # 2) 계절(seasonal) — 상품별 월 이슈
@@ -178,13 +179,16 @@ def _clip_items(bundle):
     return out
 
 
-def _has_recent_news(bundle, keywords):
+def _has_recent_news(bundle, keywords, today):
+    """이벤트 키워드에 매칭되면서 '최근(RECENT_NEWS_DAYS 이내)' 기사가 있는지.
+    오래된 스냅샷 기사로 follow_up 승격되는 것을 막기 위해 날짜를 확인한다."""
     if not keywords:
         return False
     for it in _clip_items(bundle):
-        t = it.get("t", "")
-        if any(k in t for k in keywords):
-            return True
+        if any(k in it.get("t", "") for k in keywords):
+            d = _d(it.get("date"))
+            if d and 0 <= (today - d).days <= RECENT_NEWS_DAYS:
+                return True
     return False
 
 
@@ -307,11 +311,24 @@ def in_cooldown(fp, history, today):
 
 
 # ── 추천 생성 ─────────────────────────────────────────
-def _valid_window(ev, today):
+def _valid_window(ev, today, state):
+    """추천 유효기간을 상태 기준으로 산출.
+    - emerging/active/cooling/follow_up: 지금 실행 가능하므로 valid_from=오늘
+    - upcoming: 아직 이르므로 valid_from=이벤트 시작일
+    - follow_up: valid_to 를 follow_up_days 만큼 연장(끝<시작 역전 방지)
+    """
     s, e = _d(ev.get("start")), _d(ev.get("end"))
-    if s and e:
-        return max(s, today).isoformat(), (e + timedelta(days=TAIL_DAYS)).isoformat()
-    return today.isoformat(), (today + timedelta(days=30)).isoformat()
+    fu = ev.get("follow_up_days", 0) or 0
+    vf = s if (state == "upcoming" and s) else today
+    if state == "follow_up" and e:
+        vt = e + timedelta(days=TAIL_DAYS + fu)
+    elif e:
+        vt = e + timedelta(days=TAIL_DAYS)
+    else:                                   # 계절(월) 이벤트 등 날짜 없음
+        vt = today + timedelta(days=30)
+    if vt < vf:                             # 안전장치: 역전 시 최소 7일 창
+        vt = vf + timedelta(days=7)
+    return vf.isoformat(), vt.isoformat()
 
 
 def _confidence(used, state):
@@ -337,7 +354,7 @@ def make_reco(ev, product_key, bundle, today):
         return None
     purpose = PURPOSE_BY_STATE.get(ev["state"], "점검")
     fp = fingerprint(product_key, ev["id"], purpose, title, desc)
-    vf, vt = _valid_window(ev, today)
+    vf, vt = _valid_window(ev, today, ev["state"])
     return {
         "fingerprint": fp,
         "fact": facts,
@@ -410,22 +427,22 @@ def run(bundle, today=None):
             continue
         fps.add(r["fingerprint"])
         uniq.append(r)
+    unclassified = classify_news(bundle)
     return {
         "asof": today.isoformat(),
         "counts": {"events": len(events), "recommendations": len(uniq),
-                   "suppressed_cooldown": suppressed, "unclassified": 0},
+                   "suppressed_cooldown": suppressed, "unclassified": len(unclassified)},
         "events": [{"id": e["id"], "name": e["name"], "type": e["type"],
                     "state": e["state"], "products": e.get("products", []),
                     "source": e["source"]} for e in events],
         "recommendations": uniq,
-        "unclassified": classify_news(bundle),
+        "unclassified": unclassified,
     }
 
 
 def main(root=ROOT, out_rel="data/events/recommendations.json"):
     bundle = load_bundle(root)
-    result = run(bundle)
-    result["counts"]["unclassified"] = len(result["unclassified"])
+    result = run(bundle)                      # run() 이 counts.unclassified 를 이미 채운다
     out = os.path.join(root, out_rel)
     os.makedirs(os.path.dirname(out), exist_ok=True)
     with open(out, "w", encoding="utf-8") as f:

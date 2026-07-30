@@ -144,6 +144,51 @@ class TestFingerprintCooldown(unittest.TestCase):
         self.assertIn(first["fingerprint"], {r["fingerprint"] for r in out["recommendations"]})
 
 
+class TestReviewFixes(unittest.TestCase):
+    """Codex PR#3 P2 3건 회귀."""
+    def test_emerging_valid_from_is_today_not_future(self):
+        # 리드기간(emerging) 추천은 지금 노출돼야 → valid_from == 오늘
+        cal = [{"id": "e1", "type": "명절", "name": "추석", "start": "2026-08-10",
+                "end": "2026-08-13", "products": ["driver"], "keywords": ["추석"]}]
+        r = ee.run(bundle(calendar=cal), TODAY)["recommendations"]
+        em = [x for x in r if x["event_id"] == "e1"]
+        self.assertTrue(em)
+        self.assertEqual(em[0]["event_state"], "emerging")
+        self.assertEqual(em[0]["valid_from"], TODAY.isoformat())      # 미래 시작일 아님
+        self.assertGreaterEqual(em[0]["valid_to"], em[0]["valid_from"])
+
+    def test_follow_up_window_not_inverted(self):
+        # follow_up 은 end+TAIL 이후 시작 → valid_to 가 follow_up_days 만큼 연장돼 역전되지 않음
+        start, end = TODAY - timedelta(days=20), TODAY - timedelta(days=12)  # end+7=TODAY-5 < today
+        cal = [{"id": "fu", "type": "명절", "name": "지난 연휴", "start": start.isoformat(),
+                "end": end.isoformat(), "products": ["driver"], "keywords": ["연휴사고"],
+                "follow_up_days": 20}]
+        cd = clip("연휴사고 관련 최근 뉴스")  # today 근처 날짜(2026-07-29) → 최근 evidence
+        out = ee.run(bundle(calendar=cal, clip_data=cd), TODAY)
+        fu = [x for x in out["recommendations"] if x["event_id"] == "fu"]
+        if fu:  # follow_up 로 승격됐다면 창이 유효해야
+            self.assertEqual(fu[0]["event_state"], "follow_up")
+            self.assertLessEqual(fu[0]["valid_from"], fu[0]["valid_to"])
+
+    def test_follow_up_ignores_stale_article(self):
+        # 오래된 기사만 있으면 follow_up 승격 안 됨(ended)
+        start, end = date(2026, 6, 1), date(2026, 6, 5)
+        cal = [{"id": "old", "type": "명절", "name": "옛 연휴", "start": start.isoformat(),
+                "end": end.isoformat(), "products": ["driver"], "keywords": ["옛연휴"],
+                "follow_up_days": 60}]
+        stale = {"categories": {"c": {"items": [
+            {"t": "옛연휴 관련 오래된 뉴스", "src": "s", "date": "2026-06-02", "url": "u"}]}}}
+        events = ee.build_events(bundle(calendar=cal, clip_data=stale), TODAY)
+        st = {e["id"]: e["state"] for e in events}
+        self.assertEqual(st["old"], "ended")   # 오래된 기사로 follow_up 되지 않음
+
+    def test_run_reports_unclassified_count(self):
+        cd = clip("완전 무관한 지역 소식 하나", "또 다른 무관한 소식")
+        out = ee.run(bundle(clip_data=cd), TODAY)
+        self.assertEqual(out["counts"]["unclassified"], len(out["unclassified"]))
+        self.assertGreater(out["counts"]["unclassified"], 0)
+
+
 class TestUnclassified(unittest.TestCase):
     def test_ambiguous_news_goes_to_queue_no_copy(self):
         cd = clip("아무 상품과도 무관한 지역 축구 소식", "주택화재보험 신상품 출시")
