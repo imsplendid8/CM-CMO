@@ -1,5 +1,34 @@
 # NEXT — CM-CMO 다음 구현
 
+## P0-EVENT — 이벤트 기반 뉴스·시즌 캘린더 추천 엔진
+
+> 상태: **Phase 1(뉴스 캘린더 문구 엔진) 완료 · main 병합됨** · P0-EVENT **전체는 진행 중**.
+> 상세: `docs/news-calendar-copy-engine.md`. 화면 `event-calendar.html`.
+
+### Phase 1 완료분 (규칙 기반 문구 엔진)
+
+전체 뉴스·시즌 캘린더를 결합해 상품별 문구를 **규칙 기반**으로 추천(LLM 없이 결정론). 특정
+이벤트(장마·폭염)에 하드코딩하지 않음.
+- 소스 결합: 예정 이벤트(`data/events/calendar.json`)·계절(`seasonal.json`)·기상(`signals.json`)·
+  뉴스(`clips/`)·검색량(`volume.json`)·사용 이력(`copy_history.json`)
+- 이벤트 상태 `upcoming/emerging/active/cooling/ended/follow_up` — 상태 바뀌면 목적·유효기간도 변경
+- 추천 1건: 확인된 사실·관련 상품·상태·제목/설명/소제목·이유+데이터·유효기간·피할 표현·채널·
+  상품근거(미확인)·심의(검토 전·운영 후보)·confidence·fingerprint
+- 상품 전체(주택화재·운전자·골프/홀인원·해외여행/장기·행사배상·암/여성/치아/유병자) 매핑
+- 중복 방지: 상품+사건+목적+문구 **fingerprint(어미 제거)** + **cooldown**
+- 가드레일: 공포·사건 이용 압박·담보/보험금 단정·과장/최상급 문구 **생성 금지**, 자동 "심의통과/등록가능" 표시 안 함
+- 분류 불확실 뉴스 → **unclassified 검토 큐**(자동 문구 X). 빈 키워드가 큐를 비우지 않도록 방어
+- 화면 `event-calendar.html`: 오늘/7일/30일·예정/진행/종료/후속·상품·이벤트 필터
+- fixture 회귀 테스트 `tests/test_event_engine.py`(22) — 상태·fingerprint·cooldown·가드레일·미분류·비하드코딩·견고성
+
+### P0-EVENT 남은 작업 (전체 완료 아님 · 다음 단계)
+
+1. 긴급 대형화재 감시 → **별도 실시간 알림**(텔레그램 dry-run) 분리
+2. **active window(최근 3일)** 와 **장기 뉴스 archive** 분리·연동
+3. 날씨 **episode/transition**(장마 종료→폭염 등) 실데이터 연동 — 특정 이벤트 하드코딩 금지 유지
+4. 뉴스 캘린더 UI ↔ 기존 데일리 브리프 **통합**
+5. 실제 재생성 **workflow** 관찰·런북 충돌 규칙 검토
+
 ## P0-1 — 브리프 자동화 상태 오표시 수정 ✅ 완료
 
 > 상태: **완료 · main 병합됨(PR #1, squash `11272fc`)**. `scripts/check_automation_health.py`(순수 함수) +
