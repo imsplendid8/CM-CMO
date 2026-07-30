@@ -1,0 +1,14 @@
+{
+  "_comment": "예정 이벤트 캘린더(공개·샘플). 공휴일·개학·명절·휴가·대회·지역행사·캠페인일. products=관련 상품 key, keywords=뉴스/검색 매칭용. 특정 이벤트에 하드코딩하지 않고 이 목록+seasonal+signals+clips를 결합해 상태·추천을 산출한다.",
+  "asof": "2026-07-30",
+  "events": [
+    {"id": "summer-vacation-2026", "type": "휴가", "name": "여름 휴가철", "start": "2026-07-18", "end": "2026-08-17", "products": ["overseas", "overseaslong", "driver", "holeinone", "golf"], "keywords": ["휴가", "여름휴가", "해외여행", "렌터카", "성수기"]},
+    {"id": "school-open-fall-2026", "type": "개학", "name": "2학기 개학·스쿨존", "start": "2026-08-18", "end": "2026-08-31", "products": ["driver", "dntl"], "keywords": ["개학", "스쿨존", "어린이보호구역", "방학 치과"], "follow_up_days": 14},
+    {"id": "chuseok-2026", "type": "명절", "name": "추석 연휴", "start": "2026-09-24", "end": "2026-09-27", "products": ["driver", "overseas"], "keywords": ["추석", "명절", "귀성", "장거리 운전"], "follow_up_days": 10},
+    {"id": "golf-peak-fall-2026", "type": "대회", "name": "가을 골프 성수기", "start": "2026-09-01", "end": "2026-11-15", "products": ["golf", "holeinone"], "keywords": ["가을 골프", "홀인원", "라운딩", "골프 대회"]},
+    {"id": "yearend-checkup-2026", "type": "캠페인일", "name": "연말 건강검진 시즌", "start": "2026-11-01", "end": "2026-12-20", "products": ["cncr", "woman", "dntl", "chronic"], "keywords": ["건강검진", "연말 검진", "국가검진"]},
+    {"id": "firework-festival-2026", "type": "지역행사", "name": "가을 불꽃축제·지역행사", "start": "2026-10-03", "end": "2026-10-12", "products": ["event"], "keywords": ["불꽃축제", "지역축제", "행사 배상", "야외행사"]},
+    {"id": "seollal-2027", "type": "명절", "name": "설 연휴", "start": "2027-02-15", "end": "2027-02-17", "products": ["driver", "overseas"], "keywords": ["설", "설연휴", "귀성", "장거리 운전"], "follow_up_days": 10},
+    {"id": "newyear-plan-2027", "type": "캠페인일", "name": "신년 보험 점검", "start": "2027-01-01", "end": "2027-01-31", "products": ["home", "cncr", "chronic"], "keywords": ["신년", "보험 점검", "리모델링"]}
+  ]
+}
