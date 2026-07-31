@@ -21,13 +21,24 @@
 - 화면 `event-calendar.html`: 오늘/7일/30일·예정/진행/종료/후속·상품·이벤트 필터
 - fixture 회귀 테스트 `tests/test_event_engine.py`(22) — 상태·fingerprint·cooldown·가드레일·미분류·비하드코딩·견고성
 
-### P0-EVENT 남은 작업 (전체 완료 아님 · 다음 단계)
+### Phase 2A — 상태 전이(transition/episode) 엔진 🔶 진행(별도 PR `p0-event/phase2-transitions`)
+
+이벤트 상태 **변화**를 감지해 목적·유효기간이 바뀌는 전이 추천을 산출. 상태 델타로만 판정하며
+특정 이벤트·날씨에 하드코딩하지 않음.
+- **상태 저널** `data/events/state_history.json` — 매 실행 오늘 스냅샷 append(같은 날짜 멱등, 최근 120일)
+- `detect_transitions()` — 이전 스냅샷 대비: `onset`(→active)·`winddown`(→cooling)·`resurge`(재활성)·
+  `follow_up`·`lifted`(기상특보 해제)·`handoff`(해제 특보 ↔ 신규 특보가 상품 공유 = 장마→폭염식 **전환**)
+- 전이 감지 시 목적이 `PURPOSE_BY_TRANSITION`로 바뀌고 **fingerprint·유효기간도 자동 변경**(별개 추천)
+- 기상특보→상품 매핑을 **속성 규칙**(`_weather_products`)으로 일반화(종류 하드코딩 제거)
+- 화면: `event-calendar.html` 카드에 🔄 전이 배지 + 상태 전이 섹션 + KPI
+- 회귀 테스트 `tests/test_event_engine.py`(총 29) — onset/lifted/handoff·**비하드코딩**·전이 fingerprint 변화·결정론
+
+### P0-EVENT 남은 작업 (Phase 2B~ · 전체 완료 아님)
 
 1. 긴급 대형화재 감시 → **별도 실시간 알림**(텔레그램 dry-run) 분리
 2. **active window(최근 3일)** 와 **장기 뉴스 archive** 분리·연동
-3. 날씨 **episode/transition**(장마 종료→폭염 등) 실데이터 연동 — 특정 이벤트 하드코딩 금지 유지
-4. 뉴스 캘린더 UI ↔ 기존 데일리 브리프 **통합**
-5. 실제 재생성 **workflow** 관찰·런북 충돌 규칙 검토
+3. 뉴스 캘린더 UI ↔ 기존 데일리 브리프 **통합**
+4. 실제 재생성 **workflow** 관찰·런북 충돌 규칙 검토
 
 ## P0-1 — 브리프 자동화 상태 오표시 수정 ✅ 완료
 

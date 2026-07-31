@@ -1,10 +1,11 @@
 {
- "asof": "2026-07-30",
+ "asof": "2026-07-31",
  "counts": {
   "events": 41,
   "recommendations": 32,
   "suppressed_cooldown": 0,
-  "unclassified": 140
+  "unclassified": 140,
+  "transitions": 0
  },
  "events": [
   {
@@ -431,6 +432,7 @@
    "source": "seasonal"
   }
  ],
+ "transitions": [],
  "recommendations": [
   {
    "fingerprint": "433df8af3f09d954",
@@ -445,6 +447,7 @@
    "event_name": "여름 휴가철",
    "event_type": "휴가",
    "event_state": "active",
+   "transition": null,
    "title": "여름 휴가철 해외여행보험 지금 점검",
    "description": "여름 휴가철 시기, 해외여행보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "여름 휴가철 대비 해외여행보험 확인 포인트",
@@ -455,7 +458,7 @@
     "clips",
     "volume"
    ],
-   "valid_from": "2026-07-30",
+   "valid_from": "2026-07-31",
    "valid_to": "2026-08-24",
    "avoid_phrases": [
     "끔찍",
@@ -517,6 +520,7 @@
    "event_name": "여름 휴가철",
    "event_type": "휴가",
    "event_state": "active",
+   "transition": null,
    "title": "여름 휴가철 해외장기체류보험 지금 점검",
    "description": "여름 휴가철 시기, 해외장기체류보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "여름 휴가철 대비 해외장기체류보험 확인 포인트",
@@ -527,7 +531,7 @@
     "clips",
     "volume"
    ],
-   "valid_from": "2026-07-30",
+   "valid_from": "2026-07-31",
    "valid_to": "2026-08-24",
    "avoid_phrases": [
     "끔찍",
@@ -589,6 +593,7 @@
    "event_name": "여름 휴가철",
    "event_type": "휴가",
    "event_state": "active",
+   "transition": null,
    "title": "여름 휴가철 운전자보험 지금 점검",
    "description": "여름 휴가철 시기, 운전자보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "여름 휴가철 대비 운전자보험 확인 포인트",
@@ -599,7 +604,7 @@
     "clips",
     "volume"
    ],
-   "valid_from": "2026-07-30",
+   "valid_from": "2026-07-31",
    "valid_to": "2026-08-24",
    "avoid_phrases": [
     "끔찍",
@@ -661,6 +666,7 @@
    "event_name": "여름 휴가철",
    "event_type": "휴가",
    "event_state": "active",
+   "transition": null,
    "title": "여름 휴가철 홀인원보험 지금 점검",
    "description": "여름 휴가철 시기, 홀인원보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "여름 휴가철 대비 홀인원보험 확인 포인트",
@@ -671,7 +677,7 @@
     "clips",
     "volume"
    ],
-   "valid_from": "2026-07-30",
+   "valid_from": "2026-07-31",
    "valid_to": "2026-08-24",
    "avoid_phrases": [
     "끔찍",
@@ -733,6 +739,7 @@
    "event_name": "여름 휴가철",
    "event_type": "휴가",
    "event_state": "active",
+   "transition": null,
    "title": "여름 휴가철 골프보험 지금 점검",
    "description": "여름 휴가철 시기, 골프보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "여름 휴가철 대비 골프보험 확인 포인트",
@@ -743,7 +750,7 @@
     "clips",
     "volume"
    ],
-   "valid_from": "2026-07-30",
+   "valid_from": "2026-07-31",
    "valid_to": "2026-08-24",
    "avoid_phrases": [
     "끔찍",
@@ -805,6 +812,7 @@
    "event_name": "장마·집중호우·태풍",
    "event_type": "계절",
    "event_state": "active",
+   "transition": null,
    "title": "장마·집중호우·태풍 주택화재보험 지금 점검",
    "description": "장마·집중호우·태풍 시기, 주택화재보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "장마·집중호우·태풍 대비 주택화재보험 확인 포인트",
@@ -815,8 +823,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-07-30",
-   "valid_to": "2026-08-29",
+   "valid_from": "2026-07-31",
+   "valid_to": "2026-08-30",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -876,6 +884,7 @@
    "event_name": "방학 치과 성수기",
    "event_type": "계절",
    "event_state": "active",
+   "transition": null,
    "title": "방학 치과 성수기 치아보험 지금 점검",
    "description": "방학 치과 성수기 시기, 치아보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "방학 치과 성수기 대비 치아보험 확인 포인트",
@@ -886,8 +895,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-07-30",
-   "valid_to": "2026-08-29",
+   "valid_from": "2026-07-31",
+   "valid_to": "2026-08-30",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -947,6 +956,7 @@
    "event_name": "여름 휴가 성수기",
    "event_type": "계절",
    "event_state": "active",
+   "transition": null,
    "title": "여름 휴가 성수기 해외여행보험 지금 점검",
    "description": "여름 휴가 성수기 시기, 해외여행보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "여름 휴가 성수기 대비 해외여행보험 확인 포인트",
@@ -957,8 +967,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-07-30",
-   "valid_to": "2026-08-29",
+   "valid_from": "2026-07-31",
+   "valid_to": "2026-08-30",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1018,6 +1028,7 @@
    "event_name": "가을 골프 성수기",
    "event_type": "대회",
    "event_state": "upcoming",
+   "transition": null,
    "title": "가을 골프 성수기 골프보험 선제 준비",
    "description": "가을 골프 성수기 시기, 골프보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "가을 골프 성수기 대비 골프보험 확인 포인트",
@@ -1090,6 +1101,7 @@
    "event_name": "가을 골프 성수기",
    "event_type": "대회",
    "event_state": "upcoming",
+   "transition": null,
    "title": "가을 골프 성수기 홀인원보험 선제 준비",
    "description": "가을 골프 성수기 시기, 홀인원보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "가을 골프 성수기 대비 홀인원보험 확인 포인트",
@@ -1162,6 +1174,7 @@
    "event_name": "설 연휴",
    "event_type": "명절",
    "event_state": "upcoming",
+   "transition": null,
    "title": "설 연휴 운전자보험 선제 준비",
    "description": "설 연휴 시기, 운전자보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "설 연휴 대비 운전자보험 확인 포인트",
@@ -1234,6 +1247,7 @@
    "event_name": "설 연휴",
    "event_type": "명절",
    "event_state": "upcoming",
+   "transition": null,
    "title": "설 연휴 해외여행보험 선제 준비",
    "description": "설 연휴 시기, 해외여행보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "설 연휴 대비 해외여행보험 확인 포인트",
@@ -1306,6 +1320,7 @@
    "event_name": "신년 보험 점검",
    "event_type": "캠페인일",
    "event_state": "upcoming",
+   "transition": null,
    "title": "신년 보험 점검 다이렉트 홈(브랜드) 선제 준비",
    "description": "신년 보험 점검 시기, 다이렉트 홈(브랜드) 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "신년 보험 점검 대비 다이렉트 홈(브랜드) 확인 포인트",
@@ -1378,6 +1393,7 @@
    "event_name": "신년 보험 점검",
    "event_type": "캠페인일",
    "event_state": "upcoming",
+   "transition": null,
    "title": "신년 보험 점검 암보험 선제 준비",
    "description": "신년 보험 점검 시기, 암보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "신년 보험 점검 대비 암보험 확인 포인트",
@@ -1450,6 +1466,7 @@
    "event_name": "신년 보험 점검",
    "event_type": "캠페인일",
    "event_state": "upcoming",
+   "transition": null,
    "title": "신년 보험 점검 유병자 간편보험 선제 준비",
    "description": "신년 보험 점검 시기, 유병자 간편보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "신년 보험 점검 대비 유병자 간편보험 확인 포인트",
@@ -1522,6 +1539,7 @@
    "event_name": "명절 장거리 운전",
    "event_type": "계절",
    "event_state": "upcoming",
+   "transition": null,
    "title": "명절 장거리 운전 운전자보험 선제 준비",
    "description": "명절 장거리 운전 시기, 운전자보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "명절 장거리 운전 대비 운전자보험 확인 포인트",
@@ -1532,8 +1550,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-07-30",
-   "valid_to": "2026-08-29",
+   "valid_from": "2026-07-31",
+   "valid_to": "2026-08-30",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1592,6 +1610,7 @@
    "event_name": "2학기 개학·스쿨존",
    "event_type": "개학",
    "event_state": "emerging",
+   "transition": null,
    "title": "2학기 개학·스쿨존 운전자보험 미리 대비",
    "description": "2학기 개학·스쿨존 시기, 운전자보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "2학기 개학·스쿨존 대비 운전자보험 확인 포인트",
@@ -1601,7 +1620,7 @@
     "calendar",
     "volume"
    ],
-   "valid_from": "2026-07-30",
+   "valid_from": "2026-07-31",
    "valid_to": "2026-09-07",
    "avoid_phrases": [
     "끔찍",
@@ -1661,6 +1680,7 @@
    "event_name": "2학기 개학·스쿨존",
    "event_type": "개학",
    "event_state": "emerging",
+   "transition": null,
    "title": "2학기 개학·스쿨존 치아보험 미리 대비",
    "description": "2학기 개학·스쿨존 시기, 치아보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "2학기 개학·스쿨존 대비 치아보험 확인 포인트",
@@ -1670,7 +1690,7 @@
     "calendar",
     "volume"
    ],
-   "valid_from": "2026-07-30",
+   "valid_from": "2026-07-31",
    "valid_to": "2026-09-07",
    "avoid_phrases": [
     "끔찍",
@@ -1730,6 +1750,7 @@
    "event_name": "여름 휴가철·렌터카",
    "event_type": "계절",
    "event_state": "active",
+   "transition": null,
    "title": "여름 휴가철·렌터카 운전자보험 지금 점검",
    "description": "여름 휴가철·렌터카 시기, 운전자보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "여름 휴가철·렌터카 대비 운전자보험 확인 포인트",
@@ -1739,8 +1760,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-07-30",
-   "valid_to": "2026-08-29",
+   "valid_from": "2026-07-31",
+   "valid_to": "2026-08-30",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1799,6 +1820,7 @@
    "event_name": "가을학기·워홀 출국",
    "event_type": "계절",
    "event_state": "emerging",
+   "transition": null,
    "title": "가을학기·워홀 출국 해외장기체류보험 미리 대비",
    "description": "가을학기·워홀 출국 시기, 해외장기체류보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "가을학기·워홀 출국 대비 해외장기체류보험 확인 포인트",
@@ -1808,8 +1830,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-07-30",
-   "valid_to": "2026-08-29",
+   "valid_from": "2026-07-31",
+   "valid_to": "2026-08-30",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1868,6 +1890,7 @@
    "event_name": "추석 연휴",
    "event_type": "명절",
    "event_state": "upcoming",
+   "transition": null,
    "title": "추석 연휴 운전자보험 선제 준비",
    "description": "추석 연휴 시기, 운전자보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "추석 연휴 대비 운전자보험 확인 포인트",
@@ -1938,6 +1961,7 @@
    "event_name": "추석 연휴",
    "event_type": "명절",
    "event_state": "upcoming",
+   "transition": null,
    "title": "추석 연휴 해외여행보험 선제 준비",
    "description": "추석 연휴 시기, 해외여행보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "추석 연휴 대비 해외여행보험 확인 포인트",
@@ -2008,6 +2032,7 @@
    "event_name": "연말 건강검진 시즌",
    "event_type": "캠페인일",
    "event_state": "upcoming",
+   "transition": null,
    "title": "연말 건강검진 시즌 암보험 선제 준비",
    "description": "연말 건강검진 시즌 시기, 암보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "연말 건강검진 시즌 대비 암보험 확인 포인트",
@@ -2078,6 +2103,7 @@
    "event_name": "연말 건강검진 시즌",
    "event_type": "캠페인일",
    "event_state": "upcoming",
+   "transition": null,
    "title": "연말 건강검진 시즌 여성건강보험 선제 준비",
    "description": "연말 건강검진 시즌 시기, 여성건강보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "연말 건강검진 시즌 대비 여성건강보험 확인 포인트",
@@ -2148,6 +2174,7 @@
    "event_name": "연말 건강검진 시즌",
    "event_type": "캠페인일",
    "event_state": "upcoming",
+   "transition": null,
    "title": "연말 건강검진 시즌 치아보험 선제 준비",
    "description": "연말 건강검진 시즌 시기, 치아보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "연말 건강검진 시즌 대비 치아보험 확인 포인트",
@@ -2218,6 +2245,7 @@
    "event_name": "연말 건강검진 시즌",
    "event_type": "캠페인일",
    "event_state": "upcoming",
+   "transition": null,
    "title": "연말 건강검진 시즌 유병자 간편보험 선제 준비",
    "description": "연말 건강검진 시즌 시기, 유병자 간편보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "연말 건강검진 시즌 대비 유병자 간편보험 확인 포인트",
@@ -2288,6 +2316,7 @@
    "event_name": "가을 불꽃축제·지역행사",
    "event_type": "지역행사",
    "event_state": "upcoming",
+   "transition": null,
    "title": "가을 불꽃축제·지역행사 행사배상책임보험 선제 준비",
    "description": "가을 불꽃축제·지역행사 시기, 행사배상책임보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "가을 불꽃축제·지역행사 대비 행사배상책임보험 확인 포인트",
@@ -2357,6 +2386,7 @@
    "event_name": "가을 최성수기",
    "event_type": "계절",
    "event_state": "upcoming",
+   "transition": null,
    "title": "가을 최성수기 골프보험 선제 준비",
    "description": "가을 최성수기 시기, 골프보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "가을 최성수기 대비 골프보험 확인 포인트",
@@ -2366,8 +2396,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-07-30",
-   "valid_to": "2026-08-29",
+   "valid_from": "2026-07-31",
+   "valid_to": "2026-08-30",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2426,6 +2456,7 @@
    "event_name": "구강보건의 날(6.9)",
    "event_type": "계절",
    "event_state": "cooling",
+   "transition": null,
    "title": "구강보건의 날(6.9) 치아보험 마무리 점검",
    "description": "구강보건의 날(6.9) 시기, 치아보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "구강보건의 날(6.9) 대비 치아보험 확인 포인트",
@@ -2435,8 +2466,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-07-30",
-   "valid_to": "2026-08-29",
+   "valid_from": "2026-07-31",
+   "valid_to": "2026-08-30",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2495,6 +2526,7 @@
    "event_name": "봄·가을 황금연휴/추석",
    "event_type": "계절",
    "event_state": "upcoming",
+   "transition": null,
    "title": "봄·가을 황금연휴/추석 해외여행보험 선제 준비",
    "description": "봄·가을 황금연휴/추석 시기, 해외여행보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "봄·가을 황금연휴/추석 대비 해외여행보험 확인 포인트",
@@ -2504,8 +2536,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-07-30",
-   "valid_to": "2026-08-29",
+   "valid_from": "2026-07-31",
+   "valid_to": "2026-08-30",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2564,6 +2596,7 @@
    "event_name": "가을 골프 성수기",
    "event_type": "계절",
    "event_state": "upcoming",
+   "transition": null,
    "title": "가을 골프 성수기 홀인원보험 선제 준비",
    "description": "가을 골프 성수기 시기, 홀인원보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "가을 골프 성수기 대비 홀인원보험 확인 포인트",
@@ -2573,8 +2606,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-07-30",
-   "valid_to": "2026-08-29",
+   "valid_from": "2026-07-31",
+   "valid_to": "2026-08-30",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2633,6 +2666,7 @@
    "event_name": "가을 축제·불꽃놀이",
    "event_type": "계절",
    "event_state": "upcoming",
+   "transition": null,
    "title": "가을 축제·불꽃놀이 행사배상책임보험 선제 준비",
    "description": "가을 축제·불꽃놀이 시기, 행사배상책임보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "가을 축제·불꽃놀이 대비 행사배상책임보험 확인 포인트",
@@ -2642,8 +2676,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-07-30",
-   "valid_to": "2026-08-29",
+   "valid_from": "2026-07-31",
+   "valid_to": "2026-08-30",
    "avoid_phrases": [
     "끔찍",
     "참사",

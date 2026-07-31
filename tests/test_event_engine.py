@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """이벤트 추천 엔진 회귀 테스트 (P0-EVENT). 표준 라이브러리 unittest + fixture(dict 주입)."""
+import json
 import os
 import sys
 import unittest
@@ -23,7 +24,8 @@ def clip(*titles):
         for i, t in enumerate(titles)]}}}
 
 
-def bundle(calendar=None, seasonal=None, signals=None, clip_data=None, volume=None, history=None):
+def bundle(calendar=None, seasonal=None, signals=None, clip_data=None, volume=None,
+           history=None, state_history=None):
     return {
         "products": {"hrmf": {"key": "hrmf", "name": "주택화재보험", "newsQuery": "주택화재보험",
                               "newsExtra": ["대형화재사고"]},
@@ -34,6 +36,7 @@ def bundle(calendar=None, seasonal=None, signals=None, clip_data=None, volume=No
         "calendar": calendar or [], "seasonal": seasonal or {},
         "signals": signals or {"asof": "2026-07-30", "weather": {"active": []}},
         "clip": clip_data, "volume": volume or {}, "history": history or [],
+        "state_history": state_history or [],
     }
 
 
@@ -225,6 +228,106 @@ class TestRobustness(unittest.TestCase):
                     "end": "2026-08-20", "products": ["hrmf"], "keywords": ["g"]}]
             r = ee.run(bundle(calendar=cal), TODAY)["recommendations"]
             self.assertFalse([x for x in r if x["event_id"] == "g"], bad_name)
+
+
+class TestTransitions(unittest.TestCase):
+    """상태 전이(transition/episode) 엔진 — 특정 이벤트에 하드코딩하지 않음."""
+    def _snap(self, date_str, states):
+        return [{"date": date_str, "states": states}]
+
+    def test_no_history_no_transitions(self):
+        cal = [{"id": "e1", "type": "휴가", "name": "여름 휴가철", "start": "2026-07-18",
+                "end": "2026-08-17", "products": ["overseas"], "keywords": ["휴가"]}]
+        out = ee.run(bundle(calendar=cal), TODAY)         # 첫 실행(이력 없음)
+        self.assertEqual(out["counts"]["transitions"], 0)
+        self.assertEqual(out["transitions"], [])
+
+    def test_emerging_to_active_is_onset(self):
+        cal = [{"id": "e1", "type": "휴가", "name": "여름 휴가철", "start": "2026-07-18",
+                "end": "2026-08-17", "products": ["overseas"], "keywords": ["휴가"]}]
+        sh = self._snap("2026-07-10", {"e1": "emerging"})   # 어제는 emerging, 오늘 active
+        out = ee.run(bundle(calendar=cal, state_history=sh), TODAY)
+        t = [x for x in out["transitions"] if x["event_id"] == "e1"]
+        self.assertTrue(t)
+        self.assertEqual((t[0]["from"], t[0]["to"], t[0]["kind"]), ("emerging", "active", "onset"))
+        rec = [r for r in out["recommendations"] if r["event_id"] == "e1"][0]
+        self.assertEqual(rec["purpose"], ee.PURPOSE_BY_TRANSITION["onset"])  # 목적이 전이 기준
+        self.assertEqual(rec["transition"]["kind"], "onset")
+
+    def test_weather_lifted_reported(self):
+        # 어제 활성이던 특보가 오늘 없으면 lifted 전이로 보고(특정 종류 하드코딩 아님)
+        sh = self._snap("2026-07-29", {"weather-폭염": "active"})
+        out = ee.run(bundle(state_history=sh), TODAY)       # 오늘 signals active 없음
+        t = [x for x in out["transitions"] if x["event_id"] == "weather-폭염"]
+        self.assertTrue(t)
+        self.assertEqual(t[0]["kind"], "lifted")
+
+    def test_weather_handoff_generic(self):
+        # 특보 A 해제 + 특보 B 활성이 상품을 공유하면 handoff(전환) — 임의 종류로도 성립
+        sh = self._snap("2026-07-29", {"weather-장마": "active"})
+        sig = {"asof": "2026-07-30", "weather": {"active": ["폭염"]}}   # 둘 다 hrmf 공유
+        out = ee.run(bundle(signals=sig, state_history=sh), TODAY)
+        h = [x for x in out["transitions"] if x.get("kind") == "handoff"]
+        self.assertTrue(h)
+        self.assertEqual(h[0]["event_id"], "weather-폭염")
+        self.assertEqual(h[0]["from"], "weather-장마")
+        rec = [r for r in out["recommendations"]
+               if r["event_id"] == "weather-폭염" and r["transition"]]
+        self.assertTrue(rec)
+        self.assertEqual(rec[0]["purpose"], ee.PURPOSE_BY_TRANSITION["handoff"])
+
+    def test_handoff_not_hardcoded_to_specific_weather(self):
+        # 사전에 없던 임의 특보(황사→미세먼지 대체 종류)도 상품 공유 시 handoff 성립
+        sh = self._snap("2026-07-29", {"weather-호우": "active"})
+        sig = {"asof": "2026-07-30", "weather": {"active": ["대설"]}}   # 둘 다 driver 공유
+        out = ee.run(bundle(signals=sig, state_history=sh), TODAY)
+        self.assertTrue([x for x in out["transitions"] if x.get("kind") == "handoff"])
+
+    def test_handoff_requires_newly_active_target(self):
+        # 이미 활성이던 특보는 형제 특보가 해제돼도 handoff 로 오분류되지 않음(Codex P2)
+        sh = self._snap("2026-07-29", {"weather-폭염": "active", "weather-호우": "active"})
+        sig = {"asof": "2026-07-30", "weather": {"active": ["폭염"]}}   # 호우만 해제, 폭염은 지속
+        out = ee.run(bundle(signals=sig, state_history=sh), TODAY)
+        self.assertEqual([x for x in out["transitions"] if x.get("kind") == "handoff"], [])
+        self.assertTrue([x for x in out["transitions"] if x["event_id"] == "weather-호우"
+                         and x["kind"] == "lifted"])
+        # 지속 중인 폭염 추천은 전이 없음(평상시 목적)
+        py = [r for r in out["recommendations"] if r["event_id"] == "weather-폭염"]
+        self.assertTrue(py)
+        self.assertIsNone(py[0]["transition"])
+
+    def test_winddown_only_from_active(self):
+        # 스냅샷 누락으로 emerging→cooling 직행 시 winddown 이 아니라 generic change (Codex P2)
+        self.assertEqual(ee._transition_kind("emerging", "cooling"), "change")
+        self.assertEqual(ee._transition_kind("upcoming", "cooling"), "change")
+        self.assertEqual(ee._transition_kind("active", "cooling"), "winddown")
+        cal = [{"id": "c1", "type": "휴가", "name": "짧은 행사", "start": "2026-07-20",
+                "end": "2026-07-28", "products": ["overseas"], "keywords": ["행사"]}]  # 오늘=cooling
+        sh = self._snap("2026-07-10", {"c1": "emerging"})
+        out = ee.run(bundle(calendar=cal, state_history=sh), TODAY)
+        rec = [r for r in out["recommendations"] if r["event_id"] == "c1"]
+        self.assertTrue(rec)
+        self.assertEqual(rec[0]["event_state"], "cooling")
+        self.assertNotEqual(rec[0]["purpose"], ee.PURPOSE_BY_TRANSITION["winddown"])
+
+    def test_transition_changes_fingerprint(self):
+        # 전이 목적이 붙으면 fingerprint 가 평상시와 달라진다(=별개 추천, cooldown 회피)
+        cal = [{"id": "e1", "type": "휴가", "name": "여름 휴가철", "start": "2026-07-18",
+                "end": "2026-08-17", "products": ["overseas"], "keywords": ["휴가"]}]
+        base = ee.run(bundle(calendar=cal), TODAY)["recommendations"][0]["fingerprint"]
+        sh = self._snap("2026-07-10", {"e1": "emerging"})
+        trans = ee.run(bundle(calendar=cal, state_history=sh),
+                       TODAY)["recommendations"][0]["fingerprint"]
+        self.assertNotEqual(base, trans)
+
+    def test_run_deterministic_with_history(self):
+        cal = [{"id": "e1", "type": "휴가", "name": "여름 휴가철", "start": "2026-07-18",
+                "end": "2026-08-17", "products": ["overseas"], "keywords": ["휴가"]}]
+        sh = self._snap("2026-07-10", {"e1": "emerging"})
+        a = ee.run(bundle(calendar=cal, state_history=sh), TODAY)
+        b = ee.run(bundle(calendar=cal, state_history=sh), TODAY)
+        self.assertEqual(json.dumps(a, ensure_ascii=False, sort_keys=True),
+                         json.dumps(b, ensure_ascii=False, sort_keys=True))
 
 
 class TestUnclassified(unittest.TestCase):

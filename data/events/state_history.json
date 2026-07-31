@@ -1,0 +1,51 @@
+{
+ "_comment": "이벤트 상태 전이 감지용 저널. 매 실행 시 오늘 스냅샷을 append(같은 날짜 덮어써 멱등). 전이(transition/episode)는 이전 스냅샷 대비 상태 델타로 산출한다. 시드는 비어 있고 자동화가 날짜별로 쌓는다.",
+ "entries": [
+  {
+   "date": "2026-07-31",
+   "states": {
+    "summer-vacation-2026": "active",
+    "school-open-fall-2026": "emerging",
+    "chuseok-2026": "upcoming",
+    "golf-peak-fall-2026": "upcoming",
+    "yearend-checkup-2026": "upcoming",
+    "firework-festival-2026": "upcoming",
+    "seollal-2027": "upcoming",
+    "newyear-plan-2027": "upcoming",
+    "season-home-1-2": "ended",
+    "season-hrmf-6-7-8": "active",
+    "season-hrmf-11-12-1-2": "ended",
+    "season-hrmf-3-4": "ended",
+    "season-golf-3-4-5": "ended",
+    "season-golf-9-10-11": "upcoming",
+    "season-golf-12-1-2": "ended",
+    "season-cncr-1": "ended",
+    "season-cncr-3": "ended",
+    "season-cncr-11-12": "ended",
+    "season-dntl-1-2-7-8": "active",
+    "season-dntl-6": "cooling",
+    "season-driver-2-9-10": "upcoming",
+    "season-driver-7-8": "active",
+    "season-driver-3": "ended",
+    "season-driver-12-1": "ended",
+    "season-woman-3": "ended",
+    "season-woman-10": "ended",
+    "season-woman-11-12": "ended",
+    "season-birth-3-4-5": "ended",
+    "season-birth-1": "ended",
+    "season-overseas-7-8": "active",
+    "season-overseas-1-2": "ended",
+    "season-overseas-5-9-10": "upcoming",
+    "season-overseaslong-2-3": "ended",
+    "season-overseaslong-8-9": "emerging",
+    "season-holeinone-3-4-5": "ended",
+    "season-holeinone-9-10-11": "upcoming",
+    "season-event-4-5": "ended",
+    "season-event-9-10": "upcoming",
+    "season-event-12": "ended",
+    "season-chronic-1": "ended",
+    "season-chronic-11-12": "ended"
+   }
+  }
+ ]
+}
