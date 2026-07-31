@@ -121,6 +121,17 @@ class TestWorkflows(unittest.TestCase):
                 self.assertTrue(_has_dispatch(wf),
                                 f"{name}: workflow_dispatch(수동 복구) 누락")
 
+    def test_event_reco_workflow_regenerates_and_commits(self):
+        wf = self.wfs.get("event-reco.yml")
+        self.assertIsNotNone(wf, "event-reco.yml 워크플로가 없음")
+        runs = " ".join(str(s.get("run", ""))
+                        for job in (wf.get("jobs") or {}).values()
+                        for s in (job.get("steps") or []))
+        self.assertIn("scripts/event_engine.py", runs, "엔진 재생성 스텝 누락")
+        self.assertIn("data/events/recommendations.json", runs, "추천 커밋 누락")
+        self.assertIn("data/events/state_history.json", runs, "상태 저널 커밋 누락")
+        self.assertEqual((wf.get("concurrency") or {}).get("group"), SHARED_GROUP)
+
     def test_workflow_run_targets_exist(self):
         names = {wf.get("name") for wf in self.wfs.values()}
         for fname, wf in self.wfs.items():

@@ -21,7 +21,7 @@
 - 화면 `event-calendar.html`: 오늘/7일/30일·예정/진행/종료/후속·상품·이벤트 필터
 - fixture 회귀 테스트 `tests/test_event_engine.py`(22) — 상태·fingerprint·cooldown·가드레일·미분류·비하드코딩·견고성
 
-### Phase 2A — 상태 전이(transition/episode) 엔진 🔶 진행(별도 PR `p0-event/phase2-transitions`)
+### Phase 2A — 상태 전이(transition/episode) 엔진 ✅ 완료(main 병합 `1671f90`)
 
 이벤트 상태 **변화**를 감지해 목적·유효기간이 바뀌는 전이 추천을 산출. 상태 델타로만 판정하며
 특정 이벤트·날씨에 하드코딩하지 않음.
@@ -33,12 +33,18 @@
 - 화면: `event-calendar.html` 카드에 🔄 전이 배지 + 상태 전이 섹션 + KPI
 - 회귀 테스트 `tests/test_event_engine.py`(총 29) — onset/lifted/handoff·**비하드코딩**·전이 fingerprint 변화·결정론
 
-### P0-EVENT 남은 작업 (Phase 2B~ · 전체 완료 아님)
+### Phase 2B — 추천 재생성 워크플로 🔶 진행(별도 PR `p0-event/phase2-reco-workflow`)
 
-1. 긴급 대형화재 감시 → **별도 실시간 알림**(텔레그램 dry-run) 분리
-2. **active window(최근 3일)** 와 **장기 뉴스 archive** 분리·연동
-3. 뉴스 캘린더 UI ↔ 기존 데일리 브리프 **통합**
-4. 실제 재생성 **workflow** 관찰·런북 충돌 규칙 검토
+- `.github/workflows/event-reco.yml` — 매일 07:45·13:45 KST(수집 뒤·브리프 전) `event_engine.py` 재생성 →
+  `recommendations.json`·`state_history.json` 커밋. 공유 레인 `cm-cmo-data-writers`·분 분리·안전 push(P0-2)
+- 런북(`docs/automation-runbook.md`) 순서·충돌표 갱신, 정적 회귀 테스트(`tests/test_workflows.py`) 추가
+- 효과: 클리핑 갱신에 따라 stale해지던 `recommendations.json`을 자동 신선화
+
+### P0-EVENT 남은 작업 (전체 완료 아님)
+
+1. **active window(최근 3일)** 와 **장기 뉴스 archive** 분리·연동 (다음)
+2. 뉴스 캘린더 UI ↔ 기존 데일리 브리프 **통합**
+3. 긴급 대형화재 감시 → **별도 실시간 알림**(텔레그램 dry-run) 분리
 
 ## P0-1 — 브리프 자동화 상태 오표시 수정 ✅ 완료
 
