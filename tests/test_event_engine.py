@@ -283,6 +283,33 @@ class TestTransitions(unittest.TestCase):
         out = ee.run(bundle(signals=sig, state_history=sh), TODAY)
         self.assertTrue([x for x in out["transitions"] if x.get("kind") == "handoff"])
 
+    def test_handoff_requires_newly_active_target(self):
+        # 이미 활성이던 특보는 형제 특보가 해제돼도 handoff 로 오분류되지 않음(Codex P2)
+        sh = self._snap("2026-07-29", {"weather-폭염": "active", "weather-호우": "active"})
+        sig = {"asof": "2026-07-30", "weather": {"active": ["폭염"]}}   # 호우만 해제, 폭염은 지속
+        out = ee.run(bundle(signals=sig, state_history=sh), TODAY)
+        self.assertEqual([x for x in out["transitions"] if x.get("kind") == "handoff"], [])
+        self.assertTrue([x for x in out["transitions"] if x["event_id"] == "weather-호우"
+                         and x["kind"] == "lifted"])
+        # 지속 중인 폭염 추천은 전이 없음(평상시 목적)
+        py = [r for r in out["recommendations"] if r["event_id"] == "weather-폭염"]
+        self.assertTrue(py)
+        self.assertIsNone(py[0]["transition"])
+
+    def test_winddown_only_from_active(self):
+        # 스냅샷 누락으로 emerging→cooling 직행 시 winddown 이 아니라 generic change (Codex P2)
+        self.assertEqual(ee._transition_kind("emerging", "cooling"), "change")
+        self.assertEqual(ee._transition_kind("upcoming", "cooling"), "change")
+        self.assertEqual(ee._transition_kind("active", "cooling"), "winddown")
+        cal = [{"id": "c1", "type": "휴가", "name": "짧은 행사", "start": "2026-07-20",
+                "end": "2026-07-28", "products": ["overseas"], "keywords": ["행사"]}]  # 오늘=cooling
+        sh = self._snap("2026-07-10", {"c1": "emerging"})
+        out = ee.run(bundle(calendar=cal, state_history=sh), TODAY)
+        rec = [r for r in out["recommendations"] if r["event_id"] == "c1"]
+        self.assertTrue(rec)
+        self.assertEqual(rec[0]["event_state"], "cooling")
+        self.assertNotEqual(rec[0]["purpose"], ee.PURPOSE_BY_TRANSITION["winddown"])
+
     def test_transition_changes_fingerprint(self):
         # 전이 목적이 붙으면 fingerprint 가 평상시와 달라진다(=별개 추천, cooldown 회피)
         cal = [{"id": "e1", "type": "휴가", "name": "여름 휴가철", "start": "2026-07-18",

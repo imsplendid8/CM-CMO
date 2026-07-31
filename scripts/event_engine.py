@@ -438,7 +438,7 @@ def _transition_kind(frm, to):
     if to == "active":
         return "onset" if frm in ("upcoming", "emerging") else "resurge"
     if to == "cooling":
-        return "winddown"
+        return "winddown" if frm == "active" else "change"  # active를 실제로 거친 경우만
     if to == "follow_up":
         return "follow_up"
     if to == "ended":
@@ -470,6 +470,8 @@ def detect_transitions(events, prev):
     handoff = {}
     for e in events:
         if e.get("source") == "signal" and e["state"] == "active":
+            if prev.get(e["id"]) == "active":   # 이미 활성이던 특보는 '신규 활성'이 아니므로 전환 아님
+                continue
             prods = set(e.get("products", []))
             for lw in lifted:
                 if set(_weather_products(_weather_kind(lw))) & prods:
