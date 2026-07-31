@@ -48,6 +48,21 @@ fingerprint는 추천에서 억제한다.
 상품·이벤트·긴급 어디에도 확실히 매핑되지 않는 뉴스는 **자동 문구를 만들지 않고** `unclassified`
 큐로 보내 **사람이 분류**한다.
 
+## 상태 전이(transition/episode) — Phase 2A
+이벤트의 **상태 변화**를 감지해, 목적·유효기간이 바뀌는 전이 추천을 만든다. 특정 이벤트·날씨에
+하드코딩하지 않고 **상태 델타**로만 판정한다.
+- **상태 저널** `data/events/state_history.json`: 매 실행 시 오늘 스냅샷(`{event_id: state}`)을 append.
+  같은 날짜는 덮어써 **멱등**하고 최근 120일만 유지 → 결정론 보존.
+- `detect_transitions(events, prev)`가 이전(가장 최근) 스냅샷과 비교해 전이를 산출:
+  - `onset` (upcoming/emerging → active) · `winddown` (active → cooling) · `resurge` (cooling/ended → active)
+  - `follow_up` · `lifted` (이전 활성 기상특보가 오늘 사라짐)
+  - `handoff` — 해제된 기상특보와 오늘 새로 활성인 기상특보가 **상품을 공유**하면 **전환**으로 승격
+    (예: 장마 종료 → 폭염 시작. 단, 종류를 하드코딩하지 않고 `_weather_products` 속성 규칙으로 판정).
+- 전이가 감지되면 목적이 `PURPOSE_BY_TRANSITION`으로 바뀌고 **fingerprint·유효기간도 자동으로 달라진다**
+  (평상시 추천과 구분되는 **별개 추천** → cooldown에 눌리지 않음).
+- 첫 실행(이력 없음)에는 전이가 0이며, 자동화가 날짜별 스냅샷을 쌓을수록 전이가 나타난다.
+- 화면 `event-calendar.html`: 카드의 🔄 전이 배지 + "상태 전이" 섹션 + KPI로 노출.
+
 ## 실행·검증
 ```bash
 python3 scripts/event_engine.py                 # data/events/recommendations.json 생성

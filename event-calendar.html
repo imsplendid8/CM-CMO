@@ -34,7 +34,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .wrap{padding:18px 22px 60px;max-width:1080px;width:100%;margin:0 auto;}
 .banner{background:var(--mid-bg);border:1px solid color-mix(in srgb,var(--mid) 30%,var(--line));border-radius:var(--r-sm);padding:10px 14px;font-size:12px;color:var(--ink-2);margin-bottom:14px;line-height:1.6;}
 .banner b{color:var(--mid);}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px;}
 @media(max-width:640px){.kpis{grid-template-columns:1fr 1fr;}}
 .kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh);}
 .kpi .n{font-family:var(--mono);font-size:20px;font-weight:800;} .kpi .l{font-size:11px;color:var(--muted);font-weight:700;margin-top:4px;}
@@ -51,6 +51,7 @@ select{border:1px solid var(--line);background:var(--surface);color:var(--ink);b
 .st.cooling,.st.ended{background:var(--end-bg);color:var(--end);} .st.follow_up{background:var(--fu-bg);color:var(--fu);}
 .ev{font-size:11px;color:var(--muted);font-weight:700;} .prod{font-size:13px;font-weight:800;}
 .conf{margin-left:auto;font-family:var(--mono);font-size:11px;font-weight:800;color:var(--brand-600);}
+.tr-chip{font-size:10px;font-weight:800;padding:2px 8px;border-radius:99px;background:var(--brand-50);color:var(--brand-600);}
 .tline{display:flex;gap:8px;align-items:flex-start;margin:5px 0;font-size:13px;}
 .tline .k{flex:0 0 40px;font-size:10.5px;font-weight:800;color:var(--muted);padding-top:2px;}
 .tline .v{flex:1;color:var(--ink);} .tline .cp{border:1px solid var(--line);background:var(--surface-2);color:var(--ink-2);border-radius:6px;padding:2px 8px;font-size:10.5px;font-weight:700;cursor:pointer;}
@@ -81,7 +82,7 @@ select{border:1px solid var(--line);background:var(--surface);color:var(--ink);b
 "use strict";
 const $=(s,el=document)=>el.querySelector(s);
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-let DATA={recommendations:[],unclassified:[],events:[],counts:{},asof:""};
+let DATA={recommendations:[],unclassified:[],events:[],transitions:[],counts:{},asof:""};
 let F={win:"7", state:"all", product:"all", event:"all"};
 const STGROUP={upcoming:"예정",emerging:"예정",active:"진행",cooling:"종료",ended:"종료",follow_up:"후속"};
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1500);}
@@ -115,6 +116,7 @@ function render(){
     <div class="card">
       <div class="card-h"><span class="st ${esc(r.event_state)}">${esc(STGROUP[r.event_state]||r.event_state)} · ${esc(r.event_state)}</span>
         <span class="prod">${esc(r.product_name)}</span><span class="ev">${esc(r.event_name)} · ${esc(r.event_type)}</span>
+        ${r.transition?`<span class="tr-chip" title="상태 전이 · ${esc(r.transition.kind)}">🔄 ${esc(r.transition.from)}→${esc(r.transition.to)}</span>`:""}
         <span class="conf">conf ${r.confidence}</span></div>
       <div class="tline"><span class="k">제목</span><span class="v">${esc(r.title)}</span><button class="cp" data-copy="${esc(r.title)}">복사</button></div>
       <div class="tline"><span class="k">설명</span><span class="v">${esc(r.description)}</span><button class="cp" data-copy="${esc(r.description)}">복사</button></div>
@@ -127,13 +129,14 @@ function render(){
   const uc=DATA.unclassified||[];
   w.innerHTML=`
     <div class="banner"><b>규칙 기반 추천 · 사람 검토 전</b> — 모든 문구는 <b>상품 근거 미확인 · 심의 검토 전 · 운영 후보</b>입니다. 공포·압박·담보 단정 문구는 생성하지 않으며, 분류 불확실 뉴스는 아래 <b>검토 큐</b>로 보냅니다. 기준 ${esc(DATA.asof)}.</div>
-    <div class="kpis">${kpi(c.events||0,"이벤트")}${kpi(c.recommendations||0,"추천(운영 후보)")}${kpi(c.suppressed_cooldown||0,"cooldown 억제")}${kpi(c.unclassified||0,"미분류 검토 큐")}</div>
+    <div class="kpis">${kpi(c.events||0,"이벤트")}${kpi(c.recommendations||0,"추천(운영 후보)")}${kpi(c.transitions||0,"상태 전이")}${kpi(c.suppressed_cooldown||0,"cooldown 억제")}${kpi(c.unclassified||0,"미분류 검토 큐")}</div>
     <div class="filters">
       <div class="fgroup"><span class="lb">기간</span>${chip("win","0","오늘")}${chip("win","7","7일")}${chip("win","30","30일")}${chip("win","all","전체")}</div>
       <div class="fgroup"><span class="lb">상태</span>${chip("state","all","전체")}${chip("state","예정","예정")}${chip("state","진행","진행")}${chip("state","종료","종료")}${chip("state","후속","후속")}</div>
       <div class="fgroup"><span class="lb">상품</span><select id="fprod"><option value="all">전체</option>${prods.map(([k,n])=>`<option value="${esc(k)}"${F.product===k?" selected":""}>${esc(n)}</option>`).join("")}</select></div>
       <div class="fgroup"><span class="lb">이벤트</span><select id="fev"><option value="all">전체</option>${evs.map(([k,n])=>`<option value="${esc(k)}"${F.event===k?" selected":""}>${esc(n)}</option>`).join("")}</select></div>
     </div>
+    ${(DATA.transitions&&DATA.transitions.length)?`<div class="sec-lbl">🔄 상태 전이 <b>(${DATA.transitions.length})</b> · 최근 스냅샷 대비 — 상태가 바뀌면 목적·유효기간도 변경</div>`+DATA.transitions.map(t=>`<div class="uc"><div class="t">${esc(t.event_id)}</div><div class="m">${esc(t.from)} → ${esc(t.to)} · ${esc(t.kind)}${t.from_kind?` · 이전: ${esc(t.from_kind)}`:""}</div></div>`).join(""):""}
     <div class="sec-lbl">추천 문구 <b>(${recs.length})</b> · 운영 후보(사람 검토 필요)</div>
     ${cards}
     <div class="sec-lbl">🔎 미분류 검토 큐 <b>(${uc.length})</b> · 자동 문구 생성 안 함 — 사람이 분류</div>

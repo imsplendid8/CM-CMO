@@ -68,6 +68,13 @@ PURPOSE_BY_STATE = {
     "cooling": "마무리 안내", "follow_up": "후속 점검 안내", "ended": "보관",
 }
 
+# 상태 '전이(transition)' → 추천 목적. 전이가 감지되면 목적이 바뀌고 fingerprint 도 달라진다
+# (특정 이벤트·날씨에 하드코딩하지 않고, 상태 델타로만 판정한다).
+PURPOSE_BY_TRANSITION = {
+    "onset": "본격 대응", "winddown": "마무리 전환", "resurge": "재점화 대응",
+    "handoff": "전환 대응", "follow_up": "후속 점검 안내",
+}
+
 
 # ── 로딩 ─────────────────────────────────────────────
 def _load(root, rel, default=None):
@@ -98,6 +105,7 @@ def load_bundle(root=ROOT):
         "clip": latest_clip(root),
         "volume": (_load(root, "data/volume.json", {}) or {}).get("products", {}),
         "history": (_load(root, "data/events/copy_history.json", {}) or {}).get("used", []),
+        "state_history": (_load(root, "data/events/state_history.json", {}) or {}).get("entries", []),
     }
 
 
@@ -164,9 +172,8 @@ def build_events(bundle, today):
 
     # 3) 기상특보(signals active) — active 이벤트
     for kind in (bundle.get("signals", {}).get("weather", {}) or {}).get("active", []):
-        pk = "hrmf" if kind in ("건조", "호우", "태풍", "폭염", "한파", "대설") else "driver"
         events.append({"id": f"weather-{kind}", "type": "기상", "name": f"{kind} 특보",
-                       "products": [pk] + (["driver"] if kind in ("대설", "강풍", "한파") else []),
+                       "products": _weather_products(kind),
                        "keywords": [kind], "source": "signal", "state": "active"})
 
     # 4) 긴급 뉴스(clips) — 매핑되는 것만 active(예방·점검 안내)
@@ -218,6 +225,25 @@ def _emergency_news(bundle):
 
 def _slug(s):
     return re.sub(r"[^0-9a-zA-Z가-힣]+", "-", str(s))[:32].strip("-")
+
+
+# 기상특보 종류 → 관련 상품(속성 기반 규칙 · 특정 종류에 하드코딩하지 않음).
+# 재산/화재성 특보는 주택화재, 도로위험성 특보는 운전자에 매핑하고 교집합은 둘 다.
+_WX_PROPERTY = "건조 호우 태풍 폭염 한파 대설 장마 침수".split()   # 재산·주거 위험(hrmf)
+_WX_ROADRISK = "대설 강풍 한파 호우 태풍 장마 빙판".split()         # 도로·주행 위험(driver)
+
+
+def _weather_products(kind):
+    pk = []
+    if kind in _WX_PROPERTY:
+        pk.append("hrmf")
+    if kind in _WX_ROADRISK:
+        pk.append("driver")
+    return pk or ["driver"]     # 미분류 특보는 보수적으로 운전자
+
+
+def _weather_kind(event_id):
+    return event_id[len("weather-"):] if event_id.startswith("weather-") else ""
 
 
 # ── 근거(확인된 사실) ─────────────────────────────────
@@ -353,7 +379,7 @@ def _confidence(used, state):
     return round(min(base, 0.95), 2)
 
 
-def make_reco(ev, product_key, bundle, today):
+def make_reco(ev, product_key, bundle, today, transition=None):
     if ev["state"] in ("ended", "unknown"):
         return None
     pname = _pname(bundle, product_key)
@@ -364,18 +390,28 @@ def make_reco(ev, product_key, bundle, today):
     bad = lint_avoid(title, desc, sub)
     if bad:                       # 가드레일: 금지 표현 있으면 추천 자체를 만들지 않음
         return None
-    purpose = PURPOSE_BY_STATE.get(ev["state"], "점검")
+    # 전이가 감지되면 목적이 바뀐다 → fingerprint·유효기간도 자연히 달라짐
+    if transition and transition.get("kind") in PURPOSE_BY_TRANSITION:
+        purpose = PURPOSE_BY_TRANSITION[transition["kind"]]
+    else:
+        purpose = PURPOSE_BY_STATE.get(ev["state"], "점검")
     fp = fingerprint(product_key, ev["id"], purpose, title, desc)
     vf, vt = _valid_window(ev, today, ev["state"])
+    if transition:
+        used = sorted(set(used) | {"state_history"})
+        reason = f"{ev['name']} 상태 전이({transition['from']}→{transition['to']})에 따른 {pname} {purpose}"
+    else:
+        reason = f"{ev['name']}({ev['state']}) 시기의 {pname} 선제/대비 소구"
     return {
         "fingerprint": fp,
         "fact": facts,
         "product": product_key, "product_name": pname,
         "event_id": ev["id"], "event_name": ev["name"], "event_type": ev["type"],
         "event_state": ev["state"],
+        "transition": transition,
         "title": title, "description": desc, "content_subhead": sub,
         "purpose": purpose,
-        "reason": f"{ev['name']}({ev['state']}) 시기의 {pname} 선제/대비 소구",
+        "reason": reason,
         "data_used": used,
         "valid_from": vf, "valid_to": vt,
         "avoid_phrases": AVOID_ALL,
@@ -384,6 +420,66 @@ def make_reco(ev, product_key, bundle, today):
         "review_status": "심의 검토 전 · 운영 후보",
         "confidence": _confidence(used, ev["state"]),
     }
+
+
+# ── 상태 전이(transition/episode) ─────────────────────
+def prev_states(state_history, today):
+    """오늘 이전(가장 최근) 저널 스냅샷의 {event_id: state}. 없으면 빈 dict."""
+    best = None
+    for e in state_history:
+        d = _d(e.get("date"))
+        if d and d < today and (best is None or d > _d(best.get("date"))):
+            best = e
+    return dict(best.get("states", {})) if best else {}
+
+
+def _transition_kind(frm, to):
+    """상태 델타를 전이 종류로 (특정 이벤트에 하드코딩하지 않고 상태쌍으로만 판정)."""
+    if to == "active":
+        return "onset" if frm in ("upcoming", "emerging") else "resurge"
+    if to == "cooling":
+        return "winddown"
+    if to == "follow_up":
+        return "follow_up"
+    if to == "ended":
+        return "ended"
+    return "change"
+
+
+def detect_transitions(events, prev):
+    """이전 스냅샷 대비 상태가 바뀐 이벤트를 전이로 산출.
+    - 오늘 존재하며 상태 변화 → 해당 전이
+    - 이전엔 있었으나 오늘 사라진 이벤트(예: 기상특보 해제) → lifted
+    - 해제된 기상특보 ↔ 오늘 새로 활성인 기상특보가 상품을 공유 → handoff(전환)
+    반환: (transitions[list], handoff{onset_event_id: transition})."""
+    today_states = {e["id"]: e["state"] for e in events}
+    trans = []
+    for eid, st in today_states.items():
+        p = prev.get(eid)
+        if p and p != st:
+            trans.append({"event_id": eid, "from": p, "to": st, "kind": _transition_kind(p, st)})
+    lifted = []
+    for eid, p in prev.items():
+        if eid not in today_states and p not in ("ended", "lifted"):
+            t = {"event_id": eid, "from": p, "to": "lifted", "kind": "lifted"}
+            trans.append(t)
+            if eid.startswith("weather-"):
+                lifted.append(eid)
+    # 핸드오프: 해제된 특보와 오늘 활성 특보가 상품을 공유하면 '전환'으로 승격
+    lifted.sort()                        # dict 순서 비의존(결정론)
+    handoff = {}
+    for e in events:
+        if e.get("source") == "signal" and e["state"] == "active":
+            prods = set(e.get("products", []))
+            for lw in lifted:
+                if set(_weather_products(_weather_kind(lw))) & prods:
+                    h = {"event_id": e["id"], "from": lw, "from_kind": _weather_kind(lw),
+                         "to": "active", "kind": "handoff"}
+                    handoff[e["id"]] = h
+                    trans.append(h)
+                    break
+    trans.sort(key=lambda t: (t["event_id"], t["kind"]))
+    return trans, handoff
 
 
 # ── 미분류 큐 ─────────────────────────────────────────
@@ -421,10 +517,17 @@ def run(bundle, today=None):
     today = today or datetime.now(KST).date()
     events = build_events(bundle, today)
     history = bundle.get("history", [])
+    # 상태 전이 감지(이전 저널 스냅샷 대비) → 이벤트별 전이 매핑
+    prev = prev_states(bundle.get("state_history", []), today)
+    transitions, handoff = detect_transitions(events, prev)
+    trans_map = {}
+    for t in transitions:
+        trans_map.setdefault(t["event_id"], t)
+    trans_map.update(handoff)            # 핸드오프(전환)를 우선 적용
     recos, suppressed = [], 0
     for ev in events:
         for pk in ev.get("products", []):
-            r = make_reco(ev, pk, bundle, today)
+            r = make_reco(ev, pk, bundle, today, transition=trans_map.get(ev["id"]))
             if not r:
                 continue
             if in_cooldown(r["fingerprint"], history, today):
@@ -442,13 +545,31 @@ def run(bundle, today=None):
     return {
         "asof": today.isoformat(),
         "counts": {"events": len(events), "recommendations": len(uniq),
-                   "suppressed_cooldown": suppressed, "unclassified": len(unclassified)},
+                   "suppressed_cooldown": suppressed, "unclassified": len(unclassified),
+                   "transitions": len(transitions)},
         "events": [{"id": e.get("id", ""), "name": e.get("name", ""), "type": e.get("type", ""),
                     "state": e.get("state", ""), "products": e.get("products", []),
                     "source": e.get("source", "")} for e in events],
+        "transitions": transitions,
         "recommendations": uniq,
         "unclassified": unclassified,
     }
+
+
+def append_state_history(root, result, keep=120):
+    """오늘 상태 스냅샷을 저널에 기록(같은 날짜는 덮어써 멱등). 최근 keep개만 유지."""
+    rel = "data/events/state_history.json"
+    j = _load(root, rel, {"entries": []}) or {"entries": []}
+    entries = [e for e in j.get("entries", []) if e.get("date") != result["asof"]]
+    entries.append({"date": result["asof"],
+                    "states": {e["id"]: e["state"] for e in result["events"]}})
+    entries.sort(key=lambda e: e.get("date", ""))
+    j["entries"] = entries[-keep:]
+    path = os.path.join(root, rel)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(j, f, ensure_ascii=False, indent=1)
+    return j
 
 
 def main(root=ROOT, out_rel="data/events/recommendations.json"):
@@ -458,9 +579,10 @@ def main(root=ROOT, out_rel="data/events/recommendations.json"):
     os.makedirs(os.path.dirname(out), exist_ok=True)
     with open(out, "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=1)
+    append_state_history(root, result)        # 오늘 상태 스냅샷 저널에 기록(전이 감지용)
     c = result["counts"]
     print(f"✔ {out_rel} · 이벤트 {c['events']} · 추천 {c['recommendations']} · "
-          f"cooldown억제 {c['suppressed_cooldown']} · 미분류 {c['unclassified']}")
+          f"전이 {c['transitions']} · cooldown억제 {c['suppressed_cooldown']} · 미분류 {c['unclassified']}")
     return result
 
 
