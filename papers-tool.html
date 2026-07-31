@@ -61,6 +61,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .foot{font-size:10.5px;color:var(--muted);margin-top:24px;line-height:1.6;border-top:1px solid var(--line);padding-top:14px;}
 .foot a{color:var(--brand-600);text-decoration:none;font-weight:700;}
 </style>
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("mf_theme")||"light")}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
 </head>
 <body>
 <main class="main">
@@ -132,7 +133,7 @@ document.addEventListener("click",e=>{
   if(ch){curTopic=ch.dataset.topic;render();window.scrollTo({top:0});}
 });
 $("#q").addEventListener("input",e=>{curQ=e.target.value;render();});
-$("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");});
+$("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");try{localStorage.setItem("mf_theme",d?"light":"dark")}catch(_){};});
 
 fetch("data/papers.json").then(r=>r.json()).then(d=>{DATA=d;render();}).catch(()=>render());
 render();
