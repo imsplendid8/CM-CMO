@@ -6,6 +6,19 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  # 봇 데이터 커밋(github-actions[bot], GITHUB_TOKEN)은 push 이벤트를 트리거하지 못하므로
+  # (GitHub의 재귀 방지), 커밋 워크플로 완료 시 workflow_run 으로 재배포해 사이트 신선도를 유지한다.
+  workflow_run:
+    workflows:
+      - "Demand Signals"
+      - "News Clip"
+      - "Event Recommendations"
+      - "Naver SearchAd Volume"
+      - "SERP Capture"
+      - "Naver Trends (DataLab)"
+      - "Papers Archive"
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -20,6 +33,9 @@ concurrency:
 
 jobs:
   deploy:
+    # workflow_run 트리거일 때는 커밋 워크플로가 성공한 경우에만 배포(실패 실행으로 재배포 방지).
+    # push·수동 dispatch 는 항상 배포.
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

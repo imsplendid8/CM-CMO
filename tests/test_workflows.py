@@ -132,6 +132,21 @@ class TestWorkflows(unittest.TestCase):
         self.assertIn("data/events/state_history.json", runs, "상태 저널 커밋 누락")
         self.assertEqual((wf.get("concurrency") or {}).get("group"), SHARED_GROUP)
 
+    def test_pages_redeploys_after_committing_workflows(self):
+        # 봇 커밋은 GITHUB_TOKEN push라 on:push를 못 트리거 → pages는 workflow_run으로 재배포해야 함
+        pages = self.wfs.get("pages.yml")
+        self.assertIsNotNone(pages, "pages.yml 없음")
+        wr = _on(pages).get("workflow_run") or {}
+        targets = set(wr.get("workflows") or [])
+        self.assertIn("Event Recommendations", targets, "pages가 추천 재생성 후 재배포하지 않음")
+        # 커밋(push)하는 워크플로는 모두 pages workflow_run 대상에 포함(사이트 신선도)
+        for name, wf in self.wfs.items():
+            if _pushes(wf):
+                self.assertIn(wf.get("name"), targets,
+                              f"{name}: 커밋 워크플로가 pages workflow_run 대상에 없음 → 배포 stale")
+        guard = str(pages.get("jobs", {}).get("deploy", {}).get("if", ""))
+        self.assertIn("workflow_run", guard, "실패한 커밋 실행으로 재배포 방지 가드 누락")
+
     def test_workflow_run_targets_exist(self):
         names = {wf.get("name") for wf in self.wfs.values()}
         for fname, wf in self.wfs.items():
