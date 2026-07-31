@@ -155,6 +155,7 @@ td.who{font-weight:800;white-space:nowrap;}
 .bshot figcaption{font-size:10.5px;color:var(--muted);font-weight:600;margin-top:4px;}
 .bshot.empty2{display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:11px;border:1px dashed var(--line);border-radius:8px;min-height:150px;}
 </style>
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("mf_theme")||"light")}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
 </head>
 <body>
 <div class="app">
@@ -536,7 +537,7 @@ $("#impFile").addEventListener("change",e=>{const f=e.target.files[0];if(!f)retu
     Object.keys(inc).forEach(k=>{const s=safeKey(k);if(!s||!Array.isArray(inc[k]))return;ARC[s]=ARC[s]||[];const have=new Set(ARC[s].map(x=>x.id));inc[k].forEach(it=>{if(it&&it.img&&!have.has(it.id)){ARC[s].push(it);n++;}});});
     saveArc(ARC);toast(n+"개 스크린샷 복원됨");render();}catch(err){toast("복원 실패 — 백업 JSON 파일인지 확인");}};
   rd.readAsText(f);e.target.value="";});
-$("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");});
+$("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");try{localStorage.setItem("mf_theme",d?"light":"dark")}catch(_){};});
 if(location.protocol==="file:"){$("#fileBanner").hidden=false;} // 로컬(ZIP) 열람 시 자동 캡쳐 미표시 안내
 render();
 Promise.all([loadRepoManifest(),loadBrandManifest()]).then(()=>render()); // 리포 자동 캡쳐(상품 SERP + 경쟁사 브랜드검색) 반영(있으면)

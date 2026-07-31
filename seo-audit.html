@@ -3,6 +3,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://*.workers.dev http://localhost:8787; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="no-referrer">
 <title>Modooflow SEO · 테크니컬 SEO 콘솔</title>
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("mf_theme")||"light")}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
 <style>
 /* ============================================================
    한화손해보험 다이렉트 · 장기CM SEO To-Do 콘솔 (CM사업부)
@@ -894,7 +895,7 @@ document.addEventListener("click",e=>{
 $("#themeBtn").addEventListener("click",()=>{
   const cur=document.documentElement.getAttribute("data-theme");
   const dark=cur?cur==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
-  document.documentElement.setAttribute("data-theme",dark?"light":"dark");});
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");try{localStorage.setItem("mf_theme",dark?"light":"dark")}catch(_){}});
 
 /* ── init ── */
 setView("dash");

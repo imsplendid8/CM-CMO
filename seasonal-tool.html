@@ -153,6 +153,7 @@ table.mcal thead th.rl{z-index:3;}
 :root[data-theme="dark"]{--ink:#eef1f6;--ink-2:#b7bdc9;--muted:#7f8697;--faint:#4a4f60;--bg:#0e1016;--surface:#171a21;--surface-2:#1d212a;--line:#262b35;--line-2:#20242d;--sh:0 1px 2px rgba(0,0,0,.4),0 2px 6px rgba(0,0,0,.5);--sh-lg:0 14px 34px rgba(0,0,0,.6);}
 :root[data-theme="light"]{--ink:#0f1729;--ink-2:#4a5163;--muted:#8b93a3;--faint:#cdd2db;--bg:#f7f8fa;--surface:#ffffff;--surface-2:#f4f6f8;--line:#e8ebef;--line-2:#eef1f4;--sh:0 1px 2px rgba(15,23,41,.04),0 2px 6px rgba(15,23,41,.05);--sh-lg:0 12px 30px rgba(15,23,41,.10);}
 </style>
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("mf_theme")||"light")}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
 </head>
 <body>
 <div class="app">
@@ -361,7 +362,7 @@ function renderProduct(){
 }
 function render(){curKey==="__all"?renderOverview():renderProduct();renderSidebar();window.scrollTo({top:0});}
 document.addEventListener("click",e=>{const nav=e.target.closest("[data-key]");if(nav&&nav.dataset.key){curKey=nav.dataset.key;render();}});
-$("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");});
+$("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");try{localStorage.setItem("mf_theme",d?"light":"dark")}catch(_){};});
 render();
 // 데이터랩 실측 추세 로드(Pages/서버 동일출처에서만 · 아티팩트/file은 조용히 생략)
 fetch("data/trends.json").then(r=>r.ok?r.json():null).then(d=>{if(d&&d.products){TRENDS=d;if(curKey!=="__all")render();}}).catch(()=>{});
