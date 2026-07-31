@@ -37,11 +37,12 @@ def parse(md):
         m = re.match(r"^###\s*▪\s*(\d{4}-\d{2}-\d{2})", s)
         if m:
             date = m.group(1); cur = None; continue
-        # 시드 레퍼런스 표: | S1 | [원문 링크](url) | 출처 |
+        # 담당자 제공 참고자료 표: | S1 | [원문 링크](url) | 출처 |
         m = re.match(r"^\|\s*(S\d+)\s*\|\s*\[[^\]]+\]\((https?://[^)]+)\)\s*\|\s*([^|]+)\|", s)
         if m:
-            papers.append({"title": f"시드 레퍼런스 {m.group(1)} ({m.group(3).strip()})",
-                           "link": m.group(2).strip(), "desc": "", "note": "원문 링크만 보관(제목 미확인)",
+            papers.append({"title": f"담당자 제공 참고자료 · {m.group(3).strip()}",
+                           "link": m.group(2).strip(), "desc": "",
+                           "note": "담당자 제공 원문 링크 · 제목 확인 필요",
                            "topic": topic, "date": date, "auto": False})
             continue
         # 논문 항목: '### 제목'(2·3장) 또는 '#### 제목'(4장). '### ▪ 날짜'는 위에서 처리됨.
