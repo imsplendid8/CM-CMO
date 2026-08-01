@@ -192,6 +192,35 @@ class TestReviewFixes(unittest.TestCase):
         self.assertGreater(out["counts"]["unclassified"], 0)
 
 
+class TestSeasonalSpan(unittest.TestCase):
+    """날씨 시즌 정확 일자(span) 판정 — 월 전체가 아닌 실제 기간."""
+    def test_span_states(self):
+        sp = [["07-01", "07-20"]]
+        self.assertEqual(ee.state_from_span(date(2026, 7, 10), sp), "active")
+        self.assertEqual(ee.state_from_span(date(2026, 6, 25), sp), "emerging")
+        self.assertEqual(ee.state_from_span(date(2026, 7, 25), sp), "cooling")
+        self.assertNotEqual(ee.state_from_span(date(2026, 9, 1), sp), "active")
+
+    def test_span_wraps_year_end(self):
+        sp = [["12-01", "02-10"]]                 # 겨울 구간(연말→연초)
+        self.assertEqual(ee.state_from_span(date(2026, 1, 15), sp), "active")
+        self.assertEqual(ee.state_from_span(date(2026, 12, 20), sp), "active")
+
+    def test_span_overrides_month_in_run(self):
+        # 월로는 active(7월)여도 span이 이미 끝났으면 active로 추천하지 않음
+        seasonal = {"hrmf": [{"tag": "짧은 장마", "m": [7], "kws": ["장마"],
+                              "span": [["07-01", "07-05"]]}]}
+        out = ee.run(bundle(seasonal=seasonal), TODAY)   # TODAY=2026-07-30
+        ev = [e for e in out["events"] if e["id"].startswith("season-hrmf")][0]
+        self.assertNotEqual(ev["state"], "active")
+
+    def test_span_absent_falls_back_to_months(self):
+        seasonal = {"hrmf": [{"tag": "월기준", "m": [7, 8], "kws": ["여름"]}]}
+        out = ee.run(bundle(seasonal=seasonal), TODAY)
+        ev = [e for e in out["events"] if e["id"].startswith("season-hrmf")][0]
+        self.assertEqual(ev["state"], "active")          # 7월 → 월 기준 active
+
+
 class TestRobustness(unittest.TestCase):
     """불완전·악의적 입력에 대한 방어(조용히 정상처리하지 않고 skip/미분류)."""
     def test_calendar_event_missing_name_does_not_crash(self):
