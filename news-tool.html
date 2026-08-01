@@ -136,6 +136,9 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .clip-it .dt{font-size:10px;color:var(--muted);font-family:var(--mono);white-space:nowrap;flex:0 0 76px;}
 .clip-it .tt{flex:1;font-size:12.5px;font-weight:700;color:var(--ink);line-height:1.45;} .clip-it:hover .tt{color:var(--brand-600);}
 .clip-it .ss{font-size:10.5px;color:var(--muted);white-space:nowrap;} .muted{color:var(--muted);font-size:12px;}
+.clip-flat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;}
+.clip-more{margin-top:12px;width:100%;padding:10px;border:1px dashed var(--line);background:var(--surface-2);color:var(--ink-2);border-radius:var(--r);font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;}
+.clip-more:hover{border-color:var(--brand);color:var(--brand-600);}
 /* 경쟁사 통합 카드 */
 .ci-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:13px;}
 .ci-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:14px 16px;display:flex;flex-direction:column;gap:8px;}
@@ -435,38 +438,79 @@ function renderIndustry(){
 }
 
 /* 클리핑 아카이브 (data/clips/ · 하루 2회 자동 수집 · 날짜검색·일/월 요약) */
-let CLIPS_INDEX=null,CLIP_DAY={},clipDate="",clipQ="";
+let CLIPS_INDEX=null,CLIP_DAY={},clipDate="__all",clipQ="",clipN=20,clipReq=0;
 function loadClipIndex(cb){if(CLIPS_INDEX){cb();return;}fetch("data/clips/index.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(x=>{CLIPS_INDEX=x||{dates:[],months:{}};cb();}).catch(()=>{CLIPS_INDEX={dates:[],months:{}};cb();});}
-function loadClipDay(date,cb){if(CLIP_DAY[date]){cb(CLIP_DAY[date]);return;}fetch("data/clips/"+date+".json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{CLIP_DAY[date]=d;cb(d);}).catch(()=>cb(null));}
+// 아카이브 일자 파일은 append-only에 가깝다 → 브라우저 캐시 허용(세션 간 재전송 방지). 인덱스만 no-store.
+function loadClipDay(date,cb){if(CLIP_DAY[date]){cb(CLIP_DAY[date]);return;}fetch("data/clips/"+date+".json").then(r=>r.ok?r.json():null).then(d=>{CLIP_DAY[date]=d;cb(d);}).catch(()=>cb(null));}
+// 누계: 최신 날짜부터 필요한 만큼만 순차 로드(needItems=0이면 전체). url 중복 제거·최신순.
+// 전체 아카이브를 한 번에 받지 않도록, 기본 조회는 필요한 페이지 분량의 최신 일자만 로드한다.
+function loadCumulative(needItems,cb){
+  loadClipIndex(()=>{
+    const dates=(CLIPS_INDEX.dates||[]).map(d=>d.date);   // 최신순
+    (function ensure(k){
+      const target=Math.min(k,dates.length);
+      Promise.all(dates.slice(0,target).map(dt=>new Promise(res=>loadClipDay(dt,d=>res(d))))).then(days=>{
+        const seen=new Set(),items=[];
+        days.forEach(d=>{if(!d)return;Object.values(d.categories||{}).forEach(c=>{(c.items||[]).forEach(it=>{
+          const key=it.url||it.t;if(seen.has(key))return;seen.add(key);items.push(Object.assign({cat:c.name},it));});});});
+        items.sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+        const more=target<dates.length;
+        if(needItems>0&&items.length<needItems&&more){ensure(target+3);return;}   // 부족하면 최신 일자 더 로드
+        cb(items,more);
+      });
+    })(needItems>0?Math.max(3,Math.ceil(needItems/100)+1):dates.length);
+  });
+}
 function renderClips(){
   loadClipIndex(()=>{
     const dates=CLIPS_INDEX.dates||[];
-    $("#pt").textContent="클리핑 아카이브";$("#pts").textContent=`· ${dates.length}일 수집`;
-    if(!dates.length){$("#content").innerHTML=`<div class="note" style="margin-top:0"><b>클리핑 아카이브</b> · 매일 <b>09시·13시</b>에 카테고리별 뉴스를 자동 수집해 날짜별로 쌓습니다(News Clip 워크플로우). 아직 수집분이 없어요 — 첫 실행 후 이 화면에서 날짜별로 조회·검색할 수 있습니다.</div>`;return;}
-    if(!clipDate||!dates.some(d=>d.date===clipDate))clipDate=dates[0].date;
-    const month=clipDate.slice(0,7),mo=(CLIPS_INDEX.months||{})[month]||{total:0,days:0};
-    const opts=dates.map(d=>`<option value="${esc(d.date)}"${d.date===clipDate?" selected":""}>${esc(d.date)} · ${d.total}건${(d.runs||[]).length>1?" (2회)":""}</option>`).join("");
+    $("#pt").textContent="클리핑 아카이브";
+    if(!dates.length){$("#pts").textContent="";$("#content").innerHTML=`<div class="note" style="margin-top:0"><b>클리핑 아카이브</b> · 매일 <b>09시·13시</b>에 카테고리별 뉴스를 자동 수집해 날짜별로 쌓습니다(News Clip 워크플로우). 아직 수집분이 없어요 — 첫 실행 후 이 화면에서 날짜별·누계로 조회·검색할 수 있습니다.</div>`;return;}
+    if(clipDate!=="__all"&&!dates.some(d=>d.date===clipDate))clipDate="__all";
+    const totalAll=dates.reduce((s,d)=>s+(d.total||0),0);
+    $("#pts").textContent=`· ${dates.length}일 · 누계 ${totalAll}건`;
+    const dateOpts=`<option value="__all"${clipDate==="__all"?" selected":""}>전체 누계 (${dates.length}일)</option>`+
+      dates.map(d=>`<option value="${esc(d.date)}"${d.date===clipDate?" selected":""}>${esc(d.date)} · ${d.total}건${(d.runs||[]).length>1?" (2회)":""}</option>`).join("");
+    const nOpts=[20,50,100,0].map(n=>`<option value="${n}"${n===clipN?" selected":""}>${n?n+"개씩":"전체"}</option>`).join("");
     $("#content").innerHTML=`<div class="clip-bar">
-      <label class="cf">날짜 <select id="clipDateSel">${opts}</select></label>
-      <label class="cf">🔎 <input id="clipQ" placeholder="이 날짜 클립 내 검색" value="${esc(clipQ)}"></label>
-      <span class="clip-mo">📅 ${esc(month)} 월간 <b>${mo.total}</b>건 · ${mo.days}일</span></div>
+      <label class="cf">날짜 <select id="clipDateSel">${dateOpts}</select></label>
+      <label class="cf">표시 <select id="clipNSel">${nOpts}</select></label>
+      <label class="cf">🔎 <input id="clipQ" placeholder="제목·요약·카테고리 검색" value="${esc(clipQ)}"></label></div>
       <div id="clipBody"></div>`;
-    $("#clipDateSel").addEventListener("change",e=>{clipDate=e.target.value;clipQ="";renderClips();});
+    $("#clipDateSel").addEventListener("change",e=>{clipDate=e.target.value;renderClipBody();});
+    $("#clipNSel").addEventListener("change",e=>{clipN=+e.target.value;renderClipBody();});
     $("#clipQ").addEventListener("input",e=>{clipQ=e.target.value.trim();renderClipBody();});
     renderClipBody();
   });
 }
 function renderClipBody(){
-  loadClipDay(clipDate,d=>{
-    const box=$("#clipBody");if(!box)return;
-    if(!d){box.innerHTML=`<div class="empty">${esc(clipDate)} 클리핑을 불러올 수 없습니다.</div>`;return;}
-    const q=clipQ.toLowerCase(),filt=it=>!q||((it.t+" "+(it.gist||"")).toLowerCase().indexOf(q)>=0);
+  const box=$("#clipBody");if(!box)return;
+  const q=clipQ.toLowerCase(),filt=it=>!q||((it.t+" "+(it.gist||"")+" "+(it.cat||"")).toLowerCase().indexOf(q)>=0);
+  const myReq=++clipReq;                       // 오래된 비동기 콜백이 최신 화면을 덮어쓰지 않게
+  if(clipDate==="__all"){                      // 누계 모드: 최신 일자부터 필요분만 로드 + 개수 필터
+    box.innerHTML=`<div class="empty">누계 클리핑 불러오는 중…</div>`;
+    loadCumulative(clipQ?0:clipN,(items,more)=>{   // 검색 중엔 전체 로드(정확도), 아니면 지연 로드
+      if(myReq!==clipReq||clipDate!=="__all")return;   // stale 가드
+      const b=$("#clipBody");if(!b)return;
+      const f=items.filter(filt),shown=clipN>0?f.slice(0,clipN):f;
+      const list=shown.map(it=>`<a class="clip-it" href="${esc(it.url)}" target="_blank" rel="noopener"><span class="dt">${esc(it.date||"")}</span><span class="tt">${esc(it.t)}</span><span class="ss">${esc(it.cat||"")} · ${esc(it.src||"")}</span></a>`).join("");
+      const canMore=clipN>0&&(f.length>clipN||more);
+      const moreBtn=canMore?`<button class="clip-more" id="clipMore">＋ 더 보기</button>`:"";
+      b.innerHTML=`<div class="clip-sum"><div class="clip-sum-h">📎 전체 누계 <span>표시 ${shown.length} · 필터 ${f.length}${more?"+":""}건 / 로드 ${items.length}건</span></div></div><div class="clip-flat">${list||"<div class='empty'>검색 결과가 없습니다.</div>"}</div>${moreBtn}`;
+      const mb=$("#clipMore");if(mb)mb.addEventListener("click",()=>{clipN+=50;renderClipBody();});
+    });
+    return;
+  }
+  loadClipDay(clipDate,d=>{                     // 단일 날짜 모드: 카테고리별 그룹
+    if(myReq!==clipReq||clipDate==="__all")return;    // stale 가드
+    const b=$("#clipBody");if(!b)return;
+    if(!d){b.innerHTML=`<div class="empty">${esc(clipDate)} 클리핑을 불러올 수 없습니다.</div>`;return;}
     const sm=d.summary||{total:0,top:[]},cats=d.categories||{};
     const top=(sm.top||[]).filter(filt).map(it=>`<a class="clip-top" href="${esc(it.url)}" target="_blank" rel="noopener"><b>${esc(it.t)}</b><span>${esc(it.src||"")} · ${esc(it.date||"")}</span></a>`).join("");
     const order=Object.keys(cats).sort((a,b)=>{const M=["hrmf","driver","golf"];return (M.indexOf(a)<0?9:M.indexOf(a))-(M.indexOf(b)<0?9:M.indexOf(b));});
-    const catHtml=order.map(k=>{const c=cats[k],items=(c.items||[]).filter(filt);if(!items.length)return "";
+    const catHtml=order.map(k=>{const c=cats[k];let items=(c.items||[]).filter(it=>filt(Object.assign({cat:c.name},it)));if(clipN>0)items=items.slice(0,clipN);if(!items.length)return "";  // 카테고리명도 검색 대상
       return `<div class="clip-cat"><div class="clip-cat-h">${esc(c.name)}<span>${items.length}</span></div>${items.map(it=>`<a class="clip-it" href="${esc(it.url)}" target="_blank" rel="noopener"><span class="dt">${esc(it.date||"")}</span><span class="tt">${esc(it.t)}</span><span class="ss">${esc(it.src||"")}</span></a>`).join("")}</div>`;}).join("");
-    box.innerHTML=`<div class="clip-sum"><div class="clip-sum-h">📎 ${esc(clipDate)} 요약 <span>${esc((d.runs||[]).join("·"))} · 총 ${sm.total}건</span></div>${top||"<span class='muted'>결과 없음</span>"}</div>${catHtml||`<div class="empty">검색 결과가 없습니다.</div>`}`;
+    b.innerHTML=`<div class="clip-sum"><div class="clip-sum-h">📎 ${esc(clipDate)} 요약 <span>${esc((d.runs||[]).join("·"))} · 총 ${sm.total}건</span></div>${top||"<span class='muted'>결과 없음</span>"}</div>${catHtml||`<div class="empty">검색 결과가 없습니다.</div>`}`;
   });
 }
 
