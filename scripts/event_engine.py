@@ -35,6 +35,7 @@ LEAD_DAYS = 21          # upcoming→emerging 경계(예정일 앞)
 TAIL_DAYS = 7           # active→cooling 경계(종료일 뒤)
 COOLDOWN_DAYS = 14      # 같은 fingerprint 재추천 금지 기간
 RECENT_NEWS_DAYS = 10   # follow_up 판정용 뉴스 최신성 임계(일) — 오래된 기사로 follow_up 승격 방지
+SEASON_UPCOMING_DAYS = 45  # 시즌 span upcoming 허용 지평(일) — 이보다 먼 미래 인스턴스는 무시(연중 upcoming 방지)
 STATES = ("upcoming", "emerging", "active", "cooling", "ended", "follow_up")
 
 # 가드레일: 생성 금지 표현(공포 조장 / 사건 이용 압박 / 담보·보험금 단정 / 과장·최상급)
@@ -148,6 +149,42 @@ def state_from_months(today, months):
     return "ended"
 
 
+def _mmdd(s, year):
+    """'MM-DD' + 연도 → date. 파싱 불가 시 None."""
+    try:
+        mm, dd = str(s).split("-")[:2]
+        return date(year, int(mm), int(dd))
+    except (ValueError, TypeError):
+        return None
+
+
+_SPAN_RANK = {"active": 4, "emerging": 3, "cooling": 2, "upcoming": 1, "ended": 0, "unknown": 0}
+
+
+def state_from_span(today, spans):
+    """연간 반복 날씨 구간(span=[["MM-DD","MM-DD"],...])을 **실제 일자**로 판정.
+    월 전체가 아니라 정확 기간으로 upcoming/emerging/active/cooling을 계산한다.
+    인접 연도 인스턴스(연말→연초 wrap 포함)까지 보고 '가장 진행에 가까운' 상태를 택한다."""
+    best = "ended"
+    for sp in spans or []:
+        if not (isinstance(sp, (list, tuple)) and len(sp) == 2):
+            continue
+        for yr in (today.year - 1, today.year, today.year + 1):
+            s = _mmdd(sp[0], yr)
+            e = _mmdd(sp[1], yr)
+            if not (s and e):
+                continue
+            if e < s:                       # 연말→연초 wrap: 종료는 다음 해
+                e = _mmdd(sp[1], yr + 1)
+            st = state_from_dates(today, s, e)
+            # 너무 이른 미래 인스턴스(예: 내년 겨울)는 무시 — 연중 upcoming 방지(월 기준과 유사하게 경계)
+            if st == "upcoming" and (s - today).days > SEASON_UPCOMING_DAYS:
+                continue
+            if _SPAN_RANK.get(st, 0) > _SPAN_RANK.get(best, 0):
+                best = st
+    return best
+
+
 # ── 이벤트 통합 ───────────────────────────────────────
 def build_events(bundle, today):
     """calendar + seasonal + 기상(signals) + 긴급뉴스(clips) → 이벤트 목록(상태 포함)."""
@@ -161,13 +198,14 @@ def build_events(bundle, today):
                               ongoing=_has_recent_news(bundle, ev.get("keywords", []), today))
         events.append({**ev, "source": "calendar", "state": st})
 
-    # 2) 계절(seasonal) — 상품별 월 이슈
+    # 2) 계절(seasonal) — 상품별 시즌 이슈. span(정확 일자)이 있으면 일자 기준, 없으면 월 기준.
     for pkey, wins in (bundle.get("seasonal") or {}).items():
         for w in wins:
-            st = state_from_months(today, w.get("m", []))
+            span = w.get("span")
+            st = state_from_span(today, span) if span else state_from_months(today, w.get("m", []))
             events.append({"id": f"season-{pkey}-{'-'.join(map(str, w.get('m', [])))}",
                            "type": "계절", "name": w.get("tag", ""), "months": w.get("m", []),
-                           "products": [pkey], "keywords": w.get("kws", []),
+                           "span": span, "products": [pkey], "keywords": w.get("kws", []),
                            "source": "seasonal", "state": st})
 
     # 3) 기상특보(signals active) — active 이벤트
@@ -254,7 +292,11 @@ def gather_facts(ev, product_key, bundle):
         facts.append(f"예정: {ev['name']} {ev.get('start','')}~{ev.get('end','')}")
         used.append("calendar")
     elif ev["source"] == "seasonal":
-        facts.append(f"시즌: {ev['name']} ({', '.join(str(m)+'월' for m in ev.get('months', []))})")
+        if ev.get("span"):      # 정확 일자 구간 우선 표기(월 전체 아님)
+            rng = ", ".join(f"{a}~{b}" for a, b in ev["span"] if isinstance(a, str))
+            facts.append(f"시즌: {ev['name']} (정확 기간 {rng})")
+        else:
+            facts.append(f"시즌: {ev['name']} ({', '.join(str(m)+'월' for m in ev.get('months', []))})")
         used.append("seasonal")
     elif ev["source"] == "signal":
         asof = bundle.get("signals", {}).get("asof", "")

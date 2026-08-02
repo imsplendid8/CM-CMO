@@ -16,6 +16,7 @@ from datetime import datetime, timezone, timedelta
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import check_automation_health as cah   # 자동화 상태를 브리프 직전 재계산(저장 요약 미신뢰)
+import event_engine as ee               # 시즌 span 일자 판정 공유(월 전체가 아닌 정확 기간)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HUB = "imsplendid8.github.io/CM-CMO"
@@ -114,14 +115,24 @@ def build_message():
         note = w.get("note") or "기상 특보"
         put("hrmf", 0, f"🌧 {name('hrmf')} — {note}: 누수·풍수재 소구 시즌 대응")
 
-    # (2) 시즌 이슈(이번 달 → 다음 달), 메인 우선
+    # (2) 시즌 이슈, 메인 우선. span(정확 일자) 있으면 엔진과 동일 기준(일자), 없으면 월 폴백.
+    today = now.date()
     for key, wins in seasonal.items():
         for w in wins:
-            if m in w["m"]:
-                pri = 1 if key in main else 2
-                put(key, pri, f"{'★' if key in main else '·'} {name(key)} — {w['tag']}(이번 달): 시즌 소재 등록·랜딩 점검")
-            elif nm in w["m"] and key in main:
-                put(key, 3, f"★ {name(key)} — {w['tag']}(다음 달): 시즌 소재 미리 준비")
+            span = w.get("span")
+            if span:
+                st = ee.state_from_span(today, span)
+                if st in ("active", "cooling"):
+                    pri = 1 if key in main else 2
+                    put(key, pri, f"{'★' if key in main else '·'} {name(key)} — {w['tag']}(진행 중): 시즌 소재 등록·랜딩 점검")
+                elif st in ("emerging", "upcoming") and key in main:
+                    put(key, 3, f"★ {name(key)} — {w['tag']}(대비): 시즌 소재 미리 준비")
+            else:
+                if m in w["m"]:
+                    pri = 1 if key in main else 2
+                    put(key, pri, f"{'★' if key in main else '·'} {name(key)} — {w['tag']}(이번 달): 시즌 소재 등록·랜딩 점검")
+                elif nm in w["m"] and key in main:
+                    put(key, 3, f"★ {name(key)} — {w['tag']}(다음 달): 시즌 소재 미리 준비")
 
     # (3) SERP 상위노출 갭 — 메인 중 요일 순환 1건
     gaps = ["hrmf", "golf", "driver", "overseas"]
