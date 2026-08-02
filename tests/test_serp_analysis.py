@@ -57,6 +57,27 @@ class TestAnalyze(unittest.TestCase):
         self.assertEqual(sa.analyze(None), {})
 
 
+class TestWindow(unittest.TestCase):
+    def test_old_observations_excluded(self):
+        obs = [
+            {"product": "driver", "brand": "A", "covers": ["형사합의금"], "date": "2026-07-26"},
+            {"product": "driver", "brand": "B", "covers": ["형사합의금"], "date": "2026-01-01"},  # 창 밖
+        ]
+        # 최신(07-26) 기준 35일 창 → 01-01 제외 → 공통소구 아님(한 브랜드만)
+        a = sa.analyze(obs, window_days=35)
+        self.assertEqual(a["driver"]["n"], 1)
+        self.assertEqual(a["driver"]["common_soju"], [])
+
+    def test_window_included_when_recent(self):
+        obs = [
+            {"product": "driver", "brand": "A", "covers": ["형사합의금"], "date": "2026-07-26"},
+            {"product": "driver", "brand": "B", "covers": ["형사합의금"], "date": "2026-07-10"},  # 창 안
+        ]
+        a = sa.analyze(obs, window_days=35)
+        self.assertEqual(a["driver"]["n"], 2)
+        self.assertEqual(a["driver"]["common_soju"], ["형사합의금"])
+
+
 class TestRealData(unittest.TestCase):
     def test_repo_observations_analyze(self):
         data = sa.load(ROOT)
@@ -65,6 +86,15 @@ class TestRealData(unittest.TestCase):
         for pk, v in res.items():
             self.assertIn("common_soju", v)
             self.assertIsInstance(v["soju"], list)
+
+    def test_committed_analysis_is_current(self):
+        # ad_observations.json 변경 후 재생성을 강제 — 커밋된 산출물이 build()와 일치해야 함
+        with open(os.path.join(ROOT, "serp", "ad_analysis.json"), encoding="utf-8") as f:
+            committed = json.load(f)
+        built = sa.build(ROOT)
+        self.assertEqual(json.dumps(built, ensure_ascii=False, sort_keys=True),
+                         json.dumps(committed, ensure_ascii=False, sort_keys=True),
+                         "serp/ad_analysis.json 이 최신이 아님 — `python3 scripts/serp_analysis.py` 재실행 필요")
 
 
 if __name__ == "__main__":

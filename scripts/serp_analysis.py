@@ -12,10 +12,12 @@ serp-tool(소재분석)과 adcopy-tool(문구 근거)이 이 산출물을 공유
 import json
 import os
 from collections import Counter, defaultdict
+from datetime import datetime, timedelta
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = "serp/ad_observations.json"
 OUT = "serp/ad_analysis.json"
+DEFAULT_WINDOW_DAYS = 35   # 최신 관측일 기준 lookback(주간 캡쳐 ~5주) — 중단된 프로모션·과거 광고주 제외
 
 
 def _rank(counter):
@@ -23,10 +25,33 @@ def _rank(counter):
     return [[k, n] for k, n in sorted(counter.items(), key=lambda kv: (-kv[1], kv[0]))]
 
 
-def analyze(observations):
-    """상품별 관측 소재 집계. 반환: {product: {n, brands, soju, common_soju, promos, cta, prices}}."""
+def _d(s):
+    try:
+        return datetime.strptime(str(s)[:10], "%Y-%m-%d").date()
+    except (ValueError, TypeError):
+        return None
+
+
+def window_cutoff(observations, window_days=DEFAULT_WINDOW_DAYS):
+    """최신 관측일 - window_days. 관측일이 없으면 None(전체 사용)."""
+    dates = [d for d in (_d(o.get("date")) for o in (observations or [])) if d]
+    if not dates:
+        return None
+    return max(dates) - timedelta(days=window_days)
+
+
+def _recent(observations, window_days=DEFAULT_WINDOW_DAYS):
+    """lookback 창 안(또는 날짜 없는) 관측만. 오래된 관측·과거 광고주를 현재 근거에서 제외."""
+    cutoff = window_cutoff(observations, window_days)
+    if cutoff is None:
+        return list(observations or [])
+    return [o for o in observations if (_d(o.get("date")) is None) or (_d(o.get("date")) >= cutoff)]
+
+
+def analyze(observations, window_days=DEFAULT_WINDOW_DAYS):
+    """상품별 관측 소재 집계(최신 lookback 창만). 반환: {product: {n, brands, soju, common_soju, promos, cta, prices}}."""
     byp = defaultdict(list)
-    for o in observations or []:
+    for o in _recent(observations or [], window_days):
         byp[o.get("product", "")].append(o)
     out = {}
     for pk in sorted(byp):
@@ -67,12 +92,16 @@ def load(root=ROOT):
         return json.load(f)
 
 
-def build(root=ROOT):
+def build(root=ROOT, window_days=DEFAULT_WINDOW_DAYS):
     data = load(root)
+    obs = data.get("observations", [])
+    cutoff = window_cutoff(obs, window_days)
     result = {
-        "_comment": "serp/ad_observations.json 관측 소재의 상품별 분석(규칙 기반·결정론). serp_analysis.py가 생성.",
+        "_comment": "serp/ad_observations.json 관측 소재의 상품별 분석(규칙 기반·결정론·최신 lookback 창). serp_analysis.py가 생성.",
         "asof": data.get("asof", ""),
-        "products": analyze(data.get("observations", [])),
+        "window_days": window_days,
+        "since": cutoff.isoformat() if cutoff else None,
+        "products": analyze(obs, window_days),
     }
     return result
 

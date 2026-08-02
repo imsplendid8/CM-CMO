@@ -1,6 +1,8 @@
 {
- "_comment": "serp/ad_observations.json 관측 소재의 상품별 분석(규칙 기반·결정론). serp_analysis.py가 생성.",
+ "_comment": "serp/ad_observations.json 관측 소재의 상품별 분석(규칙 기반·결정론·최신 lookback 창). serp_analysis.py가 생성.",
  "asof": "2026-08-02",
+ "window_days": 35,
+ "since": "2026-06-21",
  "products": {
   "birth": {
    "n": 1,
