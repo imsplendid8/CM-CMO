@@ -3,7 +3,7 @@
 ## P0-EVENT — 이벤트 기반 뉴스·시즌 캘린더 추천 엔진
 
 > 상태: **Phase 1(뉴스 캘린더 문구 엔진) 완료 · main 병합됨** · P0-EVENT **전체는 진행 중**.
-> 상세: `docs/news-calendar-copy-engine.md`. 화면 `event-calendar.html`.
+> 상세: `docs/news-calendar-copy-engine.md`. 화면 `seasonal-tool.html#reco`(시즌·이벤트 캘린더의 뉴스·추천·이벤트 뷰 · 구 `event-calendar.html`은 리다이렉트).
 
 ### Phase 1 완료분 (규칙 기반 문구 엔진)
 
@@ -18,7 +18,7 @@
 - 중복 방지: 상품+사건+목적+문구 **fingerprint(어미 제거)** + **cooldown**
 - 가드레일: 공포·사건 이용 압박·담보/보험금 단정·과장/최상급 문구 **생성 금지**, 자동 "심의통과/등록가능" 표시 안 함
 - 분류 불확실 뉴스 → **unclassified 검토 큐**(자동 문구 X). 빈 키워드가 큐를 비우지 않도록 방어
-- 화면 `event-calendar.html`: 오늘/7일/30일·예정/진행/종료/후속·상품·이벤트 필터
+- 화면 `seasonal-tool.html#reco`: 오늘/7일/30일·예정/진행/종료/후속·상품·이벤트 필터
 - fixture 회귀 테스트 `tests/test_event_engine.py`(22) — 상태·fingerprint·cooldown·가드레일·미분류·비하드코딩·견고성
 
 ### Phase 2A — 상태 전이(transition/episode) 엔진 ✅ 완료(main 병합 `1671f90`)
@@ -30,7 +30,7 @@
   `follow_up`·`lifted`(기상특보 해제)·`handoff`(해제 특보 ↔ 신규 특보가 상품 공유 = 장마→폭염식 **전환**)
 - 전이 감지 시 목적이 `PURPOSE_BY_TRANSITION`로 바뀌고 **fingerprint·유효기간도 자동 변경**(별개 추천)
 - 기상특보→상품 매핑을 **속성 규칙**(`_weather_products`)으로 일반화(종류 하드코딩 제거)
-- 화면: `event-calendar.html` 카드에 🔄 전이 배지 + 상태 전이 섹션 + KPI
+- 화면: `seasonal-tool.html#reco` 카드에 🔄 전이 배지 + 상태 전이 섹션 + KPI
 - 회귀 테스트 `tests/test_event_engine.py`(총 29) — onset/lifted/handoff·**비하드코딩**·전이 fingerprint 변화·결정론
 
 ### Phase 2B — 추천 재생성 워크플로 🔶 진행(별도 PR `p0-event/phase2-reco-workflow`)

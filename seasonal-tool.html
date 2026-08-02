@@ -140,6 +140,40 @@ table.mcal thead th.rl{z-index:3;}
 .crumb{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--muted);text-decoration:none;}
 .crumb:hover{color:var(--brand-600);}
 .datalab{font-size:11px;font-weight:700;color:var(--brand-600);text-decoration:none;} .datalab:hover{text-decoration:underline;}
+/* 뉴스·추천·이벤트 뷰 (event_engine 산출물) */
+.rbanner{background:var(--brand-tint);border:1px solid var(--brand-50);border-radius:var(--r-sm);padding:11px 14px;font-size:12px;color:var(--ink-2);line-height:1.65;margin-bottom:14px;}
+.rbanner b{color:var(--brand-600);}
+.rfilters{display:flex;gap:14px;flex-wrap:wrap;margin:2px 0 16px;align-items:center;}
+.rfgroup{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+.rfgroup .lb{font-size:10.5px;font-weight:800;color:var(--muted);}
+.rchip{padding:5px 11px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font-size:11.5px;font-weight:700;cursor:pointer;}
+.rchip.on{background:var(--brand);border-color:var(--brand);color:#fff;}
+.rsel{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:5px 9px;font-family:inherit;font-size:12px;}
+.rcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh);margin-bottom:11px;}
+.rcard-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+.rst{font-size:10px;font-weight:800;padding:2px 9px;border-radius:99px;background:var(--surface-2);color:var(--muted);}
+.rst.upcoming,.rst.emerging{background:var(--year-bg);color:var(--year);}
+.rst.active{background:var(--spring-bg);color:var(--spring);}
+.rst.cooling,.rst.ended{background:var(--surface-2);color:var(--muted);}
+.rst.follow_up{background:var(--summer-bg);color:var(--summer);}
+.rprod{font-size:13px;font-weight:800;} .rev{font-size:11px;color:var(--muted);font-weight:700;}
+.rconf{margin-left:auto;font-family:var(--mono);font-size:11px;font-weight:800;color:var(--brand-600);}
+.rtrchip{font-size:10px;font-weight:800;padding:2px 8px;border-radius:99px;background:var(--brand-50);color:var(--brand-600);}
+.rline{display:flex;gap:8px;align-items:flex-start;margin:5px 0;font-size:13px;}
+.rline .k{flex:0 0 40px;font-size:10.5px;font-weight:800;color:var(--muted);padding-top:2px;}
+.rline .v{flex:1;color:var(--ink);}
+.rcopy{border:1px solid var(--line);background:var(--surface-2);color:var(--ink-2);border-radius:6px;padding:2px 8px;font-size:10.5px;font-weight:700;cursor:pointer;}
+.rcopy:hover{color:var(--brand-600);border-color:var(--brand);}
+.rfact{font-size:11px;color:var(--muted);line-height:1.6;margin-top:2px;}
+.rmeta{margin-top:8px;padding-top:8px;border-top:1px solid var(--line-2);font-size:11px;color:var(--ink-2);line-height:1.7;}
+.rmeta b{color:var(--ink);} .rmeta .rev2{color:var(--summer);font-weight:800;} .rmeta .avoid{color:#d64545;}
+.ruc{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--summer);border-radius:var(--r-sm);padding:9px 13px;margin-bottom:7px;font-size:12px;}
+.ruc .t{font-weight:700;} .ruc .m{font-size:10.5px;color:var(--muted);}
+.rempty{padding:26px;text-align:center;color:var(--muted);font-size:13px;}
+.rfoot{font-size:10.5px;color:var(--muted);margin-top:22px;border-top:1px solid var(--line);padding-top:12px;line-height:1.6;}
+.rfoot code{font-family:var(--mono);}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:99px;font-size:12px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:60;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 </style>
 <style id="mf-saas-theme">
@@ -159,19 +193,20 @@ table.mcal thead th.rl{z-index:3;}
 <div class="app">
   <aside class="sidebar">
     <div class="sb-brand"><div class="brand-logo">🗓️</div>
-      <div><div class="bn">Modooflow Season</div><small>연간 시즈널 이슈 캘린더</small></div></div>
+      <div><div class="bn">시즌·이벤트 캘린더</div><small>시즌 매트릭스 + 뉴스·추천</small></div></div>
     <nav class="sb-nav" id="sbNav"></nav>
-    <div class="sb-foot"><a href="event-calendar.html#season">← 시즌·이벤트 캘린더로</a> · <a href="index.html">통합 콘솔</a><br>시즌·이벤트 캘린더의 <b>연간 상세</b> 뷰<br>계절 이슈·키워드는 마케팅 캘린더 기준 · 추세 검증은 네이버 데이터랩</div>
+    <div class="sb-foot"><a href="index.html">← 통합 콘솔</a><br>시즌 이슈·키워드는 마케팅 캘린더 기준<br>추천 문구는 뉴스·기상·검색량 결합(사람 검토 전) · 추세 검증은 네이버 데이터랩</div>
   </aside>
   <main class="main">
     <header class="topbar">
-      <a class="crumb" href="event-calendar.html#season">Modooflow › 시즌·이벤트 캘린더 ›</a>
-      <div><div id="pt">연간 상세</div><div id="pts"></div></div>
+      <a class="crumb" href="index.html">Modooflow ›</a>
+      <div><div id="pt">시즌·이벤트 캘린더</div><div id="pts"></div></div>
       <div class="tr"><button class="icon-btn" id="themeBtn" title="테마">◐</button></div>
     </header>
     <div class="content" id="content"></div>
   </main>
 </div>
+<div class="toast" id="toast"></div>
 <script>
 "use strict";
 const MONTHS=["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"];
@@ -296,9 +331,67 @@ function trendSection(p){
   </div>`;
 }
 
+/* ===== 뉴스·추천·이벤트 (event_engine.py 산출물 · 캘린더와 한 툴) ===== */
+let RECO={recommendations:[],unclassified:[],events:[],transitions:[],counts:{},asof:""};
+let RF={win:"7",state:"all",product:"all",event:"all"};
+const STGROUP={upcoming:"예정",emerging:"예정",active:"진행",cooling:"종료",ended:"종료",follow_up:"후속"};
+function toast(m){const t=$("#toast");if(!t)return;t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1500);}
+function rWithin(r){
+  if(RF.win==="all"||!RECO.asof)return true;
+  const days=+RF.win,today=new Date(RECO.asof+"T00:00:00"),lim=new Date(today);lim.setDate(lim.getDate()+days);
+  const vf=new Date(r.valid_from+"T00:00:00"),vt=new Date(r.valid_to+"T00:00:00");
+  return vf<=lim&&vt>=today;                    // 유효기간이 [오늘, 오늘+N]과 겹침
+}
+function rMatch(r){return rWithin(r)&&(RF.state==="all"||STGROUP[r.event_state]===RF.state)&&(RF.product==="all"||r.product===RF.product)&&(RF.event==="all"||r.event_id===RF.event);}
+function renderReco(){
+  $("#pt").textContent="뉴스·추천·이벤트"; $("#pts").textContent=RECO.asof?`· 기준 ${RECO.asof}`:"";
+  const c=$("#content");
+  if(!RECO.recommendations.length&&!(RECO.events&&RECO.events.length)){
+    const fm=location.protocol==="file:";
+    c.innerHTML=`<div class="rbanner">${fm?`⚠️ <b>로컬 파일로 열림.</b> 추천 데이터(<code>data/events/recommendations.json</code>)가 로드되지 않습니다. 배포 주소로 여세요.`:`아직 생성된 추천이 없습니다. <code>python3 scripts/event_engine.py</code> 실행 후 갱신됩니다.`}</div>`;
+    return;
+  }
+  const recs=RECO.recommendations.filter(rMatch),cc=RECO.counts||{};
+  const kpi=(n,l)=>`<div class="kpi"><div class="n">${n}</div><div class="l">${esc(l)}</div></div>`;
+  const fchip=(g,k,label)=>`<button class="rchip${RF[g]===k?" on":""}" data-rf="${g}" data-rv="${esc(k)}">${esc(label)}</button>`;
+  const prods=[...new Map(RECO.recommendations.map(r=>[r.product,r.product_name])).entries()];
+  const evs=[...new Map(RECO.recommendations.map(r=>[r.event_id,r.event_name])).entries()];
+  const cards=recs.length?recs.map(r=>`
+    <div class="rcard">
+      <div class="rcard-h"><span class="rst ${esc(r.event_state)}">${esc(STGROUP[r.event_state]||r.event_state)} · ${esc(r.event_state)}</span>
+        <span class="rprod">${esc(r.product_name)}</span><span class="rev">${esc(r.event_name)} · ${esc(r.event_type)}</span>
+        ${r.transition?`<span class="rtrchip" title="상태 전이 · ${esc(r.transition.kind)}">🔄 ${esc(r.transition.from)}→${esc(r.transition.to)}</span>`:""}
+        <span class="rconf">conf ${esc(r.confidence)}</span></div>
+      <div class="rline"><span class="k">제목</span><span class="v">${esc(r.title)}</span><button class="rcopy" data-copy="${esc(r.title)}">복사</button></div>
+      <div class="rline"><span class="k">설명</span><span class="v">${esc(r.description)}</span><button class="rcopy" data-copy="${esc(r.description)}">복사</button></div>
+      <div class="rline"><span class="k">소제목</span><span class="v">${esc(r.content_subhead)}</span><button class="rcopy" data-copy="${esc(r.content_subhead)}">복사</button></div>
+      <div class="rfact">📌 ${(r.fact||[]).map(esc).join(" · ")}</div>
+      <div class="rmeta"><b>이유</b> ${esc(r.reason)} · <b>데이터</b> ${(r.data_used||[]).map(esc).join(", ")}<br>
+        <b>유효</b> ${esc(r.valid_from)} ~ ${esc(r.valid_to)} · <b>채널</b> ${(r.channels||[]).map(esc).join(", ")} · <b>상품근거</b> ${esc(r.product_basis)}<br>
+        <span class="rev2">${esc(r.review_status)}</span> · <span class="avoid">피할 표현: ${(r.avoid_phrases||[]).slice(0,5).map(esc).join(", ")}…</span> · <span style="font-family:var(--mono);color:var(--muted)">fp ${esc(r.fingerprint)}</span></div>
+    </div>`).join(""):`<div class="rempty">필터에 맞는 추천이 없습니다.</div>`;
+  const uc=RECO.unclassified||[];
+  c.innerHTML=`
+    <div class="rbanner"><b>규칙 기반 추천 · 사람 검토 전</b> — 모든 문구는 <b>상품 근거 미확인 · 심의 검토 전 · 운영 후보</b>입니다. 공포·압박·담보 단정 문구는 생성하지 않으며, 분류 불확실 뉴스는 아래 <b>검토 큐</b>로 보냅니다. 이벤트 소스 = 캘린더·시즌·기상신호·뉴스 클리핑·검색량(시즌 데이터는 이 캘린더와 <b>단일 소스</b>).</div>
+    <div class="kpi-row">${kpi(cc.events||0,"이벤트")}${kpi(cc.recommendations||0,"추천(운영 후보)")}${kpi(cc.transitions||0,"상태 전이")}${kpi(cc.unclassified||0,"미분류 검토 큐")}</div>
+    <div class="rfilters">
+      <div class="rfgroup"><span class="lb">기간</span>${fchip("win","0","오늘")}${fchip("win","7","7일")}${fchip("win","30","30일")}${fchip("win","all","전체")}</div>
+      <div class="rfgroup"><span class="lb">상태</span>${fchip("state","all","전체")}${fchip("state","예정","예정")}${fchip("state","진행","진행")}${fchip("state","종료","종료")}${fchip("state","후속","후속")}</div>
+      <div class="rfgroup"><span class="lb">상품</span><select class="rsel" id="rfprod"><option value="all">전체</option>${prods.map(([k,n])=>`<option value="${esc(k)}"${RF.product===k?" selected":""}>${esc(n)}</option>`).join("")}</select></div>
+      <div class="rfgroup"><span class="lb">이벤트</span><select class="rsel" id="rfev"><option value="all">전체</option>${evs.map(([k,n])=>`<option value="${esc(k)}"${RF.event===k?" selected":""}>${esc(n)}</option>`).join("")}</select></div>
+    </div>
+    ${(RECO.transitions&&RECO.transitions.length)?`<div class="sec-lbl">🔄 상태 전이 <span class="now">${RECO.transitions.length}</span></div>`+RECO.transitions.map(t=>`<div class="ruc"><div class="t">${esc(t.event_id)}</div><div class="m">${esc(t.from)} → ${esc(t.to)} · ${esc(t.kind)}${t.from_kind?` · 이전: ${esc(t.from_kind)}`:""}</div></div>`).join(""):""}
+    <div class="sec-lbl">추천 문구 <span class="now">${recs.length}</span> <span style="font-weight:600;color:var(--muted);text-transform:none">· 운영 후보(사람 검토 필요)</span></div>
+    ${cards}
+    <div class="sec-lbl">🔎 미분류 검토 큐 <span class="now">${uc.length}</span> <span style="font-weight:600;color:var(--muted);text-transform:none">· 자동 문구 생성 안 함 — 사람이 분류</span></div>
+    ${uc.slice(0,40).map(u=>`<div class="ruc"><div class="t">${esc(u.title)}</div><div class="m">${esc(u.src)} · ${esc(u.date)} · ${esc(u.reason)}</div></div>`).join("")||'<div class="rempty">미분류 없음</div>'}
+    <div class="rfoot">데이터: <code>data/events/recommendations.json</code> ← <code>scripts/event_engine.py</code>(규칙 기반) · 파생물은 스케줄 워크플로가 갱신</div>`;
+}
+
 function renderSidebar(){
   const item=(key,label,cnt,on)=>`<button class="sb-item${on?" on":""}" data-key="${key}"><span>${esc(label)}</span><span class="kc">${cnt}</span></button>`;
   let h=item("__all","▦ 연간 캘린더","",curKey==="__all");
+  h+=item("__reco","📰 뉴스·추천·이벤트",(RECO.counts&&RECO.counts.recommendations)||"",curKey==="__reco");
   [...new Set(PRODUCTS.map(p=>p.cat))].forEach(cat=>{h+=`<div class="sb-cap">${cat}</div>`;
     PRODUCTS.filter(p=>p.cat===cat).forEach(p=>{h+=item(p.key,p.name,winsOf(p.key).length,curKey===p.key);});});
   $("#sbNav").innerHTML=h;
@@ -365,10 +458,25 @@ function renderProduct(){
     <div class="wins">${cards}</div>
     <div class="note"><b>활용</b> · 각 시즌 <b>선제 대응 시점</b>(보통 피크 3~4주 전)에 맞춰 <b>SEO 태그·검색광고 키워드·뉴스 모니터링</b>을 준비하세요. 키워드 칩은 네이버 검색, <b>데이터랩</b> 링크로 실제 검색 추세를 검증할 수 있습니다.</div>`;
 }
-function render(){curKey==="__all"?renderOverview():renderProduct();renderSidebar();window.scrollTo({top:0});}
-document.addEventListener("click",e=>{const nav=e.target.closest("[data-key]");if(nav&&nav.dataset.key){curKey=nav.dataset.key;render();}});
+function render(){curKey==="__reco"?renderReco():curKey==="__all"?renderOverview():renderProduct();renderSidebar();window.scrollTo({top:0});}
+document.addEventListener("click",e=>{
+  const f=e.target.closest("[data-rf]"); if(f){RF[f.dataset.rf]=f.dataset.rv;renderReco();return;}   // 필터: 사이드바 유지, 본문만 갱신
+  const cp=e.target.closest("[data-copy]"); if(cp){const t=cp.dataset.copy;
+    (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast("복사됨")).catch(()=>{
+      const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("복사됨");}catch(_){}ta.remove();});return;}
+  const nav=e.target.closest("[data-key]"); if(nav&&nav.dataset.key){curKey=nav.dataset.key;render();}
+});
+document.addEventListener("change",e=>{
+  if(e.target.id==="rfprod"){RF.product=e.target.value;renderReco();}
+  if(e.target.id==="rfev"){RF.event=e.target.value;renderReco();}
+});
 $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");try{localStorage.setItem("mf_theme",d?"light":"dark")}catch(_){};});
+// 해시로 뉴스·추천 직접 진입(#reco/#news/#event) · #season 등은 연간 캘린더(기본)
+const _hash=(location.hash||"").replace("#","");
+if(_hash==="reco"||_hash==="news"||_hash==="event")curKey="__reco";
 render();
+// 뉴스·추천·이벤트 산출물 로드(동일출처) — 로드 후 사이드바 카운트·본문 갱신
+fetch("data/events/recommendations.json").then(r=>r.ok?r.json():null).then(d=>{if(d){RECO=d;renderSidebar();if(curKey==="__reco")renderReco();}}).catch(()=>{});
 // 데이터랩 실측 추세 로드(Pages/서버 동일출처에서만 · 아티팩트/file은 조용히 생략)
 fetch("data/trends.json").then(r=>r.ok?r.json():null).then(d=>{if(d&&d.products){TRENDS=d;if(curKey!=="__all")render();}}).catch(()=>{});
 // 시즌 데이터 단일 소스(엔진·뉴스캘린더 공유). 배포 시 폴백을 실측 소스로 교체하고 재렌더.
