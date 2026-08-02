@@ -313,6 +313,7 @@ const EVIDENCE={
 };
 
 let curKey=PRODUCTS[0].key;
+let AD_ANALYSIS={};                          // 실측 관측 소재 분석(serp/ad_analysis.json · serp-tool과 공유)
 const MAIN=["driver","hrmf","golf"];        // 메인 3종(운전자·주택화재·골프)
 const getP=k=>PRODUCTS.find(p=>p.key===k);
 const uniq=a=>[...new Set(a)];
@@ -578,6 +579,7 @@ function render(){
   const evPanel = ev ? `<div class="ev">
     <div class="ev-row"><span class="ev-lb news">📰 뉴스 동향</span><div class="ev-tx">${esc(ev.news)}</div></div>
     <div class="ev-row"><span class="ev-lb comp">🎯 경쟁사 소구(SERP)</span><div class="ev-tx">${ev.comps.map(c=>`<b>${esc(c.who)}</b> ${esc(c.hook)}`).join("<br>")}</div></div>
+    ${AD_ANALYSIS[p.key]?`<div class="ev-row"><span class="ev-lb comp">🧪 실측 관측 소재</span><div class="ev-tx">경쟁 <b>공통 소구(회피·차별)</b>: ${(AD_ANALYSIS[p.key].common_soju||[]).map(esc).join(", ")||"—"}<br>관측 프로모션: ${(AD_ANALYSIS[p.key].promos||[]).slice(0,4).map(x=>esc(x[0])).join(" · ")||"—"} · 가격신호: ${(AD_ANALYSIS[p.key].prices||[]).map(esc).join(" · ")||"—"} <span style="color:var(--muted)">· <code>serp/ad_observations.json</code></span></div></div>`:""}
     <div class="ev-row"><span class="ev-lb ours">✅ 우리 대응 각도</span><div class="ev-tx">${esc(ev.ours)}</div></div>
     <div class="ev-links"><a href="news-tool.html" target="_blank" rel="noopener">뉴스 콘솔 ↗</a> · <a href="serp-tool.html" target="_blank" rel="noopener">SERP 아카이브 ↗</a></div>
   </div>` : "";
@@ -649,6 +651,8 @@ document.addEventListener("click",e=>{
 $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");try{localStorage.setItem("mf_theme",d?"light":"dark")}catch(_){};});
 render();
 Promise.all([loadBrandManifest(),loadVolume(),loadSignals()]).then(()=>{renderSidebar();render();}); // 경쟁사 브랜드검색 + 실측 검색량 + 기상특보(있으면)
+// 실측 관측 소재 분석(있으면) — 생성 문구의 경쟁 공통 소구 회피·차별 근거
+fetch("serp/ad_analysis.json").then(r=>r.ok?r.json():null).then(d=>{if(d&&d.products){AD_ANALYSIS=d.products;render();}}).catch(()=>{});
 </script>
 </body>
 </html>

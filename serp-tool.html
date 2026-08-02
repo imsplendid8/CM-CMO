@@ -420,6 +420,24 @@ function intelSection(p){
       <div class="box chg"><span class="lb">변화 분석</span>${esc(n.change)}</div>
     </div></div>`;
 }
+// 실측 관측 소재 분석(serp/ad_observations.json → ad_analysis.json · adcopy-tool과 공유 소스)
+let AD_ANALYSIS={},AD_OBS=[];
+function analysisSection(p){
+  const a=AD_ANALYSIS[p.key],obs=AD_OBS.filter(o=>o.product===p.key);
+  if(!a&&!obs.length)return "";
+  const chips=arr=>(arr&&arr.length)?arr.map(x=>`<span class="kwchip">${esc(x)}</span>`).join(" "):"<span style='color:var(--muted)'>관측 없음</span>";
+  const pairs=arr=>(arr&&arr.length)?arr.map(x=>`${esc(x[0])}${x[1]>1?` ×${x[1]}`:""}`).join(" · "):"—";
+  const rows=obs.map(o=>`<tr><td class="who">${esc(o.brand||"")}</td><td>${esc(o.title||"")}</td><td>${esc(o.desc||"")}</td><td>${esc(o.promo||"")}</td></tr>`).join("");
+  return `<div class="sec">
+    <div class="sec-h"><span class="t">🧪 실측 소재 분석</span><span class="sub">· 캡쳐에서 관측한 경쟁사 공개 광고 요소 · <code>serp/ad_observations.json</code></span></div>
+    <div class="sec-b">
+      ${a?`<div class="box"><span class="lb">경쟁 공통 소구 <small>(차별화 위해 회피·우회 대상)</small></span>${chips(a.common_soju)}</div>
+      <div class="box"><span class="lb">관측 프로모션</span>${pairs(a.promos)}</div>
+      <div class="box"><span class="lb">관측 가격 신호</span>${(a.prices&&a.prices.length)?a.prices.map(esc).join(" · "):"—"}</div>
+      <div class="box"><span class="lb">CTA 패턴</span>${pairs(a.cta)}</div>`:""}
+      ${rows?`<table><thead><tr><th>브랜드</th><th>관측 제목</th><th>관측 설명</th><th>프로모션</th></tr></thead><tbody>${rows}</tbody></table>`:""}
+    </div></div>`;
+}
 function renderProduct(){
   const p=getP(curKey);
   $("#pt").textContent=p.name; $("#pts").textContent=`· 대표키워드 "${p.kw}"`;
@@ -428,6 +446,7 @@ function renderProduct(){
       <a class="serplink" href="${serpUrl(p.kw)}" target="_blank" rel="noopener">네이버 PC 검색결과 열기 ↗</a></div></div>
     ${archiveSection(p)}
     ${intelSection(p)}
+    ${analysisSection(p)}
     <div class="note"><b>운영 방법</b> · 매주 같은 시점에 <b>네이버 PC 검색결과</b>를 캡처해 올리면 주차별 아카이브가 쌓이고, <b>전/후 비교</b>로 상단 광고주 교체·신규 진입·문구 변화를 한눈에 봅니다. 변화·소구포인트는 <b>뉴스 콘솔</b>의 동향과 함께 해석하세요. 스크린샷은 이 브라우저에만 저장되니 <b>⬇ 백업</b>으로 팀 공유·이관하세요.</div>`;
   // 비교 초기화
   const shots=shotsOf(p.key);
@@ -541,6 +560,9 @@ $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.ge
 if(location.protocol==="file:"){$("#fileBanner").hidden=false;} // 로컬(ZIP) 열람 시 자동 캡쳐 미표시 안내
 render();
 Promise.all([loadRepoManifest(),loadBrandManifest()]).then(()=>render()); // 리포 자동 캡쳐(상품 SERP + 경쟁사 브랜드검색) 반영(있으면)
+// 실측 관측 소재 분석(있으면) — adcopy-tool과 공유 소스
+fetch("serp/ad_analysis.json").then(r=>r.ok?r.json():null).then(d=>{if(d&&d.products){AD_ANALYSIS=d.products;render();}}).catch(()=>{});
+fetch("serp/ad_observations.json").then(r=>r.ok?r.json():null).then(d=>{if(d&&d.observations){AD_OBS=d.observations;render();}}).catch(()=>{});
 </script>
 </body>
 </html>
