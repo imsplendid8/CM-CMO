@@ -140,9 +140,6 @@ const TOOLS=[
  {id:"serp",icon:"🔭",name:"SERP 아카이브",tag:"SERP",file:"serp-tool.html",url:"https://claude.ai/code/artifact/72a87db9-596e-42b6-9d23-7b40f11d2fa3",ac:"#7c5cd6",
   desc:"대표키워드(PC) 네이버 검색결과를 매주 스크린샷 아카이빙하고, 전/후 시각 diff로 변화·경쟁사 소구포인트 분석.",
   feats:["주간 스크린샷 아카이브 + 전/후 비교","전/후 시각 diff 자동 변화감지","경쟁사 소구포인트·한화 상위노출 갭"]},
- {id:"season",icon:"🗓️",name:"시즌 캘린더",tag:"시즌",file:"seasonal-tool.html",url:"https://imsplendid8.github.io/CM-CMO/seasonal-tool.html",ac:"#d6456f",
-  desc:"상품별 계절 이슈·키워드를 한 장 연간 캘린더로 — 날씨 시즌은 정확 일자(예: 장마 6/20~7/25)로 표기. 뉴스·시즌 캘린더와 같은 단일 소스(data/seasonal.json)를 공유하고, 검색량 추세까지 보는 연간 상세 뷰.",
-  feats:["연간 마케팅 이슈 매트릭스(월×이슈)","날씨 시즌 = 정확 일자 span(월 전체 아님)","뉴스·시즌 이벤트 캘린더와 병합(데이터 단일 소스)"]},
  {id:"terms",icon:"📖",name:"약관 용어 변환",tag:"약관",file:"terms-tool.html",url:"https://imsplendid8.github.io/CM-CMO/terms-tool.html",ac:"#1f9d6b",
   desc:"보험 표준약관의 어려운 용어를 소비자가 이해하는 쉬운 표현으로 변환. 가입화면·검색광고·상세 카피 작성에 바로 복사.",
   feats:["표준약관 원문 → 소비자 쉬운 표현","용어 난이도 등급 + 활용 팁","분류·검색 + 원클릭 복사"]},
@@ -152,9 +149,9 @@ const TOOLS=[
  {id:"papers",icon:"📚",name:"논문 아카이브",tag:"참고",file:"papers-tool.html",url:"https://imsplendid8.github.io/CM-CMO/papers-tool.html",ac:"#5b6ee1",
   desc:"CM 다이렉트 마케팅 참고 논문을 매월 1일 네이버 학술 검색으로 자동 적립. 주제 필터·검색·원문 링크. 원문은 링크만, 요약은 공개 서지 기반.",
   feats:["월간 자동 적립(GitHub Actions)","주제별 필터 + 제목·요약 검색","원문 링크 · 담당자 참고 시사점"]},
- {id:"eventcal",icon:"🗓️",name:"뉴스·시즌 이벤트 캘린더",tag:"이벤트",file:"event-calendar.html",url:"https://imsplendid8.github.io/CM-CMO/event-calendar.html",ac:"#0ea5a0",
-  desc:"예정 이벤트·계절·기상·뉴스·검색량을 결합해 상품별 문구를 규칙 기반으로 추천. 이벤트 상태(예정·진행·종료·후속)·유효기간·근거·심의상태 표시. 📰 뉴스·추천 / 📅 시즌 캘린더 두 탭(시즌은 정확 일자). 모두 사람 검토 전 운영 후보.",
-  feats:["이벤트 상태머신 + 상품별 매핑(13종)","시즌 캘린더 탭(날씨 정확 일자) 통합 · 단일 소스","공포·압박·담보 단정 문구 생성 금지(가드레일)"]},
+ {id:"eventcal",icon:"🗓️",name:"시즌·이벤트 캘린더",tag:"캘린더",file:"event-calendar.html",url:"https://imsplendid8.github.io/CM-CMO/event-calendar.html",ac:"#0ea5a0",
+  desc:"시즌·이벤트 캘린더를 한 곳에서 — 📰 뉴스·추천(예정 이벤트·계절·기상·뉴스·검색량 결합 문구 추천) / 📅 시즌 캘린더(상품별 성수기·날씨 시즌, 정확 일자) 두 탭. 연간 매트릭스·검색량 추세는 시즌 탭의 ‘연간 상세’에서. 모두 사람 검토 전 운영 후보.",
+  feats:["뉴스·추천 + 시즌 두 탭 · 단일 소스(data/seasonal.json)","연간 매트릭스·데이터랩 검색량 추세(연간 상세)","이벤트 상태머신(13종) · 담보 단정 문구 금지(가드레일)"]},
 ];
 const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
 // 팀 공유 프록시(사용량 위젯·툴 실시간 연동에 사용)
@@ -202,12 +199,13 @@ function renderHome(){
     데이터·카피는 샘플·공개값 기준 · 광고 문구는 배포 전 광고심의 검수 · 검색량/입찰가는 각 광고 플랫폼에서 확정 · 뉴스 요약/시사점은 마케팅 분석(개인정보·영업비밀 미포함).</div>
   </div>`;
 }
-function show(id){
+function show(id,sub){                                  // sub = 툴 내부 딥링크(#해시) 선택
   if(id==="home"){home.style.display="block";frame.style.display="none";openTab.href="#";openTab.style.visibility="hidden";renderNav("home");location.hash="";loadUsage();return;}
   const t=TOOLS.find(x=>x.id===id); if(!t)return;
-  openTab.href=LOCAL?t.file:t.url; openTab.style.visibility="visible";
-  if(LOCAL){ home.style.display="none"; frame.style.display="block"; if(frame.getAttribute("src")!==t.file)frame.src=t.file; }
-  else { window.open(t.url,"_blank","noopener"); }   // 아티팩트에선 iframe이 막히므로 새 탭
+  const suffix=sub||"";
+  openTab.href=(LOCAL?t.file:t.url)+suffix; openTab.style.visibility="visible";
+  if(LOCAL){ home.style.display="none"; frame.style.display="block"; const src=t.file+suffix; if(frame.getAttribute("src")!==src)frame.src=src; }
+  else { window.open(t.url+suffix,"_blank","noopener"); }   // 아티팩트에선 iframe이 막히므로 새 탭
   renderNav(id); location.hash=id;
 }
 document.addEventListener("click",e=>{
@@ -261,8 +259,13 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")closeKeys();});
 renderHome();
 loadUsage();
 const start=(location.hash||"").replace("#","");
+// 레거시 딥링크 보존: 예전 '시즌 캘린더' 카드(#season)는 통합 캘린더의 시즌 탭으로
+const LEGACY_HASH={season:["eventcal","#season"]};
 renderNav("home");
-if(start&&TOOLS.some(t=>t.id===start)&&LOCAL){show(start);} else {show("home");}
+const lg=LEGACY_HASH[start];
+if(lg&&LOCAL){show(lg[0],lg[1]);}
+else if(start&&TOOLS.some(t=>t.id===start)&&LOCAL){show(start);}
+else {show("home");}
 </script>
 </body>
 </html>

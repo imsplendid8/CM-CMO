@@ -71,6 +71,10 @@ select{border:1px solid var(--line);background:var(--surface);color:var(--ink);b
 .empty{padding:30px;text-align:center;color:var(--muted);font-size:13px;}
 .foot{font-size:10.5px;color:var(--muted);margin-top:22px;border-top:1px solid var(--line);padding-top:12px;line-height:1.6;}
 .foot a{color:var(--brand-600);font-weight:700;text-decoration:none;}
+.cta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--brand-tint);border:1px solid var(--brand-50);border-radius:var(--r);padding:12px 15px;margin:12px 0 4px;}
+.cta .ct{font-size:12px;font-weight:700;color:var(--ink-2);line-height:1.5;} .cta .ct b{color:var(--brand-600);}
+.cta a{margin-left:auto;background:var(--brand);color:#fff;font-size:12px;font-weight:800;text-decoration:none;padding:8px 14px;border-radius:9px;white-space:nowrap;}
+.cta a:hover{background:var(--brand-600);}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:99px;font-size:12px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:60;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
@@ -123,6 +127,7 @@ function renderSeason(){
     </div>`).join("")).join("");
   w.innerHTML=tabBar()+`
     <div class="banner">📅 <b>연간 시즌 이슈 캘린더</b> · 상품별 성수기·날씨 시즌. <b>날씨 시즌은 정확 일자(🗓️)</b>로 표기 — 월 전체가 아닙니다. 엔진 추천과 <b>같은 소스</b>(<code>data/seasonal.json</code>). 기준 ${esc(DATA.asof)} · 이번 달 ${cur}월.</div>
+    <div class="cta"><div class="ct">📅 <b>연간 매트릭스(월×이슈) 한 장</b> · 📈 <b>데이터랩 검색량 추세</b> · 상품별 연간 타임라인은 연간 상세에서.</div><a href="seasonal-tool.html">연간 상세 열기 →</a></div>
     <div class="sec-lbl">진행 중(오늘 ${esc(DATA.asof||"")}) <b>(${now.length})</b> · 날씨 시즌은 정확 일자 기준</div>
     ${now.length?now.map(({pk,w})=>`<div class="uc"><div class="t">${esc(pname(pk))} · ${esc(w.tag)}</div><div class="m">${w.span?"🗓️ "+esc(spanText(w)):esc(mrange(w.m))}</div></div>`).join(""):`<div class="empty">오늘 활성 시즌 없음</div>`}
     ${blocks}
