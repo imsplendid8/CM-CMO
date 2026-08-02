@@ -35,6 +35,7 @@ LEAD_DAYS = 21          # upcoming→emerging 경계(예정일 앞)
 TAIL_DAYS = 7           # active→cooling 경계(종료일 뒤)
 COOLDOWN_DAYS = 14      # 같은 fingerprint 재추천 금지 기간
 RECENT_NEWS_DAYS = 10   # follow_up 판정용 뉴스 최신성 임계(일) — 오래된 기사로 follow_up 승격 방지
+SEASON_UPCOMING_DAYS = 45  # 시즌 span upcoming 허용 지평(일) — 이보다 먼 미래 인스턴스는 무시(연중 upcoming 방지)
 STATES = ("upcoming", "emerging", "active", "cooling", "ended", "follow_up")
 
 # 가드레일: 생성 금지 표현(공포 조장 / 사건 이용 압박 / 담보·보험금 단정 / 과장·최상급)
@@ -176,6 +177,9 @@ def state_from_span(today, spans):
             if e < s:                       # 연말→연초 wrap: 종료는 다음 해
                 e = _mmdd(sp[1], yr + 1)
             st = state_from_dates(today, s, e)
+            # 너무 이른 미래 인스턴스(예: 내년 겨울)는 무시 — 연중 upcoming 방지(월 기준과 유사하게 경계)
+            if st == "upcoming" and (s - today).days > SEASON_UPCOMING_DAYS:
+                continue
             if _SPAN_RANK.get(st, 0) > _SPAN_RANK.get(best, 0):
                 best = st
     return best

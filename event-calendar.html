@@ -100,6 +100,10 @@ function render(){TAB==="season"?renderSeason():renderReco();window.scrollTo({to
 function mrange(ms){const s=(ms||[]).slice().sort((a,b)=>a-b);let out=[],i=0;while(i<s.length){let j=i;while(j+1<s.length&&s[j+1]===s[j]+1)j++;out.push(s[i]===s[j]?`${s[i]}월`:`${s[i]}~${s[j]}월`);i=j+1;}return out.join(", ");}
 function curMonth(){const t=DATA.asof?new Date(DATA.asof+"T00:00:00"):new Date();return t.getMonth()+1;}
 function spanText(w){return (w.span||[]).map(sp=>`${String(sp[0]).replace("-","/")}~${String(sp[1]).replace("-","/")}`).join(", ");}
+function todayMD(){const t=DATA.asof?new Date(DATA.asof+"T00:00:00"):new Date();return (t.getMonth()+1)*100+t.getDate();}
+function activeNow(w){ // span 있으면 정확 일자로(연말→연초 wrap), 없으면 월 기준
+  if(w.span&&w.span.length){const md=todayMD();return w.span.some(sp=>{const a=+String(sp[0]).replace("-",""),b=+String(sp[1]).replace("-","");return a<=b?(md>=a&&md<=b):(md>=a||md<=b);});}
+  return (w.m||[]).includes(curMonth());}
 function monthStrip(w){const cur=curMonth();let c="";for(let m=1;m<=12;m++){const on=(w.m||[]).includes(m);c+=`<span class="ms${on?" on":""}${m===cur?" cur":""}">${m}</span>`;}return `<div class="mstrip">${c}</div>`;}
 function renderSeason(){
   const w=$("#wrap");
@@ -108,10 +112,10 @@ function renderSeason(){
       .catch(()=>{w.innerHTML=tabBar()+`<div class="banner">${location.protocol==="file:"?`⚠️ <b>로컬 파일로 열림.</b> <code>data/seasonal.json</code> 로드 불가 — 배포 주소로 여세요.`:"시즌 데이터를 불러올 수 없습니다."}</div>`;});
     return;}
   const cur=curMonth(),pname=pk=>PRODNAMES[pk]||pk;
-  const now=[];Object.entries(SEASON).forEach(([pk,wins])=>(wins||[]).forEach(x=>{if((x.m||[]).includes(cur))now.push({pk,w:x});}));
+  const now=[];Object.entries(SEASON).forEach(([pk,wins])=>(wins||[]).forEach(x=>{if(activeNow(x))now.push({pk,w:x});}));
   const blocks=Object.entries(SEASON).map(([pk,wins])=>`<div class="sec-lbl" style="margin-top:18px">${esc(pname(pk))}</div>`+
     (wins||[]).map(x=>`<div class="card">
-      <div class="card-h"><span class="prod">${esc(x.tag)}</span>${x.span?`<span class="tr-chip" title="정확 일자 기간">🗓️ ${esc(spanText(x))}</span>`:`<span class="ev">${esc(mrange(x.m))}</span>`}${(x.m||[]).includes(cur)?`<span class="st active">이번 달</span>`:""}</div>
+      <div class="card-h"><span class="prod">${esc(x.tag)}</span>${x.span?`<span class="tr-chip" title="정확 일자 기간">🗓️ ${esc(spanText(x))}</span>`:`<span class="ev">${esc(mrange(x.m))}</span>`}${activeNow(x)?`<span class="st active">진행 중</span>`:""}</div>
       ${monthStrip(x)}
       ${x.why?`<div class="fact">💡 ${esc(x.why)}</div>`:""}
       ${x.act?`<div class="meta"><b>실행</b> ${esc(x.act)}</div>`:""}
@@ -119,8 +123,8 @@ function renderSeason(){
     </div>`).join("")).join("");
   w.innerHTML=tabBar()+`
     <div class="banner">📅 <b>연간 시즌 이슈 캘린더</b> · 상품별 성수기·날씨 시즌. <b>날씨 시즌은 정확 일자(🗓️)</b>로 표기 — 월 전체가 아닙니다. 엔진 추천과 <b>같은 소스</b>(<code>data/seasonal.json</code>). 기준 ${esc(DATA.asof)} · 이번 달 ${cur}월.</div>
-    <div class="sec-lbl">이번 달(${cur}월) 진행 <b>(${now.length})</b></div>
-    ${now.length?now.map(({pk,w})=>`<div class="uc"><div class="t">${esc(pname(pk))} · ${esc(w.tag)}</div><div class="m">${w.span?"🗓️ "+esc(spanText(w)):esc(mrange(w.m))}</div></div>`).join(""):`<div class="empty">이번 달 활성 시즌 없음</div>`}
+    <div class="sec-lbl">진행 중(오늘 ${esc(DATA.asof||"")}) <b>(${now.length})</b> · 날씨 시즌은 정확 일자 기준</div>
+    ${now.length?now.map(({pk,w})=>`<div class="uc"><div class="t">${esc(pname(pk))} · ${esc(w.tag)}</div><div class="m">${w.span?"🗓️ "+esc(spanText(w)):esc(mrange(w.m))}</div></div>`).join(""):`<div class="empty">오늘 활성 시즌 없음</div>`}
     ${blocks}
     <div class="foot">데이터: <code>data/seasonal.json</code> (엔진·캘린더 공유 단일 소스) · <a href="seasonal-tool.html">연간 상세·검색량 추세 →</a> · <a href="index.html">← 통합 콘솔</a></div>`;
 }

@@ -220,6 +220,20 @@ class TestSeasonalSpan(unittest.TestCase):
         ev = [e for e in out["events"] if e["id"].startswith("season-hrmf")][0]
         self.assertEqual(ev["state"], "active")          # 7월 → 월 기준 active
 
+    def test_span_not_upcoming_far_from_season(self):
+        # 겨울 span(12-01~02-10)이 5월엔 upcoming으로 연중 노출되지 않아야 함(ended)
+        winter = [["12-01", "02-10"]]
+        self.assertEqual(ee.state_from_span(date(2026, 5, 1), winter), "ended")
+        # 시즌 임박(45일 이내)엔 upcoming
+        self.assertEqual(ee.state_from_span(date(2026, 11, 1), winter), "upcoming")
+
+    def test_span_out_of_window_makes_no_reco(self):
+        # 월엔 안 걸리고 span도 먼 겨울 → 5월 실행 시 추천 생성 안 됨
+        seasonal = {"hrmf": [{"tag": "겨울 동파", "m": [12, 1, 2], "kws": ["동파"],
+                              "span": [["12-01", "02-10"]]}]}
+        out = ee.run(bundle(seasonal=seasonal), date(2026, 5, 1))
+        self.assertFalse([r for r in out["recommendations"] if r["event_id"].startswith("season-hrmf")])
+
 
 class TestRobustness(unittest.TestCase):
     """불완전·악의적 입력에 대한 방어(조용히 정상처리하지 않고 skip/미분류)."""

@@ -269,6 +269,9 @@ const winsOf=k=>SEASONAL[k]||[];
 function mrange(ms){const s=ms.slice().sort((a,b)=>a-b);// 연속 구간 표기
   let out=[],i=0;while(i<s.length){let j=i;while(j+1<s.length&&s[j+1]===s[j]+1)j++;out.push(s[i]===s[j]?`${s[i]}월`:`${s[i]}~${s[j]}월`);i=j+1;}return out.join(", ");}
 function spanRange(w){return (w.span||[]).map(sp=>String(sp[0]).replace("-","/")+"~"+String(sp[1]).replace("-","/")).join(", ");}  // 날씨 시즌 정확 일자
+function activeNow(w){ // span 있으면 오늘 일자로(연말→연초 wrap), 없으면 이번 달 기준
+  if(w.span&&w.span.length){const t=new Date(),md=(t.getMonth()+1)*100+t.getDate();return w.span.some(sp=>{const a=+String(sp[0]).replace("-",""),b=+String(sp[1]).replace("-","");return a<=b?(md>=a&&md<=b):(md>=a||md<=b);});}
+  return (w.m||[]).includes(CURM);}
 function searchUrl(kw){return "https://search.naver.com/search.naver?query="+encodeURIComponent(kw);}
 const DATALAB="https://datalab.naver.com/keyword/trendSearch.naver";
 let curKey="__all";
@@ -305,7 +308,7 @@ function chip(kw){return `<a class="chip" href="${searchUrl(kw)}" target="_blank
 function renderOverview(){
   $("#pt").textContent="연간 시즈널 캘린더"; $("#pts").textContent=`· ${MONTHS[CURM-1]} 기준`;
   // 이번 달 주목: curMonth 포함 윈도우
-  const now=[];PRODUCTS.forEach(p=>winsOf(p.key).forEach(w=>{if(w.m.includes(CURM))now.push({p,w});}));
+  const now=[];PRODUCTS.forEach(p=>winsOf(p.key).forEach(w=>{if(activeNow(w))now.push({p,w});}));
   now.sort((a,b)=>(MAIN.has(b.p.key)?1:0)-(MAIN.has(a.p.key)?1:0));
   const nextM=CURM%12+1;const next=[];PRODUCTS.forEach(p=>winsOf(p.key).forEach(w=>{if(w.m.includes(nextM)&&!w.m.includes(CURM))next.push(p.name+" · "+w.tag);}));
   const totalWins=PRODUCTS.reduce((s,p)=>s+winsOf(p.key).length,0);
@@ -345,7 +348,7 @@ function renderProduct(){
   // 연간 타임라인: 각 월에 커버 여부
   const tl=MONTHS.map((mm,i)=>{const m=i+1;const w=wins.find(w=>w.m.includes(m));const s=w?seasonOf(w.m):null;
     return `<div class="mo${m===CURM?" now":""}" ${w?`style="background:${SEASON[s][2]};color:${SEASON[s][1]};border-color:${SEASON[s][1]}"`:""} title="${w?esc(w.tag):""}">${m}</div>`;}).join("");
-  const cards=wins.map(w=>{const s=seasonOf(w.m),sc=SEASON[s];const active=w.m.includes(CURM);
+  const cards=wins.map(w=>{const s=seasonOf(w.m),sc=SEASON[s];const active=activeNow(w);
     return `<div class="win" style="--sc:${sc[1]};--scb:${sc[2]}">
       <div class="win-h"><span class="mrange">${w.span?"🗓️ "+esc(spanRange(w)):esc(mrange(w.m))}</span><span class="tag">${esc(w.tag)}</span>
         <span class="season">${sc[0]}${active?" · 이번 달 ●":""}</span></div>
