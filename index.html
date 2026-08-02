@@ -199,12 +199,13 @@ function renderHome(){
     데이터·카피는 샘플·공개값 기준 · 광고 문구는 배포 전 광고심의 검수 · 검색량/입찰가는 각 광고 플랫폼에서 확정 · 뉴스 요약/시사점은 마케팅 분석(개인정보·영업비밀 미포함).</div>
   </div>`;
 }
-function show(id){
+function show(id,sub){                                  // sub = 툴 내부 딥링크(#해시) 선택
   if(id==="home"){home.style.display="block";frame.style.display="none";openTab.href="#";openTab.style.visibility="hidden";renderNav("home");location.hash="";loadUsage();return;}
   const t=TOOLS.find(x=>x.id===id); if(!t)return;
-  openTab.href=LOCAL?t.file:t.url; openTab.style.visibility="visible";
-  if(LOCAL){ home.style.display="none"; frame.style.display="block"; if(frame.getAttribute("src")!==t.file)frame.src=t.file; }
-  else { window.open(t.url,"_blank","noopener"); }   // 아티팩트에선 iframe이 막히므로 새 탭
+  const suffix=sub||"";
+  openTab.href=(LOCAL?t.file:t.url)+suffix; openTab.style.visibility="visible";
+  if(LOCAL){ home.style.display="none"; frame.style.display="block"; const src=t.file+suffix; if(frame.getAttribute("src")!==src)frame.src=src; }
+  else { window.open(t.url+suffix,"_blank","noopener"); }   // 아티팩트에선 iframe이 막히므로 새 탭
   renderNav(id); location.hash=id;
 }
 document.addEventListener("click",e=>{
@@ -258,8 +259,13 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")closeKeys();});
 renderHome();
 loadUsage();
 const start=(location.hash||"").replace("#","");
+// 레거시 딥링크 보존: 예전 '시즌 캘린더' 카드(#season)는 통합 캘린더의 시즌 탭으로
+const LEGACY_HASH={season:["eventcal","#season"]};
 renderNav("home");
-if(start&&TOOLS.some(t=>t.id===start)&&LOCAL){show(start);} else {show("home");}
+const lg=LEGACY_HASH[start];
+if(lg&&LOCAL){show(lg[0],lg[1]);}
+else if(start&&TOOLS.some(t=>t.id===start)&&LOCAL){show(start);}
+else {show("home");}
 </script>
 </body>
 </html>
