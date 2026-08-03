@@ -160,20 +160,42 @@ def build_message():
     parts += ["", f"🔭 전체 대시보드 → https://{HUB}"]
     return "\n".join(parts)
 
+def recipients():
+    """수신자 chat_id 목록. TELEGRAM_CHAT_IDS(콤마/줄바꿈 다중) 우선, 없으면 TELEGRAM_CHAT_ID(단일).
+    chat_id 는 개인 식별자라 저장소에 커밋하지 않고 GitHub Secrets 로만 주입한다."""
+    raw = os.environ.get("TELEGRAM_CHAT_IDS") or os.environ.get("TELEGRAM_CHAT_ID") or ""
+    seen, out = set(), []
+    for c in raw.replace("\n", ",").replace(";", ",").split(","):
+        c = c.strip()
+        if c and c not in seen:
+            seen.add(c)
+            out.append(c)
+    return out
+
+
 def send_telegram(text):
     token = os.environ.get("TELEGRAM_BOT_TOKEN")
-    chat = os.environ.get("TELEGRAM_CHAT_ID")
-    if not (token and chat):
-        print("TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID 미설정", file=sys.stderr)
+    chats = recipients()
+    if not (token and chats):
+        print("TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_IDS(또는 TELEGRAM_CHAT_ID) 미설정", file=sys.stderr)
         sys.exit(2)
     if len(text) > 4000:                      # 텔레그램 메시지 한도(4096) 보호
         text = text[:3980] + "\n…(생략)"
-    data = urllib.parse.urlencode({"chat_id": chat, "text": text, "disable_web_page_preview": "true"}).encode()
-    req = urllib.request.Request(f"https://api.telegram.org/bot{token}/sendMessage", data=data)
-    with urllib.request.urlopen(req, timeout=15) as r:
-        ok = json.load(r).get("ok")
-    print("텔레그램 발송:", "성공" if ok else "실패")
-    if not ok:
+    sent, failed = 0, 0
+    for chat in chats:
+        data = urllib.parse.urlencode({"chat_id": chat, "text": text,
+                                       "disable_web_page_preview": "true"}).encode()
+        req = urllib.request.Request(f"https://api.telegram.org/bot{token}/sendMessage", data=data)
+        try:
+            with urllib.request.urlopen(req, timeout=15) as r:
+                ok = json.load(r).get("ok")
+        except Exception as e:                # 한 명 실패가 다른 수신자 발송을 막지 않게
+            ok = False
+            print(f"  · {chat}: 예외 {e}", file=sys.stderr)
+        sent += 1 if ok else 0
+        failed += 0 if ok else 1
+    print(f"텔레그램 발송: 성공 {sent}/{len(chats)}" + (f" · 실패 {failed}" if failed else ""))
+    if sent == 0:
         sys.exit(1)
 
 if __name__ == "__main__":
