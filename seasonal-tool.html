@@ -141,6 +141,7 @@ table.mcal thead th.rl{z-index:3;}
 .crumb:hover{color:var(--brand-600);}
 .datalab{font-size:11px;font-weight:700;color:var(--brand-600);text-decoration:none;} .datalab:hover{text-decoration:underline;}
 /* 뉴스·추천·이벤트 뷰 (event_engine 산출물) */
+.kpi-row.rkpis{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));}
 .rbanner{background:var(--brand-tint);border:1px solid var(--brand-50);border-radius:var(--r-sm);padding:11px 14px;font-size:12px;color:var(--ink-2);line-height:1.65;margin-bottom:14px;}
 .rbanner b{color:var(--brand-600);}
 .rfilters{display:flex;gap:14px;flex-wrap:wrap;margin:2px 0 16px;align-items:center;}
@@ -373,7 +374,7 @@ function renderReco(){
   const uc=RECO.unclassified||[];
   c.innerHTML=`
     <div class="rbanner"><b>규칙 기반 추천 · 사람 검토 전</b> — 모든 문구는 <b>상품 근거 미확인 · 심의 검토 전 · 운영 후보</b>입니다. 공포·압박·담보 단정 문구는 생성하지 않으며, 분류 불확실 뉴스는 아래 <b>검토 큐</b>로 보냅니다. 이벤트 소스 = 캘린더·시즌·기상신호·뉴스 클리핑·검색량(시즌 데이터는 이 캘린더와 <b>단일 소스</b>).</div>
-    <div class="kpi-row">${kpi(cc.events||0,"이벤트")}${kpi(cc.recommendations||0,"추천(운영 후보)")}${kpi(cc.transitions||0,"상태 전이")}${kpi(cc.unclassified||0,"미분류 검토 큐")}</div>
+    <div class="kpi-row rkpis">${kpi(cc.events||0,"이벤트")}${kpi(cc.recommendations||0,"추천(운영 후보)")}${kpi(cc.transitions||0,"상태 전이")}${kpi(cc.suppressed_cooldown||0,"cooldown 억제")}${kpi(cc.unclassified||0,"미분류 검토 큐")}</div>
     <div class="rfilters">
       <div class="rfgroup"><span class="lb">기간</span>${fchip("win","0","오늘")}${fchip("win","7","7일")}${fchip("win","30","30일")}${fchip("win","all","전체")}</div>
       <div class="rfgroup"><span class="lb">상태</span>${fchip("state","all","전체")}${fchip("state","예정","예정")}${fchip("state","진행","진행")}${fchip("state","종료","종료")}${fchip("state","후속","후속")}</div>
@@ -459,21 +460,30 @@ function renderProduct(){
     <div class="note"><b>활용</b> · 각 시즌 <b>선제 대응 시점</b>(보통 피크 3~4주 전)에 맞춰 <b>SEO 태그·검색광고 키워드·뉴스 모니터링</b>을 준비하세요. 키워드 칩은 네이버 검색, <b>데이터랩</b> 링크로 실제 검색 추세를 검증할 수 있습니다.</div>`;
 }
 function render(){curKey==="__reco"?renderReco():curKey==="__all"?renderOverview():renderProduct();renderSidebar();window.scrollTo({top:0});}
+// 뷰 ↔ URL 해시 동기화(새로고침·뒤로가기·레거시 리다이렉트 #reco 보존). 상품은 상품키를 해시로.
+function hashFor(key){return key==="__reco"?"reco":key==="__all"?"cal":key;}   // 상품키는 그대로
+function keyFromHash(h){h=(h||"").replace("#","");
+  if(h==="reco"||h==="news"||h==="event")return "__reco";
+  if(!h||h==="cal"||h==="season")return "__all";
+  return PRODUCTS.some(p=>p.key===h)?h:null;}
+function syncHash(key){const h=hashFor(key);
+  if(location.hash!=="#"+h)location.hash=h;}                             // 뷰 전환마다 히스토리 항목 → 뒤로/앞으로 복원(hashchange가 동일 키면 무시)
+function go(key){curKey=key;render();syncHash(key);}
 document.addEventListener("click",e=>{
-  const f=e.target.closest("[data-rf]"); if(f){RF[f.dataset.rf]=f.dataset.rv;renderReco();return;}   // 필터: 사이드바 유지, 본문만 갱신
+  const f=e.target.closest("[data-rf]"); if(f){RF[f.dataset.rf]=f.dataset.rv;renderReco();return;}   // 필터: 사이드바·해시 유지, 본문만 갱신
   const cp=e.target.closest("[data-copy]"); if(cp){const t=cp.dataset.copy;
     (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast("복사됨")).catch(()=>{
       const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("복사됨");}catch(_){}ta.remove();});return;}
-  const nav=e.target.closest("[data-key]"); if(nav&&nav.dataset.key){curKey=nav.dataset.key;render();}
+  const nav=e.target.closest("[data-key]"); if(nav&&nav.dataset.key)go(nav.dataset.key);
 });
 document.addEventListener("change",e=>{
   if(e.target.id==="rfprod"){RF.product=e.target.value;renderReco();}
   if(e.target.id==="rfev"){RF.event=e.target.value;renderReco();}
 });
+window.addEventListener("hashchange",()=>{const k=keyFromHash(location.hash);if(k&&k!==curKey){curKey=k;render();}});
 $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");try{localStorage.setItem("mf_theme",d?"light":"dark")}catch(_){};});
-// 해시로 뉴스·추천 직접 진입(#reco/#news/#event) · #season 등은 연간 캘린더(기본)
-const _hash=(location.hash||"").replace("#","");
-if(_hash==="reco"||_hash==="news"||_hash==="event")curKey="__reco";
+// 진입 해시로 초기 뷰 결정(#reco/#news/#event → 뉴스·추천, 상품키 → 해당 상품, 그 외 → 연간 캘린더)
+const _k0=keyFromHash(location.hash); if(_k0)curKey=_k0;
 render();
 // 뉴스·추천·이벤트 산출물 로드(동일출처) — 로드 후 사이드바 카운트·본문 갱신
 fetch("data/events/recommendations.json").then(r=>r.ok?r.json():null).then(d=>{if(d){RECO=d;renderSidebar();if(curKey==="__reco")renderReco();}}).catch(()=>{});
