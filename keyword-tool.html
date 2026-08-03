@@ -138,7 +138,7 @@ td.kw{font-weight:700;color:var(--ink);white-space:normal;} td.c{text-align:cent
           <button data-pf="구글">구글</button>
           <button data-pf="AI">AI검색</button>
         </div>
-        <button class="btn primary" id="expNaver" title="네이버 검색광고 대량등록용 · 캠페인=상품 / 광고그룹=인텐트 · 네이버 전용(구글·AI 제외)">네이버 대량등록</button>
+        <button class="btn primary" id="expNaver" title="네이버 검색광고 바로등록용 — 대량등록 컬럼만(월검색량·경쟁도 등 분석열 제외) · 입찰가 70원 자동 채움 · 캠페인=상품/광고그룹=인텐트(그룹 유지) · 각 광고그룹 내 검색량순">네이버 바로등록(70원)</button>
         <button class="btn" id="exp" title="전체 키워드 CSV(플랫폼·매치타입 포함)">CSV 내보내기</button>
         <button class="icon-btn" id="themeBtn" title="테마">◐</button>
       </div>
@@ -356,7 +356,7 @@ function renderProduct(){
       <span style="margin-left:auto;font-size:11.5px;color:var(--muted)">광고그룹 = 이 상품</span></div>
       <div class="seeds">${p.core.map(c=>`<span class="seed">${esc(c)}</span>`).join("")}${p.special.map(s=>`<span class="seed" style="background:var(--surface-2);color:var(--ink-2)">+${esc(s)}</span>`).join("")}</div></div>
     ${productBody(p)}
-    <div class="note"><b>바로 활용</b> · 우측 상단 <b>네이버 대량등록</b>(캠페인=상품 / 광고그룹=인텐트, 네이버 전용)으로 검색광고 업로드용 파일을, <b>CSV 내보내기</b>로 전체(구글·AI 포함) 파일을 받으세요. 입찰가·연결URL은 등록 화면에서 확정. 거래형=구문/일치로 좁게, 정보형=확장으로 넓게, AI검색=페이지 FAQ로 대응.</div>`;
+    <div class="note"><b>바로 활용</b> · 우측 상단 <b>네이버 바로등록(70원)</b>은 <b>대량등록 컬럼만</b>(캠페인 유형·이름·광고그룹·키워드·입찰가·연결URL) 담고 <b>입찰가를 70원으로 채워</b> 내려줍니다(캠페인=상품·광고그룹=인텐트로 묶고, <b>각 광고그룹 안에서 검색량 높은 순</b>) — <b>연결URL만 채우면 바로 업로드</b>. 분석용(월검색량·경쟁도 포함) 전체 파일은 <b>CSV 내보내기</b>로. 입찰가는 등록 후 성과 보며 조정, 거래형=구문/일치로 좁게·정보형=확장으로 넓게.</div>`;
 }
 function renderPro(){
   $("#pt").textContent="범용 키워드 생성"; $("#pts").textContent="· 모든 업종 재사용";
@@ -397,27 +397,34 @@ function exportCsv(){
   toast(`CSV 내보내기 (${rows.length-1}개 키워드)`);
 }
 
-/* 네이버 검색광고 대량등록용 — 캠페인=상품 / 광고그룹=인텐트, 네이버 대상만(구글·AI 제외) */
+/* 네이버 검색광고 '바로 등록'용 — 분석열 없이 대량등록 컬럼만 · 입찰가 70원 채움 · 캠페인=상품 / 광고그룹=인텐트
+   (월검색량·경쟁도 등 분석 컬럼은 제외 — 그건 CSV 내보내기로. 검색량 있으면 '뜨는' 키워드 우선 정렬) */
+const DEFAULT_BID=70;   // 실등록 시작 입찰가(원) — 등록 후 성과 보며 조정
 function exportNaverBulk(){
   if(curKey==="__pro"&&!PROSEED){toast("먼저 범용 키워드를 생성하세요");return;}
   const list = curKey==="__all" ? PRODUCTS : [getP(curKey)];
-  const header=["캠페인 유형","캠페인 이름","광고그룹 이름","키워드","키워드 입찰가","연결URL(PC)","연결URL(모바일)","인텐트","월PC검색량","월모바일검색량","경쟁도"];
+  const vh=hasVol();
+  const header=["캠페인 유형","캠페인 이름","광고그룹 이름","키워드","키워드 입찰가","연결URL(PC)","연결URL(모바일)"];
   const INTENT_ORDER=["거래","브랜드","담보","정보"];
+  const vsum=kw=>{const v=volOf(kw);return v?((v.pc||0)+(v.mobile||0)):-1;};   // 검색량 합(없으면 -1 → 뒤로)
   const rows=[header]; let n=0;
   list.forEach(p=>{ if(!p)return;
-    const kws=filt(rowsOf(p.key)).filter(r=>r.pf!=="구글" && r.intent!=="AI"); // 네이버 대상만
+    const kws=filt(rowsOf(p.key)).filter(r=>r.pf!=="구글" && r.intent!=="AI"); // 네이버 파워링크 대상만
     const by={}; kws.forEach(r=>{(by[r.intent]=by[r.intent]||[]).push(r);});
     const camp=`CM_파워링크_${p.name}`;
     const order=INTENT_ORDER.concat(Object.keys(by).filter(i=>!INTENT_ORDER.includes(i)));
-    order.forEach(intent=>{(by[intent]||[]).forEach(r=>{const v=volOf(r.kw);
-      rows.push(["파워링크",camp,`${p.name} · ${intent}`,r.kw,"","","",r.intent,v?v.pc:"",v?v.mobile:"",v?v.comp||"":""]);n++;});});
+    order.forEach(intent=>{
+      let g=by[intent]||[];
+      if(vh) g=g.slice().sort((a,b)=>vsum(b.kw)-vsum(a.kw));   // 월간 검색량 '뜨는' 키워드 우선
+      g.forEach(r=>{rows.push(["파워링크",camp,`${p.name} · ${intent}`,r.kw,DEFAULT_BID,"",""]);n++;});
+    });
   });
   if(!n){toast("네이버 대상 키워드가 없습니다(구글·AI 제외)");return;}
   const csv="﻿"+rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(",")).join("\n");
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
   const nm=curKey==="__all"?"전체":(getP(curKey)?.name||"상품");
-  a.download=`네이버대량등록_${nm}_${new Date().toISOString().slice(0,10)}.csv`;a.click();
-  toast(`네이버 대량등록 파일 · ${n}키워드 (광고그룹=상품×인텐트)`);
+  a.download=`네이버_바로등록_${nm}_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+  toast(`네이버 바로등록 · ${n}키워드 · 입찰가 ${DEFAULT_BID}원`+(vh?" · 광고그룹 내 검색량순":"")+" (연결URL만 채우면 등록)");
 }
 
 document.addEventListener("click",e=>{
