@@ -29,7 +29,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 .logo{display:flex;align-items:center;gap:9px;flex:0 0 auto;text-decoration:none;color:inherit;}
 .logo .m{width:30px;height:30px;border-radius:9px;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;box-shadow:0 2px 8px rgba(224,133,15,.35);}
 .logo b{font-size:14.5px;font-weight:800;letter-spacing:-.03em;} .logo small{display:block;font-size:9px;color:var(--muted);font-weight:600;letter-spacing:0;}
-.nav{display:flex;align-items:center;gap:4px;flex:1;overflow:visible;}   /* 4개(홈·도구▾·전체안내·위키)라 스크롤 불필요 — 드롭다운이 잘리지 않게 visible */
+.nav{display:flex;align-items:center;gap:4px;flex:1;min-width:0;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;}  /* 좁은 화면에서 가로 스크롤(헤더 밖으로 안 밀림) · 드롭다운은 fixed라 안 잘림 */
+.nav::-webkit-scrollbar{height:0;}
 .navb{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:9px;border:none;background:none;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--ink-2);cursor:pointer;white-space:nowrap;transition:.14s;position:relative;}
 .navb .ic{font-size:14px;opacity:.9;}
 .navb:hover{background:var(--surface-2);color:var(--ink);}
@@ -38,7 +39,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 /* 도구 드롭다운(메뉴 압축 — 12개 가로나열 대신 그룹 드롭다운) */
 .navdd{position:relative;flex:0 0 auto;}
 .ddbtn .cx{opacity:.55;font-size:10px;margin-left:1px;}
-.ddpanel{position:absolute;top:100%;left:0;margin-top:7px;min-width:240px;background:var(--surface);border:1px solid var(--line);border-radius:13px;box-shadow:var(--sh-lg);padding:7px;display:none;z-index:40;max-height:calc(100vh - 70px);overflow-y:auto;}
+.ddpanel{position:fixed;min-width:240px;max-width:calc(100vw - 16px);background:var(--surface);border:1px solid var(--line);border-radius:13px;box-shadow:var(--sh-lg);padding:7px;display:none;z-index:60;max-height:calc(100vh - 70px);overflow-y:auto;}
 .ddpanel.on{display:block;}
 .ddcap{font-size:9.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding:9px 9px 4px;}
 .ddcap:first-child{padding-top:4px;}
@@ -223,7 +224,14 @@ function renderNav(active){
     <a class="navb" href="${WIKI}" target="_blank" rel="noopener" style="text-decoration:none"><span class="ic">📖</span>위키</a>`;
 }
 function closeDD(){const p=document.getElementById("ddPanel"),b=document.getElementById("ddBtn");if(p)p.classList.remove("on");if(b)b.setAttribute("aria-expanded","false");}
-function toggleDD(){const p=document.getElementById("ddPanel"),b=document.getElementById("ddBtn");if(!p)return;const on=!p.classList.contains("on");p.classList.toggle("on",on);if(b)b.setAttribute("aria-expanded",on?"true":"false");}
+function toggleDD(){const p=document.getElementById("ddPanel"),b=document.getElementById("ddBtn");if(!p||!b)return;
+  const on=!p.classList.contains("on");
+  if(on){p.classList.add("on");                            // fixed 패널을 버튼 아래에 배치(화면 밖으로 안 나가게 클램프)
+    const r=b.getBoundingClientRect();p.style.top=(r.bottom+5)+"px";
+    let L=Math.min(r.left, window.innerWidth-p.offsetWidth-8); p.style.left=Math.max(8,L)+"px";
+  } else p.classList.remove("on");
+  b.setAttribute("aria-expanded",on?"true":"false");}
+window.addEventListener("resize",closeDD);
 /* ===== 관리자 소프트 게이트 (공개 정적 페이지 — 팀원 눈에서 감추는 용도, 실제 보안 아님) ===== */
 const ADMIN_LS="mf_admin", ADMIN_HASH_LS="mf_admin_hash";
 const DEFAULT_ADMIN_HASH="750ecf6d8509b4c96c6868ab0aeb26f98bbb21cd80cca1bfc38e0992fb657cd7"; // sha256("modooflow") · 기본값, 앱에서 변경 가능
