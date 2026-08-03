@@ -88,8 +88,16 @@ html:not([data-admin="1"]) [data-admin-only]{display:none!important;}
 .foot b{color:var(--ink-2);font-weight:700;} .foot a{color:var(--brand-600);font-weight:700;text-decoration:none;}
 .themebtn{width:32px;height:32px;padding:0!important;justify-content:center;font-size:14px;}
 @media(max-width:760px){.hero h1{font-size:20px;} .tr .ext{display:none;} .logo small{display:none;} .home-wrap{padding:28px 18px 60px;}}
-/* 좁은 화면: 버튼을 촘촘하게 해 wrap 줄 수를 줄임(모바일에서 헤더가 너무 커지지 않게) */
-@media(max-width:600px){.top{gap:6px 8px;padding:6px 12px;} .nav{gap:4px;} .navb{padding:6px 9px;font-size:11.5px;gap:5px;} .navb .ic{font-size:12.5px;}}
+/* 좁은 화면: 메뉴를 로고·우측컨트롤과 같은 줄에 끼우지 말고 아래 전체폭 한 줄로 내림 →
+   170px가 아니라 화면 전체폭에서 wrap 되어 2줄로 정리됨. 세로가 짧은(가로/확대) 화면에선
+   높이를 캡하고 스크롤로 넘겨 .body 공간을 항상 남김(overflow:hidden 대비). */
+@media(max-width:600px){
+  .top{flex-wrap:wrap;gap:6px 8px;padding:6px 12px;}
+  .logo{margin-right:auto;}                 /* 첫 줄: 로고(좌) + 우측컨트롤(우) */
+  .nav{order:3;flex-basis:100%;width:100%;gap:4px;max-height:42vh;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-top:2px;}
+  .navb{padding:6px 9px;font-size:11.5px;gap:5px;}
+  .navb .ic{font-size:12.5px;}
+}
 /* 설정(API 키) 모달 */
 .mask{position:fixed;inset:0;z-index:100;background:rgba(15,23,41,.5);backdrop-filter:blur(3px);display:none;align-items:flex-start;justify-content:center;padding:56px 16px;overflow-y:auto;}
 .mask.on{display:flex;}
