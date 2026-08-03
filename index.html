@@ -23,14 +23,13 @@
 :root[data-theme="light"]{--ink:#0f1729;--ink-2:#4a5163;--muted:#8b93a3;--line:#e8ebef;--line-2:#eef1f4;--bg:#f7f8fa;--surface:#ffffff;--surface-2:#f4f6f8;--brand-50:#fdf3e7;--sh:0 1px 2px rgba(15,23,41,.04),0 2px 6px rgba(15,23,41,.05);--sh-lg:0 12px 30px rgba(15,23,41,.10);}
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;}
-body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;letter-spacing:-.011em;word-break:keep-all;overflow:hidden;}
-/* 상단 고정 내비 */
-.top{position:fixed;top:0;left:0;right:0;height:var(--top);z-index:30;display:flex;align-items:center;gap:14px;padding:0 16px;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:saturate(180%) blur(12px);-webkit-backdrop-filter:saturate(180%) blur(12px);border-bottom:1px solid var(--line);}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;letter-spacing:-.011em;word-break:keep-all;overflow:hidden;display:flex;flex-direction:column;}
+/* 상단 내비 — 도구를 전부 펼치고, 한 줄에 안 들어오면 2줄로 wrap(헤더 높이 자동↑, 본문은 남은 높이 채움) */
+.top{position:sticky;top:0;z-index:30;flex:0 0 auto;display:flex;align-items:center;gap:8px 14px;padding:7px 16px;min-height:var(--top);background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:saturate(180%) blur(12px);-webkit-backdrop-filter:saturate(180%) blur(12px);border-bottom:1px solid var(--line);}
 .logo{display:flex;align-items:center;gap:9px;flex:0 0 auto;text-decoration:none;color:inherit;}
 .logo .m{width:30px;height:30px;border-radius:9px;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;box-shadow:0 2px 8px rgba(224,133,15,.35);}
 .logo b{font-size:14.5px;font-weight:800;letter-spacing:-.03em;} .logo small{display:block;font-size:9px;color:var(--muted);font-weight:600;letter-spacing:0;}
-.nav{display:flex;align-items:center;gap:4px;flex:1;min-width:0;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;}  /* 좁은 화면에서 가로 스크롤(헤더 밖으로 안 밀림) · 드롭다운은 fixed라 안 잘림 */
-.nav::-webkit-scrollbar{height:0;}
+.nav{display:flex;align-items:center;flex-wrap:wrap;gap:4px 5px;flex:1 1 auto;min-width:0;}  /* 전부 펼침 + 넘치면 다음 줄로 wrap */
 .navb{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:9px;border:none;background:none;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--ink-2);cursor:pointer;white-space:nowrap;transition:.14s;position:relative;}
 .navb .ic{font-size:14px;opacity:.9;}
 .navb:hover{background:var(--surface-2);color:var(--ink);}
@@ -56,7 +55,7 @@ html:not([data-admin="1"]) [data-admin-only]{display:none!important;}
 .tr a:hover,.tr button:hover{border-color:color-mix(in srgb,var(--brand) 55%,var(--line));color:var(--brand-600);background:var(--surface-2);}
 .tr .ext{white-space:nowrap;}
 /* 본문 */
-.body{position:fixed;top:var(--top);left:0;right:0;bottom:0;}
+.body{flex:1 1 auto;min-height:0;position:relative;}
 #frame{width:100%;height:100%;border:0;display:none;background:var(--bg);}
 #home{width:100%;height:100%;overflow-y:auto;display:block;}
 .home-wrap{max-width:1120px;margin:0 auto;padding:40px 24px 72px;}
@@ -89,6 +88,16 @@ html:not([data-admin="1"]) [data-admin-only]{display:none!important;}
 .foot b{color:var(--ink-2);font-weight:700;} .foot a{color:var(--brand-600);font-weight:700;text-decoration:none;}
 .themebtn{width:32px;height:32px;padding:0!important;justify-content:center;font-size:14px;}
 @media(max-width:760px){.hero h1{font-size:20px;} .tr .ext{display:none;} .logo small{display:none;} .home-wrap{padding:28px 18px 60px;}}
+/* 좁은 화면: 메뉴를 로고·우측컨트롤과 같은 줄에 끼우지 말고 아래 전체폭 한 줄로 내림 →
+   170px가 아니라 화면 전체폭에서 wrap 되어 2줄로 정리됨. 세로가 짧은(가로/확대) 화면에선
+   높이를 캡하고 스크롤로 넘겨 .body 공간을 항상 남김(overflow:hidden 대비). */
+@media(max-width:600px){
+  .top{flex-wrap:wrap;gap:6px 8px;padding:6px 12px;}
+  .logo{margin-right:auto;}                 /* 첫 줄: 로고(좌) + 우측컨트롤(우) */
+  .nav{order:3;flex-basis:100%;width:100%;gap:4px;max-height:42vh;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-top:2px;}
+  .navb{padding:6px 9px;font-size:11.5px;gap:5px;}
+  .navb .ic{font-size:12.5px;}
+}
 /* 설정(API 키) 모달 */
 .mask{position:fixed;inset:0;z-index:100;background:rgba(15,23,41,.5);backdrop-filter:blur(3px);display:none;align-items:flex-start;justify-content:center;padding:56px 16px;overflow-y:auto;}
 .mask.on{display:flex;}
@@ -202,36 +211,16 @@ let ACTIVE="home";
 const toolById=id=>TOOLS.find(t=>t.id===id);
 function renderNav(active){
   ACTIVE=active||ACTIVE;
-  const at=toolById(ACTIVE);
-  let groups="";
-  CATS.forEach(c=>{groups+=`<div class="ddcap">${esc(c.name)}</div>`;
-    c.ids.forEach(id=>{const t=toolById(id);if(!t)return;
-      groups+=`<button class="dditem${ACTIVE===id?" on":""}" data-tool="${id}" style="--ac:${t.ac}"><span class="ic">${t.icon}</span>${esc(t.name)}</button>`;});});
-  // 관리자 전용(소프트 게이트 · [data-admin-only]) — 팀원 콘솔에선 숨김
-  groups+=`<div class="ddsep" data-admin-only></div>
-    <div class="ddcap" data-admin-only>🔐 관리자</div>
-    <a class="dditem" data-admin-only href="brief-setup.html"><span class="ic">📨</span>텔레그램 브리핑 설정</a>
-    <button class="dditem" data-admin-only data-act="keys"><span class="ic">⚙️</span>API 키 설정(개인)</button>
-    <button class="dditem" data-admin-only data-act="chpw"><span class="ic">🔑</span>관리자 비밀번호 변경</button>
-    <button class="dditem" data-admin-only data-act="lock"><span class="ic">🔓</span>관리자 잠금</button>`;
-  nav.innerHTML=`
-    <button class="navb${ACTIVE==="home"?" on":""}" data-tool="home"><span class="ic">🏠</span>홈</button>
-    <div class="navdd">
-      <button class="navb ddbtn${at?" on":""}" id="ddBtn" aria-haspopup="true" aria-expanded="false" style="--ac:${at?at.ac:"var(--brand)"}"><span class="ic">🧰</span>${at?esc(at.name):"도구"} <span class="cx">▾</span></button>
-      <div class="ddpanel" id="ddPanel">${groups}</div>
-    </div>
-    <a class="navb" href="overview.html" style="text-decoration:none"><span class="ic">🗂️</span>전체 안내</a>
-    <a class="navb" href="${WIKI}" target="_blank" rel="noopener" style="text-decoration:none"><span class="ic">📖</span>위키</a>`;
+  const item=(id,icon,name,ac,on)=>`<button class="navb${on?" on":""}" data-tool="${id}" style="--ac:${ac||"var(--brand)"}"><span class="ic">${icon}</span>${esc(name)}</button>`;
+  let h=item("home","🏠","홈",null,ACTIVE==="home");
+  TOOLS.forEach(t=>h+=item(t.id,t.icon,t.name,t.ac,ACTIVE===t.id));      // 도구 전부 펼침(한 줄 안 되면 2줄로 wrap)
+  h+=`<a class="navb" href="overview.html" style="text-decoration:none"><span class="ic">🗂️</span>전체 안내</a>`;
+  h+=`<a class="navb" href="${WIKI}" target="_blank" rel="noopener" style="text-decoration:none"><span class="ic">📖</span>위키</a>`;
+  // 관리자 전용(소프트 게이트 · 잠금 시 숨김). 키설정(⚙)·잠금(🔒)은 우측 컨트롤에.
+  h+=`<a class="navb" data-admin-only href="brief-setup.html" style="text-decoration:none"><span class="ic">📨</span>브리핑 설정</a>`;
+  h+=`<button class="navb" data-admin-only data-act="chpw" style="--ac:var(--brand)"><span class="ic">🔑</span>비번 변경</button>`;
+  nav.innerHTML=h;
 }
-function closeDD(){const p=document.getElementById("ddPanel"),b=document.getElementById("ddBtn");if(p)p.classList.remove("on");if(b)b.setAttribute("aria-expanded","false");}
-function toggleDD(){const p=document.getElementById("ddPanel"),b=document.getElementById("ddBtn");if(!p||!b)return;
-  const on=!p.classList.contains("on");
-  if(on){p.classList.add("on");                            // fixed 패널을 버튼 아래에 배치(화면 밖으로 안 나가게 클램프)
-    const r=b.getBoundingClientRect();p.style.top=(r.bottom+5)+"px";
-    let L=Math.min(r.left, window.innerWidth-p.offsetWidth-8); p.style.left=Math.max(8,L)+"px";
-  } else p.classList.remove("on");
-  b.setAttribute("aria-expanded",on?"true":"false");}
-window.addEventListener("resize",closeDD);
 /* ===== 관리자 소프트 게이트 (공개 정적 페이지 — 팀원 눈에서 감추는 용도, 실제 보안 아님) ===== */
 const ADMIN_LS="mf_admin", ADMIN_HASH_LS="mf_admin_hash";
 const DEFAULT_ADMIN_HASH="750ecf6d8509b4c96c6868ab0aeb26f98bbb21cd80cca1bfc38e0992fb657cd7"; // sha256("modooflow") · 기본값, 앱에서 변경 가능
@@ -246,7 +235,7 @@ async function adminUnlock(){
   if(await sha256(pw)===adminHash()){try{localStorage.setItem(ADMIN_LS,"1");}catch(e){}applyAdmin();renderNav(ACTIVE);ktoast("관리자 모드 ON");}
   else ktoast("비밀번호가 틀립니다");
 }
-function adminLock(){try{localStorage.removeItem(ADMIN_LS);}catch(e){}applyAdmin();renderNav(ACTIVE);closeDD();ktoast("관리자 모드 OFF");}
+function adminLock(){try{localStorage.removeItem(ADMIN_LS);}catch(e){}applyAdmin();renderNav(ACTIVE);ktoast("관리자 모드 OFF");}
 async function adminChangePw(){
   const cur=prompt("현재 관리자 비밀번호"); if(cur==null)return;
   if(await sha256(cur)!==adminHash()){ktoast("현재 비밀번호가 틀립니다");return;}
@@ -280,12 +269,10 @@ function show(id,sub){                                  // sub = 툴 내부 딥�
   renderNav(id); location.hash=id;
 }
 document.addEventListener("click",e=>{
-  if(e.target.closest("#ddBtn")){e.preventDefault();toggleDD();return;}
   const act=e.target.closest("[data-act]");
-  if(act){e.preventDefault();closeDD();const a=act.dataset.act;
-    if(a==="lock")adminLock(); else if(a==="chpw")adminChangePw(); else if(a==="keys")openKeys(); return;}
-  const b=e.target.closest("[data-tool]"); if(b){e.preventDefault();closeDD();show(b.dataset.tool);return;}
-  if(!e.target.closest(".navdd"))closeDD();                 // 바깥 클릭 → 드롭다운 닫기
+  if(act){e.preventDefault();const a=act.dataset.act;
+    if(a==="chpw")adminChangePw(); else if(a==="lock")adminLock(); else if(a==="keys")openKeys(); return;}
+  const b=e.target.closest("[data-tool]"); if(b){e.preventDefault();show(b.dataset.tool);return;}
 });
 document.getElementById("adminBtn").addEventListener("click",()=>{isAdmin()?adminLock():adminUnlock();});
 document.getElementById("themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");try{localStorage.setItem("mf_theme",d?"light":"dark")}catch(_){};});
@@ -331,7 +318,7 @@ document.getElementById("keySave").addEventListener("click",()=>{
 document.getElementById("keyClear").addEventListener("click",()=>{
   if(confirm("저장된 API 키를 이 브라우저에서 모두 지울까요?")){localStorage.removeItem(KEYS_LS);renderKeys();ktoast("모두 지움");}
 });
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeKeys();closeDD();}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeKeys();}});
 
 applyAdmin();
 renderHome();
