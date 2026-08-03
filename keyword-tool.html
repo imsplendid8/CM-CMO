@@ -103,6 +103,28 @@ td.kw{font-weight:700;color:var(--ink);white-space:normal;} td.c{text-align:cent
 .legend span{display:inline-flex;align-items:center;gap:5px;} .lg{width:9px;height:9px;border-radius:2px;}
 .note{font-size:11.5px;color:var(--ink-2);line-height:1.7;margin-top:18px;padding:13px 15px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);}
 .note b{font-weight:800;} .note a{color:var(--brand-600);font-weight:700;text-decoration:none;} .note a:hover{text-decoration:underline;}
+/* 이달의 추천 키워드(월별 검색수요 급상승·선점) */
+.reco{background:linear-gradient(180deg,color-mix(in srgb,var(--brand) 6%,var(--surface)),var(--surface));border:1px solid color-mix(in srgb,var(--brand) 30%,var(--line));border-radius:var(--r);padding:16px 17px 6px;box-shadow:var(--sh);margin-bottom:6px;}
+.reco-h{display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:15px;font-weight:800;letter-spacing:-.02em;}
+.reco-h .as{font-size:10px;font-weight:800;padding:2px 8px;border-radius:999px;background:var(--brand-50);color:var(--brand-600);}
+.reco-h .sm{font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--line-2);color:var(--muted);}
+.reco-lead{font-size:11.5px;color:var(--ink-2);line-height:1.65;margin:6px 0 4px;}
+.rk-cap{font-size:11px;font-weight:800;letter-spacing:.03em;color:var(--ink-2);margin:14px 2px 8px;display:flex;align-items:center;gap:7px;}
+.rk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:11px;}
+.rk{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 13px;cursor:pointer;transition:.15s;}
+.rk:hover{border-color:var(--brand);box-shadow:var(--sh-lg);transform:translateY(-1px);}
+.rk-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.rk-nm{font-size:13px;font-weight:800;letter-spacing:-.01em;line-height:1.25;}
+.rk-up{font-size:11px;font-weight:800;padding:2px 7px;border-radius:999px;white-space:nowrap;flex:0 0 auto;}
+.rk-up.up{background:var(--trx-bg);color:var(--trx);} .rk-up.soon{background:var(--inf-bg);color:var(--inf);}
+.rk-sub{font-size:10.5px;color:var(--muted);margin-top:3px;font-weight:600;}
+.rk-mid{display:flex;align-items:center;gap:9px;margin:7px 0 8px;color:var(--brand-600);}
+.rk-spark{flex:0 0 auto;color:var(--brand);}
+.rk-mlab{font-size:9.5px;color:var(--muted);font-weight:700;letter-spacing:.02em;}
+.rk-kw{display:flex;flex-wrap:wrap;gap:5px;}
+.rk-chip{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:7px;background:var(--surface-2);border:1px solid var(--line-2);color:var(--ink-2);}
+.rk-chip b{color:var(--ink);font-weight:800;} .rk-chip .v{font-family:var(--mono);color:var(--brand-600);font-weight:800;}
+.rk-empty{font-size:11px;color:var(--muted);padding:6px 2px;}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:10px;font-size:12.5px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:50;box-shadow:var(--sh-lg);}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
@@ -256,6 +278,7 @@ function importMap(map,target){
     const c=classifyImported(k);add.push({kw:k.trim(),gram:c.gram,intent:c.intent,pf:c.pf,mt:c.mt,src:"네이버"});
   });
   IMPORTED[target]=(IMPORTED[target]||[]).concat(add);
+  snapshotVolume();
   toast(add.length+"개 키워드 추가 · 합계 "+rowsOf(target).length+"개");render();
 }
 /* 검색광고 API 실검색량 자동 반영 (data/volume.json · Pages/서버) — 상품별 조용히 병합 */
@@ -273,6 +296,7 @@ function applyVolumeData(vd){
     });
     if(add.length)IMPORTED[key]=(IMPORTED[key]||[]).concat(add);
   });
+  snapshotVolume(vd&&vd.asof);      // 데이터 측정월(asof) 기준으로 스냅샷 키 지정
   render();
 }
 function importKeywords(text){
@@ -302,6 +326,92 @@ function renderSidebar(){
 function intentCounts(rows){const c={거래:0,정보:0,브랜드:0,담보:0,AI:0};rows.forEach(r=>c[r.intent]++);return c;}
 function pfCounts(rows){const c={네이버:0,구글:0,공통:0,AI:0};rows.forEach(r=>c[r.pf]++);return c;}
 
+/* ── 이달의 추천 키워드 ────────────────────────────────────────────────
+   ① 이번 달 검색수요가 오르는 상품(전월 대비 ↑) → 대표 키워드 = 지금 입찰 강화·추가
+   ② 다음 달 오를 상품(익월 ↑) → 선점 키워드 = 미리 등록
+   ③ 실측 전월대비 급상승/신규 키워드 = 네이버 실검색량을 매달 가져오면 브라우저 로컬에
+      스냅샷이 쌓여 자동 계산(원본 검색량은 커밋되지 않고 로컬에만 저장 · 거버넌스 준수)
+   데이터: data/trends.json(상품별 월 검색추세) × data/volume.json(키워드별 실검색량) */
+const MK=["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"];
+const HKEY="mf_kwvol_hist";
+let TRENDS=null;
+const kstNow=()=>new Date(Date.now()+9*3600*1000);        // KST 벽시계(월 경계 오차 방지)
+const kstMonthKey=()=>kstNow().toISOString().slice(0,7);
+const kstMonthIdx=()=>kstNow().getUTCMonth();
+const monthsBetween=(a,b)=>{const[ay,am]=a.split("-").map(Number),[by,bm]=b.split("-").map(Number);return(by-ay)*12+(bm-am);};
+function loadLocalHist(){try{return JSON.parse(localStorage.getItem(HKEY)||"{}")||{};}catch(e){return{};}}
+function snapshotVolume(asof){                   // 실검색량 병합 시 '측정월' 스냅샷 누적(로컬 전용)
+  if(!hasVol())return;
+  const m=(asof&&/^\d{4}-\d{2}/.test(asof))?asof.slice(0,7):kstMonthKey();  // 데이터 asof 우선, 없으면 KST 현재월
+  const h=loadLocalHist(),cur=h[m]||{};
+  PRODUCTS.forEach(p=>rowsOf(p.key).forEach(r=>{const v=volOf(r.kw);if(v){const t=(v.pc||0)+(v.mobile||0);if(t>0)cur[r.kw]=t;}}));
+  h[m]=cur;try{localStorage.setItem(HKEY,JSON.stringify(h));}catch(e){}
+}
+function topKwFor(key,n){                         // 상품 내 실검색량 상위 키워드(없으면 시드)
+  const rows=rowsOf(key).filter(r=>volOf(r.kw));
+  rows.sort((a,b)=>{const va=volOf(a.kw),vb=volOf(b.kw);return((vb.pc+vb.mobile)-(va.pc+va.mobile));});
+  const out=rows.slice(0,n).map(r=>{const v=volOf(r.kw);return{kw:r.kw,vol:(v.pc||0)+(v.mobile||0)};});
+  if(!out.length){const p=getP(key);if(p)out.push({kw:p.core[0],vol:null});}
+  return out;
+}
+function spark(vals,curIdx){                      // 12개월 미니 추세선 + 이번 달 점
+  const w=104,h=26,pad=3,mx=Math.max(...vals,1),mn=Math.min(...vals);
+  const X=i=>pad+i*(w-2*pad)/(vals.length-1), Y=v=>h-pad-(v-mn)/((mx-mn)||1)*(h-2*pad);
+  const pts=vals.map((v,i)=>X(i).toFixed(1)+","+Y(v).toFixed(1)).join(" ");
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" class="rk-spark"><polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" opacity=".5"/><circle cx="${X(curIdx).toFixed(1)}" cy="${Y(vals[curIdx]).toFixed(1)}" r="2.6" fill="currentColor"/></svg>`;
+}
+function reco(){
+  if(!TRENDS||!TRENDS.products)return null;
+  const idx=kstMonthIdx(), prev=(idx+11)%12, next=(idx+1)%12, rows=[];
+  Object.keys(TRENDS.products).forEach(key=>{
+    const p=PRODUCTS.find(x=>x.key===key), m=(TRENDS.products[key]||{}).months;
+    if(!p||!m||m.length<12)return;
+    const upR=m[prev]>0?(m[idx]/m[prev]-1):(m[idx]>0?1:0), nxR=m[idx]>0?(m[next]/m[idx]-1):(m[next]>0?1:0);
+    rows.push({key,name:p.name,m,up:m[idx]-m[prev],upR,nx:m[next]-m[idx],nxR});
+  });
+  const FLOOR=8;  // 전월/당월 값이 너무 낮으면(노이즈) 상승률이 과장되므로 제외
+  return {idx,prev,next,
+    rising:rows.filter(r=>r.up>0.5&&r.m[prev]>=FLOOR).sort((a,b)=>b.upR-a.upR).slice(0,4),
+    soon:rows.filter(r=>r.nx>0.5&&r.m[idx]>=FLOOR).sort((a,b)=>b.nxR-a.nxR).slice(0,4)};
+}
+function realMoM(){                               // 로컬 스냅샷 2개월↑ 있으면 실측 전월대비
+  const h=loadLocalHist(), ms=Object.keys(h).sort();
+  if(ms.length<2)return null;
+  const curM=ms[ms.length-1], prevM=ms[ms.length-2], cur=h[curM], prev=h[prevM], risers=[], fresh=[];
+  Object.keys(cur).forEach(k=>{
+    if(prev[k]>=300){const d=cur[k]/prev[k]-1;if(d>=0.1)risers.push({kw:k,cur:cur[k],d});}
+    else if(!(k in prev)&&cur[k]>=300)fresh.push({kw:k,cur:cur[k]});
+  });
+  risers.sort((a,b)=>b.d-a.d);fresh.sort((a,b)=>b.cur-a.cur);
+  return {curM,prevM,gap:monthsBetween(prevM,curM),risers:risers.slice(0,8),fresh:fresh.slice(0,8)};
+}
+function pctUp(r){return "▲ "+Math.round(r*100)+"%";}
+function chips(list){return list.map(x=>`<span class="rk-chip"><b>${esc(x.kw)}</b>${x.vol!=null?`<span class="v">${fmtVol(x.vol)}</span>`:""}</span>`).join("");}
+function renderReco(){
+  const R=reco(); if(!R)return "";
+  const src=(TRENDS.source==="datalab")?`<span class="as">데이터랩 실측</span>`:`<span class="sm">근사</span>`;
+  const card=(r,cls,lab)=>`<div class="rk" data-key="${r.key}">
+      <div class="rk-top"><div class="rk-nm">${esc(r.name)}</div><span class="rk-up ${cls}">${lab}</span></div>
+      <div class="rk-sub">${MK[cls==="up"?R.prev:R.idx]}→${MK[cls==="up"?R.idx:R.next]} 검색수요 ${Math.round(cls==="up"?r.m[R.prev]:r.m[R.idx])}→${Math.round(cls==="up"?r.m[R.idx]:r.m[R.next])}</div>
+      <div class="rk-mid">${spark(r.m,R.idx)}<span class="rk-mlab">최근 12개월</span></div>
+      <div class="rk-kw">${chips(topKwFor(r.key,3))}</div></div>`;
+  const rm=realMoM();
+  const per = rm ? (rm.gap===1?"전월대비":`${rm.gap}개월 전 대비`) : "";
+  const realSec = rm && (rm.risers.length||rm.fresh.length) ? `
+    <div class="rk-cap">📊 실측 급상승·신규 · <span style="font-weight:600;color:var(--muted)">${rm.prevM}→${rm.curM} (${per}) 브라우저 로컬 스냅샷</span></div>
+    ${rm.risers.length?`<div class="reco-lead" style="margin-bottom:6px"><b>급상승</b>(${per}) · ${rm.risers.map(x=>`${esc(x.kw)}(<span style="color:var(--trx);font-weight:800">▲${Math.round(x.d*100)}%</span> ${fmtVol(x.cur)})`).join(" · ")}</div>`:""}
+    ${rm.fresh.length?`<div class="reco-lead"><b>신규 유입</b> · ${rm.fresh.map(x=>`${esc(x.kw)}(${fmtVol(x.cur)})`).join(" · ")}</div>`:""}` : "";
+  return `<div class="reco">
+    <div class="reco-h">📅 이달의 추천 키워드 <span style="color:var(--muted);font-weight:700;font-size:12px">· ${MK[R.idx]} 기준</span> ${src}</div>
+    <div class="reco-lead">매월 검색수요가 오르는 상품군의 <b>대표 키워드를 자동 추천</b>합니다 — ①지금 입찰을 강화·추가할 키워드 ②다음 달을 미리 선점할 키워드. 상품 카드를 누르면 전체 키워드셋으로 이동합니다.</div>
+    <div class="rk-cap">📈 이번 달 검색수요 상승 → 지금 강화·추가</div>
+    ${R.rising.length?`<div class="rk-grid">${R.rising.map(r=>card(r,"up",pctUp(r.upR))).join("")}</div>`:`<div class="rk-empty">이번 달 전월 대비 상승 상품이 없습니다(비수기).</div>`}
+    <div class="rk-cap">🔜 다음 달 상승 예고 → 미리 선점</div>
+    ${R.soon.length?`<div class="rk-grid">${R.soon.map(r=>card(r,"soon",pctUp(r.nxR))).join("")}</div>`:`<div class="rk-empty">다음 달 상승 예고 상품이 없습니다.</div>`}
+    ${realSec}
+  </div>`;
+}
+
 function renderOverview(){
   $("#pt").textContent="전체 개요"; $("#pts").textContent="· 10개 광고그룹 통합";
   const total=PRODUCTS.reduce((s,p)=>s+filt(rowsOf(p.key)).length,0);
@@ -319,6 +429,7 @@ function renderOverview(){
     </div>`;
   }).join("");
   $("#content").innerHTML=`
+    ${renderReco()}
     <div class="kpi-row">
       ${kpi(total,"총 키워드","10개 상품(광고그룹)")}
       ${kpi(pc.네이버+pc.공통,"네이버 우선","거래·브랜드형 중심","var(--nav-ink)")}
@@ -539,6 +650,8 @@ $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.ge
 render();
 // 검색광고 실검색량 자동 로드(Pages/서버 동일출처 · 아티팩트/file은 조용히 생략)
 fetch("data/volume.json").then(r=>r.ok?r.json():null).then(d=>{if(d)applyVolumeData(d);}).catch(()=>{});
+// 상품별 월 검색추세(이달의 추천 키워드용) — 로드되면 개요 갱신
+fetch("data/trends.json").then(r=>r.ok?r.json():null).then(d=>{if(d&&d.products){TRENDS=d;if(curKey==="__all")render();}}).catch(()=>{});
 </script>
 
 </body>
