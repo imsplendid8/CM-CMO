@@ -296,7 +296,7 @@ function applyVolumeData(vd){
     });
     if(add.length)IMPORTED[key]=(IMPORTED[key]||[]).concat(add);
   });
-  snapshotVolume();
+  snapshotVolume(vd&&vd.asof);      // 데이터 측정월(asof) 기준으로 스냅샷 키 지정
   render();
 }
 function importKeywords(text){
@@ -335,10 +335,15 @@ function pfCounts(rows){const c={네이버:0,구글:0,공통:0,AI:0};rows.forEac
 const MK=["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"];
 const HKEY="mf_kwvol_hist";
 let TRENDS=null;
+const kstNow=()=>new Date(Date.now()+9*3600*1000);        // KST 벽시계(월 경계 오차 방지)
+const kstMonthKey=()=>kstNow().toISOString().slice(0,7);
+const kstMonthIdx=()=>kstNow().getUTCMonth();
+const monthsBetween=(a,b)=>{const[ay,am]=a.split("-").map(Number),[by,bm]=b.split("-").map(Number);return(by-ay)*12+(bm-am);};
 function loadLocalHist(){try{return JSON.parse(localStorage.getItem(HKEY)||"{}")||{};}catch(e){return{};}}
-function snapshotVolume(){                       // 실검색량 병합 시 이번 달 스냅샷 누적(로컬 전용)
+function snapshotVolume(asof){                   // 실검색량 병합 시 '측정월' 스냅샷 누적(로컬 전용)
   if(!hasVol())return;
-  const m=new Date().toISOString().slice(0,7),h=loadLocalHist(),cur=h[m]||{};
+  const m=(asof&&/^\d{4}-\d{2}/.test(asof))?asof.slice(0,7):kstMonthKey();  // 데이터 asof 우선, 없으면 KST 현재월
+  const h=loadLocalHist(),cur=h[m]||{};
   PRODUCTS.forEach(p=>rowsOf(p.key).forEach(r=>{const v=volOf(r.kw);if(v){const t=(v.pc||0)+(v.mobile||0);if(t>0)cur[r.kw]=t;}}));
   h[m]=cur;try{localStorage.setItem(HKEY,JSON.stringify(h));}catch(e){}
 }
@@ -357,7 +362,7 @@ function spark(vals,curIdx){                      // 12개월 미니 추세선 +
 }
 function reco(){
   if(!TRENDS||!TRENDS.products)return null;
-  const idx=new Date().getMonth(), prev=(idx+11)%12, next=(idx+1)%12, rows=[];
+  const idx=kstMonthIdx(), prev=(idx+11)%12, next=(idx+1)%12, rows=[];
   Object.keys(TRENDS.products).forEach(key=>{
     const p=PRODUCTS.find(x=>x.key===key), m=(TRENDS.products[key]||{}).months;
     if(!p||!m||m.length<12)return;
@@ -372,13 +377,13 @@ function reco(){
 function realMoM(){                               // 로컬 스냅샷 2개월↑ 있으면 실측 전월대비
   const h=loadLocalHist(), ms=Object.keys(h).sort();
   if(ms.length<2)return null;
-  const cur=h[ms[ms.length-1]], prev=h[ms[ms.length-2]], risers=[], fresh=[];
+  const curM=ms[ms.length-1], prevM=ms[ms.length-2], cur=h[curM], prev=h[prevM], risers=[], fresh=[];
   Object.keys(cur).forEach(k=>{
     if(prev[k]>=300){const d=cur[k]/prev[k]-1;if(d>=0.1)risers.push({kw:k,cur:cur[k],d});}
     else if(!(k in prev)&&cur[k]>=300)fresh.push({kw:k,cur:cur[k]});
   });
   risers.sort((a,b)=>b.d-a.d);fresh.sort((a,b)=>b.cur-a.cur);
-  return {curM:ms[ms.length-1],prevM:ms[ms.length-2],risers:risers.slice(0,8),fresh:fresh.slice(0,8)};
+  return {curM,prevM,gap:monthsBetween(prevM,curM),risers:risers.slice(0,8),fresh:fresh.slice(0,8)};
 }
 function pctUp(r){return "▲ "+Math.round(r*100)+"%";}
 function chips(list){return list.map(x=>`<span class="rk-chip"><b>${esc(x.kw)}</b>${x.vol!=null?`<span class="v">${fmtVol(x.vol)}</span>`:""}</span>`).join("");}
@@ -391,9 +396,10 @@ function renderReco(){
       <div class="rk-mid">${spark(r.m,R.idx)}<span class="rk-mlab">최근 12개월</span></div>
       <div class="rk-kw">${chips(topKwFor(r.key,3))}</div></div>`;
   const rm=realMoM();
+  const per = rm ? (rm.gap===1?"전월대비":`${rm.gap}개월 전 대비`) : "";
   const realSec = rm && (rm.risers.length||rm.fresh.length) ? `
-    <div class="rk-cap">📊 실측 급상승·신규 · <span style="font-weight:600;color:var(--muted)">${rm.prevM}→${rm.curM} 브라우저 로컬 스냅샷</span></div>
-    ${rm.risers.length?`<div class="reco-lead" style="margin-bottom:6px"><b>급상승</b> · ${rm.risers.map(x=>`${esc(x.kw)}(<span style="color:var(--trx);font-weight:800">▲${Math.round(x.d*100)}%</span> ${fmtVol(x.cur)})`).join(" · ")}</div>`:""}
+    <div class="rk-cap">📊 실측 급상승·신규 · <span style="font-weight:600;color:var(--muted)">${rm.prevM}→${rm.curM} (${per}) 브라우저 로컬 스냅샷</span></div>
+    ${rm.risers.length?`<div class="reco-lead" style="margin-bottom:6px"><b>급상승</b>(${per}) · ${rm.risers.map(x=>`${esc(x.kw)}(<span style="color:var(--trx);font-weight:800">▲${Math.round(x.d*100)}%</span> ${fmtVol(x.cur)})`).join(" · ")}</div>`:""}
     ${rm.fresh.length?`<div class="reco-lead"><b>신규 유입</b> · ${rm.fresh.map(x=>`${esc(x.kw)}(${fmtVol(x.cur)})`).join(" · ")}</div>`:""}` : "";
   return `<div class="reco">
     <div class="reco-h">📅 이달의 추천 키워드 <span style="color:var(--muted);font-weight:700;font-size:12px">· ${MK[R.idx]} 기준</span> ${src}</div>
