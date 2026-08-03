@@ -41,15 +41,24 @@
 
 ## 설정 (1회) — 텔레그램 봇
 1. 텔레그램에서 **@BotFather** → `/newbot` → 봇 이름 지정 → **봇 토큰** 받기.
-2. 만든 봇과 대화 시작(아무 메시지 전송) → 브라우저에서 `https://api.telegram.org/bot<토큰>/getUpdates` 열어 `chat.id` 확인.
+2. 받을 사람은 각자 만든 봇과 대화 시작(아무 메시지 전송) 후 `chat.id` 확인 — 가장 쉬운 방법은 텔레그램 **@userinfobot** 에게 말 걸어 나오는 `Id` 숫자. (또는 브라우저에서 `https://api.telegram.org/bot<토큰>/getUpdates` 의 `chat.id`.)
 3. 저장소 **Settings → Secrets and variables → Actions** 에 추가:
    - `TELEGRAM_BOT_TOKEN` = 봇 토큰
-   - `TELEGRAM_CHAT_ID` = 내 chat id
+   - **`TELEGRAM_CHAT_IDS`** = 받을 사람들의 chat_id를 **콤마로 구분**(예: `123456789,987654321`). 한 명이면 그 값 하나. (하위호환: 단일 `TELEGRAM_CHAT_ID` 도 계속 지원 — `TELEGRAM_CHAT_IDS` 가 우선)
    - 뉴스는 **뉴스 클리핑(`news-clip.yml`)** 이 적립한 `data/clips/`에서 자동 선별합니다(브리핑이 직접 네이버를 호출하지 않음). 뉴스 클리핑용 `NAVER_CLIENT_ID/SECRET`만 설정돼 있으면 됩니다.
-4. **Actions 탭 → Daily Brief → Run workflow** 로 즉시 테스트. 이후 매일 08:00 KST 자동 발송.
+4. **Actions 탭 → Daily Brief → Run workflow** 로 즉시 테스트. 이후 매일 08:00·14:00 KST 자동 발송.
+
+> ⚠️ **개인정보**: chat_id는 개인 식별자입니다. **공개 저장소에 커밋하지 말고 GitHub Secrets(비공개)에만** 넣으세요.
+
+## 수신자·발송시간을 대시보드에서 만들기 — `brief-setup.html`
+코드를 건드리지 않고 **설정 빌더**로 값만 생성해 붙여넣을 수 있습니다.
+- `brief-setup.html` 열기 → **① 받을 사람**(이름 메모 + chat_id 행 추가) → `TELEGRAM_CHAT_IDS` 값 **복사** → 위 3번 Secret 에 붙여넣기.
+- **② 발송 시간(KST)** 을 고르면 **cron(UTC)으로 자동 변환** → **복사** 해서 `daily-brief.yml` 의 `schedule:` 블록에 붙여넣기.
+- 이 페이지는 **서버로 아무것도 보내지 않고**(입력은 브라우저 `localStorage` `mf_brief` 에만 저장), chat_id는 저장소에 커밋되지 않습니다.
 
 ## 시간·내용 바꾸기
-- 시간: `daily-brief.yml`의 cron 수정(UTC 기준. 08:00 KST=23:00 UTC).
+- 시간: `brief-setup.html` 로 cron 생성(권장) 또는 `daily-brief.yml`의 cron 직접 수정(UTC 기준. 08:00 KST=23:00 UTC, 14:00 KST=05:00 UTC).
+- 수신자: `brief-setup.html` 로 `TELEGRAM_CHAT_IDS` 생성 → Secret 갱신. 파싱은 `scripts/daily_brief.py`의 `recipients()`(콤마·줄바꿈·세미콜론 구분, 중복 제거).
 - 내용: `scripts/daily_brief.py`(시즌·뉴스·SERP 비중), 시즌 데이터는 `data/seasonal.json`.
 
 ## 참고 — 카카오톡 경로
