@@ -138,7 +138,7 @@ td.kw{font-weight:700;color:var(--ink);white-space:normal;} td.c{text-align:cent
           <button data-pf="구글">구글</button>
           <button data-pf="AI">AI검색</button>
         </div>
-        <button class="btn primary" id="expNaver" title="네이버 검색광고 바로등록용 — 대량등록 컬럼만(월검색량·경쟁도 등 분석열 제외) · 입찰가 70원 자동 채움 · 캠페인=상품/광고그룹=인텐트 · 검색량순 정렬">네이버 바로등록(70원)</button>
+        <button class="btn primary" id="expNaver" title="네이버 검색광고 바로등록용 — 대량등록 컬럼만(월검색량·경쟁도 등 분석열 제외) · 입찰가 70원 자동 채움 · 캠페인=상품/광고그룹=인텐트(그룹 유지) · 각 광고그룹 내 검색량순">네이버 바로등록(70원)</button>
         <button class="btn" id="exp" title="전체 키워드 CSV(플랫폼·매치타입 포함)">CSV 내보내기</button>
         <button class="icon-btn" id="themeBtn" title="테마">◐</button>
       </div>
@@ -356,7 +356,7 @@ function renderProduct(){
       <span style="margin-left:auto;font-size:11.5px;color:var(--muted)">광고그룹 = 이 상품</span></div>
       <div class="seeds">${p.core.map(c=>`<span class="seed">${esc(c)}</span>`).join("")}${p.special.map(s=>`<span class="seed" style="background:var(--surface-2);color:var(--ink-2)">+${esc(s)}</span>`).join("")}</div></div>
     ${productBody(p)}
-    <div class="note"><b>바로 활용</b> · 우측 상단 <b>네이버 바로등록(70원)</b>은 <b>대량등록 컬럼만</b>(캠페인 유형·이름·광고그룹·키워드·입찰가·연결URL) 담고 <b>입찰가를 70원으로 채워</b>, 검색량 있는 키워드부터 정렬해 내려줍니다 — <b>연결URL만 채우면 바로 업로드</b>. 분석용(월검색량·경쟁도 포함) 전체 파일은 <b>CSV 내보내기</b>로. 입찰가는 등록 후 성과 보며 조정, 거래형=구문/일치로 좁게·정보형=확장으로 넓게.</div>`;
+    <div class="note"><b>바로 활용</b> · 우측 상단 <b>네이버 바로등록(70원)</b>은 <b>대량등록 컬럼만</b>(캠페인 유형·이름·광고그룹·키워드·입찰가·연결URL) 담고 <b>입찰가를 70원으로 채워</b> 내려줍니다(캠페인=상품·광고그룹=인텐트로 묶고, <b>각 광고그룹 안에서 검색량 높은 순</b>) — <b>연결URL만 채우면 바로 업로드</b>. 분석용(월검색량·경쟁도 포함) 전체 파일은 <b>CSV 내보내기</b>로. 입찰가는 등록 후 성과 보며 조정, 거래형=구문/일치로 좁게·정보형=확장으로 넓게.</div>`;
 }
 function renderPro(){
   $("#pt").textContent="범용 키워드 생성"; $("#pts").textContent="· 모든 업종 재사용";
@@ -424,7 +424,7 @@ function exportNaverBulk(){
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
   const nm=curKey==="__all"?"전체":(getP(curKey)?.name||"상품");
   a.download=`네이버_바로등록_${nm}_${new Date().toISOString().slice(0,10)}.csv`;a.click();
-  toast(`네이버 바로등록 · ${n}키워드 · 입찰가 ${DEFAULT_BID}원`+(vh?" · 검색량순":"")+" (연결URL만 채우면 등록)");
+  toast(`네이버 바로등록 · ${n}키워드 · 입찰가 ${DEFAULT_BID}원`+(vh?" · 광고그룹 내 검색량순":"")+" (연결URL만 채우면 등록)");
 }
 
 document.addEventListener("click",e=>{
