@@ -7,7 +7,7 @@ LLM 없이 결정론적으로 동작하고, 모든 산출물은 **사람 검토 
 - `scripts/event_engine.py` — 순수 함수(run/build_events/make_reco …). 실데이터로 실행 시 `data/events/recommendations.json` 생성.
 - `data/events/calendar.json` — 예정 이벤트(공휴일·개학·명절·휴가·대회·지역행사·캠페인). 공개·샘플.
 - `data/events/copy_history.json` — 채택 문구 이력(fingerprint+날짜) → cooldown.
-- `event-calendar.html` — 뉴스 캘린더 화면(오늘/7일/30일·상태·상품·이벤트 필터·추천·근거·유효기간·검토상태·미분류 큐).
+- `seasonal-tool.html#reco` — 시즌·이벤트 캘린더의 **뉴스·추천·이벤트** 뷰(오늘/7일/30일·상태·상품·이벤트 필터·추천·근거·유효기간·검토상태·미분류 큐). 구 `event-calendar.html`은 이 뷰로 리다이렉트.
 - `tests/test_event_engine.py` — fixture 회귀 테스트(unittest).
 
 ## 이벤트 소스 결합 (하드코딩 금지)
@@ -61,14 +61,14 @@ fingerprint는 추천에서 억제한다.
 - 전이가 감지되면 목적이 `PURPOSE_BY_TRANSITION`으로 바뀌고 **fingerprint·유효기간도 자동으로 달라진다**
   (평상시 추천과 구분되는 **별개 추천** → cooldown에 눌리지 않음).
 - 첫 실행(이력 없음)에는 전이가 0이며, 자동화가 날짜별 스냅샷을 쌓을수록 전이가 나타난다.
-- 화면 `event-calendar.html`: 카드의 🔄 전이 배지 + "상태 전이" 섹션 + KPI로 노출.
+- 화면 `seasonal-tool.html#reco`: 카드의 🔄 전이 배지 + "상태 전이" 섹션 + KPI로 노출.
 
 ## 실행·검증
 ```bash
 python3 scripts/event_engine.py                 # data/events/recommendations.json 생성
 python3 -m unittest tests.test_event_engine     # 회귀 테스트
 ```
-UI는 배포 주소 `event-calendar.html`에서 `recommendations.json`을 읽어 표시(로컬 file://은 미표시 안내).
+UI는 배포 주소 `seasonal-tool.html#reco`에서 `recommendations.json`을 읽어 표시(로컬 file://은 미표시 안내).
 
 ## 다음 단계(이번 PR 범위 밖)
 - 규칙 기반 추천 위에 **LLM 보조**(초안 다양화)는 사람 검토 흐름이 안정된 뒤.
