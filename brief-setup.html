@@ -76,10 +76,28 @@ details .body{font-size:12px;color:var(--ink-2);line-height:1.8;margin-top:8px;}
 .warnline{font-size:11.5px;color:var(--bad);margin-top:6px;font-weight:700;}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:99px;font-size:12px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:60;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+/* 관리자 소프트 게이트 — 미해제 시 빌더 숨기고 잠금 화면(공개 정적 페이지라 실제 보안 아님) */
+html:not([data-admin="1"]) main.main{display:none;}
+html:not([data-admin="1"]) #admGate{display:flex!important;}
+#admGate{display:none;position:fixed;inset:0;z-index:200;align-items:center;justify-content:center;padding:24px;background:var(--bg);}
+.admbox{max-width:380px;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh);padding:24px;text-align:center;}
+.admbox input{width:100%;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:9px;padding:9px 11px;font-family:inherit;font-size:13px;margin-bottom:10px;}
+.admbox input:focus{outline:2px solid var(--brand-50);border-color:var(--brand);}
 </style>
-<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("mf_theme")||"light")}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
+<script>try{var _r=document.documentElement;_r.setAttribute("data-theme",localStorage.getItem("mf_theme")||"light");_r.setAttribute("data-admin",localStorage.getItem("mf_admin")==="1"?"1":"0");}catch(e){document.documentElement.setAttribute("data-theme","light");}</script>
 </head>
 <body>
+<div id="admGate"><div class="admbox">
+  <div style="font-size:30px">🔐</div>
+  <h2 style="font-size:15px;font-weight:800;margin:8px 0 4px">관리자 전용</h2>
+  <p style="font-size:12px;color:var(--ink-2);line-height:1.6;margin-bottom:14px">데일리 브리핑 설정은 관리자만 사용합니다. 비밀번호를 입력하세요.</p>
+  <input id="admPw" type="password" placeholder="관리자 비밀번호" autocomplete="off">
+  <div style="display:flex;gap:8px">
+    <button id="admGo" class="btn primary" style="flex:1">잠금 해제</button>
+    <a href="index.html" class="btn" style="text-decoration:none;display:flex;align-items:center">← 콘솔</a>
+  </div>
+  <div id="admErr" style="font-size:11.5px;color:var(--bad);margin-top:8px;min-height:14px"></div>
+</div></div>
 <main class="main">
   <header class="topbar">
     <div class="brand-logo">📨</div>
@@ -148,6 +166,18 @@ details .body{font-size:12px;color:var(--ink-2);line-height:1.8;margin-top:8px;}
 "use strict";
 const $=(s,el=document)=>el.querySelector(s);
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+/* 관리자 잠금 해제(콘솔과 동일 해시 · 소프트 게이트) */
+const DEFAULT_ADMIN_HASH="750ecf6d8509b4c96c6868ab0aeb26f98bbb21cd80cca1bfc38e0992fb657cd7"; // sha256("modooflow")
+async function _sha256(s){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(String(s)));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}
+function _admHash(){try{return localStorage.getItem("mf_admin_hash")||DEFAULT_ADMIN_HASH;}catch(e){return DEFAULT_ADMIN_HASH;}}
+async function _admTry(){
+  const pw=$("#admPw").value, err=$("#admErr");
+  if(!(window.crypto&&crypto.subtle)){err.textContent="이 브라우저에선 해제 불가(https 필요)";return;}
+  if(await _sha256(pw)===_admHash()){try{localStorage.setItem("mf_admin","1");}catch(e){}document.documentElement.setAttribute("data-admin","1");$("#admGate").style.display="none";}
+  else err.textContent="비밀번호가 틀립니다";
+}
+$("#admGo").addEventListener("click",_admTry);
+$("#admPw").addEventListener("keydown",e=>{if(e.key==="Enter")_admTry();});
 const LS="mf_brief";
 let state={recipients:[{name:"",id:""}],times:["08:00","14:00"]};
 try{const s=JSON.parse(localStorage.getItem(LS)||"null");if(s&&Array.isArray(s.recipients)&&Array.isArray(s.times))state=s;}catch(_){}
