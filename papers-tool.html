@@ -52,7 +52,10 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .badge{font-size:10px;font-weight:800;padding:2px 8px;border-radius:99px;white-space:nowrap;}
 .badge.date{background:var(--brand-50);color:var(--brand-600);font-family:var(--mono);}
 .badge.auto{background:var(--good-bg);color:var(--good);}
+.badge.manual{background:color-mix(in srgb,#e0a020 20%,transparent);color:#a0690f;}
 .badge.new{background:var(--brand);color:#fff;}
+.srcbar{font-size:11.5px;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:9px 13px;margin-bottom:14px;line-height:1.8;}
+.srcbar b{color:var(--ink-2);} .srcbar a{color:var(--brand-600);font-weight:700;text-decoration:none;} .srcbar a:hover{text-decoration:underline;}
 .card .desc{font-size:12.5px;color:var(--ink-2);line-height:1.6;margin-top:8px;}
 .card .note{font-size:11.5px;color:var(--muted);line-height:1.55;margin-top:7px;padding-top:7px;border-top:1px solid var(--line-2);}
 .card .note b{color:var(--ink-2);}
@@ -93,12 +96,13 @@ function render(){
     return;
   }
   const q=curQ.trim().toLowerCase();
+  const PAPERS=DATA.papers;                                     // 제공자 무관 · 전부 주제로 그룹핑(제공자는 배지)
   const match=p=>(curTopic==="__all"||p.topic===curTopic)&&(!q||(p.title+p.desc+p.note).toLowerCase().includes(q));
-  const rows=DATA.papers.filter(match);
-  // 주제 칩
+  const rows=PAPERS.filter(match);
+  // 주제 칩(제공자 무관 · 주제 기준)
   const chip=(k,label,n)=>`<button class="chip${curTopic===k?" on":""}" data-topic="${esc(k)}">${esc(label)}<span class="n">${n}</span></button>`;
-  let chips=chip("__all","전체",DATA.papers.length);
-  DATA.topics.forEach(t=>{chips+=chip(t,t,DATA.papers.filter(p=>p.topic===t).length);});
+  let chips=chip("__all","전체",PAPERS.length);
+  DATA.topics.forEach(t=>{chips+=chip(t,t,PAPERS.filter(p=>p.topic===t).length);});
   // 주제별 그룹
   let body="";
   const groups=curTopic==="__all"?DATA.topics:[curTopic];
@@ -112,7 +116,7 @@ function render(){
         <a class="t" href="${esc(p.link)}" target="_blank" rel="noopener">${esc(p.title)}</a>
         ${p.date&&p.date.slice(0,7)===thisMonth?`<span class="badge new">이번 달 신규</span>`:""}
         ${p.date?`<span class="badge date">${esc(p.date)}</span>`:""}
-        ${p.auto?`<span class="badge auto">자동적립</span>`:""}</div>
+        ${p.auto?`<span class="badge auto" title="네이버 학술 자동 적립">🤖 자동적립</span>`:`<span class="badge manual" title="담당자가 직접 추가">📌 담당자 제공</span>`}</div>
         ${p.desc?`<div class="desc">${esc(p.desc)}</div>`:""}
         ${p.note?`<div class="note"><b>담당자 참고</b> · ${esc(p.note)}</div>`:""}
         <div style="margin-top:7px"><a class="lk" href="${esc(p.link)}" target="_blank" rel="noopener">🔗 ${esc(host(p.link))} ↗</a></div>
@@ -122,7 +126,7 @@ function render(){
   $("#pt").textContent="논문 아카이브";
   const asof=DATA.updated?` · 갱신 ${esc(DATA.updated)}`:"";
   c.innerHTML=`
-    <div class="intro"><b>CM 다이렉트 마케팅 참고 논문</b> — 매월 1일 <b>네이버 학술(전문자료)</b> 검색으로 신규 논문을 자동 적립합니다(GitHub Actions). 원문은 링크만, 요약은 공개 서지·초록 기반. 총 <b>${DATA.papers.length}편</b>${asof}.</div>
+    <div class="intro"><b>CM 다이렉트 마케팅 참고 논문</b> — 매월 1일 <b>네이버 학술(전문자료)</b> 검색으로 신규 논문을 자동 적립합니다(GitHub Actions). 원문은 링크만, 요약은 공개 서지·초록 기반. <b>주제별 그룹</b>(제공자 무관 · 📌담당자 제공/🤖자동적립은 배지로 구분). 총 <b>${PAPERS.length}편</b>${asof}.</div>
     <div class="chips">${chips}</div>
     ${body||`<div class="empty">검색 결과 없음 — 다른 키워드나 주제를 선택하세요.</div>`}
     <div class="foot">데이터: <code>data/papers.json</code> ← <code>docs/논문-아카이브.md</code>(정본, GitHub에서 렌더) · 수집: 네이버 학술 검색 · 요약은 자체 정리이며 원문 저작권은 각 발행처에 있습니다. · <a href="index.html">← 통합 콘솔</a></div>`;
