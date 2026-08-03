@@ -224,14 +224,21 @@ function renderNav(active){
     <a class="navb" href="${WIKI}" target="_blank" rel="noopener" style="text-decoration:none"><span class="ic">📖</span>위키</a>`;
 }
 function closeDD(){const p=document.getElementById("ddPanel"),b=document.getElementById("ddBtn");if(p)p.classList.remove("on");if(b)b.setAttribute("aria-expanded","false");}
-function toggleDD(){const p=document.getElementById("ddPanel"),b=document.getElementById("ddBtn");if(!p||!b)return;
-  const on=!p.classList.contains("on");
-  if(on){p.classList.add("on");                            // fixed 패널을 버튼 아래에 배치(화면 밖으로 안 나가게 클램프)
-    const r=b.getBoundingClientRect();p.style.top=(r.bottom+5)+"px";
-    let L=Math.min(r.left, window.innerWidth-p.offsetWidth-8); p.style.left=Math.max(8,L)+"px";
-  } else p.classList.remove("on");
-  b.setAttribute("aria-expanded",on?"true":"false");}
+function openDD(){const p=document.getElementById("ddPanel"),b=document.getElementById("ddBtn");if(!p||!b||p.classList.contains("on"))return;
+  p.classList.add("on");                                   // fixed 패널을 버튼 아래에 배치(화면 밖으로 안 나가게 클램프)
+  const r=b.getBoundingClientRect();p.style.top=(r.bottom+5)+"px";
+  let L=Math.min(r.left, window.innerWidth-p.offsetWidth-8); p.style.left=Math.max(8,L)+"px";
+  b.setAttribute("aria-expanded","true");}
+function toggleDD(){const p=document.getElementById("ddPanel");if(!p)return;p.classList.contains("on")?closeDD():openDD();}
 window.addEventListener("resize",closeDD);
+// 데스크톱(마우스)에선 도구에 올리기만 하면 펼침 — '탭해서 열고 또 탭' 없이 클릭 한 번으로 선택.
+// nav는 렌더마다 다시 그려지므로 유지되는 부모(nav)에 위임. 터치기기는 클릭(탭) 유지.
+let _ddHoverT;
+if(matchMedia("(hover:hover) and (pointer:fine)").matches){
+  nav.addEventListener("mouseover",e=>{if(e.target.closest(".navdd")){clearTimeout(_ddHoverT);openDD();}});
+  nav.addEventListener("mouseout",e=>{const to=e.relatedTarget;
+    if(e.target.closest(".navdd")&&!(to&&to.closest&&to.closest(".navdd"))){clearTimeout(_ddHoverT);_ddHoverT=setTimeout(closeDD,160);}});
+}
 /* ===== 관리자 소프트 게이트 (공개 정적 페이지 — 팀원 눈에서 감추는 용도, 실제 보안 아님) ===== */
 const ADMIN_LS="mf_admin", ADMIN_HASH_LS="mf_admin_hash";
 const DEFAULT_ADMIN_HASH="750ecf6d8509b4c96c6868ab0aeb26f98bbb21cd80cca1bfc38e0992fb657cd7"; // sha256("modooflow") · 기본값, 앱에서 변경 가능
