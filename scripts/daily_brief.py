@@ -195,7 +195,7 @@ def send_telegram(text):
         sent += 1 if ok else 0
         failed += 0 if ok else 1
     print(f"텔레그램 발송: 성공 {sent}/{len(chats)}" + (f" · 실패 {failed}" if failed else ""))
-    if sent == 0:
+    if failed:                                # 일부라도 미수신이면 실패(exit≠0) — 스케줄 워크플로가 부분 발송을 감지·재시도
         sys.exit(1)
 
 if __name__ == "__main__":
