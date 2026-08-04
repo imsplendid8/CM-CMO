@@ -34,6 +34,8 @@
   <a href="monitor.html" data-f="monitor.html"><span class="ic">📡</span><span><span class="t">외부 모니터링</span><small>퍼널 · 뉴스</small></span></a>
  </div>
 </div>
+<!-- 관리자 편집 모드 토글 (app.js가 #adminToggle에 바인딩 — 방법론·가중치·루브릭·필드사전 노출/숨김) -->
+<button id="adminToggle" title="관리자 편집 모드 — 방법론·가중치·루브릭·필드사전 노출/숨김" style="position:fixed;top:14px;right:70px;z-index:99999;height:44px;padding:0 14px;border-radius:12px;border:1px solid rgba(0,0,0,.08);background:#fff;box-shadow:0 6px 20px rgba(0,0,0,.14);cursor:pointer;font-family:'Pretendard','Noto Sans KR',-apple-system,sans-serif;font-size:12.5px;font-weight:700;color:#1a1a2e;">🔒 사용 모드 (편집 숨김)</button>
 <script>
 (function(){var nav=document.getElementById('mfNav');if(!nav)return;var btn=document.getElementById('mfNavBtn'),p=document.getElementById('mfNavP');
  var cur=(location.pathname.split('/').pop()||'').toLowerCase()||'index.html';

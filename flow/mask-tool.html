@@ -462,10 +462,10 @@ function loadScriptOnce(src){return new Promise(function(res,rej){var s=document
 function withTimeout(p,ms,msg){return Promise.race([p,new Promise(function(_,rej){setTimeout(function(){rej(new Error(msg));},ms);})]);}
 function loadTess(){
  if(window.Tesseract)return Promise.resolve();
- // 1) 로컬 동봉 엔진(vendor/tesseract) 우선 → 2) 없으면 CDN → 3) 둘 다 실패면 안내
+ // 개인정보 보호(fail-closed): 원본 캡쳐가 있는 페이지엔 외부 CDN 실행코드를 절대 주입하지 않음.
+ // OCR은 로컬 동봉 엔진(vendor/tesseract)만 사용 — 없으면 실패 처리하고 다운로드 안내.
  return loadScriptOnce('vendor/tesseract/tesseract.min.js').then(function(){TESS_LOCAL=true;})
-  .catch(function(){return withTimeout(loadScriptOnce('https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js'),12000,'CDN 응답 없음(차단망?)');})
-  .catch(function(){return Promise.reject(new Error('OCR 엔진 로드 실패 — vendor/tesseract/ 에 엔진 파일을 넣으세요(OCR엔진-받기 실행).'));});
+  .catch(function(){return Promise.reject(new Error('OCR 엔진(로컬)이 없습니다 — 개인정보 보호를 위해 외부 CDN을 쓰지 않습니다. vendor/tesseract/ 에 엔진 파일을 넣으세요(OCR엔진-받기 실행).'));});
 }
 function neighborIdx(bb,words,self){var x0=bb.x0,y0=bb.y0,x1=bb.x1,y1=bb.y1,h=y1-y0,cy=(y0+y1)/2,out=[];for(var j=0;j<words.length;j++){if(j===self)continue;var c=words[j].bbox;if(!c)continue;var jcy=(c.y0+c.y1)/2;if(Math.abs(jcy-cy)<h*0.8&&c.x0>=x1-3&&(c.x0-x1)<h*12)out.push(j);var ov=Math.min(x1,c.x1)-Math.max(x0,c.x0);if(ov>0&&(c.y0-y1)>0&&(c.y0-y1)<h*1.9)out.push(j);}return out;}
 async function runAuto(silent){
@@ -577,6 +577,7 @@ document.getElementById('recsub')&&document.getElementById('recsub').addEventLis
 var GRADEL={good:['양호','#16a34a','#e7f6ee'],mid:['보통','#c47f12','#fdf3e3'],bad:['개선필요','#e5484d','#fdecec']};
 function rGet(){try{return JSON.parse(localStorage.getItem('cap_records')||'[]');}catch(e){return [];}}
 function rSave(a){localStorage.setItem('cap_records',JSON.stringify(a));}
+var _editId=null;  // 편집 중인 기록 id — 편집 클릭만으로 삭제하지 않고, '추가'로 커밋할 때만 교체(데이터 손실 방지)
 /* 전체 백업 JSON 다운로드(수동/자동 공용) — 파일명에 시각 포함해 덮어쓰기 방지 */
 function doBackup(auto){var d=new Date(),pad=function(n){return (n<10?'0':'')+n;};var stamp=d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'_'+pad(d.getHours())+pad(d.getMinutes());
  function dl(obj,suffix){var blob=new Blob([JSON.stringify(obj,null,1)],{type:'application/json'});var u=URL.createObjectURL(blob),el=document.createElement('a');el.href=u;el.download='modooflow_backup_'+stamp+suffix+'.json';el.click();setTimeout(function(){URL.revokeObjectURL(u);},1500);}
@@ -664,15 +665,15 @@ function checkedIds(){return Array.prototype.slice.call(document.querySelectorAl
 function checkedDraftIds(){return Array.prototype.slice.call(document.querySelectorAll('#reclist .r_chk[data-conf="0"]:checked')).map(function(c){return c.getAttribute('data-id');});}
 function checkedConfIds(){return Array.prototype.slice.call(document.querySelectorAll('#reclist .r_chk[data-conf="1"]:checked')).map(function(c){return c.getAttribute('data-id');});}
 var _radd=document.getElementById('r_add');_radd&&_radd.addEventListener('click',function(){
- if(cur<0||!imgs[cur]){alert('먼저 [캡쳐 마스킹] 탭에서 캡쳐를 불러오세요.\n직접 입력은 현재 불러온 캡쳐에 대한 기록만 추가됩니다(캡쳐 없는 기록 방지).');return;}
+ if(!_editId&&(cur<0||!imgs[cur])){alert('먼저 [캡쳐 마스킹] 탭에서 캡쳐를 불러오세요.\n직접 입력은 현재 불러온 캡쳐에 대한 기록만 추가됩니다(캡쳐 없는 기록 방지).');return;}
  var sc=document.getElementById('r_screen').value.trim();if(!sc){alert('화면명을 입력하세요.');return;}
- if(!(imgs[cur].boxes&&imgs[cur].boxes.length)&&!confirm('이 캡쳐엔 마스킹(박스·⚡자동검출)이 없습니다.\n\n· 가릴 개인정보가 없으면 그대로 진행하세요.\n· 개인정보가 있으면 [취소] 후 가린 뒤 추가하세요.\n\n그대로 추가할까요?'))return;
- var co=document.getElementById('r_co').value;var a=rGet();var _now=Date.now();var _id='r'+_now;
+ if(!_editId&&!(imgs[cur].boxes&&imgs[cur].boxes.length)&&!confirm('이 캡쳐엔 마스킹(박스·⚡자동검출)이 없습니다.\n\n· 가릴 개인정보가 없으면 그대로 진행하세요.\n· 개인정보가 있으면 [취소] 후 가린 뒤 추가하세요.\n\n그대로 추가할까요?'))return;
+ var co=document.getElementById('r_co').value;var a=rGet();var _now=Date.now();var _id=_editId||('r'+_now);if(_editId){a=a.filter(function(x){return x.id!==_editId;});}
  a.unshift({id:_id,co:co,case:document.getElementById('r_case').value,branch:document.getElementById('r_branch').value,substep:document.getElementById('r_substep').value.trim(),screen:sc,step:document.getElementById('r_step').value.trim(),canon:document.getElementById('r_canon').value.trim(),btn:document.getElementById('r_btn').value.trim(),upcover:document.getElementById('r_upcover').value.trim(),fee:document.getElementById('r_fee').value.trim(),prefill:document.getElementById('r_prefill').value,auto:document.getElementById('r_auto').value,grade:document.getElementById('r_grade').value,fields:document.getElementById('r_fields').value.trim(),memo:document.getElementById('r_memo').value.trim(),status:'draft',ts:_now,batch:fmtTS(_now)});
  rSave(a);
  /* 현재 불러온 캡쳐를 이 기록에 첨부 → 캡쳐 기반 기록 보장 */
- try{imgs[cur]._recId=_id;idbPut({id:_id,url:shotURL(),thumb:shotThumbURL(),co:co,screen:sc,ts:_now});bumpShots();}catch(e){}
- ['r_screen','r_step','r_substep','r_canon','r_btn','r_upcover','r_fee','r_fields','r_memo'].forEach(function(i){document.getElementById(i).value='';});rRender();});
+ try{if(imgs[cur]){imgs[cur]._recId=_id;idbPut({id:_id,url:shotURL(),thumb:shotThumbURL(),co:co,screen:sc,ts:_now});bumpShots();}}catch(e){}
+ ['r_screen','r_step','r_substep','r_canon','r_btn','r_upcover','r_fee','r_fields','r_memo'].forEach(function(i){document.getElementById(i).value='';});_editId=null;rRender();});
 /* 스테이징 액션바: 검수 완료(전체 반영)·백업·복원 (recsum 위임) */
 var _rsum=document.getElementById('recsum');_rsum&&_rsum.addEventListener('click',function(e){
  var _rv=e.target.getAttribute&&e.target.getAttribute('data-rv');if(_rv){_recView=_rv;rRender();return;}
@@ -710,7 +711,7 @@ _rsum&&document.getElementById('reclist').addEventListener('change',function(e){
 document.getElementById('rechist').addEventListener('click',function(e){var i=e.target.getAttribute('data-restore');if(i!==null&&i!==undefined&&i!=='')restoreHist(+i);});
 /* 기록 편집 / 이전 버전 원복 (reclist 위임) */
 document.getElementById('reclist').addEventListener('click',function(e){
-  var id=e.target.getAttribute('data-redit');if(!id)return;var r2=rGet().filter(function(x){return x.id===id;})[0];if(!r2)return;document.getElementById('r_co').value=r2.co;document.getElementById('r_case').value=r2.case||'신규';document.getElementById('r_branch').value=r2.branch||'';document.getElementById('r_substep').value=r2.substep||'';document.getElementById('r_screen').value=r2.screen||'';document.getElementById('r_step').value=r2.step||'';document.getElementById('r_canon').value=r2.canon||'';document.getElementById('r_btn').value=(r2.btn!=null?r2.btn:'');document.getElementById('r_upcover').value=r2.upcover||'';document.getElementById('r_fee').value=r2.fee||'';document.getElementById('r_prefill').value=r2.prefill||'-';document.getElementById('r_auto').value=r2.auto||'-';document.getElementById('r_grade').value=r2.grade||'-';document.getElementById('r_fields').value=r2.fields||'';document.getElementById('r_memo').value=r2.memo||'';rSave(rGet().filter(function(x){return x.id!==id;}));rRender();window.scrollTo(0,0);});
+  var id=e.target.getAttribute('data-redit');if(!id)return;var r2=rGet().filter(function(x){return x.id===id;})[0];if(!r2)return;document.getElementById('r_co').value=r2.co;document.getElementById('r_case').value=r2.case||'신규';document.getElementById('r_branch').value=r2.branch||'';document.getElementById('r_substep').value=r2.substep||'';document.getElementById('r_screen').value=r2.screen||'';document.getElementById('r_step').value=r2.step||'';document.getElementById('r_canon').value=r2.canon||'';document.getElementById('r_btn').value=(r2.btn!=null?r2.btn:'');document.getElementById('r_upcover').value=r2.upcover||'';document.getElementById('r_fee').value=r2.fee||'';document.getElementById('r_prefill').value=r2.prefill||'-';document.getElementById('r_auto').value=r2.auto||'-';document.getElementById('r_grade').value=r2.grade||'-';document.getElementById('r_fields').value=r2.fields||'';document.getElementById('r_memo').value=r2.memo||'';_editId=id;rRender();window.scrollTo(0,0);});
 /* 텍스트 플로우 → 측정기록 일괄 등록 (캡쳐 없이) — 형식: 회사[/케이스]: 단계1, 단계2(항목1·항목2), … */
 var _rtext=document.getElementById('r_textadd');_rtext&&_rtext.addEventListener('click',function(){
  var raw=document.getElementById('r_text').value;var lines=raw.split(/\r?\n/).map(function(l){return l.trim();}).filter(Boolean);

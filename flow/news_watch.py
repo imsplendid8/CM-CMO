@@ -184,12 +184,13 @@ def run_once(dry_run=False):
                              "st": "new" if is_new else "done"})
             if is_new:
                 new_count += 1
-                seen.add(key)
                 if dry_run:
+                    # 미리보기(dry-run)는 실제 전송이 아니므로 seen에 넣지 않음 → 실제 실행 때 알림 보장
                     print(f"  [신규] {co} · {title} ({source})")
                 else:
                     try:
                         kakao_send(token, title, link, source, date)
+                        seen.add(key)   # 전송 성공 후에만 seen 등록 → 일시적 실패 시 다음 실행에서 재시도
                         print(f"  [알림전송] {co} · {title}")
                     except Exception as e:
                         print(f"  (전송 실패: {e})", file=sys.stderr)
