@@ -1,0 +1,23 @@
+# ── 개인정보 보호: 원본 캡쳐는 절대 커밋 금지 ──
+# 원본은 로컬에만 보관하고, 마스킹(비식별화) 완료본만 커밋합니다.
+/capture/
+capture/
+
+# 마스킹 완료본만 허용 (커밋 전 주민번호·차량번호 등 가림 확인)
+!capture_masked/
+!capture_masked/**
+
+# 잡파일
+.DS_Store
+Thumbs.db
+*.log
+__pycache__/
+*.pyc
+
+# 뉴스 감지 상태 파일 (전송 중복 방지용, 커밋 불필요)
+news_seen.json
+
+# 오프라인 OCR 엔진(로컬 동봉, 용량 커서 커밋 제외 — 각 PC에서 download 스크립트로 받음)
+vendor/tesseract/*.js
+vendor/tesseract/*.wasm
+vendor/tesseract/*.gz

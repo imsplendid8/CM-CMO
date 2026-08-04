@@ -45,6 +45,7 @@
 | `index.html` | 배포/Pages용 전체 문서(모바일 viewport) |
 | `seo-audit.html` | 동일 콘텐츠 프래그먼트본 |
 | `unlighthouse.config.ts` · `.github/workflows/technical-seo.yml` | 적용형 테크니컬 SEO 자산 |
+| `flow/` | **가입플로우 경쟁분석** 앱(자체완결) — 입력효율·용어 2축 벤치마크·플로우맵·GA360 퍼널·A/B 요건정의 + 캡쳐 마스킹(로컬)·모니터링 콘솔. 허브 `가입플로우 경쟁분석` 카드로 진입. 원본 캡쳐는 커밋 금지(`flow/.gitignore`), 마스킹 완료본만 허용 |
 
 ## 바로 보기
 
