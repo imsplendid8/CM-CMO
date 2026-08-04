@@ -1,0 +1,8 @@
+[
+ {"co":"당사","screen":"운전자정보","step":"STEP1","prefill":"N","auto":"N","grade":"bad","fields":"주민번호, 면허번호, 면허종류, 취득일, 경력, 위반동의, 해외경력, 군경력","memo":"입력 9개로 과다 · 면허정보 자동조회 미적용 · 개선 우선순위 1"},
+ {"co":"삼성","screen":"운전자정보","step":"STEP1","prefill":"부분","auto":"Y","grade":"good","fields":"범위, 생년월일, 취득일, 위반동의","memo":"핵심 4개만 노출 · 면허정보 자동조회로 입력 부담↓"},
+ {"co":"당사","screen":"본인인증","step":"STEP2","prefill":"N","auto":"N","grade":"bad","fields":"주민번호, 휴대폰인증","memo":"본인인증이 견적 앞단에 위치 → 견적 전 이탈 위험"},
+ {"co":"DB","screen":"본인인증","step":"-","prefill":"-","auto":"Y","grade":"good","fields":"간편인증","memo":"간편인증 1단계로 간소화"},
+ {"co":"당사","screen":"담보선택","step":"STEP4","prefill":"부분","auto":"N","grade":"bad","fields":"대인, 대물, 자손, 무보험, 자차, 특약12개","memo":"특약 12개 동시 노출로 복잡 · 용어 미설명"},
+ {"co":"삼성","screen":"담보선택","step":"-","prefill":"Y","auto":"N","grade":"good","fields":"대인, 대물, 자손, 자차","memo":"핵심 담보 4개 + 쉬운 설명 제공"}
+]

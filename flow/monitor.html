@@ -1,0 +1,404 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<!-- 외부 모니터링 콘솔 — 독립형(self-contained). 데이터스튜디오 퍼널 + 손보 뉴스만 포함.
+     포함: ① 구글 데이터스튜디오(Looker) 퍼널 임베드  ② 공개 뉴스 모니터링(키워드 필터). -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-src https://lookerstudio.google.com https://datastudio.google.com; frame-ancestors 'none';">
+<meta name="referrer" content="no-referrer">
+<title>Modooflow · 외부 모니터링 콘솔</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<style>
+:root{
+ --brand:#e0850f;--brand-600:#b96b08;--brand-50:#fdeee0;
+ --grad:linear-gradient(135deg,#e0850f,#f29e67);
+ --ink:#1e1e2c;--ink-2:#4b4d60;--muted:#9094a3;
+ --bg:#ffffff;--surface:#ffffff;--line:#e7e9f0;--line-2:#f1f2f6;
+ --side:#1a1a28;--side-2:#2b2b40;--side-ink:#c7cad8;--side-ink-2:#8388a0;
+ --good:#16a34a;--good-bg:#e7f6ee;--r:16px;
+ --sh:0 1px 2px rgba(20,28,60,.04),0 6px 20px rgba(20,28,60,.06);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{font-family:'Pretendard','Noto Sans KR','Apple SD Gothic Neo',-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;letter-spacing:-.01em;-webkit-font-smoothing:antialiased;}
+.app{display:grid;grid-template-columns:248px 1fr;min-height:100vh;}
+.sidebar{background:linear-gradient(180deg,var(--side),var(--side-2));color:var(--side-ink);display:flex;flex-direction:column;padding:18px 14px;position:sticky;top:0;height:100vh;}
+.brand{display:flex;align-items:center;gap:11px;padding:6px 8px 18px;}
+.brand-logo{width:38px;height:38px;border-radius:11px;background:var(--grad);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px;box-shadow:0 6px 16px rgba(224,133,15,.45);}
+.brand-name{font-size:16px;font-weight:800;color:#fff;line-height:1.1;}
+.brand-sub{display:block;font-size:10px;font-weight:500;color:var(--side-ink-2);margin-top:2px;}
+.nav{display:flex;flex-direction:column;gap:3px;margin-top:6px;flex:1;}
+.nav-cap{font-size:10px;font-weight:700;color:var(--side-ink-2);text-transform:uppercase;letter-spacing:.08em;padding:14px 10px 6px;}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:10px;border:none;background:transparent;color:var(--side-ink);font-size:13.5px;font-weight:600;cursor:pointer;text-align:left;width:100%;transition:.15s;}
+.nav-item svg{width:18px;height:18px;flex:0 0 18px;stroke:currentColor;opacity:.85;}
+.nav-item:hover{background:rgba(255,255,255,.06);color:#fff;}
+.nav-item.on{background:var(--grad);color:#fff;box-shadow:0 8px 18px rgba(224,133,15,.35);}
+.side-foot{margin-top:10px;padding:12px;border-radius:12px;background:rgba(255,255,255,.05);font-size:11px;color:var(--side-ink-2);}
+.side-foot .pro{display:inline-block;background:var(--grad);color:#fff;font-weight:800;font-size:10px;padding:2px 8px;border-radius:6px;margin-bottom:6px;}
+.main{display:flex;flex-direction:column;min-width:0;height:100vh;}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 72px 16px 28px;background:rgba(255,255,255,.85);backdrop-filter:saturate(160%) blur(8px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;}
+.page-title{font-size:19px;font-weight:800;letter-spacing:-.03em;}
+.page-sub{font-size:12.5px;color:var(--muted);margin-top:1px;}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:var(--brand-600);background:var(--brand-50);border:1px solid #f6d9bf;border-radius:999px;padding:6px 12px;}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px rgba(22,163,74,.18);}
+.content{padding:22px 28px 40px;overflow-y:auto;flex:1;}
+.view{display:none;}.view.on{display:block;animation:fade .25s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+.sec{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:16px;box-shadow:var(--sh);}
+.lbl{font-size:12.5px;color:var(--muted);font-weight:600;}
+.banner{background:var(--brand-50);border:1px solid #f6d9bf;color:var(--brand-600);border-radius:12px;padding:12px 14px;font-size:13px;margin-bottom:14px;}
+.search{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:11px;font-size:14px;outline:none;font-family:inherit;}
+.search:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-50);}
+.btn{padding:11px 18px;border:none;border-radius:11px;background:var(--grad);color:#fff;font-size:13.5px;font-weight:700;cursor:pointer;box-shadow:0 6px 16px rgba(224,133,15,.28);transition:.15s;}
+.btn.sub{background:#1a1a28;box-shadow:none;}.btn.ghost{background:#9aa0ab;box-shadow:none;}
+.row{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px;}
+.lsframe{width:100%;height:72vh;border:1px solid var(--line);border-radius:14px;margin-top:14px;background:#fff;}
+.empty{border:1px dashed #d7dae3;border-radius:12px;padding:26px;text-align:center;color:var(--muted);font-size:13px;}
+.empty code{background:var(--line-2);border-radius:5px;padding:1px 6px;color:var(--ink-2);font-size:11px;}
+.chip{display:inline-block;padding:7px 13px;margin:0 5px 6px 0;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ink-2);font-size:12px;font-weight:600;cursor:pointer;transition:.15s;}
+.chip:hover{border-color:#f6d9bf;}
+.chip.on{background:var(--brand-50);color:var(--brand-600);border-color:#f6d9bf;}
+.summary{background:var(--brand-50);border:1px solid #f6d9bf;color:var(--brand-600);border-radius:12px;padding:11px 14px;font-size:13px;margin:6px 0 14px;font-weight:600;}
+.nws{border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:12px;padding:13px 15px;margin-bottom:10px;background:#fff;box-shadow:var(--sh);}
+.nws .nt{font-size:14.5px;font-weight:700;letter-spacing:-.01em;}
+.nws .meta{font-size:12px;color:var(--muted);margin:3px 0 7px;}
+.kw{display:inline-block;background:var(--brand-50);color:var(--brand-600);font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;margin:4px 5px 0 0;cursor:default;}
+.kw.hit{background:var(--brand);color:#fff;}
+/* 트위터식 피드 카드 */
+#newslist{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.tw{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff;box-shadow:var(--sh);min-height:152px;}
+.tw .av{flex:0 0 30px;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;}
+.tw .hd{display:flex;align-items:center;gap:8px;}
+.tw .nm{font-weight:800;font-size:13px;}
+.dotc{width:9px;height:9px;border-radius:50%;flex:0 0 9px;display:inline-block;}
+.tw .hn{color:var(--muted);font-size:11.5px;white-space:nowrap;}
+.tw .al{margin-left:auto;background:#fdecec;color:var(--bad);font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;}
+.tw .tx{font-size:13.5px;color:var(--ink);line-height:1.45;font-weight:600;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.tw .ft{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:auto;}
+.tw .kws{display:flex;flex-wrap:wrap;gap:3px;overflow:hidden;max-height:22px;}
+@media(max-width:1100px){#newslist{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:820px){#newslist{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:560px){#newslist{grid-template-columns:1fr;}}
+a.tw{text-decoration:none;color:inherit;}
+a.tw:hover{border-color:var(--brand);box-shadow:0 10px 30px rgba(20,28,60,.12);transform:translateY(-1px);}
+.tw .lk{color:var(--brand);font-weight:800;font-size:12px;}
+/* 샘플(예시) 자리표시 — 데이터스튜디오 회색 샘플 / 뉴스 예시 목업 */
+.ds-note{background:var(--brand-50);border:1px solid #f1d9b8;border-radius:12px;padding:12px 14px;font-size:12.5px;color:var(--brand-600);line-height:1.6;margin-bottom:12px;}
+.ds-note code{background:var(--line-2);border-radius:5px;padding:1px 6px;color:var(--ink-2);font-size:11px;}
+.ds-sample{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#f3f4f7;box-shadow:var(--sh);filter:grayscale(.6) opacity(.92);}
+.ds-badge{position:absolute;top:12px;left:12px;z-index:2;background:rgba(90,96,110,.92);color:#fff;font-size:11px;font-weight:700;letter-spacing:.05em;padding:4px 10px;border-radius:7px;}
+.ds-sec{margin-top:14px;background:#fbfbfd;border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:12.5px;color:var(--ink-2);line-height:1.6;}
+.ds-sec>b{display:block;margin-bottom:6px;color:var(--ink);font-size:13px;}
+/* ③ 모바일 프로토타입 빌더 */
+.pt-wrap{display:grid;grid-template-columns:1fr 372px;gap:18px;align-items:start;}
+@media(max-width:980px){.pt-wrap{grid-template-columns:1fr;}}
+.pt-drop{border:2px dashed #d7dae3;border-radius:14px;padding:26px;text-align:center;color:var(--muted);font-size:13px;cursor:pointer;background:#fbfbfd;transition:.15s;}
+.pt-drop.drag{border-color:var(--brand);background:var(--brand-50);color:var(--brand-600);}
+.pt-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px;margin-top:14px;}
+.pt-th{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#f3f4f7;box-shadow:var(--sh);}
+.pt-th img{width:100%;height:150px;object-fit:cover;object-position:top center;display:block;}
+.pt-th .n{position:absolute;top:6px;left:6px;background:rgba(26,26,40,.82);color:#fff;font-size:11px;font-weight:800;min-width:22px;height:22px;padding:0 5px;border-radius:11px;display:flex;align-items:center;justify-content:center;}
+.pt-th .ops{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;background:rgba(255,255,255,.93);padding:3px 4px;}
+.pt-th .ops button{border:none;background:transparent;cursor:pointer;font-size:13px;color:var(--ink-2);padding:2px 6px;border-radius:6px;line-height:1;}
+.pt-th .ops button:hover{background:var(--line-2);color:var(--ink);}
+.phone{width:336px;max-width:100%;margin:0 auto;background:#11131a;border-radius:38px;padding:12px;box-shadow:0 18px 50px rgba(20,28,60,.28);}
+.phone .scr{position:relative;border-radius:27px;overflow:hidden;background:#fff;aspect-ratio:9/19;}
+.phone .scr>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center;}
+.phone .notch{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:118px;height:22px;background:#11131a;border-radius:12px;z-index:3;}
+.phone .tapL,.phone .tapR{position:absolute;top:0;bottom:0;z-index:2;cursor:pointer;}
+.phone .tapL{left:0;width:30%;}.phone .tapR{left:30%;right:0;}
+.phone .empty2{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;text-align:center;padding:24px;}
+.pt-ctl{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:12px;color:var(--ink-2);font-size:13px;font-weight:800;}
+.pt-ctl button{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:17px;color:var(--ink-2);}
+.pt-ctl button:hover{border-color:var(--brand);color:var(--brand);}
+.pt-dots{display:flex;gap:5px;justify-content:center;margin-top:10px;flex-wrap:wrap;}
+.pt-dots i{width:7px;height:7px;border-radius:50%;background:#d7dae3;display:inline-block;cursor:pointer;}
+.pt-dots i.on{background:var(--brand);}
+#ptPlay{position:fixed;inset:0;z-index:100000;background:rgba(12,14,22,.95);display:none;align-items:center;justify-content:center;flex-direction:column;padding:20px;}
+#ptPlay.on{display:flex;}
+#ptPlay .pp-title{color:#fff;font-weight:800;font-size:15px;margin-bottom:14px;text-align:center;}
+#ptPlay .pp-close{position:absolute;top:18px;right:20px;width:42px;height:42px;border-radius:50%;border:none;background:rgba(255,255,255,.16);color:#fff;font-size:19px;cursor:pointer;}
+#ptPlay .pp-count{color:#c7cad8;font-size:13px;margin-top:13px;font-weight:700;}
+#ptPlay .pp-hint{color:#7d8294;font-size:11px;margin-top:7px;}
+</style>
+</head><body>
+<!-- ▼ 페이지 전환 햄버거 메뉴 (산출물 3종 바로가기) -->
+<style>
+#mfNav{position:fixed;top:14px;right:16px;z-index:99999;font-family:'Pretendard','Noto Sans KR',-apple-system,sans-serif;}
+#mfNavBtn{width:44px;height:44px;border-radius:12px;border:1px solid rgba(0,0,0,.08);background:#fff;box-shadow:0 6px 20px rgba(0,0,0,.14);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:0;}
+#mfNavBtn i{width:18px;height:2px;background:#1a1a2e;border-radius:2px;transition:.2s;}
+#mfNav.open #mfNavBtn i:nth-child(1){transform:translateY(6px) rotate(45deg);}
+#mfNav.open #mfNavBtn i:nth-child(2){opacity:0;}
+#mfNav.open #mfNavBtn i:nth-child(3){transform:translateY(-6px) rotate(-45deg);}
+#mfNavP{display:none;position:absolute;top:52px;right:0;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.18);min-width:238px;overflow:hidden;}
+#mfNav.open #mfNavP{display:block;}
+#mfNavP .cap{padding:12px 16px 6px;font-size:11px;font-weight:800;color:#9094a3;letter-spacing:.05em;}
+#mfNavP a{display:flex;align-items:center;gap:11px;padding:12px 16px;text-decoration:none;color:#1a1a2e;font-size:13.5px;font-weight:600;border-top:1px solid #f1f2f5;}
+#mfNavP a:hover{background:#faf6ef;}
+#mfNavP a .ic{width:30px;height:30px;border-radius:9px;background:#f3f4f7;display:flex;align-items:center;justify-content:center;font-size:15px;flex:0 0 auto;}
+#mfNavP a small{display:block;font-size:11px;font-weight:500;color:#9094a3;margin-top:1px;}
+#mfNavP a.on{background:linear-gradient(135deg,#fdeee0,#fff);}
+#mfNavP a.on .ic{background:#e0850f;color:#fff;}
+#mfNavP a.on .t{color:#b96b08;}
+</style>
+<div id="mfNav">
+ <button id="mfNavBtn" aria-label="페이지 메뉴"><i></i><i></i><i></i></button>
+ <div id="mfNavP">
+  <div class="cap">바로가기 · MODOOFLOW</div>
+  <a href="index.html" data-f="index.html"><span class="ic">📊</span><span><span class="t">내부 대시보드</span><small>분석 · 벤치마크</small></span></a>
+  <a href="mask-tool.html" data-f="mask-tool.html"><span class="ic">🛠️</span><span><span class="t">관리자 도구</span><small>캡쳐 · 마스킹 · 기록</small></span></a>
+  <a href="monitor.html" data-f="monitor.html"><span class="ic">📡</span><span><span class="t">외부 모니터링</span><small>퍼널 · 뉴스</small></span></a>
+ </div>
+</div>
+<script>
+(function(){var nav=document.getElementById('mfNav');if(!nav)return;var btn=document.getElementById('mfNavBtn'),p=document.getElementById('mfNavP');
+ var cur=(location.pathname.split('/').pop()||'').toLowerCase()||'index.html';
+ nav.querySelectorAll('a').forEach(function(a){if(a.getAttribute('data-f').toLowerCase()===cur)a.classList.add('on');});
+ btn.addEventListener('click',function(e){e.stopPropagation();nav.classList.toggle('open');});
+ p.addEventListener('click',function(e){e.stopPropagation();});
+ document.addEventListener('click',function(){nav.classList.remove('open');});
+ document.addEventListener('keydown',function(e){if(e.key==='Escape')nav.classList.remove('open');});
+})();
+</script>
+<!-- ▲ 페이지 전환 햄버거 메뉴 -->
+<div class="app">
+ <aside class="sidebar">
+  <div class="brand"><div class="brand-logo"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><path d="M5 5.5h14a.9.9 0 0 1 .72 1.44L14 14v4.1a.9.9 0 0 1-.5.8l-2.6 1.3A.7.7 0 0 1 9.9 19.6V14L4.28 6.94A.9.9 0 0 1 5 5.5Z" fill="#fff"/><circle cx="12" cy="19.4" r="1.5" fill="#fff"/></svg></div><div class="brand-name">Modooflow<span class="brand-sub">외부 모니터링 콘솔</span></div></div>
+  <nav class="nav" id="nav">
+   <div class="nav-cap">외부망 전용</div>
+   <button class="nav-item on" data-t="v1"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h18l-7 8v7l-4 2v-9L3 4Z"/></svg><span>데이터스튜디오 퍼널</span></button>
+   <button class="nav-item" data-t="v2"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h13a2 2 0 0 1 2 2v12a1 1 0 0 0 1 1H6a2 2 0 0 1-2-2V5Z"/><path d="M8 8h7M8 12h7M8 16h4"/></svg><span>손보 뉴스</span></button>
+   <button class="nav-item" data-t="v3"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/></svg><span>모바일 프로토타입</span></button>
+  </nav>
+  <div class="side-foot"><span class="pro">EXTERNAL</span></div>
+ </aside>
+ <main class="main">
+  <header class="topbar">
+   <div><div class="page-title" id="ptitle">데이터스튜디오 퍼널</div><div class="page-sub" id="psub">구글 데이터스튜디오 가입 퍼널 리포트 (임베디드 · 권한 부여된 이메일만 접속)</div></div>
+   <span class="pill"><span class="dot"></span>외부망 콘솔</span>
+  </header>
+  <div class="content">
+
+   <section id="v1" class="view on">
+    <div class="banner">구글 <b>데이터스튜디오</b> 가입 퍼널 리포트 <span style="color:var(--muted);font-weight:600;">(실제 작동 방식은 임베디드 방식으로, 권한 부여된 이메일만 접속 가능)</span></div>
+    <div id="lswrap"></div>
+    <div class="sec" style="margin-top:14px;">
+     <span class="lbl">Looker Studio 임베드 URL</span>
+     <input id="lsurl" class="search" type="text" placeholder="https://lookerstudio.google.com/embed/reporting/..." style="margin:6px 0 0;">
+     <div class="row"><button class="btn" id="lsload">불러오기</button><button class="btn sub" id="lsopen">새 탭에서 열기</button><button class="btn ghost" id="lsclear">초기화</button></div>
+    </div>
+   </section>
+
+   <section id="v2" class="view">
+    <div class="banner">손보 <b>가입 리뉴얼·개편</b> 공개 뉴스 — 업체별·최신순 아카이브 <span style="color:var(--muted);font-weight:600;">(현재 샘플 · 향후 보안 점검 후 외부 공개 방식으로 RSS 자동 수집 · 카드 클릭 시 기사로 이동)</span></div>
+    <input id="q" class="search" type="text" placeholder="제목·출처 검색…" style="margin-bottom:12px;">
+    <div class="lbl" style="margin-bottom:5px;">업체별</div>
+    <div id="chips"></div>
+    <div id="newssum"></div>
+    <div id="newslist"></div>
+   </section>
+
+   <section id="v3" class="view">
+    <div class="banner">📱 <b>모바일 프로토타입</b> — 모바일 페이지 <b>시안 이미지</b>를 업로드하면 폰 프레임에서 <b>탭하며 넘기는</b> 클릭형 프로토타입이 됩니다. <span style="color:var(--muted);font-weight:600;">이 브라우저에 로컬 저장 · 외부 업로드 없음 · 공유는 <b>HTML 파일 내보내기</b>(이미지 내장)로 카톡·메일 전송, 받는 사람은 더블클릭만 하면 열립니다.</span></div>
+    <div class="row" style="margin-bottom:14px;align-items:center;gap:8px;">
+     <select id="ptSel" class="search" style="max-width:260px;"></select>
+     <button class="btn" id="ptNewBtn">＋ 새 프로토타입</button>
+     <button class="btn sub" id="ptRename">이름 변경</button>
+     <button class="btn ghost" id="ptDelBtn">삭제</button>
+    </div>
+    <div class="pt-wrap">
+     <div class="sec" style="margin:0;">
+      <span class="lbl">시안 업로드 · 순서가 곧 화면 전환 순서</span>
+      <div class="pt-drop" id="ptDrop" style="margin-top:8px;">시안 이미지를 <b>드래그</b>하거나 클릭해서 업로드<br><span style="font-size:11px;">PNG·JPG · 여러 장 동시 가능 · 720px로 자동 압축 저장</span></div>
+      <input id="ptFile" type="file" accept="image/*" multiple style="display:none;">
+      <div class="pt-strip" id="ptStrip"></div>
+     </div>
+     <div>
+      <div class="phone" id="ptPhone"></div>
+      <div class="pt-ctl" id="ptCtl"></div>
+      <div class="pt-dots" id="ptDots"></div>
+      <div class="row" style="justify-content:center;margin-top:16px;">
+       <button class="btn" id="ptPlayBtn">▶ 전체화면 미리보기</button>
+       <button class="btn sub" id="ptLink">🔗 링크 복사</button>
+       <button class="btn sub" id="ptExport">⬇ HTML 내보내기</button>
+      </div>
+     </div>
+    </div>
+   </section>
+
+  </div>
+ </main>
+</div>
+
+<!-- 모바일 프로토타입 풀스크린 플레이어 -->
+<div id="ptPlay"><button class="pp-close" id="ptPlayClose" aria-label="닫기">✕</button><div class="pp-title" id="ptPlayTitle"></div><div class="phone" style="margin:0;"><div class="scr" id="ptPlayScr"></div></div><div class="pp-count" id="ptPlayCount"></div><div class="pp-hint">화면을 탭하면 다음으로 · 왼쪽 가장자리 = 이전 · (← → 키 / Esc)</div></div>
+
+<!-- 공개 뉴스 데이터 (내부에서 news_watch.py 실행 시 생성되는 newsdata.js). 없으면 안내 표시. -->
+<script src="newsdata.js" onerror="window.__noNews=1"></script>
+<script>
+function esc(s){return (s==null?'':''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+var NAV={v1:["데이터스튜디오 퍼널","구글 데이터스튜디오 가입 퍼널 리포트 (임베디드 · 권한 부여된 이메일만 접속)"],v2:["손보 뉴스","업체별 뉴스 아카이브"],v3:["모바일 프로토타입","시안 업로드 → 폰 프레임 클릭형 프로토타입 · 로컬 저장 · HTML 공유"]};
+document.getElementById('nav').addEventListener('click',function(e){var it=e.target.closest('.nav-item');if(!it)return;this.querySelectorAll('.nav-item').forEach(function(x){x.classList.remove('on');});it.classList.add('on');document.querySelectorAll('.view').forEach(function(x){x.classList.remove('on');});document.getElementById(it.dataset.t).classList.add('on');var m=NAV[it.dataset.t];document.getElementById('ptitle').textContent=m[0];document.getElementById('psub').textContent=m[1];});
+
+/* ① 데이터스튜디오 (Looker 임베드 · 구글 도메인만 허용) — URL 없으면 회색 '샘플' 표시 */
+function lsValid(u){return /^https:\/\/(lookerstudio|datastudio)\.google\.com\/embed\/[^\s"'<>]+$/.test(u);}
+function sampleReportSVG(){
+ var W=980,fy=14,fh=46,filters=['기간 선택','담당자','afccd','대분류','중분류','소분류','채널(통합)','채널(상세)','가입유형'];
+ var nf=filters.length,fpad=16,fgap=8,fw=(W-fpad*2-fgap*(nf-1))/nf;
+ var fbar=filters.map(function(t,i){var x=fpad+i*(fw+fgap);
+  return '<rect x="'+x+'" y="'+fy+'" width="'+fw+'" height="'+fh+'" rx="9" fill="#ffffff" stroke="#e3e6ec"/>'
+   +'<text x="'+(x+11)+'" y="'+(fy+28)+'" font-size="12" fill="#6b7180">'+t+'</text>'
+   +'<text x="'+(x+fw-12)+'" y="'+(fy+28)+'" font-size="10" fill="#aab0bb" text-anchor="end">▾</text>';}).join('');
+ var ids=['PA01201','PA01058','PA00404','PA00645','PA00939','PA01084','PA00462','PA00938','PA01186','PA00650','PA00459','PA00457','PA01069','PA00940'];
+ var py=80,headH=32,rowH=27,nrow=ids.length,bodyH=nrow*rowH;
+ function panel(px,pw,cols){
+  var idW=120,sx=px+idW,sw=pw-idW,cw=sw/cols.length,h=headH+bodyH;
+  var s='<rect x="'+px+'" y="'+py+'" width="'+pw+'" height="'+(h+4)+'" rx="8" fill="#ffffff" stroke="#e7e9ef"/>';
+  s+='<rect x="'+px+'" y="'+py+'" width="'+pw+'" height="'+headH+'" fill="#eef1fb"/>';
+  s+='<text x="'+(px+14)+'" y="'+(py+21)+'" font-size="12.5" font-weight="800" fill="#5b6270">afccd</text>';
+  cols.forEach(function(c,i){s+='<text x="'+(sx+i*cw+cw-10)+'" y="'+(py+21)+'" font-size="12" font-weight="700" fill="#5b6270" text-anchor="end">'+c+'</text>';});
+  s+='<rect x="'+sx+'" y="'+(py+headH)+'" width="'+sw+'" height="'+bodyH+'" fill="#f1f2f5"/>';
+  for(var r=0;r<nrow;r++){var ry=py+headH+r*rowH;
+   if(r%2)s+='<rect x="'+px+'" y="'+ry+'" width="'+idW+'" height="'+rowH+'" fill="#fafbfc"/>';
+   s+='<text x="'+(px+14)+'" y="'+(ry+18)+'" font-size="11" fill="#aab0bb">'+(r+1)+'.</text>';
+   s+='<text x="'+(px+38)+'" y="'+(ry+18)+'" font-size="12" fill="#5b6270">'+ids[r]+'</text>';
+   s+='<line x1="'+sx+'" y1="'+(ry+rowH)+'" x2="'+(px+pw)+'" y2="'+(ry+rowH)+'" stroke="#e7e9ef"/>';}
+  s+='<line x1="'+sx+'" y1="'+py+'" x2="'+sx+'" y2="'+(py+h)+'" stroke="#e7e9ef"/>';
+  for(var ci=1;ci<cols.length;ci++){var lx=sx+ci*cw;s+='<line x1="'+lx+'" y1="'+(py+headH)+'" x2="'+lx+'" y2="'+(py+h)+'" stroke="#e7e9ef"/>';}
+  s+='<text x="'+(px+pw-64)+'" y="'+(py+h+22)+'" font-size="11" fill="#9aa0ab" text-anchor="end">1 - 100 / 336</text>'
+    +'<text x="'+(px+pw-40)+'" y="'+(py+h+23)+'" font-size="13" fill="#9aa0ab">‹  ›</text>';
+  return s;}
+ var gap=16,pw=(W-18*2-gap)/2,plx=18,prx=plx+pw+gap;
+ var totalH=py+headH+bodyH+40;
+ return '<svg viewBox="0 0 '+W+' '+totalH+'" width="100%" font-family="-apple-system,Apple SD Gothic Neo,sans-serif">'
+  +'<rect width="'+W+'" height="'+totalH+'" fill="#ffffff"/>'+fbar
+  +panel(plx,pw,['0.인트로','1.유입','2.정보입력','3.차량선택'])
+  +panel(prx,pw,['4.산출완료','5.사진등록','6.결제','7.가입완료'])+'</svg>';
+}
+function lsSamplePanel(){
+ return '<div class="ds-sample"><span class="ds-badge">샘플 · SAMPLE</span>'+sampleReportSVG()+'</div>';
+}
+function lsRender(){var u=localStorage.getItem('monitor_ls_url')||'';var w=document.getElementById('lswrap');var inp=document.getElementById('lsurl');if(u)inp.value=u;if(!u){w.innerHTML=lsSamplePanel();return;}var f=document.createElement('iframe');f.className='lsframe';f.src=u;f.setAttribute('allowfullscreen','');f.setAttribute('sandbox','allow-scripts allow-same-origin allow-popups allow-forms');w.innerHTML='';w.appendChild(f);}
+document.getElementById('lsload').addEventListener('click',function(){var u=document.getElementById('lsurl').value.trim();if(!lsValid(u)){alert('Looker Studio 임베드 URL만 허용됩니다.');return;}localStorage.setItem('monitor_ls_url',u);lsRender();});
+document.getElementById('lsopen').addEventListener('click',function(){var u=localStorage.getItem('monitor_ls_url')||document.getElementById('lsurl').value.trim();if(!lsValid(u)){alert('먼저 올바른 임베드 URL을 입력·불러오기 하세요.');return;}window.open(u,'_blank','noopener');});
+document.getElementById('lsclear').addEventListener('click',function(){localStorage.removeItem('monitor_ls_url');document.getElementById('lsurl').value='';lsRender();});
+
+/* ② 손보 뉴스 (읽기 전용 · 공개 뉴스 · 업체별 아카이브) — 실데이터 없으면 예시(샘플) 목업 표시 */
+var SAMPLE_NEWS=[
+ {co:"S사",title:"S사, 다이렉트 자동차보험 가입 프로세스 전면 개편",src:"전자신문",date:"2026-05-28",kws:["가입 프로세스","개편"]},
+ {co:"H사",title:"H사, 간편가입 'UX 리뉴얼' 베타 런칭",src:"디지털데일리",date:"2026-05-21",kws:["리뉴얼","런칭","간편가입"]},
+ {co:"D사",title:"D사, 모바일 견적 화면 개선…입력 단계 축소",src:"보험신보",date:"2026-04-30",kws:["UX 개선"]},
+ {co:"K사",title:"K사, 본인인증 절차 간소화 적용",src:"한국금융",date:"2026-03-12",kws:["간소화"]}
+];
+var USING_SAMPLE=!(window.NEWS&&window.NEWS.length);
+var NEWS=USING_SAMPLE?SAMPLE_NEWS:window.NEWS;
+var activeCo='전체', q='';
+function byDate(a,b){return (b.date||'').localeCompare(a.date||'');}  // 최신순
+function coSet(){var s={};NEWS.forEach(function(n){if(n.co)s[n.co]=(s[n.co]||0)+1;});return s;}
+function renderChips(){var cs=coSet();var ks=['전체'].concat(Object.keys(cs));
+ document.getElementById('chips').innerHTML=ks.map(function(k){var n=(k==='전체')?NEWS.length:cs[k];return '<span class="chip'+(k===activeCo?' on':'')+'" data-k="'+esc(k)+'">'+esc(k)+' <b>'+n+'</b></span>';}).join('');}
+var AVC={"S사":"#6b8ff3","H사":"#e0850f","D사":"#34b1aa","K사":"#d97706","삼성":"#6b8ff3","현대":"#e0850f","DB":"#34b1aa","KB":"#d97706","메리츠":"#a855f7","한화":"#ef5a16"};
+function avc(co){for(var k in AVC){if((co||'').indexOf(k)>=0)return AVC[k];}return '#9094a3';}
+function handle(co){var m={"S사":"@s_direct","H사":"@h_direct","D사":"@d_direct","K사":"@k_direct","삼성":"@samsung_fire","현대":"@hyundai_direct","DB":"@db_insurance","KB":"@kb_insure","메리츠":"@meritz","한화":"@hanwha"};for(var k in m){if((co||'').indexOf(k)>=0)return m[k];}return '@'+esc(co||'news');}
+function card(n){
+ var kws=(n.kws||[]);
+ var chips=kws.map(function(k){return '<span class="kw">#'+esc(k)+'</span>';}).join('');
+ var alarm=kws.length?'<span class="al">● 알림</span>':'';
+ var href=n.url||n.link||('https://news.google.com/search?q='+encodeURIComponent(n.title||''));
+ return '<a class="tw" href="'+esc(href)+'" target="_blank" rel="noopener">'
+  +'<div class="hd"><span class="dotc" style="background:'+avc(n.co)+'"></span><span class="nm">'+esc(n.co||'')+'</span>'+alarm+'</div>'
+  +'<div class="tx">'+esc(n.title)+'</div>'
+  +'<div class="ft"><div class="kws">'+chips+'</div><div class="hn">'+esc(n.date||'')+' <span class="lk">↗</span></div></div></a>';
+}
+function newsRender(){
+ var list=document.getElementById('newslist'),sum=document.getElementById('newssum');
+ if(!NEWS.length){sum.innerHTML='';list.innerHTML='<div class="empty">아카이브가 비어 있습니다. 향후 보안 점검 후, 외부 공개 방식으로 공개 뉴스를 RSS로 자동 수집해 표시할 예정입니다.</div>';return;}
+ var ql=q.trim().toLowerCase();
+ var rows=NEWS.filter(function(n){
+   var okc=(activeCo==='전체')||(n.co===activeCo);
+   var hay=((n.title||'')+' '+(n.src||'')).toLowerCase();
+   return okc&&(!ql||hay.indexOf(ql)>=0);});
+ sum.innerHTML=(USING_SAMPLE?'<div class="summary" style="background:#fff4e6;border:1px solid #f6d9bf;color:#b96b08;margin-bottom:8px">📌 예시(샘플) 뉴스입니다. 향후 보안 점검 후, 외부 공개 방식으로 RSS 자동 수집되도록 구현 예정.</div>':'')+'<div class="summary">아카이브 <b>'+rows.length+'</b>건'+(activeCo!=='전체'?' · '+esc(activeCo):' · 전체 업체')+' · 최신순</div>';
+ if(!rows.length){list.innerHTML='<div class="empty">조건에 맞는 뉴스가 없습니다.</div>';return;}
+ list.innerHTML=rows.slice().sort(byDate).map(card).join('');
+}
+document.getElementById('chips').addEventListener('click',function(e){var c=e.target.closest('.chip');if(!c)return;activeCo=c.dataset.k;renderChips();newsRender();});
+document.getElementById('q').addEventListener('input',function(){q=this.value;newsRender();});
+
+/* ③ 모바일 프로토타입 빌더 — 시안 업로드(로컬 압축 저장) → 폰 프레임 클릭형 → 로컬 링크 / 자체완결 HTML 내보내기. 외부 전송 없음. */
+var PT_KEY='mf_protos';
+function ptLoad(){try{return JSON.parse(localStorage.getItem(PT_KEY)||'[]')||[];}catch(e){return [];}}
+function ptSave(){try{localStorage.setItem(PT_KEY,JSON.stringify(ptList));return true;}catch(e){alert('브라우저 저장 용량을 초과했습니다.\n일부 프로토타입을 HTML로 내보낸 뒤 삭제해 주세요.');return false;}}
+var ptList=ptLoad(),ptCur=(ptList[0]&&ptList[0].id)||null,ptIdx=0;
+function ptCurrent(){for(var i=0;i<ptList.length;i++)if(ptList[i].id===ptCur)return ptList[i];return null;}
+function ptNew(){var name=prompt('프로토타입 이름','모바일 시안 '+(ptList.length+1));if(name==null)return;var id='p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);ptList.push({id:id,name:(name||'제목없음').trim(),ts:Date.now(),screens:[]});ptCur=id;ptIdx=0;if(ptSave())ptRenderBuilder();}
+function ptRename(){var p=ptCurrent();if(!p){alert('먼저 프로토타입을 만들어 주세요.');return;}var n=prompt('이름 변경',p.name);if(n==null)return;p.name=(n||'제목없음').trim();ptSave();ptRenderBuilder();}
+function ptDel(){var p=ptCurrent();if(!p)return;if(!confirm('"'+p.name+'" 프로토타입을 삭제할까요?'))return;ptList=ptList.filter(function(x){return x.id!==p.id;});ptCur=ptList.length?ptList[0].id:null;ptIdx=0;ptSave();ptRenderBuilder();}
+function ptCompress(file,cb){var rd=new FileReader();rd.onload=function(){var im=new Image();im.onload=function(){var mw=720,sc=Math.min(1,mw/im.width),w=Math.round(im.width*sc),h=Math.round(im.height*sc);var c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0,w,h);var u;try{u=c.toDataURL('image/webp',0.8);if(u.indexOf('image/webp')<0)u=c.toDataURL('image/jpeg',0.82);}catch(e){u=c.toDataURL('image/jpeg',0.82);}cb(u);};im.onerror=function(){cb(null);};im.src=rd.result;};rd.onerror=function(){cb(null);};rd.readAsDataURL(file);}
+function ptAddFiles(files){var p=ptCurrent();if(!p){ptNew();p=ptCurrent();if(!p)return;}var arr=[].slice.call(files).filter(function(f){return /^image\//.test(f.type);});if(!arr.length)return;var done=0,bag=[];arr.forEach(function(f,k){ptCompress(f,function(u){bag[k]=u;if(++done===arr.length){bag.forEach(function(x){if(x)p.screens.push(x);});ptSave();ptRenderBuilder();}});});}
+function ptMove(i,d){var p=ptCurrent();if(!p)return;var j=i+d;if(j<0||j>=p.screens.length)return;var t=p.screens[i];p.screens[i]=p.screens[j];p.screens[j]=t;ptSave();ptRenderBuilder();}
+function ptDelScreen(i){var p=ptCurrent();if(!p)return;p.screens.splice(i,1);if(ptIdx>=p.screens.length)ptIdx=Math.max(0,p.screens.length-1);ptSave();ptRenderBuilder();}
+function ptGo(d){var p=ptCurrent();if(!p||!p.screens.length)return;ptIdx=Math.max(0,Math.min(p.screens.length-1,ptIdx+d));ptRenderPreview();}
+function ptSet(i){ptIdx=i;ptRenderPreview();}
+function ptRenderBuilder(){var sel=document.getElementById('ptSel');if(!sel)return;
+ sel.innerHTML=ptList.length?ptList.map(function(p){return '<option value="'+esc(p.id)+'"'+(p.id===ptCur?' selected':'')+'>'+esc(p.name)+' ('+p.screens.length+'장)</option>';}).join(''):'<option value="">— 프로토타입 없음 (＋ 새로 만들기) —</option>';
+ var p=ptCurrent(),strip=document.getElementById('ptStrip');
+ strip.innerHTML=(p&&p.screens.length)?p.screens.map(function(u,i){return '<div class="pt-th"><div class="n">'+(i+1)+'</div><img src="'+u+'" alt=""><div class="ops"><button data-mv="-1" data-i="'+i+'" title="앞으로">◀</button><button data-del="'+i+'" title="삭제">🗑</button><button data-mv="1" data-i="'+i+'" title="뒤로">▶</button></div></div>';}).join(''):'';
+ ptRenderPreview();}
+function ptRenderPreview(){var ph=document.getElementById('ptPhone');if(!ph)return;var p=ptCurrent(),n=p?p.screens.length:0;if(ptIdx>=n)ptIdx=Math.max(0,n-1);
+ ph.innerHTML='<div class="notch"></div><div class="scr">'+(n?('<img src="'+p.screens[ptIdx]+'" alt=""><div class="tapL" id="ptTapL"></div><div class="tapR" id="ptTapR"></div>'):'<div class="empty2">왼쪽에서 시안 이미지를 업로드하면<br>여기서 폰 화면으로 미리볼 수 있어요</div>')+'</div>';
+ var ctl=document.getElementById('ptCtl');if(ctl)ctl.innerHTML=n?('<button data-go="-1">‹</button><span>'+(ptIdx+1)+' / '+n+'</span><button data-go="1">›</button>'):'';
+ var dots=document.getElementById('ptDots');if(dots)dots.innerHTML=n?p.screens.map(function(_,i){return '<i class="'+(i===ptIdx?'on':'')+'" data-dot="'+i+'"></i>';}).join(''):'';}
+/* 풀스크린 플레이어 */
+var ptPlayState=null;
+function ptPlayOpen(screens,title,idx){if(!screens||!screens.length){alert('화면이 없습니다. 시안을 먼저 업로드하세요.');return;}ptPlayState={s:screens,t:title||'',i:idx||0};document.getElementById('ptPlayTitle').textContent=ptPlayState.t;ptPlayRender();document.getElementById('ptPlay').classList.add('on');}
+function ptPlayRender(){var st=ptPlayState;if(!st)return;document.getElementById('ptPlayScr').innerHTML='<img src="'+st.s[st.i]+'" alt=""><div class="tapL" id="ppL"></div><div class="tapR" id="ppR"></div>';document.getElementById('ptPlayCount').textContent=(st.i+1)+' / '+st.s.length;}
+function ptPlayGo(d){var st=ptPlayState;if(!st)return;st.i=Math.max(0,Math.min(st.s.length-1,st.i+d));ptPlayRender();}
+/* 자체완결 HTML 생성 (이미지 data URL 내장 · 네트워크 차단 CSP · 인라인 플레이어) */
+function ptBuildStandalone(p){var data=JSON.stringify({t:p.name||'',s:p.screens}).replace(/</g,'\\u003c').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029');
+ var css="*{margin:0;box-sizing:border-box}body{background:#0c0e16;font-family:'Pretendard','Apple SD Gothic Neo',-apple-system,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;color:#fff}#t{font-weight:800;font-size:16px;margin-bottom:14px;text-align:center}#ph{width:336px;max-width:92vw;background:#11131a;border-radius:38px;padding:12px;box-shadow:0 18px 50px rgba(0,0,0,.5)}.scr{position:relative;border-radius:27px;overflow:hidden;background:#fff;aspect-ratio:9/19}.scr img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center}.notch{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:118px;height:22px;background:#11131a;border-radius:12px;z-index:3}#L,#R{position:absolute;top:0;bottom:0;cursor:pointer;z-index:2}#L{left:0;width:30%}#R{left:30%;right:0}#c{margin-top:14px;font-size:13px;color:#c7cad8;font-weight:700}#h{margin-top:7px;font-size:11px;color:#7d8294}";
+ var js="var D="+data+",i=0,im=document.getElementById('im');document.getElementById('t').textContent=D.t||'모바일 프로토타입';function r(){im.src=D.s[i];document.getElementById('c').textContent=(i+1)+' / '+D.s.length;}document.getElementById('R').onclick=function(){if(i<D.s.length-1){i++;r();}};document.getElementById('L').onclick=function(){if(i>0){i--;r();}};document.onkeydown=function(e){if(e.key==='ArrowRight'&&i<D.s.length-1){i++;r();}else if(e.key==='ArrowLeft'&&i>0){i--;r();}};r();";
+ return '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+  +'<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; img-src data:; style-src \'unsafe-inline\'; script-src \'unsafe-inline\'; base-uri \'none\';">'
+  +'<title>'+esc(p.name||'모바일 프로토타입')+'</title><style>'+css+'</style></head><body>'
+  +'<div id="t"></div><div id="ph"><div class="scr"><div class="notch"></div><img id="im" alt=""><div id="L"></div><div id="R"></div></div></div>'
+  +'<div id="c"></div><div id="h">화면을 탭하면 다음으로 · 왼쪽 가장자리 = 이전 · (← → 키)</div>'
+  +'<scr'+'ipt>'+js+'</scr'+'ipt></body></html>';}
+function ptExport(){var p=ptCurrent();if(!p||!p.screens.length){alert('먼저 시안을 업로드하세요.');return;}
+ var blob=new Blob([ptBuildStandalone(p)],{type:'text/html'}),a=document.createElement('a');
+ a.href=URL.createObjectURL(blob);a.download=((p.name||'prototype').replace(/[^\w가-힣\- ]/g,'').trim().replace(/\s+/g,'_')||'prototype')+'_프로토타입.html';
+ document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1500);}
+function ptCopyLink(){var p=ptCurrent();if(!p||!p.screens.length){alert('먼저 시안을 업로드하세요.');return;}
+ var url=location.href.split('#')[0]+'#play='+p.id;
+ function done(){alert('프로토타입 링크를 복사했어요 (이 브라우저에서만 열립니다):\n\n'+url+'\n\n다른 사람과 공유하려면 [⬇ HTML 내보내기]를 사용하세요.');}
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(done,function(){prompt('아래 링크를 복사하세요 (이 브라우저 전용):',url);});}else{prompt('아래 링크를 복사하세요 (이 브라우저 전용):',url);}}
+function ptCheckHash(){var m=(location.hash||'').match(/play=([a-z0-9]+)/i);if(!m)return;var p=ptLoad().filter(function(x){return x.id===m[1];})[0];if(p&&p.screens&&p.screens.length)ptPlayOpen(p.screens,p.name,0);}
+/* 이벤트 바인딩 */
+(function(){
+ var v3=document.getElementById('v3');
+ v3.addEventListener('click',function(e){var t=e.target;
+  if(t.id==='ptTapR'){ptGo(1);return;}if(t.id==='ptTapL'){ptGo(-1);return;}
+  var go=t.getAttribute&&t.getAttribute('data-go');if(go){ptGo(+go);return;}
+  var dot=t.getAttribute&&t.getAttribute('data-dot');if(dot!==null&&dot!==''&&dot!==undefined){ptSet(+dot);return;}
+  var mv=t.getAttribute&&t.getAttribute('data-mv');if(mv){ptMove(+t.getAttribute('data-i'),+mv);return;}
+  var del=t.getAttribute&&t.getAttribute('data-del');if(del!==null&&del!==''&&del!==undefined){ptDelScreen(+del);return;}});
+ document.getElementById('ptNewBtn').addEventListener('click',ptNew);
+ document.getElementById('ptRename').addEventListener('click',ptRename);
+ document.getElementById('ptDelBtn').addEventListener('click',ptDel);
+ document.getElementById('ptSel').addEventListener('change',function(){ptCur=this.value||null;ptIdx=0;ptRenderBuilder();});
+ var drop=document.getElementById('ptDrop'),file=document.getElementById('ptFile');
+ drop.addEventListener('click',function(){file.click();});
+ file.addEventListener('change',function(){if(this.files&&this.files.length){ptAddFiles(this.files);this.value='';}});
+ ['dragenter','dragover'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add('drag');});});
+ ['dragleave','drop'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove('drag');});});
+ drop.addEventListener('drop',function(e){if(e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files.length)ptAddFiles(e.dataTransfer.files);});
+ document.getElementById('ptPlayBtn').addEventListener('click',function(){var p=ptCurrent();if(!p){alert('먼저 프로토타입을 만들고 시안을 업로드하세요.');return;}ptPlayOpen(p.screens,p.name,ptIdx);});
+ document.getElementById('ptLink').addEventListener('click',ptCopyLink);
+ document.getElementById('ptExport').addEventListener('click',ptExport);
+ var play=document.getElementById('ptPlay');
+ play.addEventListener('click',function(e){if(e.target.id==='ppR'){ptPlayGo(1);}else if(e.target.id==='ppL'){ptPlayGo(-1);}});
+ document.getElementById('ptPlayClose').addEventListener('click',function(){play.classList.remove('on');if(location.hash)history.replaceState(null,'',location.pathname+location.search);});
+ document.addEventListener('keydown',function(e){if(!play.classList.contains('on'))return;if(e.key==='ArrowRight')ptPlayGo(1);else if(e.key==='ArrowLeft')ptPlayGo(-1);else if(e.key==='Escape')document.getElementById('ptPlayClose').click();});
+})();
+
+lsRender();renderChips();newsRender();ptRenderBuilder();ptCheckHash();
+</script>
+</body></html>
