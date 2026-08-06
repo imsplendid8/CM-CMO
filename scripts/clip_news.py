@@ -20,6 +20,7 @@ KST = datetime.timezone(datetime.timedelta(hours=9))
 NOW = datetime.datetime.now(KST)
 TODAY = NOW.strftime("%Y-%m-%d")
 PART = "오전" if NOW.hour < 12 else "오후"
+KEEP_DAYS = 30   # 아카이브 보관 기간 — 최신 30일치만 유지(이전 일자 파일은 정리)
 
 # 상품 카테고리(products.json) + 업계·경쟁사
 def load_cats():
@@ -109,14 +110,23 @@ def main():
     except Exception: pass
     dates = {d["date"]: d for d in idx.get("dates", [])}
     dates[TODAY] = {"date": TODAY, "total": total, "runs": runs}
-    idx["dates"] = sorted(dates.values(), key=lambda x: x["date"], reverse=True)[:400]
+    idx["dates"] = sorted(dates.values(), key=lambda x: x["date"], reverse=True)[:KEEP_DAYS]
+    keep = {d["date"] for d in idx["dates"]}
     months = {}
     for d in idx["dates"]:
         m = d["date"][:7]; months.setdefault(m, {"total": 0, "days": 0}); months[m]["total"] += d["total"]; months[m]["days"] += 1
     idx["months"] = months
     idx["updated"] = TODAY
     json.dump(idx, open(ipath, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    print(f"✔ data/clips/{TODAY}.json ({src}) · {PART} · 총 {total}건 · 카테고리 {len(by)}개")
+
+    # 최신 30일치만 보관 — 보관 기간을 벗어난 이전 일자 파일 정리
+    pruned = 0
+    for fn in os.listdir(CLIPS):
+        m = re.match(r"^(\d{4}-\d{2}-\d{2})\.json$", fn)
+        if m and m.group(1) not in keep:
+            try: os.remove(os.path.join(CLIPS, fn)); pruned += 1
+            except OSError: pass
+    print(f"✔ data/clips/{TODAY}.json ({src}) · {PART} · 총 {total}건 · 카테고리 {len(by)}개 · 보관 {len(keep)}일" + (f" · 정리 {pruned}일" if pruned else ""))
 
 if __name__ == "__main__":
     main()

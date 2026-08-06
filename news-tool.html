@@ -367,7 +367,7 @@ function renderSidebar(){
 function naverMore(p){return "https://search.naver.com/search.naver?where=news&sort=1&query="+encodeURIComponent(p.q);}
 function newsPanel(p){
   const n=NEWSMON[p.key]; if(!n)return "";
-  const stamp=n.live?`실시간 ${esc(n.live)}`:`스냅샷 ${esc(NEWS_ASOF)}`;
+  const stamp=n.live?`실시간 ${esc(n.live)}`:n.auto?`자동수집 ${esc(n.auto)}`:`스냅샷 ${esc(NEWS_ASOF)}`;
   const trg=TRIGGERS[p.key]||[];const trgKws=trg.map(t=>t.kw);
   const hot=title=>trgKws.some(k=>String(title).indexOf(k)>=0);
   const cards=n.items.map((it,i)=>{const h=hot(it.t);return `<a class="nm-card${h?" hot":""}" href="${esc(it.url)}" target="_blank" rel="noopener">
@@ -398,7 +398,7 @@ function renderProduct(){
     <div class="seedbar"><div class="st"><h2>${esc(p.name)}</h2><span class="tier">${esc(p.cat)} · ${esc(p.tier)}</span>
       <span style="margin-left:auto;font-size:11.5px;color:var(--muted)">카테고리 뉴스 모니터링</span></div></div>
     ${newsPanel(p)}
-    <div class="note"><b>활용</b> · 동향 요약·시사점으로 이 카테고리의 경쟁·시즌 이슈를 파악하고, <b>SEO 콘솔</b>의 태그·<b>키워드 도구</b>의 검색광고 키워드에 반영하세요. 최신 헤드라인은 <b>🔄 실시간 갱신</b>(로컬 서버) 또는 <b>네이버 뉴스</b> 링크로 확인.</div>`;
+    <div class="note"><b>활용</b> · 동향 요약·시사점으로 이 카테고리의 경쟁·시즌 이슈를 파악하고, <b>SEO 콘솔</b>의 태그·<b>키워드 도구</b>의 검색광고 키워드에 반영하세요. 헤드라인은 <b>클리핑 아카이브(하루 2회 자동수집)</b> 최신분을 자동 반영하며, <b>🔄 실시간 갱신</b>으로 즉시 조회하거나 <b>네이버 뉴스</b> 링크로 더 볼 수 있습니다.</div>`;
 }
 function renderOverview(){
   $("#pt").textContent="전체 개요"; $("#pts").textContent=`· ${PRODUCTS.filter(p=>NEWSMON[p.key]).length}개 카테고리`;
@@ -410,7 +410,7 @@ function renderOverview(){
   const top=all.slice(0,6).map(it=>`<li class="nm-item"><a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.t)}<span class="gs">${esc(it.cat)} · ${esc(it.gist||"")}</span></a><span class="mt">${esc(it.src||"")}<br>${esc(it.date||"")}</span></li>`).join("");
   const ovcard=p=>{const n=NEWSMON[p.key];if(!n)return "";const s=n.summary.length>96?n.summary.slice(0,96)+"…":n.summary;
     const trg=(TRIGGERS[p.key]||[]).length;
-    return `<div class="ov-card" data-key="${p.key}"><div class="ct">${esc(p.name)}<span style="font-size:10.5px;color:var(--nav-ink);font-weight:700">${trg?`🔥${trg} · `:""}${n.live?"실시간":"뉴스 "+n.items.length}</span></div><div class="cs">${esc(s)}</div></div>`;};
+    return `<div class="ov-card" data-key="${p.key}"><div class="ct">${esc(p.name)}<span style="font-size:10.5px;color:var(--nav-ink);font-weight:700">${trg?`🔥${trg} · `:""}${n.live?"실시간":n.auto?"자동 "+n.items.length:"뉴스 "+n.items.length}</span></div><div class="cs">${esc(s)}</div></div>`;};
   const indCards=INDUSTRY.map(ovcard).join("");
   const cards=PRODUCTS.filter(p=>NEWSMON[p.key]).map(ovcard).join("");
   const kpi=(n,l)=>`<div class="kpi"><div class="n">${n}</div><div class="l">${l}</div></div>`;
@@ -440,6 +440,31 @@ function loadAutoClips(){
       if(lbl){lbl.textContent=`🔄 자동 수집 최신 · ${j.asof||latest} · 매일 2회 자동`;lbl.style.display="";}
       box.innerHTML=`<div class="newsmon"><div class="nm-body"><ul class="nm-list" style="margin-top:0">${li}</ul></div></div>`;
     }).catch(()=>{});
+  });
+}
+/* 카테고리 카드 자동 반영 — 클리핑 아카이브(하루 2회 자동 수집) 최신 일자를 각 카드 헤드라인에 채움.
+   요약·시사점은 정적 큐레이션 유지, 헤드라인만 자동 최신화. 수집분 없으면(예: file://·첫 실행 전) 정적 시드 유지.
+   수동 '실시간 갱신'(n.live)이 걸린 카드는 덮어쓰지 않음. */
+let AUTOFILLED=false;
+function autofillFromClips(){
+  if(AUTOFILLED)return;
+  loadClipIndex(()=>{
+    const dates=CLIPS_INDEX.dates||[]; if(!dates.length)return;      // 수집분 없으면 정적 유지
+    const latest=dates[0].date;
+    loadClipDay(latest,d=>{
+      AUTOFILLED=true;
+      if(!d||!d.categories)return;
+      let n=0;
+      Object.entries(d.categories).forEach(([key,c])=>{
+        if(!NEWSMON[key]||NEWSMON[key].live)return;                  // 수동 실시간 갱신분은 보존
+        const items=(c.items||[]).slice(0,8).map(it=>({t:it.t,src:it.src,date:it.date,url:it.url,gist:it.gist})).filter(it=>it.t&&it.url);
+        if(!items.length)return;
+        NEWSMON[key].items=items;
+        NEWSMON[key].auto=d.asof||latest;                           // 자동수집 표기(수동 n.live 와 구분)
+        n++;
+      });
+      if(n)render();                                                 // 현재 화면 다시 그림
+    });
   });
 }
 function render(){curKey==="__all"?renderOverview():curKey==="__clips"?renderClips():curKey.startsWith("ind_")?renderIndustry():renderProduct();renderSidebar();window.scrollTo({top:0});}
@@ -590,6 +615,7 @@ document.addEventListener("click",e=>{
 });
 $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");try{localStorage.setItem("mf_theme",d?"light":"dark")}catch(_){};});
 render();
+autofillFromClips();                                                 // 카드 헤드라인을 클리핑 아카이브 최신분으로 자동 반영
 fetch("data/signals.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(s=>{if(s&&s.triggers){SIGNALS=s;render();}}).catch(()=>{}); // 실시간 수요 신호(있으면)
 </script>
 </body>
