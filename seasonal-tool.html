@@ -77,6 +77,20 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .chip{font-size:11px;font-weight:700;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2);padding:3px 9px;border-radius:99px;text-decoration:none;transition:.13s;}
 .chip:hover{border-color:var(--brand);color:var(--brand-600);}
 .now-card .act{font-size:11px;color:var(--nav-ink);font-weight:700;margin-top:9px;background:var(--nav-bg);padding:6px 9px;border-radius:7px;line-height:1.5;}
+/* 카테고리 대표키워드 카드 */
+.rep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:11px;}
+.rep{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 13px;box-shadow:var(--sh);cursor:pointer;transition:.15s;}
+.rep:hover{border-color:var(--brand);box-shadow:var(--sh-lg);transform:translateY(-1px);}
+.rep-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.rep-nm{font-size:13px;font-weight:800;letter-spacing:-.01em;line-height:1.25;}
+.rep-up{font-size:11px;font-weight:800;padding:2px 7px;border-radius:999px;white-space:nowrap;flex:0 0 auto;background:var(--summer-bg);color:#b5730c;}
+.rep-up.up{background:#fdeede;color:#c2670a;} .rep-up.dn{background:var(--line-2);color:var(--muted);} .rep-up.flat{background:var(--line-2);color:var(--muted);}
+.rep-sub{font-size:10.5px;color:var(--muted);margin-top:3px;font-weight:600;}
+.rep-mid{display:flex;align-items:center;gap:9px;margin:7px 0 8px;color:var(--brand-600);}
+.rep-spark{flex:0 0 auto;color:var(--brand);}
+.rep-mlab{font-size:9.5px;color:var(--muted);font-weight:700;letter-spacing:.02em;}
+.rep-kw{display:flex;flex-wrap:wrap;gap:5px;}
+.rep-kw .chip{font-size:10.5px;}
 /* 히트맵 */
 .hm-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:6px;}
 table.hm{border-collapse:collapse;width:100%;min-width:720px;}
@@ -227,19 +241,19 @@ function seasonOf(ms){const m=ms[0];if([3,4,5].includes(m))return"spring";if([6,
 const SEASON={spring:["봄","var(--spring)","var(--spring-bg)"],summer:["여름","var(--summer)","var(--summer-bg)"],fall:["가을","var(--fall)","var(--fall-bg)"],winter:["겨울","var(--winter)","var(--winter-bg)"],year:["연중","var(--year)","var(--year-bg)"]};
 const MAIN=new Set(["driver","hrmf","golf"]); // 메인 상품군(운전자·주택화재·골프)
 const PRODUCTS=[
- {key:"home",cat:"사이트",name:"다이렉트 홈(브랜드)"},
- {key:"hrmf",cat:"장기",name:"주택화재보험"},
- {key:"golf",cat:"장기",name:"골프보험"},
- {key:"cncr",cat:"장기",name:"암보험"},
- {key:"dntl",cat:"장기",name:"치아보험"},
- {key:"driver",cat:"장기",name:"운전자보험"},
- {key:"woman",cat:"장기",name:"여성건강보험"},
- {key:"birth",cat:"장기",name:"임신·출산(태아)보험"},
- {key:"overseas",cat:"일반",name:"해외여행보험"},
- {key:"overseaslong",cat:"일반",name:"해외장기체류보험"},
- {key:"holeinone",cat:"일반",name:"홀인원보험"},
- {key:"event",cat:"일반",name:"행사배상책임보험"},
- {key:"chronic",cat:"장기",name:"유병자 간편보험"},
+ {key:"home",cat:"사이트",name:"다이렉트 홈(브랜드)",core:["한화손보 다이렉트", "한화 다이렉트보험"]},
+ {key:"hrmf",cat:"장기",name:"주택화재보험",core:["주택화재보험", "화재보험"]},
+ {key:"golf",cat:"장기",name:"골프보험",core:["골프보험", "홀인원보험"]},
+ {key:"cncr",cat:"장기",name:"암보험",core:["암보험", "다이렉트 암보험"]},
+ {key:"dntl",cat:"장기",name:"치아보험",core:["치아보험", "다이렉트 치아보험"]},
+ {key:"driver",cat:"장기",name:"운전자보험",core:["운전자보험", "다이렉트 운전자보험"]},
+ {key:"woman",cat:"장기",name:"여성건강보험",core:["여성건강보험", "여성보험"]},
+ {key:"birth",cat:"장기",name:"임신·출산(태아)보험",core:["태아보험", "임신보험"]},
+ {key:"overseas",cat:"일반",name:"해외여행보험",core:["해외여행보험", "여행자보험"]},
+ {key:"overseaslong",cat:"일반",name:"해외장기체류보험",core:["해외장기체류보험", "장기여행보험"]},
+ {key:"holeinone",cat:"일반",name:"홀인원보험",core:["홀인원보험", "캐롯 홀인원보험"]},
+ {key:"event",cat:"일반",name:"행사배상책임보험",core:["행사배상책임보험", "행사보험"]},
+ {key:"chronic",cat:"장기",name:"유병자 간편보험",core:["유병자보험", "간편심사보험"]},
 ];
 /* 시즈널 이슈 윈도우: m=월배열, tag, why(이슈), kws(키워드), act(선제 대응) */
 // 초기값 = file:// 오프라인 폴백. 배포 시 data/seasonal.json(엔진·캘린더 공유 단일 소스)으로 교체됨.
@@ -352,6 +366,32 @@ function renderSidebar(){
   $("#sbNav").innerHTML=h;
 }
 function chip(kw){return `<a class="chip" href="${searchUrl(kw)}" target="_blank" rel="noopener">${esc(kw)}</a>`;}
+function spark(vals,curIdx){                       // 12개월 미니 추세선 + 이번 달 점
+  const w=104,h=26,pad=3,mx=Math.max(...vals,1),mn=Math.min(...vals);
+  const X=i=>pad+i*(w-2*pad)/(vals.length-1), Y=v=>h-pad-(v-mn)/((mx-mn)||1)*(h-2*pad);
+  const pts=vals.map((v,i)=>X(i).toFixed(1)+","+Y(v).toFixed(1)).join(" ");
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" class="rep-spark"><polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" opacity=".5"/><circle cx="${X(curIdx).toFixed(1)}" cy="${Y(vals[curIdx]).toFixed(1)}" r="2.6" fill="currentColor"/></svg>`;
+}
+/* 카테고리 대표키워드 — 상품별 대표 키워드 2개 + 실측 검색추세(데이터랩 trends.json). 키워드 도구의 '이달의 추천 키워드'에서 이관. */
+function repKwCards(){
+  const idx=(CURM-1)%12, prev=(idx+11)%12;
+  const card=p=>{
+    const t=(TRENDS&&TRENDS.products&&TRENDS.products[p.key])||null;
+    let badge=`<span class="rep-up flat">지수 —</span>`, sub="", mid="";
+    if(t&&t.months&&t.months.length===12){
+      const m=t.months, cur=m[idx], pv=m[prev]||0, up=pv>0?(cur/pv-1):(cur>0?1:0);
+      const cls=up>0.02?"up":(up<-0.02?"dn":"flat"), lab=up>0.02?`▲ ${Math.round(up*100)}%`:(up<-0.02?`▼ ${Math.round(-up*100)}%`:"보합");
+      badge=`<span class="rep-up ${cls}">${lab}</span>`;
+      sub=`<div class="rep-sub">${MONTHS[prev]}→${MONTHS[idx]} 검색수요 ${Math.round(pv)}→${Math.round(cur)}</div>`;
+      mid=`<div class="rep-mid">${spark(m,idx)}<span class="rep-mlab">최근 12개월</span></div>`;
+    }
+    const chips=(p.core||[]).slice(0,2).map(chip).join("");
+    return `<div class="rep" data-key="${p.key}"><div class="rep-top"><div class="rep-nm">${esc(p.name)}${MAIN.has(p.key)?" ★":""}</div>${badge}</div>${sub}${mid}<div class="rep-kw">${chips}</div></div>`;
+  };
+  const src=TRENDS&&TRENDS.source==="datalab"?"데이터랩 실측":"근사(연동 전)";
+  return `<div class="sec-lbl" style="margin-top:24px">🔑 카테고리 대표키워드 <span style="font-weight:600;color:var(--muted);text-transform:none">· 상품별 대표 키워드 2개 + 실측 검색추세 · ${esc(src)} · 카드 클릭 → 상품 시즌 탭</span></div>
+    <div class="rep-grid">${PRODUCTS.map(card).join("")}</div>`;
+}
 
 function renderOverview(){
   $("#pt").textContent="연간 시즈널 캘린더"; $("#pts").textContent=`· ${MONTHS[CURM-1]} 기준`;
@@ -374,7 +414,8 @@ function renderOverview(){
     ${next.length?`<div class="note"><b>다음 달(${MONTHS[nextM-1]}) 선제 대응 예고</b> · ${next.map(esc).join(" · ")} → 지금 콘텐츠·검색광고 준비를 시작하세요.</div>`:""}
     <div class="sec-lbl" style="margin-top:24px">🗓️ 연간 마케팅 이슈 캘린더 <span style="font-weight:600;color:var(--muted);text-transform:none">· 한 장에 총체적으로 · 상품행 클릭 시 세부 탭(월별 이슈)으로</span></div>
     ${annualMatrix()}
-    <div class="lg">${Object.keys(SEASON).map(s=>`<span><i style="background:${SEASON[s][1]}"></i>${SEASON[s][0]}</span>`).join("")}<span style="color:var(--brand);font-weight:700">▮ ${MONTHS[CURM-1]} (이번 달)</span></div>`;
+    <div class="lg">${Object.keys(SEASON).map(s=>`<span><i style="background:${SEASON[s][1]}"></i>${SEASON[s][0]}</span>`).join("")}<span style="color:var(--brand);font-weight:700">▮ ${MONTHS[CURM-1]} (이번 달)</span></div>
+    ${repKwCards()}`;
 }
 function annualMatrix(){
   const monthHead=`<tr><th class="rl">구분 \\ 월</th>`+MONTHS.map((m,i)=>`<th class="${i+1===CURM?"mnow":""}">${m}</th>`).join("")+`</tr>`;
@@ -434,7 +475,7 @@ $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.ge
 const _k0=keyFromHash(location.hash); if(_k0)curKey=_k0;
 render();
 // 데이터랩 실측 추세 로드(Pages/서버 동일출처에서만 · 아티팩트/file은 조용히 생략)
-fetch("data/trends.json").then(r=>r.ok?r.json():null).then(d=>{if(d&&d.products){TRENDS=d;if(curKey!=="__all")render();}}).catch(()=>{});
+fetch("data/trends.json").then(r=>r.ok?r.json():null).then(d=>{if(d&&d.products){TRENDS=d;render();}}).catch(()=>{});   // 개요의 대표키워드 카드도 실측으로 갱신
 // 시즌 데이터 단일 소스(엔진·뉴스캘린더 공유). 배포 시 폴백을 실측 소스로 교체하고 재렌더.
 fetch("data/seasonal.json").then(r=>r.ok?r.json():null).then(d=>{if(d&&d.seasonal){SEASONAL=d.seasonal;render();}}).catch(()=>{});
 </script>
