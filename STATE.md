@@ -2,7 +2,7 @@
 
 > **이 문서의 목적**: 대화 세션이 끊겨도 다음 세션(사람이든 Claude든)이 **이 파일 하나만 읽으면** 지금까지 뭘 만들었고 어디를 이어가면 되는지 즉시 파악하도록. 새 작업을 시작하기 전에 항상 먼저 읽으세요.
 
-_최종 갱신: 2026-07-27 · 도구 8개(SEO·키워드·뉴스·SERP·시즌·약관·검색광고 소재·논문) + 팀 실시간 연동 + 자동화(뉴스클리핑·SERP·수요신호·논문 월간) · BSA 운영 CLI는 부서 전용 private 저장소로 분리_
+_최종 갱신: 2026-08-06 · 도구 8개(SEO·키워드·뉴스·SERP·시즌·약관·검색광고 소재·논문) + 팀 실시간 연동 + 자동화(뉴스클리핑·SERP·수요신호·논문 월간) · BSA 운영 CLI는 부서 전용 private 저장소로 분리 · **코덱스 개선분(PR #9~#23) main 반영 완료**_
 
 ## 한 줄 요약
 한화손보 장기CM 마케팅 콘솔 **Modooflow** — 담당 상품(홈·장기7·일반2, 13종)의 SEO·키워드·뉴스·SERP·시즌을 다루는 **정적 웹 도구 모음**. 단일 레포·트렁크(main), GitHub Pages 자동 배포. **디자인=Clean SaaS Light(흰 배경·Pretendard 자체호스팅)**. 실시간 데이터는 **팀 공유 Cloudflare 프록시**로, 키 입력 없이 팀 전원 사용.
@@ -11,17 +11,18 @@ _최종 갱신: 2026-07-27 · 도구 8개(SEO·키워드·뉴스·SERP·시즌·
 | # | 작업공간 | 파일 | 실시간 연동 | 상태 |
 |---|---|---|---|---|
 | 1 | 테크니컬 SEO 콘솔 | `seo-audit.html` | (정적 진단) | ✅ |
-| 2 | 검색광고 키워드 추출 | `keyword-tool.html` | **검색량=프록시** `/searchad/keywordstool`(실시간) | ✅ |
+| 2 | 검색광고 키워드 추출 | `keyword-tool.html` | **검색량=프록시** `/searchad/keywordstool`(실시간) · **네이버 '바로등록' 포맷**(분석열 제외·입찰가 70원·검색량순) · **이달의 추천 키워드**(월별 급상승·선점) | ✅ |
 | 3 | 카테고리 뉴스 모니터링 | `news-tool.html` | **뉴스=프록시** `/naver/v1/search/news.json` | ✅ |
-| 4 | 검색결과 주간 아카이브 | `serp-tool.html` | **자동 캡쳐**(주간 Action) + 수동 업로드 + 전/후 diff | ✅ |
+| 4 | 검색결과 주간 아카이브 | `serp-tool.html` | **자동 캡쳐**(주간 Action) + 수동 업로드 + 전/후 diff · **관측 광고 분석**(`serp/ad_analysis.json` ← `serp_analysis.py`)이 SERP·소재를 근거화 | ✅ |
 | 5 | 연간 시즈널 이슈 캘린더 | `seasonal-tool.html` | 트렌드=월간 Action(`data/trends.json`) | ✅ |
 | 6 | 약관 용어 변환 | `terms-tool.html` | (정적, 표준약관→소비자 표현·난이도) | ✅ |
-| 7 | 검색광고 소재 | `adcopy-tool.html` | 파워링크 등록 양식 5블록·엑셀 + **주차별 소재 캘린더**·**경쟁사 브랜드검색** 탭 | ✅ |
-| 8 | 논문 아카이브 | `papers-tool.html` | `data/papers.json` ← 월 1회 네이버 학술 자동 적립(`papers.yml`) · 주제 필터·검색 | ✅ |
+| 7 | 검색광고 소재 | `adcopy-tool.html` | 파워링크 등록 양식 5블록·엑셀 + **주차별 소재 캘린더**·**경쟁사 브랜드검색** 탭 + **네이버 소재 등록 구조 CSV**(담당자 바로 등록·캠페인 ID 공란) | ✅ |
+| 8 | 논문 아카이브 | `papers-tool.html` | `data/papers.json` ← 월 1회 네이버 학술 자동 적립(`papers.yml`) · **제공자 아닌 '주제' 기준 그룹핑**·자료원 분리·제공자 배지 · 검색 | ✅ |
 | 9 | 시즌·이벤트 캘린더 · 뉴스·추천·이벤트 뷰 | `seasonal-tool.html#reco` (구 `event-calendar.html` → 리다이렉트) | `data/events/recommendations.json` ← `scripts/event_engine.py`(규칙 기반·결정론) · 캘린더+시즌+기상+뉴스+검색량 결합 | ✅ **P0-EVENT Phase 1**(문구 엔진) · 시즌 캘린더와 한 툴(사이드바)로 통합 |
-| — | 통합 허브 | `index.html` | ⚙키설정 + **오늘 API 사용량 위젯** · 전체 안내 `overview.html` | ✅ |
+| — | 통합 허브 | `index.html` | ⚙키설정 + **오늘 API 사용량 위젯** · **상단 메뉴 전부 펼침 wrap**(모바일 전체폭·높이 캡) + **관리자 소프트 게이트**(🔒·`[data-admin-only]` 숨김) · 전체 안내 `overview.html` | ✅ |
+| — | 브리핑 설정 빌더 | `brief-setup.html` | 텔레그램 브리핑 **다중 수신자 + 발송시간** 설정 UI(관리자) → `daily-brief.yml`·`daily_brief.py` 반영 | ✅ |
 | — | BSA 운영(부서 전용) | **private `imsplendid8/Private`** | 검색광고 관리 API on/off·계약·키워드·검색량 — 민감데이터라 공개 CM-CMO에서 분리 | ✅ |
-| — | 데일리 비서 | `scripts/daily_brief.py` + `daily-brief.yml` | 매일 08:00·14:00 KST **텔레그램 · 오늘 할 일 판단형**(신호·시즌·클리핑·SERP→액션) | ✅ 작동 확인 |
+| — | 데일리 비서 | `scripts/daily_brief.py` + `daily-brief.yml` | 매일 08:00·14:00 KST **텔레그램 · 오늘 할 일 판단형**(신호·시즌·클리핑·SERP→액션) · **다중 수신자**(일부 실패 시 종료코드≠0으로 부분 발송 감지) · 뉴스에 기사 링크 | ✅ 작동 확인 |
 | — | 상품 마스터 | `data/products.json` + `check_products_sync.py` | 단일 소스 + CI 드리프트 | ✅ |
 
 ## 팀 실시간 연동 구조 (이번 세션 신설 · 핵심)
@@ -44,6 +45,7 @@ _최종 갱신: 2026-07-27 · 도구 8개(SEO·키워드·뉴스·SERP·시즌·
 | `trends.yml` | 월 1일 | `data/trends.json`(데이터랩) |
 | `searchad.yml` | 주간(일) | `data/volume.json`(검색량) |
 | `serp-capture.yml` | 주간(화 06:00) | `serp/*.png` + `manifest.json` (Playwright 네이버 SERP 자동 캡쳐) |
+| `event-reco.yml` | 정기(P0-EVENT Phase 2B) | `data/events/recommendations.json` 재생성 → `pages.yml`이 `workflow_run`으로 재배포 |
 | `technical-seo.yml` | — | unlighthouse |
 
 ## 접속
@@ -65,6 +67,19 @@ _최종 갱신: 2026-07-27 · 도구 8개(SEO·키워드·뉴스·SERP·시즌·
 3. 실시간/프록시 관련이면 `docs/api-from-url.md`, 자동캡쳐면 `serp/README.md` 확인.
 4. 새 기능이면: main에서 짧은 브랜치 → 도구 파일 + `index.html` `TOOLS` 카드 → 검증(Playwright 렌더/`node --check`/`check_products_sync.py`) → main 병합·push(자동 배포).
 5. **데이터 거버넌스 준수**: 실제 개인정보·영업비밀·실키 커밋 금지, 샘플·공개·비식별만. 키는 워커 시크릿/GitHub Secrets/localStorage에만.
+
+## 점검 이력 (2026-08-06) — 코덱스 개선분 반영 확인
+Codex가 별도 브랜치로 작업한 개선분이 **PR #9~#23으로 이미 main에 스쿼시 병합**되어 있음을 확인(미병합 원격 `feat/*`·`p0-event/*` 브랜치들은 스쿼시 이전의 오래된 중복본 → 다시 병합하면 오히려 main 회귀). 반영된 항목:
+- **시즌·캘린더 통합**: 시즌 소스 단일화·day-level 기상 span(#9)·단일 진입점(#11)·**사이드바 단일 앱 통합**(#12).
+- **SERP 근거화**: 관측 광고 분석(`serp_analysis.py`)이 SERP·소재를 근거화(#10).
+- **브리핑**: 다중 수신자 + `brief-setup.html` 발송시간 빌더(#13), 부분 발송 감지(종료코드), 뉴스 기사 링크(#23).
+- **허브 내비**: 그룹 드롭다운 + 관리자 소프트 게이트(#14) → **전부 펼침 wrap형**으로 정리(#19), 메뉴 라벨 간소화(#22).
+- **논문**: 제공자 아닌 '주제' 기준 그룹핑 + 제공자 배지(#15).
+- **키워드**: 네이버 '바로등록' 포맷(#16), **이달의 추천 키워드**(#20).
+- **소재**: 네이버 소재 등록 구조 CSV(#17).
+- **이벤트 엔진**: Phase 2A 상태 전이 + Phase 2B **추천 재생성 워크플로**(`event-reco.yml`).
+- **가입플로우 앱**: `flow/`로 통합했다가(#21) **되돌림**(#23) — 공개 CM-CMO엔 미포함(현 상태). 라이트 기본 테마·토글 저장은 전 도구에 반영됨.
+- 이번 세션 산출물: 위 반영 상태를 **STATE.md에 현행화**(코드 변경 없음 — 신규 병합 대상 없음).
 
 ## 점검 이력 (2026-07-27)
 - **검색광고 소재 재구성**: 카드형 후보 → 네이버 파워링크 **실제 등록 양식 5블록**(광고제목·추가제목·설명·홍보문구·서브링크) 롤링 소재 + 글자수 자동 + **엑셀(.xls)/TSV 내보내기**. **주차별 소재 캘린더** 탭(6주×집중 이슈+경쟁사 참고) + **경쟁사 브랜드검색** 탭(serp/brand 이식) 통합.
