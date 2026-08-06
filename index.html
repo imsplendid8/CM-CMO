@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://*.workers.dev http://localhost:8787; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="no-referrer">
-<meta name="description" content="Modooflow — 한화손보 CM SEO·SEM 마케팅 콘솔 허브(전 기능 상단 고정)">
-<title>Modooflow · 한화손보 CM 마케팅 콘솔</title>
+<meta name="description" content="Modoo — 한화손보 CM SEO·SEM 마케팅 콘솔 허브(전 기능 상단 고정)">
+<title>Modoo · 한화손보 CM 마케팅 콘솔</title>
 <style>
 @font-face{font-family:'Pretendard Variable';font-weight:45 920;font-style:normal;font-display:swap;src:url('fonts/PretendardVariable.woff2') format('woff2-variations');}
 :root{
@@ -159,7 +159,7 @@ html:not([data-admin="1"]) [data-admin-only]{display:none!important;}
 </head>
 <body>
 <header class="top">
-  <a class="logo" href="#" data-tool="home"><span class="m">◆</span><span><b>Modooflow</b><small>한화손보 CM 마케팅 콘솔</small></span></a>
+  <a class="logo" href="#" data-tool="home"><span class="m">◆</span><span><b>Modoo</b><small>한화손보 CM 마케팅 콘솔</small></span></a>
   <nav class="nav" id="nav"></nav>
   <div class="tr">
     <a class="ext" id="openTab" href="#" target="_blank" rel="noopener" title="현재 화면을 새 탭에서 열기">↗ 새 탭</a>
@@ -323,7 +323,7 @@ async function adminChangePw(){
 function renderHome(){
   home.innerHTML=`<div class="home-wrap">
     <div class="hero"><span class="hm">◆</span>
-      <div><h1>Modooflow 마케팅 콘솔</h1></div></div>
+      <div><h1>Modoo 마케팅 콘솔</h1></div></div>
     <div id="usageBox"></div>
     <div class="grid">${TOOLS.map(t=>`<div class="card" data-tool="${t.id}" style="--ac:${t.ac}">
       <div class="ico">${t.icon}</div><h2>${esc(t.name)}</h2>
