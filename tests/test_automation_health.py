@@ -168,8 +168,8 @@ class TestAutomationHealth(unittest.TestCase):
             make_repo(tmp, omit=("data/signals.json",),          # missing
                       garbage=("data/volume.json",))             # unknown
             text = "\n".join(cah.format_lines(cah.compute_health(NOW, base_dir=tmp)))
-            self.assertIn("누락 1건: 수요 신호", text)
-            self.assertIn("확인 불가 1건: 실측 검색량", text)
+            self.assertIn("누락(missing) 1건: 수요 신호", text)
+            self.assertIn("확인 불가(unknown) 1건: 실측 검색량", text)
 
     def test_partial_failure_mix(self):
         # 일부만 실패해도 나머지는 정상 계산, ok=True, 합계 일치.

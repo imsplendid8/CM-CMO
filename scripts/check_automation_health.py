@@ -120,13 +120,13 @@ def format_lines(health):
     def line(label, cnt, nm):
         return f"· {label} {cnt}건" + (f": {', '.join(nm)}" if nm else "")
 
+    # stale(갱신 필요)·missing(누락)·unknown(확인 불가)을 항상 분리 표기(0건이어도 상태별로 구분).
     lines = ["[데이터 상태]",
              f"· 정상 {s['healthy']}건",
-             line("갱신 필요", s["stale"], names("stale")),
-             line("누락", s["missing"], names("missing"))]
-    if s["unknown"]:
-        lines.append(line("확인 불가", s["unknown"], names("unknown")))
-    lines.append(f"· 기준 시각: {health['asof']} KST")
+             line("갱신 필요(stale)", s["stale"], names("stale")),
+             line("누락(missing)", s["missing"], names("missing")),
+             line("확인 불가(unknown)", s["unknown"], names("unknown")),
+             f"· 기준 시각: {health['asof']} KST (브리프 실행 시 재계산)"]
     return lines
 
 
