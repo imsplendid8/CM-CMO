@@ -95,6 +95,45 @@ def pick_news(clip, products):
             break
     return out
 
+
+EMAIL_NEWS_N = 8   # 이메일 '주요 뉴스' 표시 개수(전체 통틀어, 카테고리별 아님) — 5~10 권장
+
+
+def rank_news(clip, products, main, n=EMAIL_NEWS_N):
+    """전체 카테고리에서 '행동가치' 뉴스를 점수화해 상위 n건 반환 — (태그, item) 목록. 경쟁사 가중·제목 dedup."""
+    if not clip:
+        return []
+    comp = {"ind_samsung": "삼성화재", "ind_db": "DB손보", "ind_hyundai": "현대해상",
+            "ind_kb": "KB손보", "ind_meritz": "메리츠화재", "ind_biz": "업계 전반"}
+    cands = []
+    for key, cat in clip.get("categories", {}).items():
+        is_comp = key in comp
+        pname = products.get(key, {}).get("name", cat.get("name", key))
+        for it in cat.get("items", [])[:6]:
+            t = it.get("t", "")
+            hit = [w for w in ACTION_KW if w in t]
+            if not hit:
+                continue
+            if is_comp:
+                tag, score = f"경쟁사·{comp[key]}", 2 + len(hit)
+            else:
+                tag, score = pname, len(hit) + (1 if key in main else 0)
+            cands.append((score, it.get("date", ""), tag, it))
+    cands.sort(key=lambda x: (x[0], x[1]), reverse=True)
+    out, seen, per_tag = [], set(), {}
+    for score, dt, tag, it in cands:
+        k = it.get("t", "")[:12]
+        if k in seen:
+            continue
+        if per_tag.get(tag, 0) >= 2:          # 한 상품/경쟁사가 동일 이벤트 기사로 상위를 도배하지 않게(카테고리당 최대 2건)
+            continue
+        seen.add(k)
+        per_tag[tag] = per_tag.get(tag, 0) + 1
+        out.append((tag, it))
+        if len(out) >= n:
+            break
+    return out
+
 # 업계·경쟁사(뉴스 클리핑·news-tool INDUSTRY와 동일 키) — 이메일 동향 섹션 순서
 INDUSTRY = [("ind_biz", "손보업계 전반"), ("ind_samsung", "삼성화재"), ("ind_db", "DB손해보험"),
             ("ind_hyundai", "현대해상"), ("ind_kb", "KB손해보험"), ("ind_meritz", "메리츠화재")]
@@ -220,42 +259,51 @@ def render_email():
     wd = "월화수목금토일"[now.weekday()]
     part = "오전" if now.hour < 12 else "오후"
     subject = f"📮 Modooflow 데일리 브리핑 · {now.month}/{now.day}({wd}) {part}"
-    name = lambda k: products.get(k, {}).get("name", k)
+    ind_name = dict(INDUSTRY)
+    name = lambda k: products.get(k, {}).get("name") or ind_name.get(k, k)
     S = _ES
 
-    def cat_block(key, accent):
+    def trend_card(key, accent):
+        """카테고리 동향 요약 + 마케팅 시사점(헤드라인 없이 압축)."""
         nmn = newsmon.get(key, {})
-        items = (cats.get(key) or {}).get("items", [])[:8]
-        if not (nmn or items):
+        if not (nmn.get("summary") or nmn.get("insight")):
             return ""
-        cat_style = f"font-size:14px;font-weight:800;background:#f4f6f8;border-left:4px solid {accent};padding:8px 11px;border-radius:7px 7px 0 0;margin-top:14px;"
-        h = f'<div style="{cat_style}">{esc(name(key))} <span style="color:#6b7280;font-weight:600;font-size:11.5px">· 헤드라인 {len(items)}건</span></div>'
+        cat_style = f"font-size:13.5px;font-weight:800;background:#f4f6f8;border-left:4px solid {accent};padding:7px 11px;border-radius:7px 7px 0 0;margin-top:12px;"
+        h = f'<div style="{cat_style}">{esc(name(key))}</div>'
         if nmn.get("summary"):
             h += f'<div style="{S["sumbox"]}"><span style="{S["bg"]}">동향 요약</span>{esc(nmn["summary"])}</div>'
         if nmn.get("insight"):
             h += f'<div style="{S["insbox"]}"><span style="{S["ba"]}">마케팅 시사점</span>{esc(nmn["insight"])}</div>'
-        if items:
-            rows = ""
-            for it in items:
-                t = esc(it.get("t", ""))
-                g = esc((it.get("gist") or "")[:110])
-                src = esc(it.get("src", ""))
-                dt = esc(it.get("date", ""))
-                url = it.get("url", "")
-                title = f'<a href="{esc(url)}" style="color:#1f2937;text-decoration:none;font-weight:600">{t}</a>' if url else f"<b>{t}</b>"
-                gh = f'<div style="color:#6b7280;font-size:11.5px;margin-top:3px">{g}</div>' if g else ""
-                rows += f'<tr><td style="{S["td"]}">{title}{gh}</td><td style="{S["tdr"]}">{src}<br>{dt}</td></tr>'
-            h += f'<table role="presentation" style="{S["tbl"]}">{rows}</table>'
         return h
 
-    # ① 보험별 동향(메인 ★ 우선)
-    prod_keys = [k for k in main if k in products] + [k for k in order if k not in main]
-    prod_body = "".join(cat_block(k, "#1f7a4d") for k in prod_keys)
-    prod_html = f'<h3 style="{S["h3"]}">📊 보험별 동향 <span style="font-size:12px;color:#6b7280;font-weight:600">· 담당 상품 {len(products)}종</span></h3>' + (prod_body or '<div style="font-size:12.5px;color:#6b7280">수집된 헤드라인이 없습니다.</div>')
+    # ① 핵심 동향 · 마케팅 시사점 — 메인 3종(★) + 업계 전반만(전체 카테고리 아님)
+    focus = [k for k in main if k in newsmon] + (["ind_biz"] if "ind_biz" in newsmon else [])
+    trend_body = "".join(trend_card(k, "#b45309" if k == "ind_biz" else "#1f7a4d") for k in focus)
+    trend_html = f'<h3 style="{S["h3"]}">📊 핵심 동향 · 마케팅 시사점 <span style="font-size:12px;color:#6b7280;font-weight:600">· 메인 상품 + 업계 전반</span></h3>' + (trend_body or '<div style="font-size:12.5px;color:#6b7280">동향 데이터가 없습니다.</div>')
 
-    # ② 경쟁사·업계 동향
-    ind_body = "".join(cat_block(k, "#b45309") for k, _ in INDUSTRY)
-    ind_html = f'<h3 style="{S["h3"]}">🏢 경쟁사·업계 동향 <span style="font-size:12px;color:#6b7280;font-weight:600">· 빅4/5 + 업계 전반</span></h3>' + (ind_body or '<div style="font-size:12.5px;color:#6b7280">수집된 헤드라인이 없습니다.</div>')
+    # ② 주요 뉴스 — 전체 통틀어 상위 N건(카테고리별 아님)
+    news = rank_news(clip, products, main, EMAIL_NEWS_N)
+    if news:
+        nrows = ""
+        for tag, it in news:
+            t = esc(it.get("t", ""))
+            g = esc((it.get("gist") or "")[:110])
+            src = esc(it.get("src", ""))
+            dt = esc(it.get("date", ""))
+            url = it.get("url", "")
+            comp = tag.startswith("경쟁사")
+            tag_style = f'font-size:10.5px;font-weight:800;white-space:nowrap;vertical-align:top;padding:7px 10px;border-bottom:1px solid #eef0f3;color:{"#9a6b12" if comp else "#1f7a4d"}'
+            title = f'<a href="{esc(url)}" style="color:#1f2937;text-decoration:none;font-weight:600">{t}</a>' if url else f"<b>{t}</b>"
+            gh = f'<div style="color:#6b7280;font-size:11.5px;margin-top:3px">{g}</div>' if g else ""
+            nrows += (f'<tr><td style="{tag_style}">{esc(tag)}</td>'
+                      f'<td style="{S["td"]}">{title}{gh}</td>'
+                      f'<td style="{S["tdr"]}">{src}<br>{dt}</td></tr>')
+        news_tbl = (f'<table role="presentation" style="{S["tbl"]}"><tr>'
+                    f'<th style="{S["th"]}">구분</th><th style="{S["th"]}">제목 · 요약</th>'
+                    f'<th style="{S["th"]}">출처</th></tr>{nrows}</table>')
+    else:
+        news_tbl = '<div style="font-size:12.5px;color:#6b7280">행동가치 있는 주요 뉴스가 없습니다.</div>'
+    news_html = f'<h3 style="{S["h3"]}">📰 주요 뉴스 <span style="font-size:12px;color:#6b7280;font-weight:600">· 전체 상위 {len(news)}건(경쟁사 우선)</span></h3>{news_tbl}'
 
     # ③ 뉴스 캘린더 — 지금·곧 준비할 것 (시즌 이슈)
     m, nm, today = now.month, now.month % 12 + 1, now.date()
@@ -303,38 +351,28 @@ def render_email():
               f'{health}<br><br>🔭 전체 대시보드 → <a href="https://{HUB}" style="color:#1f7a4d">{HUB}</a></div>')
 
     head = (f'<div style="{S["h2"]}">📮 Modooflow 데일리 브리핑</div>'
-            f'<div style="{S["sub"]}">{now.month}/{now.day}({wd}) {part} · 담당 상품 {len(products)}종 + 업계·경쟁사 · 표로 한눈에</div>')
-    html = f'<div style="{S["wrap"]}">{head}{prod_html}{ind_html}{cal_html}{footer}</div>'
+            f'<div style="{S["sub"]}">{now.month}/{now.day}({wd}) {part} · 핵심 동향 + 주요 뉴스 + 준비 캘린더 · 표로 한눈에</div>')
+    html = f'<div style="{S["wrap"]}">{head}{trend_html}{news_html}{cal_html}{footer}</div>'
 
     # ── 텍스트 대체본(HTML 미지원 클라이언트용) ──
     P = [f"📮 Modooflow 데일리 브리핑 · {now.month}/{now.day}({wd}) {part}", ""]
-
-    def cat_text(key):
-        nmn = newsmon.get(key, {})
-        items = (cats.get(key) or {}).get("items", [])[:8]
-        if not (nmn or items):
-            return []
-        out = [f"■ {name(key)} (헤드라인 {len(items)}건)"]
+    P += ["[핵심 동향 · 마케팅 시사점]"]
+    for k in focus:
+        nmn = newsmon.get(k, {})
+        P.append(f"■ {name(k)}")
         if nmn.get("summary"):
-            out.append(f"  동향 요약: {nmn['summary']}")
+            P.append(f"  동향 요약: {nmn['summary']}")
         if nmn.get("insight"):
-            out.append(f"  마케팅 시사점: {nmn['insight']}")
-        for it in items:
-            out.append(f"  · {it.get('t','')} ({it.get('src','')}·{it.get('date','')})")
-            g = (it.get("gist") or "").strip()
-            if g:
-                out.append(f"    ⤷ {g[:110]}")
-            if it.get("url"):
-                out.append(f"    {it['url']}")
-        return out + [""]
-
-    P += ["[보험별 동향]"]
-    for k in prod_keys:
-        P += cat_text(k)
-    P += ["[경쟁사·업계 동향]"]
-    for k, _ in INDUSTRY:
-        P += cat_text(k)
-    P += ["[뉴스 캘린더 — 지금·곧 준비할 것]"]
+            P.append(f"  마케팅 시사점: {nmn['insight']}")
+    P += ["", f"[주요 뉴스 · 전체 상위 {len(news)}건]"]
+    for tag, it in news:
+        P.append(f"· ({tag}) {it.get('t','')} ({it.get('src','')}·{it.get('date','')})")
+        g = (it.get("gist") or "").strip()
+        if g:
+            P.append(f"  ⤷ {g[:110]}")
+        if it.get("url"):
+            P.append(f"  {it['url']}")
+    P += ["", "[뉴스 캘린더 — 지금·곧 준비할 것]"]
     if cal:
         for pr, mn, nmk, tag, status, act in cal:
             P.append(f"- {'★ ' if mn == 0 else ''}{nmk} | {tag} | {status} | {act}")
