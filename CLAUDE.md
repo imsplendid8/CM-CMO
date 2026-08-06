@@ -10,7 +10,7 @@
 |---|---|
 | 현재 상태·재개 | `STATE.md` (최우선) |
 | 위키(정리 문서) | `docs/` — `README.md`(색인)·`architecture.md`·`tools.md`·`검색광고-BSA-로드맵.md`·`roadmap.md`·`daily-brief.md`·`api-from-url.md`(프록시)·`oss-leverage.md`·`논문-아카이브.md` |
-| 허브 | `index.html` (상단 고정 내비 + ⚙키설정 + API 사용량 위젯) · 전체 안내 `overview.html` |
+| 허브 | `index.html` (상단 고정 내비 + API 사용량 위젯 · 개인 키 입력 없음) · 전체 안내 `overview.html` |
 | 도구 8종 | `seo-audit.html` · `keyword-tool.html`(+네이버 대량등록 파일) · `news-tool.html`(업계·경쟁사+수요 트리거) · `serp-tool.html`(자동 캡쳐+브랜드검색) · `seasonal-tool.html` · `terms-tool.html`(약관 용어→쉬운 표현) · `adcopy-tool.html`(파워링크 등록 양식 5블록·엑셀+주차별 캘린더+경쟁사 브랜드검색 탭) · `papers-tool.html`(논문 아카이브·주제 필터·검색) |
 | 별도 도구(부서 전용) | BSA(브랜드검색) 운영 CLI는 **부서 전용 private 저장소 `imsplendid8/Private`** 로 분리(계약·단가 등 민감데이터). 공개 CM-CMO엔 포함하지 않음 |
 | 팀 실시간 프록시 | `proxy/naver-proxy-worker.js` (Cloudflare Worker · 키=워커 시크릿) |
@@ -23,7 +23,7 @@
 - **트렁크 기반**: main에서 짧은 브랜치 → 검증 → 바로 병합·push(자동 배포). 롱리브 브랜치 금지.
 - 도구는 **자체완결 단일 HTML**(외부 라이브러리·빌드 0). 사용자 입력 출력은 `esc()`, 객체 키는 `safeKey()`.
 - **디자인**: 각 도구 `<head>`의 `id="mf-saas-theme"` 블록이 통일 뉴트럴 토큰+Pretendard 주입. 툴별 액센트색 유지. 전 페이지 CSP + no-referrer.
-- **실시간 데이터**: 브라우저는 네이버 직접호출 불가(CORS·HMAC) → **프록시 경유**(`DEFAULT_PROXY`). 키는 워커 시크릿(팀 공유)/GitHub Secrets(Action)/localStorage(개인). 파일·커밋 금지.
+- **실시간 데이터**: 브라우저는 네이버 직접호출 불가(CORS·HMAC) → **프록시 경유**(`DEFAULT_PROXY`). 키는 **워커 시크릿(팀 공유)/GitHub Secrets(Action)만** — 브라우저 키 입력·localStorage 저장은 폐지(워커 인증·요청허용 정책 적용). 파일·커밋 금지.
 - 새 기능 = 도구 HTML 1개 + 허브 `TOOLS` 카드 1개 + (선택) Artifact 발행. 방법은 `docs/architecture.md`.
 - 도구 상품 집합은 5종 모두 동일(13종) — `scripts/check_products_sync.py` 드리프트 가드(CI). 업계·경쟁사(뉴스툴 INDUSTRY)는 상품 마스터와 분리.
 

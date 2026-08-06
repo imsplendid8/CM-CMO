@@ -47,6 +47,7 @@
 3. 긴급 대형화재 감시 → **별도 실시간 알림**(텔레그램 dry-run) 분리
 
 ## P0-1 — 브리프 자동화 상태 오표시 수정 ✅ 완료
+> **2026-08-07 확장**: `format_lines`가 stale·missing·unknown을 **항상 분리 표기**(0건이어도). 자동화상태 전용 워크플로 `automation-status.yml`(07:40·13:40) 신설(커밋 없음·Run 요약).
 
 > 상태: **완료 · main 병합됨(PR #1, squash `11272fc`)**. `scripts/check_automation_health.py`(순수 함수) +
 > `scripts/daily_brief.py` 연동 + `tests/test_automation_health.py`(15개) + `ci.yml` 반영.
@@ -137,7 +138,8 @@ scripts/daily_brief.py가 저장된 data/automation_health.json의 summary를 �
   SERP 캡쳐(`serp/manifest.json`). 허용 기간=cron 주기+여유(일간 2·주간 9·월간 35일).
 - `compute_health()`는 읽기 전용. `data/automation_health.json`은 만들지 않는다(저장 요약을 신뢰하지 않으므로 불필요).
 
-## P0-2 — GitHub Actions 실행 순서·write 충돌 정리 🔶 진행(별도 PR)
+## P0-2 — GitHub Actions 실행 순서·write 충돌 정리 ✅ 완료 (2026-08-07 확장)
+> **2026-08-07**: 순서 재정비(signals 06:30→news 07:20→automation-status 07:40→brief 08:00 / 오후 13:20·13:40·14:00). daily-brief·daily-email·automation-status도 `cm-cmo-data-writers` 레인 편입(수집 끝난 데이터로 소비).
 
 > 상태: 별도 브랜치 `p0-2/actions-ordering`에서 구현. 상세는 `docs/automation-runbook.md`.
 
