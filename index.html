@@ -29,6 +29,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 .logo{display:flex;align-items:center;gap:9px;flex:0 0 auto;text-decoration:none;color:inherit;}
 .logo .m{width:30px;height:30px;border-radius:9px;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;box-shadow:0 2px 8px rgba(224,133,15,.35);}
 .logo b{font-size:14.5px;font-weight:800;letter-spacing:-.03em;} .logo small{display:block;font-size:9px;color:var(--muted);font-weight:600;letter-spacing:0;}
+.ctx{display:none;align-items:center;min-width:0;font-size:13.5px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ctx b{color:var(--muted);font-weight:600;margin:0 7px;flex:0 0 auto;}
 .nav{display:flex;align-items:center;flex-wrap:wrap;gap:4px 5px;flex:1 1 auto;min-width:0;}  /* 전부 펼침 + 넘치면 다음 줄로 wrap */
 .navb{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:9px;border:none;background:none;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--ink-2);cursor:pointer;white-space:nowrap;transition:.14s;position:relative;}
 .navb .ic{font-size:14px;opacity:.9;display:inline-flex;align-items:center;}
@@ -93,7 +95,8 @@ html:not([data-admin="1"]) [data-admin-only]{display:none!important;}
 /* ===== 모바일 앱형 UI — 상단은 로고+컨트롤만, 메뉴는 하단 탭바(botnav)로 이동 ===== */
 @media(max-width:600px){
   .top{padding:7px 12px;gap:8px;}
-  .logo{margin-right:auto;}                  /* 로고(좌) + 우측 컨트롤(우) */
+  .logo{margin-right:8px;}                    /* 로고(좌) */
+  .ctx{display:flex;flex:1 1 auto;}          /* 로고 옆 한 줄에 현재 도구 이름 */
   .nav{display:none;}                        /* 상단 wrap 메뉴 숨김 → 하단 탭바로 */
   .home-wrap{padding:22px 16px 26px;}        /* 하단 탭바가 자체 높이를 차지하므로 하단 여백 축소 */
 }
@@ -163,6 +166,7 @@ html:not([data-admin="1"]) [data-admin-only]{display:none!important;}
 <body>
 <header class="top">
   <a class="logo" href="#" data-tool="home"><span class="m">◆</span><span><b>Modoo</b><small>한화손보 CM 마케팅 콘솔</small></span></a>
+  <span class="ctx" id="ctxName"></span>
   <nav class="nav" id="nav"></nav>
   <div class="tr">
     <a class="ext" id="openTab" href="#" target="_blank" rel="noopener" title="현재 화면을 새 탭에서 열기">↗ 새 탭</a>
@@ -253,6 +257,9 @@ const CATS=[
 // 모바일 하단 탭바에 바로 노출할 핵심 도구(나머지는 '전체' 바텀시트). 순서·구성은 여기만 고치면 됨.
 const MOBILE_TABS=["kw","news","adcopy"];
 let ACTIVE="home";
+// 헤더 한 줄에 표시할 도구 이름(도구 자체 타이틀과 동일). 임베드 시 도구의 둘째 줄 브랜드는 숨김.
+const HDR={seo:"테크니컬 SEO",kw:"검색광고 키워드 추출",news:"카테고리 뉴스 모니터링",serp:"검색결과 주간 아카이브",terms:"약관 쉬운 용어 변환",adcopy:"검색광고 문구 소재",papers:"논문 아카이브",eventcal:"시즌·이벤트 캘린더"};
+function setCtx(id){const el=document.getElementById("ctxName");if(!el)return;el.innerHTML=(id&&id!=="home"&&HDR[id])?`<b>›</b>${esc(HDR[id])}`:"";}
 const toolById=id=>TOOLS.find(t=>t.id===id);
 function renderNav(active){
   ACTIVE=active||ACTIVE;
@@ -343,8 +350,6 @@ async function adminChangePw(){
 }
 function renderHome(){
   home.innerHTML=`<div class="home-wrap">
-    <div class="hero"><span class="hm">◆</span>
-      <div><h1>Modoo 마케팅 콘솔</h1></div></div>
     <div id="usageBox"></div>
     <div class="grid">${TOOLS.map(t=>`<div class="card" data-tool="${t.id}" style="--ac:${t.ac}">
       <div class="ico">${ICON[t.id]||t.icon}</div><h2>${esc(t.name)}</h2>
@@ -357,6 +362,7 @@ function renderHome(){
 }
 function show(id,sub){                                  // sub = 툴 내부 딥링크(#해시) 선택
   closeSheet();                                         // 도구 전환 시 바텀시트 닫기
+  setCtx(id);                                           // 헤더 한 줄에 도구 이름(홈이면 비움)
   if(id==="home"){home.style.display="block";frame.style.display="none";openTab.href="#";openTab.style.visibility="hidden";renderNav("home");location.hash="";loadUsage();return;}
   const t=TOOLS.find(x=>x.id===id); if(!t)return;
   const suffix=sub||"";
