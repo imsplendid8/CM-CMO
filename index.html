@@ -99,6 +99,7 @@ html:not([data-admin="1"]) [data-admin-only]{display:none!important;}
 @media(max-width:600px){
   .top{padding:7px 12px;gap:8px;}
   .logo{margin-right:8px;}                    /* 로고(좌) */
+  .logo b{display:none;}                      /* 'Modoo' 글자 숨김 → 도구 이름 공간 확보(짤림 방지). ◆ 아이콘은 유지 */
   .ctx{display:flex;flex:1 1 auto;}          /* 로고 옆 한 줄에 현재 도구 이름 */
   .nav{display:none;}                        /* 상단 wrap 메뉴 숨김 → 하단 탭바로 */
   .home-wrap{padding:8px 16px 24px;}         /* 상단 여백 축소 + 하단 탭바 높이 고려 */
