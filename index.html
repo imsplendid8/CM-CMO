@@ -78,6 +78,8 @@ html:not([data-admin="1"]) [data-admin-only]{display:none!important;}
 .hero p b{color:var(--ink);font-weight:700;}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(304px,1fr));gap:15px;margin-top:14px;}
 #usageBox:empty{display:none;}                 /* 사용량 위젯 없을 때 빈 자리 제거 */
+#usageSheet:empty{display:none;} #usageSheet .usage{margin-top:0;margin-bottom:14px;}  /* 전체 시트 상단 사용량 위젯 */
+@media(max-width:600px){#usageBox{display:none;}}  /* 모바일: 홈 위젯 숨김 → API 사용량은 '전체' 시트에서만 */
 .card{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:20px;box-shadow:var(--sh);transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease;position:relative;overflow:hidden;cursor:pointer;}
 .card:hover{box-shadow:var(--sh-lg);transform:translateY(-3px);border-color:color-mix(in srgb,var(--ac) 40%,var(--line));}
 .card .ico{width:40px;height:40px;border-radius:11px;background:color-mix(in srgb,var(--ac) 13%,transparent);color:var(--ac);display:flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:13px;}
@@ -233,8 +235,8 @@ const TOOLS=[
 const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
 // 팀 공유 프록시(사용량 위젯·툴 실시간 연동에 사용)
 const DEFAULT_PROXY="https://modooflow-naver-proxy.angle0102.workers.dev";
-function loadUsage(){
-  const box=document.getElementById("usageBox"); if(!box)return;
+function loadUsage(boxId){
+  const box=document.getElementById(boxId||"usageBox"); if(!box)return;
   const base=(DEFAULT_PROXY||"").replace(/\/+$/,""); if(!base){box.innerHTML="";return;}
   fetch(base+"/usage",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(u=>{
     if(!u||!u.tracked){box.innerHTML="";return;}   // KV 미연결 → 위젯 숨김
@@ -322,9 +324,9 @@ function renderSheet(){
   // 관리자 전용(소프트 게이트 · 잠금 시 CSS가 개별 타일을 숨김)
   t+=sLink("brief-setup.html",ICON.brief,"브리핑 설정",'data-admin-only');
   t+=`<button class="sitem" data-act="chpw" data-admin-only style="--ac:var(--brand)"><span class="ic">${ICON.chpw}</span><span class="tx">비번 변경</span></button>`;
-  wrap.innerHTML=`<div class="sgrid">${t}</div>`;
+  wrap.innerHTML=`<div id="usageSheet"></div><div class="sgrid">${t}</div>`;
 }
-function openSheet(){renderSheet();document.getElementById("sheetMask").classList.add("on");document.getElementById("sheet").classList.add("on");}
+function openSheet(){renderSheet();loadUsage("usageSheet");document.getElementById("sheetMask").classList.add("on");document.getElementById("sheet").classList.add("on");}
 function closeSheet(){document.getElementById("sheetMask").classList.remove("on");document.getElementById("sheet").classList.remove("on");}
 function toggleSheet(){document.getElementById("sheet").classList.contains("on")?closeSheet():openSheet();}
 /* ===== 관리자 소프트 게이트 (공개 정적 페이지 — 팀원 눈에서 감추는 용도, 실제 보안 아님) ===== */
