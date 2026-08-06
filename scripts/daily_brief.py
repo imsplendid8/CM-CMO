@@ -95,20 +95,28 @@ def pick_news(clip, products):
             break
     return out
 
-def build_message():
+# 업계·경쟁사(뉴스 클리핑·news-tool INDUSTRY와 동일 키) — 이메일 동향 섹션 순서
+INDUSTRY = [("ind_biz", "손보업계 전반"), ("ind_samsung", "삼성화재"), ("ind_db", "DB손해보험"),
+            ("ind_hyundai", "현대해상"), ("ind_kb", "KB손해보험"), ("ind_meritz", "메리츠화재")]
+
+
+def _load_context():
     pdata = load("data/products.json")
     products = {p["key"]: p for p in pdata["products"]}
+    order = [p["key"] for p in pdata["products"]]
     main = pdata["main"]
     seasonal = load("data/seasonal.json")["seasonal"]
     signals = load_opt("data/signals.json", {}) or {}
     clip = latest_clip()
     now = kst_now()
+    return products, order, main, seasonal, signals, clip, now
+
+
+def compute_action_lines(products, main, seasonal, signals, now):
+    """오늘 할 일(우선순위) 텍스트 목록 산출 — 번호 없이 반환(채널별로 번호 부여)."""
     m = now.month
     nm = m % 12 + 1  # 다음 달
-    wd = "월화수목금토일"[now.weekday()]
     name = lambda k: products.get(k, {}).get("name", k)
-
-    # ── 오늘 할 일(액션) 산출: 상품별 1건, 우선순위 정렬 ──
     actions = {}  # key -> (priority, text)   낮을수록 우선
 
     def put(key, pri, text):
@@ -151,9 +159,13 @@ def build_message():
     put(g, 4 if g in [k for k, _ in actions.items()] else 2.5,
         f"🔭 {name(g)} — SERP 상위노출 갭: 검색결과 점검·소구 보완")
 
-    ranked = sorted(actions.values(), key=lambda x: x[0])[:5]
-    action_lines = [f"{i+1}. {txt}" for i, (_, txt) in enumerate(ranked)]
+    return [txt for _, txt in sorted(actions.values(), key=lambda x: x[0])[:5]]
 
+
+def build_message():
+    products, order, main, seasonal, signals, clip, now = _load_context()
+    wd = "월화수목금토일"[now.weekday()]
+    action_lines = [f"{i+1}. {t}" for i, t in enumerate(compute_action_lines(products, main, seasonal, signals, now))]
     news_lines = pick_news(clip, products)
 
     part = "오전" if now.hour < 12 else "오후"
@@ -170,6 +182,178 @@ def build_message():
                   "· 자동수집이 정상이라고 단정할 수 없음"]
     parts += ["", f"🔭 전체 대시보드 → https://{HUB}"]
     return "\n".join(parts)
+
+def load_newsmon():
+    """news-tool.html의 큐레이션 '동향 요약'·'마케팅 시사점'(단일 소스)을 키별 추출 → 이메일 재사용."""
+    try:
+        html = open(os.path.join(ROOT, "news-tool.html"), encoding="utf-8").read()
+    except Exception:
+        return {}
+    import re
+    pat = re.compile(r'(\w+):\{summary:"([^"]*)",\s*insight:"([^"]*)"', re.S)
+    return {mm.group(1): {"summary": mm.group(2), "insight": mm.group(3)} for mm in pat.finditer(html)}
+
+
+# ── 이메일(표 도식형) 스타일 토큰 — 인라인 CSS(메일 클라이언트 호환), 이미지 없음 ──
+_ES = {
+    "wrap": "max-width:720px;margin:0 auto;padding:20px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Malgun Gothic','Apple SD Gothic Neo',sans-serif;color:#20242c;background:#ffffff;",
+    "h2": "font-size:19px;font-weight:800;margin:0 0 3px;letter-spacing:-.02em;",
+    "sub": "font-size:12.5px;color:#6b7280;margin:0 0 6px;",
+    "h3": "font-size:15px;font-weight:800;margin:26px 0 10px;padding-bottom:6px;border-bottom:2px solid #eceef1;",
+    "sumbox": "background:#e8f5ee;border:1px solid #cfe9db;padding:9px 12px;font-size:12.5px;line-height:1.65;",
+    "insbox": "background:#fbf3e0;border:1px solid #f0e0bd;padding:9px 12px;font-size:12.5px;line-height:1.65;border-radius:0 0 7px 7px;margin-bottom:6px;",
+    "bg": "display:inline-block;font-size:10px;font-weight:800;color:#1f7a4d;background:#d6efe0;padding:1px 7px;border-radius:99px;margin-right:6px;vertical-align:1px;",
+    "ba": "display:inline-block;font-size:10px;font-weight:800;color:#9a6b12;background:#f6e6c2;padding:1px 7px;border-radius:99px;margin-right:6px;vertical-align:1px;",
+    "tbl": "width:100%;border-collapse:collapse;margin:8px 0 4px;",
+    "td": "padding:7px 10px;border-bottom:1px solid #eef0f3;font-size:12.5px;vertical-align:top;",
+    "tdr": "padding:7px 10px;border-bottom:1px solid #eef0f3;font-size:11px;color:#6b7280;white-space:nowrap;vertical-align:top;text-align:right;",
+    "th": "padding:6px 10px;text-align:left;font-size:11px;font-weight:800;color:#6b7280;background:#f8f9fa;border-bottom:1px solid #e6e8ec;",
+}
+
+
+def render_email():
+    """데일리 브리핑을 표 도식형 이메일(HTML+텍스트)로 렌더. returns (subject, html, plain).
+    구성: ① 오늘 할 일 ② 보험별 동향(요약·시사점+헤드라인) ③ 경쟁사·업계 동향 ④ 뉴스 캘린더(준비할 것)."""
+    products, order, main, seasonal, signals, clip, now = _load_context()
+    newsmon = load_newsmon()
+    cats = (clip or {}).get("categories", {})
+    wd = "월화수목금토일"[now.weekday()]
+    part = "오전" if now.hour < 12 else "오후"
+    subject = f"📮 Modooflow 데일리 브리핑 · {now.month}/{now.day}({wd}) {part}"
+    name = lambda k: products.get(k, {}).get("name", k)
+    S = _ES
+
+    def cat_block(key, accent):
+        nmn = newsmon.get(key, {})
+        items = (cats.get(key) or {}).get("items", [])[:8]
+        if not (nmn or items):
+            return ""
+        cat_style = f"font-size:14px;font-weight:800;background:#f4f6f8;border-left:4px solid {accent};padding:8px 11px;border-radius:7px 7px 0 0;margin-top:14px;"
+        h = f'<div style="{cat_style}">{esc(name(key))} <span style="color:#6b7280;font-weight:600;font-size:11.5px">· 헤드라인 {len(items)}건</span></div>'
+        if nmn.get("summary"):
+            h += f'<div style="{S["sumbox"]}"><span style="{S["bg"]}">동향 요약</span>{esc(nmn["summary"])}</div>'
+        if nmn.get("insight"):
+            h += f'<div style="{S["insbox"]}"><span style="{S["ba"]}">마케팅 시사점</span>{esc(nmn["insight"])}</div>'
+        if items:
+            rows = ""
+            for it in items:
+                t = esc(it.get("t", ""))
+                g = esc((it.get("gist") or "")[:110])
+                src = esc(it.get("src", ""))
+                dt = esc(it.get("date", ""))
+                url = it.get("url", "")
+                title = f'<a href="{esc(url)}" style="color:#1f2937;text-decoration:none;font-weight:600">{t}</a>' if url else f"<b>{t}</b>"
+                gh = f'<div style="color:#6b7280;font-size:11.5px;margin-top:3px">{g}</div>' if g else ""
+                rows += f'<tr><td style="{S["td"]}">{title}{gh}</td><td style="{S["tdr"]}">{src}<br>{dt}</td></tr>'
+            h += f'<table role="presentation" style="{S["tbl"]}">{rows}</table>'
+        return h
+
+    # ① 오늘 할 일
+    al = compute_action_lines(products, main, seasonal, signals, now)
+    today_html = f'<h3 style="{S["h3"]}">✅ 오늘 할 일 (우선순위)</h3>'
+    if al:
+        today_html += '<ol style="margin:0;padding-left:20px">' + "".join(f'<li style="margin:4px 0;font-size:13px;line-height:1.5">{esc(x)}</li>' for x in al) + "</ol>"
+    else:
+        today_html += '<div style="font-size:13px;color:#6b7280">오늘 특이 액션 없음 — 정기 점검만</div>'
+
+    # ② 보험별 동향(메인 ★ 우선)
+    prod_keys = [k for k in main if k in products] + [k for k in order if k not in main]
+    prod_body = "".join(cat_block(k, "#1f7a4d") for k in prod_keys)
+    prod_html = f'<h3 style="{S["h3"]}">📊 보험별 동향 <span style="font-size:12px;color:#6b7280;font-weight:600">· 담당 상품 {len(products)}종</span></h3>' + (prod_body or '<div style="font-size:12.5px;color:#6b7280">수집된 헤드라인이 없습니다.</div>')
+
+    # ③ 경쟁사·업계 동향
+    ind_body = "".join(cat_block(k, "#b45309") for k, _ in INDUSTRY)
+    ind_html = f'<h3 style="{S["h3"]}">🏢 경쟁사·업계 동향 <span style="font-size:12px;color:#6b7280;font-weight:600">· 빅4/5 + 업계 전반</span></h3>' + (ind_body or '<div style="font-size:12.5px;color:#6b7280">수집된 헤드라인이 없습니다.</div>')
+
+    # ④ 뉴스 캘린더 — 지금·곧 준비할 것 (시즌 이슈)
+    m, nm, today = now.month, now.month % 12 + 1, now.date()
+    cal = []
+    for key, wins in seasonal.items():
+        for w in wins:
+            span = w.get("span")
+            status, pr = None, 9
+            if span:
+                st = ee.state_from_span(today, span)
+                if st in ("active", "cooling"):
+                    status, pr = "진행 중", 0
+                elif st in ("emerging", "upcoming"):
+                    status, pr = "곧 · 대비", 1
+            else:
+                if m in w["m"]:
+                    status, pr = "이번 달", 0
+                elif nm in w["m"]:
+                    status, pr = "다음 달", 1
+            if status:
+                cal.append((pr, 0 if key in main else 1, name(key), w.get("tag", ""), status, w.get("act", "")))
+    cal.sort(key=lambda r: (r[0], r[1]))
+    cal = cal[:14]
+    if cal:
+        crows = ""
+        for pr, mn, nmk, tag, status, act in cal:
+            star = "★ " if mn == 0 else ""
+            crows += (f'<tr><td style="{S["td"]};font-weight:700;white-space:nowrap">{star}{esc(nmk)}</td>'
+                      f'<td style="{S["td"]}">{esc(tag)}</td>'
+                      f'<td style="{S["td"]};white-space:nowrap;color:#1f7a4d;font-weight:700">{esc(status)}</td>'
+                      f'<td style="{S["td"]};color:#374151">{esc(act)}</td></tr>')
+        cal_tbl = (f'<table role="presentation" style="{S["tbl"]}"><tr>'
+                   f'<th style="{S["th"]}">상품</th><th style="{S["th"]}">시즌 이슈</th>'
+                   f'<th style="{S["th"]}">시점</th><th style="{S["th"]}">준비할 것</th></tr>{crows}</table>')
+    else:
+        cal_tbl = '<div style="font-size:12.5px;color:#6b7280">이번·다음 달 준비할 시즌 이슈가 없습니다.</div>'
+    cal_html = f'<h3 style="{S["h3"]}">🗓️ 뉴스 캘린더 — 지금·곧 준비할 것</h3>{cal_tbl}'
+
+    # 데이터 상태 + 푸터
+    try:
+        health = "<br>".join(esc(x) for x in cah.format_lines(cah.compute_health(now)))
+    except Exception:
+        health = "· 상태 확인 불가 · 자동수집이 정상이라고 단정할 수 없음"
+    footer = (f'<div style="margin-top:24px;padding-top:12px;border-top:1px solid #eceef1;font-size:11px;color:#6b7280;line-height:1.6">'
+              f'{health}<br><br>🔭 전체 대시보드 → <a href="https://{HUB}" style="color:#1f7a4d">{HUB}</a></div>')
+
+    head = (f'<div style="{S["h2"]}">📮 Modooflow 데일리 브리핑</div>'
+            f'<div style="{S["sub"]}">{now.month}/{now.day}({wd}) {part} · 담당 상품 {len(products)}종 + 업계·경쟁사 · 표로 한눈에</div>')
+    html = f'<div style="{S["wrap"]}">{head}{today_html}{prod_html}{ind_html}{cal_html}{footer}</div>'
+
+    # ── 텍스트 대체본(HTML 미지원 클라이언트용) ──
+    P = [f"📮 Modooflow 데일리 브리핑 · {now.month}/{now.day}({wd}) {part}", ""]
+    P += ["[오늘 할 일]"] + ([f"{i+1}. {x}" for i, x in enumerate(al)] or ["· 특이 액션 없음"]) + [""]
+
+    def cat_text(key):
+        nmn = newsmon.get(key, {})
+        items = (cats.get(key) or {}).get("items", [])[:8]
+        if not (nmn or items):
+            return []
+        out = [f"■ {name(key)} (헤드라인 {len(items)}건)"]
+        if nmn.get("summary"):
+            out.append(f"  동향 요약: {nmn['summary']}")
+        if nmn.get("insight"):
+            out.append(f"  마케팅 시사점: {nmn['insight']}")
+        for it in items:
+            out.append(f"  · {it.get('t','')} ({it.get('src','')}·{it.get('date','')})")
+            g = (it.get("gist") or "").strip()
+            if g:
+                out.append(f"    ⤷ {g[:110]}")
+            if it.get("url"):
+                out.append(f"    {it['url']}")
+        return out + [""]
+
+    P += ["[보험별 동향]"]
+    for k in prod_keys:
+        P += cat_text(k)
+    P += ["[경쟁사·업계 동향]"]
+    for k, _ in INDUSTRY:
+        P += cat_text(k)
+    P += ["[뉴스 캘린더 — 지금·곧 준비할 것]"]
+    if cal:
+        for pr, mn, nmk, tag, status, act in cal:
+            P.append(f"- {'★ ' if mn == 0 else ''}{nmk} | {tag} | {status} | {act}")
+    else:
+        P.append("- 이번·다음 달 준비할 시즌 이슈 없음")
+    P += ["", f"🔭 전체 대시보드 → https://{HUB}"]
+    plain = "\n".join(P)
+
+    return subject, html, plain
+
 
 def recipients():
     """수신자 chat_id 목록. TELEGRAM_CHAT_IDS(콤마/줄바꿈 다중) 우선, 없으면 TELEGRAM_CHAT_ID(단일).
@@ -222,23 +406,8 @@ def email_recipients():
     return out
 
 
-def _mail_plain(text):
-    """이메일 텍스트본: 텔레그램 HTML(<a href>·이스케이프)을 순수 텍스트로 환원."""
-    import re
-    t = re.sub(r'<a href="([^"]*)">([^<]*)</a>', r"\2: \1", text)   # 링크 → '텍스트: URL'
-    return t.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
-
-
-def _mail_html(text):
-    """이메일 HTML본: 본문은 이미 HTML-이스케이프됨(esc). 줄바꿈만 <br>로, 링크(<a>)는 그대로 렌더."""
-    body = text.replace("\n", "<br>\n")
-    return ('<div style="font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,'
-            "'Malgun Gothic','Apple SD Gothic Neo',sans-serif;font-size:14px;line-height:1.7;"
-            f'color:#20242c;max-width:680px">{body}</div>')
-
-
-def send_email(text):
-    """데일리 브리핑을 이메일(SMTP)로 발송 — 텔레그램과 독립. Gmail SMTP 기본.
+def send_email():
+    """데일리 브리핑을 표 도식형 이메일(SMTP)로 발송 — 텔레그램과 독립. Gmail SMTP 기본.
     필요 Secrets: SMTP_USER(발송 계정) · SMTP_PASS(앱 비밀번호) · EMAIL_TO(수신 메일·다중)
       선택: SMTP_HOST(기본 smtp.gmail.com) · SMTP_PORT(기본 587·STARTTLS, 465=SSL) · EMAIL_FROM(기본 SMTP_USER)"""
     import smtplib
@@ -254,16 +423,14 @@ def send_email(text):
     if not (user and pw and to):
         print("SMTP_USER / SMTP_PASS / EMAIL_TO 미설정", file=sys.stderr)
         sys.exit(2)
-    now = kst_now()
-    wd = "월화수목금토일"[now.weekday()]
-    part = "오전" if now.hour < 12 else "오후"
+    subject, html, plain = render_email()
     msg = MIMEMultipart("alternative")
-    msg["Subject"] = f"📮 Modooflow 데일리 브리핑 · {now.month}/{now.day}({wd}) {part}"
+    msg["Subject"] = subject
     msg["From"] = formataddr(("Modooflow 브리핑", frm))
     msg["To"] = ", ".join(to)
     msg["Date"] = formatdate(localtime=True)
-    msg.attach(MIMEText(_mail_plain(text), "plain", "utf-8"))
-    msg.attach(MIMEText(_mail_html(text), "html", "utf-8"))
+    msg.attach(MIMEText(plain, "plain", "utf-8"))
+    msg.attach(MIMEText(html, "html", "utf-8"))
     try:
         if port == 465:
             server = smtplib.SMTP_SSL(host, port, timeout=30)
@@ -282,10 +449,19 @@ def send_email(text):
 
 
 if __name__ == "__main__":
-    msg = build_message()
-    if "--dry" in sys.argv:
-        print(msg)
-    elif "--email" in sys.argv:
-        send_email(msg)
-    else:
-        send_telegram(msg)
+    if "--dry" in sys.argv:                       # 텔레그램 본문 미리보기
+        print(build_message())
+    elif "--email-preview" in sys.argv:           # 이메일(표 도식형) 미리보기 — 발송 없음
+        subject, html, plain = render_email()
+        out = sys.argv[sys.argv.index("--out") + 1] if "--out" in sys.argv else None
+        if out:
+            with open(out, "w", encoding="utf-8") as f:
+                f.write(f"<!-- Subject: {subject} -->\n" + html)
+            print(f"제목: {subject}\nHTML 미리보기 저장 → {out}")
+        else:
+            print("제목:", subject, "\n")
+            print(plain)
+    elif "--email" in sys.argv:                   # 이메일 발송(SMTP)
+        send_email()
+    else:                                          # 텔레그램 발송(기본)
+        send_telegram(build_message())
