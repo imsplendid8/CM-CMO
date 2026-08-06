@@ -70,16 +70,19 @@ def pick_news(clip, products):
             else:
                 tag = f"[{cat.get('name', key)}]"
                 score = len(hit)
-            cands.append((score, it.get("date", ""), tag, t, it.get("src", "")))
+            cands.append((score, it.get("date", ""), tag, t, it.get("src", ""), it.get("url", "")))
     # 점수·최신 우선, 제목 앞부분 dedup
     cands.sort(key=lambda x: (x[0], x[1]), reverse=True)
     out, seen = [], set()
-    for sc, dt, tag, t, src in cands:
+    for sc, dt, tag, t, src, url in cands:
         k = t[:12]
         if k in seen:
             continue
         seen.add(k)
-        out.append(f"· {tag} {t[:44]} ({src})")
+        line = f"· {tag} {t[:44]} ({src})"
+        if url:                       # 기사 링크를 다음 줄에 붙여 클릭 가능하게(텔레그램은 원문 URL 자동 링크)
+            line += f"\n  {url}"
+        out.append(line)
         if len(out) >= 3:
             break
     return out
