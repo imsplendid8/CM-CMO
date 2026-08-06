@@ -106,7 +106,9 @@ function render(){
     return;
   }
   const q=curQ.trim().toLowerCase();
-  const PAPERS=DATA.papers;                                     // 제공자 무관 · 전부 주제로 그룹핑(제공자는 배지)
+  // '참고자료 · … (제목 미확인)' 제목 미확정 플레이스홀더는 아카이브 표시에서 숨김
+  const isPlaceholder=p=>/제목 미확인/.test(p.title||"");
+  const PAPERS=DATA.papers.filter(p=>!isPlaceholder(p));        // 제공자 무관 · 전부 주제로 그룹핑(제공자는 배지)
   const match=p=>(curTopic==="__all"||p.topic===curTopic)&&(!q||(p.title+p.desc+p.note).toLowerCase().includes(q));
   const rows=PAPERS.filter(match);
   // 주제 칩(제공자 무관 · 주제 기준)

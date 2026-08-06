@@ -24,8 +24,45 @@ const today = new Date().toISOString().slice(0, 10);
 
 const naverUrl = kw => "https://search.naver.com/search.naver?query=" + encodeURIComponent(kw);
 const safe = s => String(s).replace(/[^a-zA-Z0-9_-]/g, "");
+const RETRIES = Number(process.env.CAPTURE_RETRIES || 1); // 실패(빈 화면/오류) 시 추가 재캡쳐 횟수
 
 fs.mkdirSync(OUT, { recursive: true });
+
+// 렌더 성공 판정 — 검색결과 본문이 실제로 채워졌는지(스켈레톤/빈 화면 감지)
+async function renderedOk(page) {
+  try {
+    return await page.evaluate(() => {
+      const mp = document.querySelector("#main_pack") || document.querySelector("#ct") || document.body;
+      if (!mp) return false;
+      const txt = (mp.innerText || "").replace(/\s+/g, "");
+      return txt.length > 300; // 실제 결과가 채워지면 텍스트가 충분히 쌓임
+    });
+  } catch { return false; }
+}
+
+// 네이버 SERP 열고 캡쳐 — 빈 화면/오류면 재로드해 한 번 더 시도. 마지막 시도는 무조건 저장(캡쳐 유실 방지).
+async function gotoAndShoot(page, url, shotOpts, label) {
+  let r = null, lastErr = null;
+  for (let attempt = 0; attempt <= RETRIES; attempt++) {
+    const last = attempt === RETRIES;
+    try {
+      r = await page.goto(url, { waitUntil: "domcontentloaded", timeout: 45000 });
+      await page.waitForTimeout(1800 + attempt * 1000); // 재시도일수록 조금 더 대기
+      const ok = await renderedOk(page);
+      if (ok || last) {
+        await page.screenshot(shotOpts);
+        return { status: r ? r.status() : null, attempt, rendered: ok };
+      }
+      lastErr = new Error("빈 화면/스켈레톤 — 렌더 미완");
+    } catch (e) {
+      lastErr = e;
+      if (last) throw e;
+    }
+    console.warn(`  ↻ ${label} 재캡쳐 ${attempt + 1}/${RETRIES} (${lastErr.message})`);
+    await page.waitForTimeout(1500);
+  }
+  throw lastErr;
+}
 
 async function main() {
   const proxy = process.env.HTTPS_PROXY || process.env.https_proxy;
@@ -49,12 +86,14 @@ async function main() {
     const file = `${safe(p.key)}-${today}.png`;
     const page = await ctx.newPage();
     try {
-      const r = await page.goto(naverUrl(kw), { waitUntil: "domcontentloaded", timeout: 45000 });
-      await page.waitForTimeout(1800);
-      // 상단 통합검색 영역만 (파워링크·브랜드검색·플레이스 노출 구간)
-      await page.screenshot({ path: path.join(OUT, file), clip: { x: 0, y: 0, width: 1280, height: 1600 } });
-      results.push({ key: p.key, name: p.name, kw, file, date: today, status: r ? r.status() : null });
-      console.log(`✓ ${p.key.padEnd(10)} "${kw}" → serp/${file}`);
+      // 상단 통합검색 영역만 (파워링크·브랜드검색·플레이스 노출 구간) · 빈 화면이면 재캡쳐
+      const res = await gotoAndShoot(
+        page, naverUrl(kw),
+        { path: path.join(OUT, file), clip: { x: 0, y: 0, width: 1280, height: 1600 } },
+        p.key,
+      );
+      results.push({ key: p.key, name: p.name, kw, file, date: today, status: res.status });
+      console.log(`✓ ${p.key.padEnd(10)} "${kw}" → serp/${file}${res.attempt ? ` (재캡쳐 ${res.attempt}회)` : ""}${res.rendered ? "" : " ⚠ 렌더 미완"}`);
     } catch (e) {
       console.error(`✗ ${p.key} "${kw}" — ${e.message}`);
       results.push({ key: p.key, name: p.name, kw, file: null, date: today, error: e.message });

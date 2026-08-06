@@ -32,8 +32,45 @@ const PRODUCTS = ["운전자보험", "주택화재보험", "골프보험", "암�
 const naverUrl = q => "https://search.naver.com/search.naver?query=" + encodeURIComponent(q);
 const safe = s => String(s).replace(/[^a-zA-Z0-9_-]/g, "");
 const prodKey = p => ({ "운전자보험": "driver", "주택화재보험": "hrmf", "골프보험": "golf", "암보험": "cncr", "해외여행보험": "overseas" }[p] || safe(p));
+const RETRIES = Number(process.env.CAPTURE_RETRIES || 1); // 실패(빈 화면/오류) 시 추가 재캡쳐 횟수
 
 fs.mkdirSync(OUT, { recursive: true });
+
+// 렌더 성공 판정 — 검색결과 본문이 실제로 채워졌는지(스켈레톤/빈 화면 감지)
+async function renderedOk(page) {
+  try {
+    return await page.evaluate(() => {
+      const mp = document.querySelector("#main_pack") || document.querySelector("#ct") || document.body;
+      if (!mp) return false;
+      const txt = (mp.innerText || "").replace(/\s+/g, "");
+      return txt.length > 300; // 실제 결과가 채워지면 텍스트가 충분히 쌓임
+    });
+  } catch { return false; }
+}
+
+// 네이버 SERP 열고 캡쳐 — 빈 화면/오류면 재로드해 한 번 더 시도. 마지막 시도는 무조건 저장(캡쳐 유실 방지).
+async function gotoAndShoot(page, url, shotOpts, label) {
+  let lastErr = null;
+  for (let attempt = 0; attempt <= RETRIES; attempt++) {
+    const last = attempt === RETRIES;
+    try {
+      await page.goto(url, { waitUntil: "domcontentloaded", timeout: 45000 });
+      await page.waitForTimeout(1800 + attempt * 1000); // 재시도일수록 조금 더 대기
+      const ok = await renderedOk(page);
+      if (ok || last) {
+        await page.screenshot(shotOpts);
+        return { attempt, rendered: ok };
+      }
+      lastErr = new Error("빈 화면/스켈레톤 — 렌더 미완");
+    } catch (e) {
+      lastErr = e;
+      if (last) throw e;
+    }
+    console.warn(`  ↻ ${label} 재캡쳐 ${attempt + 1}/${RETRIES} (${lastErr.message})`);
+    await page.waitForTimeout(1500);
+  }
+  throw lastErr;
+}
 
 const DEVICES = {
   pc: { viewport: { width: 1280, height: 1500 }, ua: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36" },
@@ -58,11 +95,13 @@ async function main() {
         const page = await ctx.newPage();
         const file = `${b.key}-${pk}-${dev}-${today}.png`;
         try {
-          await page.goto(naverUrl(query), { waitUntil: "domcontentloaded", timeout: 45000 });
-          await page.waitForTimeout(1800);
-          await page.screenshot({ path: path.join(OUT, file), clip: { x: 0, y: 0, width: cfg.viewport.width, height: cfg.viewport.height } });
+          const res = await gotoAndShoot(
+            page, naverUrl(query),
+            { path: path.join(OUT, file), clip: { x: 0, y: 0, width: cfg.viewport.width, height: cfg.viewport.height } },
+            `${b.key}/${pk}/${dev}`,
+          );
           shots.push({ co: b.key, coName: b.name, prod, prodKey: pk, dev, query, file, date: today });
-          console.log(`✓ ${b.key}/${pk}/${dev} "${query}"`);
+          console.log(`✓ ${b.key}/${pk}/${dev} "${query}"${res.attempt ? ` (재캡쳐 ${res.attempt}회)` : ""}${res.rendered ? "" : " ⚠ 렌더 미완"}`);
         } catch (e) {
           console.error(`✗ ${b.key}/${pk}/${dev} — ${e.message}`);
         }
