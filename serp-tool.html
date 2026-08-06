@@ -71,9 +71,6 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .filebanner a{color:#8a5a00;font-weight:800;}
 [data-theme=dark] .filebanner{background:#3a2f14;border-color:#6b5320;color:#f0d590;}[data-theme=dark] .filebanner a{color:#f0d590;}
 /* 아카이브 */
-.drop{border:1.5px dashed var(--brand);border-radius:var(--r-sm);background:var(--brand-tint);padding:16px;text-align:center;font-size:12px;color:var(--ink-2);cursor:pointer;transition:.14s;}
-.drop:hover,.drop.hot{background:var(--brand-50);}
-.drop b{color:var(--brand-600);}
 .tl{display:flex;gap:12px;overflow-x:auto;padding:14px 2px 4px;}
 .shot{flex:0 0 auto;width:150px;cursor:pointer;}
 .shot img{width:150px;height:104px;object-fit:cover;object-position:top;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);display:block;transition:.14s;}
@@ -177,7 +174,7 @@ td.who{font-weight:800;white-space:nowrap;}
       </div>
     </header>
     <div class="filebanner" id="fileBanner" hidden>
-      ⚠️ <b>로컬 파일(ZIP)로 열었습니다.</b> 이렇게 열면 <b>자동 캡쳐(상품 SERP·경쟁사 브랜드검색)가 보이지 않고</b>, 아래 "개인 업로드"만 나타납니다.
+      ⚠️ <b>로컬 파일(ZIP)로 열었습니다.</b> 이렇게 열면 <b>자동 캡쳐(상품 SERP·경쟁사 브랜드검색)가 보이지 않습니다.</b>
       팀 공유 캡쳐를 보려면 배포 주소로 여세요 →
       <a href="https://imsplendid8.github.io/CM-CMO/serp-tool.html" target="_blank" rel="noopener">imsplendid8.github.io/CM-CMO/serp-tool.html</a>
     </div>
@@ -330,20 +327,6 @@ const shotsOf=k=>{const s=safeKey(k);if(!s)return [];
   return man.concat(rep).sort((a,b)=>(b.date||"").localeCompare(a.date||""));};
 const todayStr=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
 
-/* 이미지 다운스케일(용량 절약) → dataURL(JPEG) */
-function fileToShot(file,cb){
-  const rd=new FileReader();
-  rd.onload=()=>{const img=new Image();img.onload=()=>{
-    const maxW=1000,scale=Math.min(1,maxW/img.width),w=Math.round(img.width*scale),h=Math.round(img.height*scale);
-    const cv=document.createElement("canvas");cv.width=w;cv.height=h;cv.getContext("2d").drawImage(img,0,0,w,h);
-    let url;try{url=cv.toDataURL("image/jpeg",0.82);}catch(e){url=rd.result;}
-    cb(url);
-  };img.onerror=()=>cb(rd.result);img.src=rd.result;};
-  rd.readAsDataURL(file);
-}
-function addShot(key,file){const s=safeKey(key);if(!s)return;
-  fileToShot(file,url=>{ARC[s]=ARC[s]||[];ARC[s].push({id:Date.now()+"_"+Math.random().toString(36).slice(2,7),date:todayStr(),img:url,note:""});saveArc(ARC);toast("스크린샷 아카이브에 추가됨 · "+todayStr());render();});
-}
 function delShot(key,id){const s=safeKey(key);if(!s||!ARC[s])return;ARC[s]=ARC[s].filter(x=>x.id!==id);saveArc(ARC);render();}
 function editNote(key,id,val){const s=safeKey(key);if(!s||!ARC[s])return;const it=ARC[s].find(x=>x.id===id);if(it){it.note=val;saveArc(ARC);}}
 
@@ -401,11 +384,9 @@ function archiveSection(p){
       <span class="diffmeta" id="diffMeta">두 주차를 고른 뒤 변화 감지를 누르세요.</span></div>
     <div class="diffwrap" id="diffWrap"></div>`:"";
   return `<div class="sec">
-    <div class="sec-h"><span class="t">📸 주간 SERP 스크린샷 아카이브</span><span class="sub">· ${shots.length}주차 · 이 브라우저에 저장</span>
+    <div class="sec-h"><span class="t">📸 주간 SERP 스크린샷 아카이브</span><span class="sub">· ${shots.length}주차 · 자동 캡쳐</span>
       <a class="serplink" style="margin-left:auto" href="${serpUrl(p.kw)}" target="_blank" rel="noopener">네이버 PC 검색결과 보기 ↗</a></div>
     <div class="sec-b">
-      <div class="drop" id="drop"><b>＋ 개인 스크린샷 올리기</b> — 이 브라우저에만 저장 · 팀 공유 아님 (파일 선택 또는 드래그)<input type="file" id="shotFile" accept="image/*" multiple style="display:none"></div>
-      <div class="note" style="margin:8px 0 0;font-size:11px;color:var(--muted)">※ 팀 공유용 자동 캡쳐는 <b>배포 주소</b>에서 자동 표시됩니다(별도 업로드 불필요). 위 업로드는 개인 메모용입니다.</div>
       ${tl}
       ${shots.length>=2?`<div class="sec-lbl" style="margin:16px 0 0">전/후 비교 (두 주차 선택)</div>${cmp}`:""}
     </div></div>`;
@@ -448,7 +429,7 @@ function renderProduct(){
     ${archiveSection(p)}
     ${intelSection(p)}
     ${analysisSection(p)}
-    <div class="note"><b>운영 방법</b> · 매주 같은 시점에 <b>네이버 PC 검색결과</b>를 캡처해 올리면 주차별 아카이브가 쌓이고, <b>전/후 비교</b>로 상단 광고주 교체·신규 진입·문구 변화를 한눈에 봅니다. 변화·소구포인트는 <b>뉴스 콘솔</b>의 동향과 함께 해석하세요. 스크린샷은 이 브라우저에만 저장되니 <b>⬇ 백업</b>으로 팀 공유·이관하세요.</div>`;
+    <div class="note"><b>운영 방법</b> · 매주 같은 시점의 <b>네이버 PC 검색결과</b>를 <b>자동 캡처</b>해 주차별 아카이브가 쌓이고, <b>전/후 비교</b>로 상단 광고주 교체·신규 진입·문구 변화를 한눈에 봅니다. 변화·소구포인트는 <b>뉴스 콘솔</b>의 동향과 함께 해석하세요.</div>`;
   // 비교 초기화
   const shots=shotsOf(p.key);
   if(shots.length>=2){
@@ -539,16 +520,10 @@ document.addEventListener("click",e=>{
   const del=e.target.closest("[data-del]");if(del){delShot(curKey,del.dataset.del);return;}
   const bz=e.target.closest("[data-bzoom]");if(bz){$("#lbImg").src=bz.dataset.bzoom;$("#lbCap").textContent=bz.dataset.bcap||"";$("#lb").classList.add("show");return;}
   const zoom=e.target.closest("[data-zoom]");if(zoom){const it=shotsOf(curKey).find(s=>s.id===zoom.dataset.zoom);if(it){$("#lbImg").src=it.img;$("#lbCap").textContent=getP(curKey).name+" · "+getP(curKey).kw+" · "+it.date;$("#lb").classList.add("show");}return;}
-  const drop=e.target.closest("#drop");if(drop){$("#shotFile").click();return;}
   const nav=e.target.closest("[data-key]");if(nav&&nav.dataset.key){curKey=nav.dataset.key;render();return;}
   if(e.target.closest("#lb")){$("#lb").classList.remove("show");}
 });
-document.addEventListener("change",e=>{if(e.target.id==="shotFile"){[...e.target.files].forEach(f=>addShot(curKey,f));e.target.value="";}});
 document.addEventListener("input",e=>{const n=e.target.closest("[data-note]");if(n)editNote(curKey,n.dataset.note,n.value);});
-// drag-drop
-document.addEventListener("dragover",e=>{if(e.target.closest("#drop")){e.preventDefault();e.target.closest("#drop").classList.add("hot");}});
-document.addEventListener("dragleave",e=>{const d=e.target.closest("#drop");if(d)d.classList.remove("hot");});
-document.addEventListener("drop",e=>{const d=e.target.closest("#drop");if(d){e.preventDefault();d.classList.remove("hot");[...(e.dataTransfer.files||[])].filter(f=>/^image\//.test(f.type)).forEach(f=>addShot(curKey,f));}});
 // 백업/복원
 $("#expBtn").addEventListener("click",()=>{const blob=new Blob([JSON.stringify({app:"modooflow-serp",exportedAt:new Date().toISOString(),archive:ARC},null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="modooflow-serp-archive-"+todayStr()+".json";a.click();toast("아카이브 백업 파일 저장됨");});
