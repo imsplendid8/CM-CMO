@@ -252,34 +252,30 @@ _ES = {
 
 def render_email():
     """데일리 브리핑을 표 도식형 이메일(HTML+텍스트)로 렌더. returns (subject, html, plain).
-    구성: ① 보험별 동향(요약·시사점+헤드라인) ② 경쟁사·업계 동향 ③ 뉴스 캘린더(준비할 것)."""
+    구성: ① 핵심 동향(메인 3종+업계 요약) ② 주요 뉴스(전체 상위 N건)."""
     products, order, main, seasonal, signals, clip, now = _load_context()
     newsmon = load_newsmon()
     cats = (clip or {}).get("categories", {})
     wd = "월화수목금토일"[now.weekday()]
     part = "오전" if now.hour < 12 else "오후"
-    subject = f"📮 Modooflow 데일리 브리핑 · {now.month}/{now.day}({wd}) {part}"
+    subject = f"(장기CM사업부) {now.strftime('%y.%m.%d')} 뉴스 모니터링"
     ind_name = dict(INDUSTRY)
     name = lambda k: products.get(k, {}).get("name") or ind_name.get(k, k)
     S = _ES
 
     def trend_card(key, accent):
-        """카테고리 동향 요약 + 마케팅 시사점(헤드라인 없이 압축)."""
+        """카테고리 동향 요약(헤드라인·시사점 없이 압축)."""
         nmn = newsmon.get(key, {})
-        if not (nmn.get("summary") or nmn.get("insight")):
+        if not nmn.get("summary"):
             return ""
         cat_style = f"font-size:13.5px;font-weight:800;background:#f4f6f8;border-left:4px solid {accent};padding:7px 11px;border-radius:7px 7px 0 0;margin-top:12px;"
-        h = f'<div style="{cat_style}">{esc(name(key))}</div>'
-        if nmn.get("summary"):
-            h += f'<div style="{S["sumbox"]}"><span style="{S["bg"]}">동향 요약</span>{esc(nmn["summary"])}</div>'
-        if nmn.get("insight"):
-            h += f'<div style="{S["insbox"]}"><span style="{S["ba"]}">마케팅 시사점</span>{esc(nmn["insight"])}</div>'
-        return h
+        return (f'<div style="{cat_style}">{esc(name(key))}</div>'
+                f'<div style="{S["sumbox"]}border-radius:0 0 7px 7px;margin-bottom:6px;"><span style="{S["bg"]}">동향 요약</span>{esc(nmn["summary"])}</div>')
 
-    # ① 핵심 동향 · 마케팅 시사점 — 메인 3종(★) + 업계 전반만(전체 카테고리 아님)
+    # ① 핵심 동향 — 메인 3종(★) + 업계 전반만(전체 카테고리 아님)
     focus = [k for k in main if k in newsmon] + (["ind_biz"] if "ind_biz" in newsmon else [])
     trend_body = "".join(trend_card(k, "#b45309" if k == "ind_biz" else "#1f7a4d") for k in focus)
-    trend_html = f'<h3 style="{S["h3"]}">📊 핵심 동향 · 마케팅 시사점 <span style="font-size:12px;color:#6b7280;font-weight:600">· 메인 상품 + 업계 전반</span></h3>' + (trend_body or '<div style="font-size:12.5px;color:#6b7280">동향 데이터가 없습니다.</div>')
+    trend_html = f'<h3 style="{S["h3"]}">📊 핵심 동향 <span style="font-size:12px;color:#6b7280;font-weight:600">· 메인 상품 + 업계 전반</span></h3>' + (trend_body or '<div style="font-size:12.5px;color:#6b7280">동향 데이터가 없습니다.</div>')
 
     # ② 주요 뉴스 — 전체 통틀어 상위 N건(카테고리별 아님)
     news = rank_news(clip, products, main, EMAIL_NEWS_N)
@@ -305,43 +301,6 @@ def render_email():
         news_tbl = '<div style="font-size:12.5px;color:#6b7280">행동가치 있는 주요 뉴스가 없습니다.</div>'
     news_html = f'<h3 style="{S["h3"]}">📰 주요 뉴스 <span style="font-size:12px;color:#6b7280;font-weight:600">· 전체 상위 {len(news)}건(경쟁사 우선)</span></h3>{news_tbl}'
 
-    # ③ 뉴스 캘린더 — 지금·곧 준비할 것 (시즌 이슈)
-    m, nm, today = now.month, now.month % 12 + 1, now.date()
-    cal = []
-    for key, wins in seasonal.items():
-        for w in wins:
-            span = w.get("span")
-            status, pr = None, 9
-            if span:
-                st = ee.state_from_span(today, span)
-                if st in ("active", "cooling"):
-                    status, pr = "진행 중", 0
-                elif st in ("emerging", "upcoming"):
-                    status, pr = "곧 · 대비", 1
-            else:
-                if m in w["m"]:
-                    status, pr = "이번 달", 0
-                elif nm in w["m"]:
-                    status, pr = "다음 달", 1
-            if status:
-                cal.append((pr, 0 if key in main else 1, name(key), w.get("tag", ""), status, w.get("act", "")))
-    cal.sort(key=lambda r: (r[0], r[1]))
-    cal = cal[:14]
-    if cal:
-        crows = ""
-        for pr, mn, nmk, tag, status, act in cal:
-            star = "★ " if mn == 0 else ""
-            crows += (f'<tr><td style="{S["td"]};font-weight:700;white-space:nowrap">{star}{esc(nmk)}</td>'
-                      f'<td style="{S["td"]}">{esc(tag)}</td>'
-                      f'<td style="{S["td"]};white-space:nowrap;color:#1f7a4d;font-weight:700">{esc(status)}</td>'
-                      f'<td style="{S["td"]};color:#374151">{esc(act)}</td></tr>')
-        cal_tbl = (f'<table role="presentation" style="{S["tbl"]}"><tr>'
-                   f'<th style="{S["th"]}">상품</th><th style="{S["th"]}">시즌 이슈</th>'
-                   f'<th style="{S["th"]}">시점</th><th style="{S["th"]}">준비할 것</th></tr>{crows}</table>')
-    else:
-        cal_tbl = '<div style="font-size:12.5px;color:#6b7280">이번·다음 달 준비할 시즌 이슈가 없습니다.</div>'
-    cal_html = f'<h3 style="{S["h3"]}">🗓️ 뉴스 캘린더 — 지금·곧 준비할 것</h3>{cal_tbl}'
-
     # 데이터 상태 + 푸터
     try:
         health = "<br>".join(esc(x) for x in cah.format_lines(cah.compute_health(now)))
@@ -350,20 +309,17 @@ def render_email():
     footer = (f'<div style="margin-top:24px;padding-top:12px;border-top:1px solid #eceef1;font-size:11px;color:#6b7280;line-height:1.6">'
               f'{health}<br><br>🔭 전체 대시보드 → <a href="https://{HUB}" style="color:#1f7a4d">{HUB}</a></div>')
 
-    head = (f'<div style="{S["h2"]}">📮 Modooflow 데일리 브리핑</div>'
-            f'<div style="{S["sub"]}">{now.month}/{now.day}({wd}) {part} · 핵심 동향 + 주요 뉴스 + 준비 캘린더 · 표로 한눈에</div>')
-    html = f'<div style="{S["wrap"]}">{head}{trend_html}{news_html}{cal_html}{footer}</div>'
+    head = (f'<div style="{S["h2"]}">📮 (장기CM사업부) 뉴스 모니터링</div>'
+            f'<div style="{S["sub"]}">{now.strftime("%Y.%m.%d")}({wd}) {part} · 핵심 동향 + 주요 뉴스 · 표로 한눈에</div>')
+    html = f'<div style="{S["wrap"]}">{head}{trend_html}{news_html}{footer}</div>'
 
     # ── 텍스트 대체본(HTML 미지원 클라이언트용) ──
-    P = [f"📮 Modooflow 데일리 브리핑 · {now.month}/{now.day}({wd}) {part}", ""]
-    P += ["[핵심 동향 · 마케팅 시사점]"]
+    P = [f"(장기CM사업부) {now.strftime('%y.%m.%d')} 뉴스 모니터링 · {wd}요일 {part}", ""]
+    P += ["[핵심 동향]"]
     for k in focus:
         nmn = newsmon.get(k, {})
-        P.append(f"■ {name(k)}")
         if nmn.get("summary"):
-            P.append(f"  동향 요약: {nmn['summary']}")
-        if nmn.get("insight"):
-            P.append(f"  마케팅 시사점: {nmn['insight']}")
+            P.append(f"■ {name(k)}: {nmn['summary']}")
     P += ["", f"[주요 뉴스 · 전체 상위 {len(news)}건]"]
     for tag, it in news:
         P.append(f"· ({tag}) {it.get('t','')} ({it.get('src','')}·{it.get('date','')})")
@@ -372,12 +328,6 @@ def render_email():
             P.append(f"  ⤷ {g[:110]}")
         if it.get("url"):
             P.append(f"  {it['url']}")
-    P += ["", "[뉴스 캘린더 — 지금·곧 준비할 것]"]
-    if cal:
-        for pr, mn, nmk, tag, status, act in cal:
-            P.append(f"- {'★ ' if mn == 0 else ''}{nmk} | {tag} | {status} | {act}")
-    else:
-        P.append("- 이번·다음 달 준비할 시즌 이슈 없음")
     P += ["", f"🔭 전체 대시보드 → https://{HUB}"]
     plain = "\n".join(P)
 
