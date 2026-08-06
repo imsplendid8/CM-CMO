@@ -210,9 +210,82 @@ def send_telegram(text):
     if failed:                                # 일부라도 미수신이면 실패(exit≠0) — 스케줄 워크플로가 부분 발송을 감지·재시도
         sys.exit(1)
 
+def email_recipients():
+    """수신 이메일 목록. EMAIL_TO(콤마/줄바꿈/세미콜론 다중). 이메일은 개인정보라 커밋하지 않고 Secrets 로만 주입."""
+    raw = os.environ.get("EMAIL_TO") or ""
+    seen, out = set(), []
+    for c in raw.replace("\n", ",").replace(";", ",").split(","):
+        c = c.strip()
+        if c and c not in seen:
+            seen.add(c)
+            out.append(c)
+    return out
+
+
+def _mail_plain(text):
+    """이메일 텍스트본: 텔레그램 HTML(<a href>·이스케이프)을 순수 텍스트로 환원."""
+    import re
+    t = re.sub(r'<a href="([^"]*)">([^<]*)</a>', r"\2: \1", text)   # 링크 → '텍스트: URL'
+    return t.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
+
+
+def _mail_html(text):
+    """이메일 HTML본: 본문은 이미 HTML-이스케이프됨(esc). 줄바꿈만 <br>로, 링크(<a>)는 그대로 렌더."""
+    body = text.replace("\n", "<br>\n")
+    return ('<div style="font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,'
+            "'Malgun Gothic','Apple SD Gothic Neo',sans-serif;font-size:14px;line-height:1.7;"
+            f'color:#20242c;max-width:680px">{body}</div>')
+
+
+def send_email(text):
+    """데일리 브리핑을 이메일(SMTP)로 발송 — 텔레그램과 독립. Gmail SMTP 기본.
+    필요 Secrets: SMTP_USER(발송 계정) · SMTP_PASS(앱 비밀번호) · EMAIL_TO(수신 메일·다중)
+      선택: SMTP_HOST(기본 smtp.gmail.com) · SMTP_PORT(기본 587·STARTTLS, 465=SSL) · EMAIL_FROM(기본 SMTP_USER)"""
+    import smtplib
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+    from email.utils import formataddr, formatdate
+    host = os.environ.get("SMTP_HOST") or "smtp.gmail.com"
+    port = int(os.environ.get("SMTP_PORT") or "587")
+    user = os.environ.get("SMTP_USER")
+    pw = os.environ.get("SMTP_PASS")
+    frm = os.environ.get("EMAIL_FROM") or user
+    to = email_recipients()
+    if not (user and pw and to):
+        print("SMTP_USER / SMTP_PASS / EMAIL_TO 미설정", file=sys.stderr)
+        sys.exit(2)
+    now = kst_now()
+    wd = "월화수목금토일"[now.weekday()]
+    part = "오전" if now.hour < 12 else "오후"
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = f"📮 Modooflow 데일리 브리핑 · {now.month}/{now.day}({wd}) {part}"
+    msg["From"] = formataddr(("Modooflow 브리핑", frm))
+    msg["To"] = ", ".join(to)
+    msg["Date"] = formatdate(localtime=True)
+    msg.attach(MIMEText(_mail_plain(text), "plain", "utf-8"))
+    msg.attach(MIMEText(_mail_html(text), "html", "utf-8"))
+    try:
+        if port == 465:
+            server = smtplib.SMTP_SSL(host, port, timeout=30)
+        else:
+            server = smtplib.SMTP(host, port, timeout=30)
+            server.ehlo()
+            server.starttls()
+            server.ehlo()
+        server.login(user, pw)
+        server.sendmail(frm, to, msg.as_string())
+        server.quit()
+    except Exception as e:
+        print(f"이메일 발송 실패: {e}", file=sys.stderr)
+        sys.exit(1)
+    print(f"이메일 발송: 성공 {len(to)}명 → {', '.join(to)}")
+
+
 if __name__ == "__main__":
     msg = build_message()
     if "--dry" in sys.argv:
         print(msg)
+    elif "--email" in sys.argv:
+        send_email(msg)
     else:
         send_telegram(msg)

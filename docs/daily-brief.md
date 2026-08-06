@@ -61,5 +61,24 @@
 - 수신자: `brief-setup.html` 로 `TELEGRAM_CHAT_IDS` 생성 → Secret 갱신. 파싱은 `scripts/daily_brief.py`의 `recipients()`(콤마·줄바꿈·세미콜론 구분, 중복 제거).
 - 내용: `scripts/daily_brief.py`(시즌·뉴스·SERP 비중), 시즌 데이터는 `data/seasonal.json`.
 
+## 이메일로도 받기 (텔레그램과 별도) — 매일 08:30 KST
+텔레그램과 **독립적으로**, 같은 브리핑 본문을 **이메일로 매일 08:30 KST**에 특정 주소로 보냅니다.
+같은 `scripts/daily_brief.py`의 `build_message()`를 재사용하며, `--email` 모드로 SMTP 발송합니다(HTML+텍스트 멀티파트, 뉴스 '바로가기'는 링크로 렌더).
+
+- 스크립트: `python3 scripts/daily_brief.py --email`
+- 스케줄: `.github/workflows/daily-email.yml` (cron `30 23 * * *` = **08:30 KST**, 수동 실행도 가능)
+
+### 설정 (1회) — Gmail SMTP 기준
+1. 발송용 Gmail 계정에 **2단계 인증**을 켠 뒤 **앱 비밀번호**(16자리)를 발급: Google 계정 → 보안 → 앱 비밀번호.
+2. 저장소 **Settings → Secrets and variables → Actions** 에 추가:
+   - `SMTP_USER` = 발송 Gmail 주소 (예: `myaccount@gmail.com`)
+   - `SMTP_PASS` = 위에서 발급한 **앱 비밀번호**(일반 로그인 비밀번호 아님)
+   - **`EMAIL_TO`** = **받을 이메일 주소**(여러 명이면 콤마로 구분)
+   - 선택: `SMTP_HOST`(기본 `smtp.gmail.com`) · `SMTP_PORT`(기본 `587`, STARTTLS / `465`=SSL) · `EMAIL_FROM`(기본 `SMTP_USER`)
+3. **Actions 탭 → Daily Brief (Email) → Run workflow** 로 즉시 테스트. 이후 매일 08:30 KST 자동 발송.
+
+> ⚠️ **개인정보/보안**: 수신 이메일(`EMAIL_TO`)과 앱 비밀번호(`SMTP_PASS`)는 **커밋하지 말고 GitHub Secrets(비공개)에만** 넣으세요. 발송 시간은 `daily-email.yml`의 cron(UTC)에서 조정합니다(08:30 KST=23:30 UTC 전일).
+> Gmail이 아닌 다른 메일 서비스는 `SMTP_HOST`/`SMTP_PORT`만 그 서비스 값으로 바꾸면 됩니다.
+
 ## 참고 — 카카오톡 경로
 초기엔 카카오 MCP로 테스트했으나(즉석 발송 확인됨), 스케줄 세션의 커넥터 제약으로 **텔레그램(봇 API)** 을 정식 자동화 경로로 채택. 카카오로 받고 싶으면 claude.ai 자동화(Routines) UI에서 카카오 커넥터를 붙인 루틴을 별도로 만들 수 있습니다.

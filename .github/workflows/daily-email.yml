@@ -1,0 +1,36 @@
+name: Daily Brief (Email)
+
+# 데일리 비서 브리핑을 이메일로 매일 08:30 KST 발송 (텔레그램과 별도).
+# 필요 Secrets:
+#   SMTP_USER  (필수) 발송 계정 (예: Gmail 주소)
+#   SMTP_PASS  (필수) 앱 비밀번호 (Gmail=2단계인증 후 '앱 비밀번호' 16자리)
+#   EMAIL_TO   (필수) 수신 메일 (콤마로 여러 명)
+#   선택: SMTP_HOST(기본 smtp.gmail.com) · SMTP_PORT(기본 587·STARTTLS, 465=SSL) · EMAIL_FROM(기본 SMTP_USER)
+# 설정법: docs/daily-brief.md
+
+on:
+  schedule:
+    - cron: "30 23 * * *"   # 08:30 KST (UTC 23:30 전일) — news 07:30·signals 06:00 수집 뒤
+  workflow_dispatch:
+
+# 브리프는 커밋/푸시하지 않고 이메일만 발송 → 최소 권한(read).
+permissions:
+  contents: read
+
+jobs:
+  email:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Send daily brief (email)
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}     # 선택(기본 smtp.gmail.com)
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}     # 선택(기본 587)
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}   # 선택(기본 SMTP_USER)
+        run: python3 scripts/daily_brief.py --email
