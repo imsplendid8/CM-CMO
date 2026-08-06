@@ -48,6 +48,19 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .crumb{font-size:12px;color:var(--muted);text-decoration:none;font-weight:700;} .crumb:hover{color:var(--brand-600);}
 .content{padding:20px 24px 60px;max-width:1080px;}
 .banner{background:var(--warn-bg);border:1px solid color-mix(in srgb,var(--warn) 30%,var(--line));border-radius:var(--r);padding:11px 15px;font-size:11.5px;color:var(--ink-2);margin-bottom:16px;line-height:1.6;}
+/* 추천 소재(근거 기반) 카드 — event_engine 산출물 병합 */
+.rc-wrap{display:flex;flex-direction:column;gap:11px;}
+.rc{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh);}
+.rc-h{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:8px;}
+.rc-st{font-size:9.5px;font-weight:800;padding:2px 8px;border-radius:99px;background:var(--surface-2);color:var(--muted);}
+.rc-st.active{background:var(--brand-50);color:var(--brand-600);}
+.rc-pr{font-size:13px;font-weight:800;letter-spacing:-.02em;}
+.rc-ev{font-size:11px;color:var(--muted);font-weight:700;}
+.rc-cf{margin-left:auto;font-size:10px;font-family:var(--mono);color:var(--muted);}
+.rc-l{display:flex;align-items:center;gap:8px;padding:5px 0;border-top:1px solid var(--line-2);}
+.rc-l .k{flex:0 0 38px;font-size:10.5px;color:var(--muted);font-weight:700;}
+.rc-l .v{flex:1;min-width:0;font-size:13px;color:var(--ink);line-height:1.5;}
+.rc-f{margin-top:8px;font-size:10.5px;color:var(--ink-2);background:var(--surface-2);border-radius:8px;padding:7px 10px;line-height:1.6;}
 .banner b{color:var(--warn);}
 .specbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
 .spec{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:8px 13px;font-size:11.5px;color:var(--ink-2);box-shadow:var(--sh);}
@@ -315,6 +328,7 @@ const EVIDENCE={
 
 let curKey=PRODUCTS[0].key;
 let AD_ANALYSIS={};                          // 실측 관측 소재 분석(serp/ad_analysis.json · serp-tool과 공유)
+let RECO={recommendations:[],asof:""};       // 근거 기반 추천 소재(event_engine.py 산출물 · 연간플랜에서 병합)
 const MAIN=["driver","hrmf","golf"];        // 메인 3종(운전자·주택화재·골프)
 const getP=k=>PRODUCTS.find(p=>p.key===k);
 const uniq=a=>[...new Set(a)];
@@ -379,6 +393,7 @@ function genSubs(p){
 function renderSidebar(){
   const item=(k,label,on)=>`<button class="sb-item${on?" on":""}" data-key="${k}"><span>${esc(label)}</span></button>`;
   let h=`<div class="sb-cap top">보기</div>`;
+  h+=item("__reco",`✨ 추천 소재${usableRecs().length?` (${usableRecs().length})`:""}`,curKey==="__reco");
   h+=item("__cal","🗓 주차별 소재 캘린더",curKey==="__cal");
   h+=item("__brand",`🏷 경쟁사 브랜드검색${brandCount()?` (${brandCount()})`:""}`,curKey==="__brand");
   [...new Set(PRODUCTS.map(p=>p.cat))].forEach(cat=>{h+=`<div class="sb-cap">${esc(cat)} 소재</div>`;
@@ -593,7 +608,29 @@ function renderCalendar(){
     ${cards.join("")}`;
 }
 
+/* ── 추천 소재(근거 기반) — 연간플랜 엔진 산출물 병합 · '실제 쓸 것만' conf≥0.6 필터 ── */
+const RECO_MINCONF=0.6;
+function usableRecs(){return (RECO.recommendations||[]).filter(r=>(r.confidence||0)>=RECO_MINCONF)
+  .sort((a,b)=>{const o={active:0,upcoming:1,emerging:2};return (o[a.event_state]??9)-(o[b.event_state]??9)||(b.confidence||0)-(a.confidence||0);});}
+function renderReco(){
+  $("#pt").textContent="추천 소재"; $("#pts").textContent=RECO.asof?`· 근거 기반 · 기준 ${RECO.asof}`:"· 근거 기반";
+  const recs=usableRecs(),ST={upcoming:"예정",emerging:"신흥",active:"진행"};
+  const cards=recs.length?recs.map(r=>`
+    <div class="rc">
+      <div class="rc-h"><span class="rc-st ${esc(r.event_state)}">${esc(ST[r.event_state]||r.event_state)}</span>
+        <span class="rc-pr">${esc(r.product_name)}</span><span class="rc-ev">${esc(r.event_name)}</span>
+        <span class="rc-cf">conf ${esc(r.confidence)}</span></div>
+      <div class="rc-l"><span class="k">제목</span><span class="v">${esc(r.title)}</span><button class="cp" data-copy="${esc(r.title)}">복사</button></div>
+      <div class="rc-l"><span class="k">설명</span><span class="v">${esc(r.description)}</span><button class="cp" data-copy="${esc(r.description)}">복사</button></div>
+      ${r.content_subhead?`<div class="rc-l"><span class="k">소제목</span><span class="v">${esc(r.content_subhead)}</span><button class="cp" data-copy="${esc(r.content_subhead)}">복사</button></div>`:""}
+      <div class="rc-f">📌 ${(r.fact||[]).map(esc).join(" · ")}</div>
+    </div>`).join(""):`<div class="banner">지금 기준 신뢰도 <b>conf ≥ ${RECO_MINCONF}</b> 추천이 없습니다. (엔진 산출물이 아직 없거나 로컬 파일로 열림 — 배포 주소에서 확인)</div>`;
+  $("#content").innerHTML=`
+    <div class="banner"><b>근거 기반 추천 소재</b> · 시즌 캘린더·뉴스 클리핑·검색량을 결합해 <b>지금 밀 만한 상품·문구</b>를 자동 제안(신뢰도 <b>conf ≥ ${RECO_MINCONF}</b>만 노출). 모두 <b>운영 후보</b> — 심의·상품근거 검토 후 사용. 상시 세트는 <b>상품별 소재</b> 탭.</div>
+    <div class="rc-wrap">${cards}</div>`;
+}
 function render(){
+  if(curKey==="__reco"){renderReco();renderSidebar();window.scrollTo({top:0});return;}
   if(curKey==="__cal"){renderCalendar();renderSidebar();window.scrollTo({top:0});return;}
   if(curKey==="__brand"){renderBrand();renderSidebar();window.scrollTo({top:0});return;}
   const p=getP(curKey), s=buildSheet(p);
@@ -678,6 +715,8 @@ render();
 Promise.all([loadBrandManifest(),loadVolume(),loadSignals()]).then(()=>{renderSidebar();render();}); // 경쟁사 브랜드검색 + 실측 검색량 + 기상특보(있으면)
 // 실측 관측 소재 분석(있으면) — 생성 문구의 경쟁 공통 소구 회피·차별 근거
 fetch("serp/ad_analysis.json").then(r=>r.ok?r.json():null).then(d=>{if(d&&d.products){AD_ANALYSIS=d.products;render();}}).catch(()=>{});
+// 근거 기반 추천 소재(event_engine 산출물 · 연간플랜에서 병합) — 사이드바 카운트·본문 갱신
+fetch("data/events/recommendations.json").then(r=>r.ok?r.json():null).then(d=>{if(d&&d.recommendations){RECO=d;renderSidebar();if(curKey==="__reco")render();}}).catch(()=>{});
 </script>
 </body>
 </html>
