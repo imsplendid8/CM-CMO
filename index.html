@@ -67,7 +67,8 @@ html:not([data-admin="1"]) [data-admin-only]{display:none!important;}
 .hero h1{font-size:24px;font-weight:800;letter-spacing:-.035em;line-height:1.15;}
 .hero p{font-size:13.5px;color:var(--ink-2);margin-top:7px;line-height:1.7;max-width:700px;}
 .hero p b{color:var(--ink);font-weight:700;}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(304px,1fr));gap:15px;margin-top:28px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(304px,1fr));gap:15px;margin-top:14px;}
+#usageBox:empty{display:none;}                 /* 사용량 위젯 없을 때 빈 자리 제거 */
 .card{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:20px;box-shadow:var(--sh);transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease;position:relative;overflow:hidden;cursor:pointer;}
 .card:hover{box-shadow:var(--sh-lg);transform:translateY(-3px);border-color:color-mix(in srgb,var(--ac) 40%,var(--line));}
 .card .ico{width:40px;height:40px;border-radius:11px;background:color-mix(in srgb,var(--ac) 13%,transparent);color:var(--ac);display:flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:13px;}
@@ -100,7 +101,7 @@ html:not([data-admin="1"]) [data-admin-only]{display:none!important;}
   .logo{margin-right:8px;}                    /* 로고(좌) */
   .ctx{display:flex;flex:1 1 auto;}          /* 로고 옆 한 줄에 현재 도구 이름 */
   .nav{display:none;}                        /* 상단 wrap 메뉴 숨김 → 하단 탭바로 */
-  .home-wrap{padding:22px 16px 26px;}        /* 하단 탭바가 자체 높이를 차지하므로 하단 여백 축소 */
+  .home-wrap{padding:8px 16px 24px;}         /* 상단 여백 축소 + 하단 탭바 높이 고려 */
 }
 /* 하단 탭바 — 모바일에서만 표시. body(flex column)의 마지막 항목으로 자리를 차지해 본문이 그만큼 줄어 겹침이 없음 */
 .botnav{display:none;}
