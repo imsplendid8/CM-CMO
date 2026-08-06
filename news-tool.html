@@ -407,6 +407,8 @@ function renderOverview(){
   const kpi=(n,l)=>`<div class="kpi"><div class="n">${n}</div><div class="l">${l}</div></div>`;
   $("#content").innerHTML=`
     <div class="kpi-row">${kpi(PRODUCTS.filter(p=>NEWSMON[p.key]).length,"상품 카테고리")}${kpi(INDUSTRY.length,"업계·경쟁사")}${kpi(totalHeads,"수집 헤드라인")}${kpi(live,"실시간 갱신됨")}</div>
+    <div class="sec-lbl" id="autoClipLbl" style="display:none"></div>
+    <div id="autoClipBox"></div>
     <div class="sec-lbl">🏢 업계·경쟁사 동향 · 손보 빅4/5 + 업계 전반</div>
     <div class="ov-grid">${indCards}</div>
     <div class="sec-lbl">📰 최신 헤드라인 (상품 카테고리)</div>
@@ -414,6 +416,22 @@ function renderOverview(){
     <div class="sec-lbl">상품 카테고리별 동향 · 카드를 클릭하면 상세(🔥=수요 트리거)</div>
     <div class="ov-grid">${cards}</div>
     <div class="note"><b>카테고리 뉴스 모니터링</b> · 담당 상품 + 업계·경쟁사 동향을 요약·분석합니다. 헤드라인·링크는 공개 뉴스, 요약·시사점은 마케팅 관점 분석(개인정보·영업비밀 미포함). 실시간 갱신은 <b>팀 공유 프록시</b>(허브 ⚙) 또는 로컬 서버로 동작합니다.</div>`;
+  loadAutoClips();                                     // 개요 상단 '자동 수집 최신'을 클리핑 아카이브(하루 2회)에서 채움
+}
+/* 전체 개요 상단: 자동 수집 최신 헤드라인 — data/clips 최신 일자의 상위 헤드라인(비동기) */
+function loadAutoClips(){
+  loadClipIndex(()=>{
+    const dates=CLIPS_INDEX.dates||[]; if(!dates.length)return;      // 아직 수집분 없으면 조용히 패스
+    const latest=dates[0].date;                                      // index는 최신순(내림차순)
+    fetch(`data/clips/${latest}.json`,{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{
+      const box=$("#autoClipBox"),lbl=$("#autoClipLbl");
+      if(!j||!box||curKey!=="__all")return;                          // 화면 벗어났으면 무시
+      const items=(j.summary&&j.summary.top)||[]; if(!items.length)return;
+      const li=items.slice(0,6).map(it=>`<li class="nm-item"><a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.t)}${it.gist?`<span class="gs">${esc(it.gist)}</span>`:""}</a><span class="mt">${esc(it.src||"")}<br>${esc(it.date||"")}</span></li>`).join("");
+      if(lbl){lbl.textContent=`🔄 자동 수집 최신 · ${j.asof||latest} · 매일 2회 자동`;lbl.style.display="";}
+      box.innerHTML=`<div class="newsmon"><div class="nm-body"><ul class="nm-list" style="margin-top:0">${li}</ul></div></div>`;
+    }).catch(()=>{});
+  });
 }
 function render(){curKey==="__all"?renderOverview():curKey==="__clips"?renderClips():curKey.startsWith("ind_")?renderIndustry():renderProduct();renderSidebar();window.scrollTo({top:0});}
 
