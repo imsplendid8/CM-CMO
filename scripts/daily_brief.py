@@ -213,7 +213,7 @@ _ES = {
 
 def render_email():
     """데일리 브리핑을 표 도식형 이메일(HTML+텍스트)로 렌더. returns (subject, html, plain).
-    구성: ① 오늘 할 일 ② 보험별 동향(요약·시사점+헤드라인) ③ 경쟁사·업계 동향 ④ 뉴스 캘린더(준비할 것)."""
+    구성: ① 보험별 동향(요약·시사점+헤드라인) ② 경쟁사·업계 동향 ③ 뉴스 캘린더(준비할 것)."""
     products, order, main, seasonal, signals, clip, now = _load_context()
     newsmon = load_newsmon()
     cats = (clip or {}).get("categories", {})
@@ -248,24 +248,16 @@ def render_email():
             h += f'<table role="presentation" style="{S["tbl"]}">{rows}</table>'
         return h
 
-    # ① 오늘 할 일
-    al = compute_action_lines(products, main, seasonal, signals, now)
-    today_html = f'<h3 style="{S["h3"]}">✅ 오늘 할 일 (우선순위)</h3>'
-    if al:
-        today_html += '<ol style="margin:0;padding-left:20px">' + "".join(f'<li style="margin:4px 0;font-size:13px;line-height:1.5">{esc(x)}</li>' for x in al) + "</ol>"
-    else:
-        today_html += '<div style="font-size:13px;color:#6b7280">오늘 특이 액션 없음 — 정기 점검만</div>'
-
-    # ② 보험별 동향(메인 ★ 우선)
+    # ① 보험별 동향(메인 ★ 우선)
     prod_keys = [k for k in main if k in products] + [k for k in order if k not in main]
     prod_body = "".join(cat_block(k, "#1f7a4d") for k in prod_keys)
     prod_html = f'<h3 style="{S["h3"]}">📊 보험별 동향 <span style="font-size:12px;color:#6b7280;font-weight:600">· 담당 상품 {len(products)}종</span></h3>' + (prod_body or '<div style="font-size:12.5px;color:#6b7280">수집된 헤드라인이 없습니다.</div>')
 
-    # ③ 경쟁사·업계 동향
+    # ② 경쟁사·업계 동향
     ind_body = "".join(cat_block(k, "#b45309") for k, _ in INDUSTRY)
     ind_html = f'<h3 style="{S["h3"]}">🏢 경쟁사·업계 동향 <span style="font-size:12px;color:#6b7280;font-weight:600">· 빅4/5 + 업계 전반</span></h3>' + (ind_body or '<div style="font-size:12.5px;color:#6b7280">수집된 헤드라인이 없습니다.</div>')
 
-    # ④ 뉴스 캘린더 — 지금·곧 준비할 것 (시즌 이슈)
+    # ③ 뉴스 캘린더 — 지금·곧 준비할 것 (시즌 이슈)
     m, nm, today = now.month, now.month % 12 + 1, now.date()
     cal = []
     for key, wins in seasonal.items():
@@ -312,11 +304,10 @@ def render_email():
 
     head = (f'<div style="{S["h2"]}">📮 Modooflow 데일리 브리핑</div>'
             f'<div style="{S["sub"]}">{now.month}/{now.day}({wd}) {part} · 담당 상품 {len(products)}종 + 업계·경쟁사 · 표로 한눈에</div>')
-    html = f'<div style="{S["wrap"]}">{head}{today_html}{prod_html}{ind_html}{cal_html}{footer}</div>'
+    html = f'<div style="{S["wrap"]}">{head}{prod_html}{ind_html}{cal_html}{footer}</div>'
 
     # ── 텍스트 대체본(HTML 미지원 클라이언트용) ──
     P = [f"📮 Modooflow 데일리 브리핑 · {now.month}/{now.day}({wd}) {part}", ""]
-    P += ["[오늘 할 일]"] + ([f"{i+1}. {x}" for i, x in enumerate(al)] or ["· 특이 액션 없음"]) + [""]
 
     def cat_text(key):
         nmn = newsmon.get(key, {})
