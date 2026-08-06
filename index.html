@@ -359,7 +359,6 @@ function renderHome(){
     <div class="grid">${TOOLS.map(t=>`<div class="card" data-tool="${t.id}" style="--ac:${t.ac}">
       <div class="ico">${ICON[t.id]||t.icon}</div><h2>${esc(t.name)}</h2>
       <div class="desc">${esc(t.desc)}</div>
-      <ul class="feats">${t.feats.map(f=>`<li>${esc(f)}</li>`).join("")}</ul>
       <div class="go">열기 →</div></div>`).join("")}</div>
     <div class="foot"><b>연결 구조</b> · 상단 고정 메뉴에서 각 작업공간으로 즉시 전환합니다. 도구들은 같은 담당 상품 집합(홈·장기7·일반2)을 공유합니다. · <a href="${WIKI}" target="_blank" rel="noopener">📖 위키</a><br>
     데이터·카피는 샘플·공개값 기준 · 광고 문구는 배포 전 광고심의 검수 · 검색량/입찰가는 각 광고 플랫폼에서 확정 · 뉴스 요약/시사점은 마케팅 분석(개인정보·영업비밀 미포함).</div>
