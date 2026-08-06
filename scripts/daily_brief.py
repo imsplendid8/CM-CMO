@@ -50,8 +50,12 @@ def latest_clip():
             return c
     return None
 
+def esc(s):
+    """텔레그램 HTML parse_mode용 이스케이프(제목·요약·URL 등 동적 텍스트)."""
+    return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
 def pick_news(clip, products):
-    """행동가치 있는 뉴스만 2~3건: [경쟁사 동향] / [트리거]."""
+    """행동가치 있는 뉴스만 2~3건: [경쟁사 동향] / [트리거]. 요약(gist)+바로가기 링크 포함."""
     if not clip:
         return []
     comp_names = {"ind_samsung": "삼성화재", "ind_db": "DB손보", "ind_hyundai": "현대해상",
@@ -70,18 +74,22 @@ def pick_news(clip, products):
             else:
                 tag = f"[{cat.get('name', key)}]"
                 score = len(hit)
-            cands.append((score, it.get("date", ""), tag, t, it.get("src", ""), it.get("url", "")))
+            cands.append((score, it.get("date", ""), tag, t, it.get("src", ""),
+                          it.get("url", ""), it.get("gist", "")))
     # 점수·최신 우선, 제목 앞부분 dedup
     cands.sort(key=lambda x: (x[0], x[1]), reverse=True)
     out, seen = [], set()
-    for sc, dt, tag, t, src, url in cands:
+    for sc, dt, tag, t, src, url, gist in cands:
         k = t[:12]
         if k in seen:
             continue
         seen.add(k)
-        line = f"· {tag} {t[:44]} ({src})"
-        if url:                       # 기사 링크를 다음 줄에 붙여 클릭 가능하게(텔레그램은 원문 URL 자동 링크)
-            line += f"\n  {url}"
+        line = f"· {esc(tag)} {esc(t[:44])} ({esc(src)})"
+        g = str(gist).strip()
+        if g:                                   # 요약(gist) 반영
+            line += f"\n  ⤷ {esc(g[:88])}" + ("…" if len(g) > 88 else "")
+        if url:                                 # 링크 텍스트를 '바로가기'로(HTML 하이퍼링크)
+            line += f'\n  🔗 <a href="{esc(url)}">바로가기</a>'
         out.append(line)
         if len(out) >= 3:
             break
@@ -187,6 +195,7 @@ def send_telegram(text):
     sent, failed = 0, 0
     for chat in chats:
         data = urllib.parse.urlencode({"chat_id": chat, "text": text,
+                                       "parse_mode": "HTML",
                                        "disable_web_page_preview": "true"}).encode()
         req = urllib.request.Request(f"https://api.telegram.org/bot{token}/sendMessage", data=data)
         try:
