@@ -91,6 +91,8 @@ html:not([data-admin="1"]) [data-admin-only]{display:none!important;}
 .foot{margin-top:32px;padding-top:22px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted);line-height:1.75;}
 .foot b{color:var(--ink-2);font-weight:700;} .foot a{color:var(--brand-600);font-weight:700;text-decoration:none;}
 .themebtn{width:32px;height:32px;padding:0!important;justify-content:center;font-size:14px;}
+.tr button svg,.tr a svg{width:17px;height:17px;}
+#homeBtn.on{border-color:color-mix(in srgb,var(--brand) 60%,var(--line));color:var(--brand-600);background:var(--brand-50);}
 @media(max-width:760px){.hero h1{font-size:20px;} .tr .ext{display:none;} .logo small{display:none;} .home-wrap{padding:28px 18px 60px;}}
 /* ===== 모바일 앱형 UI — 상단은 로고+컨트롤만, 메뉴는 하단 탭바(botnav)로 이동 ===== */
 @media(max-width:600px){
@@ -169,6 +171,7 @@ html:not([data-admin="1"]) [data-admin-only]{display:none!important;}
   <span class="ctx" id="ctxName"></span>
   <nav class="nav" id="nav"></nav>
   <div class="tr">
+    <button class="themebtn" id="homeBtn" data-tool="home" title="홈"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.7 12 3.5l9 7.2"/><path d="M5.5 9.3V20h13V9.3"/><path d="M9.7 20v-5.4h4.6V20"/></svg></button>
     <a class="ext" id="openTab" href="#" target="_blank" rel="noopener" title="현재 화면을 새 탭에서 열기">↗ 새 탭</a>
     <button class="themebtn" id="keyBtn" data-admin-only title="API 키 설정(이 브라우저에만 저장 · 관리자)">⚙</button>
     <button class="themebtn" id="adminBtn" title="관리자 모드">🔒</button>
@@ -255,11 +258,12 @@ const CATS=[
   {name:"참고",      ids:["papers"]},
 ];
 // 모바일 하단 탭바에 바로 노출할 핵심 도구(나머지는 '전체' 바텀시트). 순서·구성은 여기만 고치면 됨.
-const MOBILE_TABS=["kw","news","adcopy"];
+const MOBILE_TABS=["kw","news","adcopy","eventcal"];   // 홈은 우측상단으로 이동 · 연간플랜 하단 편입
 let ACTIVE="home";
 // 헤더 한 줄에 표시할 도구 이름(도구 자체 타이틀과 동일). 임베드 시 도구의 둘째 줄 브랜드는 숨김.
 const HDR={seo:"테크니컬 SEO",kw:"검색광고 키워드 추출",news:"카테고리 뉴스 모니터링",serp:"검색결과 주간 아카이브",terms:"약관 쉬운 용어 변환",adcopy:"검색광고 문구 소재",papers:"논문 아카이브",eventcal:"시즌·이벤트 캘린더"};
-function setCtx(id){const el=document.getElementById("ctxName");if(!el)return;el.innerHTML=(id&&id!=="home"&&HDR[id])?`<b>›</b>${esc(HDR[id])}`:"";}
+function setCtx(id){const hb=document.getElementById("homeBtn");if(hb)hb.classList.toggle("on",id==="home");
+  const el=document.getElementById("ctxName");if(!el)return;el.innerHTML=(id&&id!=="home"&&HDR[id])?`<b>›</b>${esc(HDR[id])}`:"";}
 const toolById=id=>TOOLS.find(t=>t.id===id);
 function renderNav(active){
   ACTIVE=active||ACTIVE;
@@ -298,8 +302,9 @@ function renderBotnav(){
   const tab=(id,svg,label,ac,on,act)=>`<button class="bn${on?" on":""}" ${act?`data-act="${act}"`:`data-tool="${id}"`} style="--ac:${ac||"var(--brand)"}"><span class="ic">${svg}</span><span class="tx">${esc(label)}</span></button>`;
   const featured=MOBILE_TABS.map(toolById).filter(Boolean);
   const inFeatured=ACTIVE==="home"||featured.some(t=>t.id===ACTIVE);
-  let h=tab("home",ICON.home,"홈",null,ACTIVE==="home");
-  featured.forEach(t=>h+=tab(t.id,ICON[t.id]||`<span style="font-size:20px">${t.icon}</span>`,t.tag,t.ac,ACTIVE===t.id));  // 짧은 라벨(tag)
+  let h="";                                                              // 홈 탭 제거(우측상단으로 이동)
+  featured.forEach(t=>{const lbl=t.id==="eventcal"?"연간플랜":t.tag;      // 연간플랜은 이름 그대로, 나머지는 짧은 tag
+    h+=tab(t.id,ICON[t.id]||`<span style="font-size:20px">${t.icon}</span>`,lbl,t.ac,ACTIVE===t.id);});
   h+=tab(null,ICON.sheet,"전체",null,!inFeatured,"sheet");               // 현재 도구가 탭바에 없으면 '전체' 강조
   bn.innerHTML=h;
 }
