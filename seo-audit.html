@@ -485,6 +485,20 @@ const euckrLen=s=>{let n=0;for(const c of s)n+=(c.codePointAt(0)>127?2:1);return
 const gScore=p=>Math.round(AXES.reduce((s,k)=>s+p.ax[k]*W.google[k],0));
 const nScore=p=>Math.round(AXES.reduce((s,k)=>s+p.ax[k]*W.naver[k],0));
 const grade=n=>n>=80?["A","good"]:n>=65?["B","good"]:n>=50?["C","mid"]:n>=40?["D","mid"]:["F","bad"];
+/* ── After(예상) 점수 — "권장 To-Do 전부 적용 시" 추정 (실측 아님) ──
+   각 축은 그 축을 개선하는 To-Do가 이 상품에 있을 때만 가이드 기준(good 타깃)까지 상향. */
+const AX_TARGET={title:92,meta:90,semantic:78,url:88,social:86,trust:82};
+const TODO_AXES={title:["title"],meta:["meta"],og:["social"],mobile:["url","trust"],
+  bridge:["url","trust"],h1:["semantic"],crawler:["trust","url"],robots:["trust","url"],
+  robotsmeta:["trust"],sitemap:["url"],channel:["social","trust"],alt:["semantic","social"]};
+function axAfter(p){
+  const lift={};
+  todosFor(p,COPY[p.key]).forEach(t=>(TODO_AXES[t.id]||[]).forEach(a=>lift[a]=1));
+  const out={};AXES.forEach(k=>out[k]=lift[k]?Math.max(p.ax[k],AX_TARGET[k]):p.ax[k]);
+  return out;
+}
+const gScoreAfter=p=>{const a=axAfter(p);return Math.round(AXES.reduce((s,k)=>s+a[k]*W.google[k],0));};
+const nScoreAfter=p=>{const a=axAfter(p);return Math.round(AXES.reduce((s,k)=>s+a[k]*W.naver[k],0));};
 const sevWord=v=>v==="good"?"양호":v==="mid"?"보통":"수정필요";
 const bgOf=g=>g==="good"?"var(--good-bg)":g==="mid"?"var(--mid-bg)":"var(--bad-bg)";
 const inkOf=g=>g==="good"?"var(--good-ink)":g==="mid"?"var(--mid-ink)":"var(--bad-ink)";
@@ -679,6 +693,30 @@ function webStdPanel(){
         <div class="good"><b>✓ ${r[2]}</b><br><code>${r[4]}</code></div>
       </div></div>`).join("")}</div>`;
 }
+/* ── 예상 점수 변화 패널 (Before 실측 → After 예측) ── */
+const AXL={title:"제목",meta:"설명",semantic:"본문·구조",url:"URL·색인",social:"공유·OG",trust:"신뢰·크롤"};
+function scoreProjection(p){
+  const after=axAfter(p),g=gScore(p),n=nScore(p),gA=gScoreAfter(p),nA=nScoreAfter(p);
+  const bigChip=(lbl,b,a)=>{const[bg,bgc]=grade(b),[ag,agc]=grade(a);
+    return `<div style="display:flex;align-items:center;gap:7px">
+      <span style="font-size:11px;font-weight:800;color:var(--muted);min-width:34px">${lbl}</span>
+      <span style="font-size:13px;font-weight:800;color:${inkOf(bgc)};background:${bgOf(bgc)};padding:2px 8px;border-radius:7px">${b}<small style="font-weight:700;opacity:.75;margin-left:3px">${bg}</small></span>
+      <span style="opacity:.5;font-weight:800">→</span>
+      <span style="font-size:13px;font-weight:800;color:${inkOf(agc)};background:${bgOf(agc)};padding:2px 8px;border-radius:7px">${a}<small style="font-weight:700;opacity:.75;margin-left:3px">${ag}</small></span>
+      ${a>b?`<span style="font-size:11px;font-weight:800;color:var(--good-ink)">▲${a-b}</span>`:""}</div>`;};
+  const bars=AXES.map(k=>{const b=p.ax[k],a=after[k],up=a>b;
+    return `<div style="display:flex;align-items:center;gap:8px;margin:3px 0">
+      <span style="font-size:10.5px;color:var(--ink-2);width:58px;flex:0 0 auto">${AXL[k]}</span>
+      <span style="position:relative;flex:1;height:7px;border-radius:5px;background:var(--surface-2);overflow:hidden">
+        <i style="position:absolute;left:0;top:0;height:100%;width:${a}%;background:var(--good);opacity:.28"></i>
+        <i style="position:absolute;left:0;top:0;height:100%;width:${b}%;background:var(--ink-2);opacity:.5"></i></span>
+      <span style="font-size:10.5px;font-weight:700;color:var(--muted);width:56px;text-align:right;flex:0 0 auto">${b}${up?` <b style="color:var(--good-ink)">→${a}</b>`:""}</span></div>`;}).join("");
+  return `<div style="margin:14px 0;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface)">
+    <div style="font-size:12px;font-weight:800;margin-bottom:10px">📈 예상 점수 변화 <span style="font-size:10.5px;color:var(--muted);font-weight:600">· 권장 태깅 전부 적용 시 <b>예측치</b>(실측 아님) · Before=네이버 색인 실측(2026-07-18)</span></div>
+    <div style="display:flex;flex-wrap:wrap;gap:9px 24px;margin-bottom:12px">${bigChip("구글",g,gA)}${bigChip("네이버",n,nA)}</div>
+    ${bars}
+    <div style="font-size:10px;color:var(--muted);margin-top:9px;line-height:1.55">※ After는 이 화면의 <b>권장 To-Do가 다루는 항목</b>이 가이드 기준(good)에 도달했다고 가정한 <b>추정 점수</b>입니다. 실제 반영·측정값이 아니며, 사이트 봇차단(403) 해제 후 <b>unlighthouse 실측</b>으로 검증하세요.</div></div>`;
+}
 function renderScreen(){
   const p=PRODUCTS.find(x=>x.key===curKey);if(!p)return;
   const g=gScore(p),n=nScore(p),[,gc]=grade(g),[,nc]=grade(n);
@@ -704,6 +742,7 @@ function renderScreen(){
         <div class="cur-box"><div class="cb-top"><span class="cb-k">현재 Description</span><span class="badge ${p.exDescV}">${sevWord(p.exDescV)}</span></div><div class="cb-v ${p.exDescV==="bad"?"bad":""}">${esc(p.exDesc)}</div></div>
       </div>
     </div>
+    ${scoreProjection(p)}
     <div class="prog"><div class="prog-num">${done}<small>/${ts.length} 완료</small></div>
       <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
       <div class="prog-num" style="color:var(--brand-600)">${pct}%</div></div>
@@ -715,7 +754,7 @@ function renderScreen(){
     ${ts.map(t=>todoHtml(p,t)).join("")}
     ${implSection(p,COPY[p.key],{brand:p.brand})}
     ${p.delivery==="home"?webStdPanel():""}
-    <div class="foot-note"><b>참고</b> · Before는 네이버 색인 실측값(2026-07-18). 브릿지 상품은 <b>캐롯 목적지 페이지</b> 색인값 기준이며, 브릿지 자체는 색인이 거의 없습니다(분기 처리 To-Do 참고). H1·alt·OG 원본은 사이트 봇차단(403)으로 미수집 → 템플릿 예시이니 실제 DOM에 맞춰 반영. After 카피는 광고심의 검수 후 배포.<br><b>네이버 웹마스터도구 가이드</b> · 제목 15자·설명 45자 이내 권장, 제목=설명·키워드 반복·낚시성 금지, robots.txt와 로봇 메타태그 <b>둘 다 허용</b>, 리다이렉트는 <b>HTTP 301</b>, 사이트맵·RSS 제출.</div>`;
+    <div class="foot-note"><b>참고</b> · Before는 네이버 색인 실측값(2026-07-18)이고, <b>After(예상)</b>는 권장 태깅을 전부 적용했을 때의 <b>추정 점수</b>(실측·자동측정 아님)입니다. 브릿지 상품은 <b>캐롯 목적지 페이지</b> 색인값 기준이며, 브릿지 자체는 색인이 거의 없습니다(분기 처리 To-Do 참고). H1·alt·OG 원본은 사이트 봇차단(403)으로 미수집 → 템플릿 예시이니 실제 DOM에 맞춰 반영. After 카피는 광고심의 검수 후 배포.<br><b>네이버 웹마스터도구 가이드</b> · 제목 15자·설명 45자 이내 권장, 제목=설명·키워드 반복·낚시성 금지, robots.txt와 로봇 메타태그 <b>둘 다 허용</b>, 리다이렉트는 <b>HTTP 301</b>, 사이트맵·RSS 제출.</div>`;
   $("#pageTitle").textContent=p.name;
   renderSidebar();
 }
