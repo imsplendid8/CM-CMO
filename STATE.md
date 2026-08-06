@@ -47,6 +47,7 @@ _최종 갱신: 2026-08-07 · 도구 8개 + 팀 실시간 연동 + 자동화(수
 | `daily-brief.yml` | 매일 08:00·14:00 | 텔레그램 브리프 |
 | `daily-email.yml` | 매일 08:30 | 이메일 브리프(표 도식형·SMTP) |
 | `event-reco.yml` | 매일 07:45·13:45 | `data/events/recommendations.json` 재생성 |
+| `fire-watch.yml` | 낮 3시간 간격 | (별도 대형화재 감시 → 텔레그램 알림·기본 dry-run) |
 | `trends.yml` | 월 1일 | `data/trends.json`(데이터랩) |
 | `searchad.yml` | 주간(일) | `data/volume.json`(검색량) |
 | `serp-capture.yml` | 주간(월 06:20) | `serp/*.png`+`manifest.json`(캡쳐 실패 시 재시도·`CAPTURE_RETRIES`) |
@@ -84,6 +85,7 @@ _최종 갱신: 2026-08-07 · 도구 8개 + 팀 실시간 연동 + 자동화(수
 - **파이프라인 재정비**: signals 06:30 / news 07:20·13:20 / **automation-status.yml 신규** 07:40·13:40 / brief 08:00·14:00 — 전부 `cm-cmo-data-writers` 레인(daily-brief·daily-email도 편입).
 - **자동화 상태**: `check_automation_health.format_lines` — stale·missing·unknown **항상 분리 표기**(브리프 실행 시 재계산은 기존대로). 테스트 15/15.
 - **보안**: 브라우저 API 키 입력·localStorage 저장 제거(news·keyword) · 전 HTML CSP `localhost:8787` 제거 · **워커 인증·요청허용 정책**(Origin/Referer 화이트리스트 403 · 워커 시크릿 전용 · 라우트/메서드 화이트리스트 404 · IP·일 상한 429). `docs/api-from-url.md` 갱신. ⚠️ **워커 재배포 필요**.
+- **후속 개발(2026-08-07)**: P0-EVENT #3 **긴급 대형화재 감시** 구현 — `fire_watch.py`+`fire-watch.yml`(별도 텔레그램 알림·기본 dry-run·사건문구 필터로 '삼성화재' 오탐 회피).
 - **미결(외부)**: 2026-08-06 오후~ **GitHub 광범위 장애**로 Pages 배포+Actions run 생성이 멈춤(코드는 main 반영 완료, 복구 시 자동 배포). 워커는 사용자 대시보드 배포 완료(검증 대기).
 
 ## 점검 이력 (2026-08-06) — 코덱스 개선분 반영 확인

@@ -44,7 +44,7 @@
 
 1. **active window(최근 3일)** 와 **장기 뉴스 archive** 분리·연동 (다음)
 2. 뉴스 캘린더 UI ↔ 기존 데일리 브리프 **통합**
-3. 긴급 대형화재 감시 → **별도 실시간 알림**(텔레그램 dry-run) 분리
+3. ✅ **긴급 대형화재 감시 → 별도 텔레그램 알림**(2026-08-07) — `scripts/fire_watch.py`(네이버 뉴스 화재 신호 감지·사건문구 필터로 회사명 오탐 회피·최근 N시간 창) + `.github/workflows/fire-watch.yml`(낮 3시간 간격·기본 dry-run, 저장소 Variable `FIRE_ALERT_SEND=1` 옵트인 시 발송)
 
 ## P0-1 — 브리프 자동화 상태 오표시 수정 ✅ 완료
 > **2026-08-07 확장**: `format_lines`가 stale·missing·unknown을 **항상 분리 표기**(0건이어도). 자동화상태 전용 워크플로 `automation-status.yml`(07:40·13:40) 신설(커밋 없음·Run 요약).

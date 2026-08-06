@@ -1,0 +1,48 @@
+name: Fire Watch (긴급 대형화재 감시)
+
+# 대형화재·산불을 네이버 뉴스에서 감지해 '별도' 텔레그램 알림(정기 브리프와 분리).
+# 낮 시간 3시간 간격으로 감시. 기본은 dry-run(발송 안 함·Run 요약에만 표시).
+#   실제 발송하려면 저장소 Variables 에 FIRE_ALERT_SEND=1 등록 (또는 워크플로 수동 실행 시).
+# 필요 Secrets: NAVER_CLIENT_ID/SECRET · TELEGRAM_BOT_TOKEN · (FIRE_)TELEGRAM_CHAT_IDS
+# 커밋하지 않음(상태 파일 없음·최근 N시간 창으로 중복 억제) → 최소 권한 read.
+
+on:
+  schedule:
+    - cron: "0 0,3,6,9,12 * * *"   # 09·12·15·18·21 KST (낮 3시간 간격)
+  workflow_dispatch:
+    inputs:
+      send:
+        description: "실제 발송(true) / dry-run(false)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cm-cmo-fire-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 대형화재 감시
+        env:
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          FIRE_TELEGRAM_CHAT_IDS: ${{ secrets.FIRE_TELEGRAM_CHAT_IDS }}
+          TELEGRAM_CHAT_IDS: ${{ secrets.TELEGRAM_CHAT_IDS }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          # 스케줄 실행은 저장소 Variable FIRE_ALERT_SEND(=1) 로 옵트인, 수동 실행은 입력값 우선
+          FIRE_ALERT_SEND: ${{ (github.event_name == 'workflow_dispatch' && inputs.send) && '1' || vars.FIRE_ALERT_SEND }}
+        run: |
+          echo "## 🚨 대형화재 감시 ($(TZ=Asia/Seoul date '+%F %H:%M') KST)" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          python3 scripts/fire_watch.py | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"

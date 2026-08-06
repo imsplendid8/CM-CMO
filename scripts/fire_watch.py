@@ -1,0 +1,190 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""긴급 대형화재 감시 — 최신 화재 뉴스를 감지해 '별도' 텔레그램 알림(정기 브리프와 분리).
+
+왜: 대형화재·산불은 주택화재보험 검색·가입이 급증하는 메인 수요 트리거. 하루 2회 정기
+    브리프를 기다리지 않고, 뜨는 즉시 담당자에게 알려 소재·검색광고를 선제 대응하기 위함.
+
+동작:
+  - 네이버 뉴스 검색 API로 화재 키워드를 조회(최신순) → 최근 N시간(FIRE_WINDOW_HOURS, 기본 4)
+    이내 기사만 추림 → '사건 특화 문구'(대형 화재·산불·아파트 화재 등)로 필터(회사명 '삼성화재'
+    같은 오탐 회피) → 제목 dedup → 심각도 점수순.
+  - 기본 **dry-run**: 발송하지 않고 감지 결과만 출력(로그). 실제 발송은 --send 또는 FIRE_ALERT_SEND=1.
+  - 상태 파일 없음(무커밋). 최근 N시간 창으로 중복을 억제(실행 주기 ≤ 창).
+
+필요 환경변수(Secrets):
+  NAVER_CLIENT_ID / NAVER_CLIENT_SECRET   (필수, 뉴스 조회)
+  TELEGRAM_BOT_TOKEN                        (발송 시)
+  FIRE_TELEGRAM_CHAT_IDS 또는 TELEGRAM_CHAT_IDS/TELEGRAM_CHAT_ID  (발송 대상)
+공개 뉴스 헤드라인·링크만 사용(데이터 거버넌스). 표준 라이브러리만.
+"""
+import os, sys, json, re, urllib.parse, urllib.request
+from datetime import datetime, timezone, timedelta
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+HUB = "imsplendid8.github.io/CM-CMO"
+KST = timezone(timedelta(hours=9))
+ID = os.environ.get("NAVER_CLIENT_ID", "").strip()
+SECRET = os.environ.get("NAVER_CLIENT_SECRET", "").strip()
+
+# 조회 질의(넓게) → 아래 STRONG 문구로 정밀 필터
+QUERIES = ["대형화재", "산불", "아파트 화재", "공장 화재", "물류창고 화재"]
+# 사건 특화 문구: 공백 포함/사건 단어라 회사명(삼성화재·화재보험 상품명)엔 매칭되지 않음
+STRONG = ["대형화재", "대형 화재", "산불", "들불", "아파트 화재", "공장 화재", "창고 화재",
+          "물류창고 화재", "주택 화재", "상가 화재", "빌딩 화재", "화재 사망", "화재 참사",
+          "화재 대피", "화재로 대피", "화재로 숨", "전소", "연쇄 화재", "야산 화재"]
+SEVERITY = ["사망", "숨진", "부상", "실종", "대피", "이재민", "전소", "참사", "완전 소실", "전체 소실"]
+
+
+def kst_now():
+    return datetime.now(timezone.utc).astimezone(KST)
+
+
+def esc(s):
+    return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def strip(s):
+    return re.sub(r"<[^>]*>", "", str(s or "")).replace("&quot;", '"').replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">").replace("&#39;", "'").strip()
+
+
+def host(u):
+    try:
+        return urllib.parse.urlparse(u).hostname.replace("www.", "")
+    except Exception:
+        return ""
+
+
+def naver_news(q, display=30):
+    url = "https://openapi.naver.com/v1/search/news.json?" + urllib.parse.urlencode({"query": q, "display": display, "sort": "date"})
+    req = urllib.request.Request(url, headers={"X-Naver-Client-Id": ID, "X-Naver-Client-Secret": SECRET})
+    with urllib.request.urlopen(req, timeout=20) as r:
+        d = json.loads(r.read().decode("utf-8"))
+    out = []
+    for it in d.get("items", []):
+        u = it.get("link") or it.get("originallink")
+        if not u:
+            continue
+        dt = None
+        try:
+            dt = datetime.strptime(it.get("pubDate", "")[:31].strip(), "%a, %d %b %Y %H:%M:%S %z")
+        except Exception:
+            dt = None
+        out.append({"t": strip(it.get("title")), "src": host(it.get("originallink") or u),
+                    "url": u, "gist": strip(it.get("description"))[:90], "dt": dt})
+    return out
+
+
+def detect(items, now, window_hours):
+    """사건 문구 필터 + 최근 window 시간 + 제목 dedup + 심각도 점수순."""
+    cutoff = now - timedelta(hours=window_hours)
+    hits = []
+    for it in items:
+        text = (it.get("t", "") + " " + it.get("gist", ""))
+        strong = [w for w in STRONG if w in text]
+        if not strong:
+            continue
+        dt = it.get("dt")
+        if dt is not None and dt < cutoff:      # 오래된 기사 제외(시각 없으면 통과)
+            continue
+        sev = [w for w in SEVERITY if w in text]
+        it = dict(it, score=len(strong) * 2 + len(sev), kw=strong + sev)
+        hits.append(it)
+    hits.sort(key=lambda x: (x["score"], x.get("dt") or now), reverse=True)
+    out, seen = [], set()
+    for h in hits:
+        k = h["t"][:14]
+        if k in seen:
+            continue
+        seen.add(k)
+        out.append(h)
+    return out
+
+
+def build_alert(hits, now):
+    wd = "월화수목금토일"[now.weekday()]
+    parts = [f"🚨 [대형화재 감시] {now.month}/{now.day}({wd}) {now.strftime('%H:%M')} — 감지 {len(hits)}건",
+             "주택화재보험 수요 급증 트리거 — 누수·풍수재·잔존물제거 소구·검색광고 선제 점검", ""]
+    for h in hits[:6]:
+        line = f"· {esc(h['t'][:52])} ({esc(h['src'])})"
+        g = str(h.get("gist") or "").strip()
+        if g:
+            line += f"\n  ⤷ {esc(g[:80])}"
+        if h.get("url"):
+            line += f'\n  🔗 <a href="{esc(h["url"])}">바로가기</a>'
+        parts.append(line)
+    parts += ["", f"🔭 뉴스 모니터링 → https://{HUB}/news-tool.html"]
+    return "\n".join(parts)
+
+
+def fire_recipients():
+    raw = os.environ.get("FIRE_TELEGRAM_CHAT_IDS") or os.environ.get("TELEGRAM_CHAT_IDS") or os.environ.get("TELEGRAM_CHAT_ID") or ""
+    seen, out = set(), []
+    for c in raw.replace("\n", ",").replace(";", ",").split(","):
+        c = c.strip()
+        if c and c not in seen:
+            seen.add(c)
+            out.append(c)
+    return out
+
+
+def send_telegram(text):
+    token = os.environ.get("TELEGRAM_BOT_TOKEN")
+    chats = fire_recipients()
+    if not (token and chats):
+        print("TELEGRAM_BOT_TOKEN / (FIRE_)TELEGRAM_CHAT_IDS 미설정 — 발송 생략", file=sys.stderr)
+        return False
+    if len(text) > 4000:
+        text = text[:3980] + "\n…(생략)"
+    ok_all = True
+    for chat in chats:
+        data = urllib.parse.urlencode({"chat_id": chat, "text": text, "parse_mode": "HTML",
+                                       "disable_web_page_preview": "true"}).encode()
+        req = urllib.request.Request(f"https://api.telegram.org/bot{token}/sendMessage", data=data)
+        try:
+            with urllib.request.urlopen(req, timeout=15) as r:
+                ok = json.load(r).get("ok")
+        except Exception as e:
+            ok = False
+            print(f"  · {chat}: 예외 {e}", file=sys.stderr)
+        ok_all = ok_all and bool(ok)
+    return ok_all
+
+
+def gather():
+    seen, items = set(), []
+    for q in QUERIES:
+        try:
+            for it in naver_news(q):
+                if it["url"] in seen:
+                    continue
+                seen.add(it["url"])
+                items.append(it)
+        except Exception as e:
+            print(f"  · 조회 실패 '{q}': {e}", file=sys.stderr)
+    return items
+
+
+def main():
+    now = kst_now()
+    window = int(os.environ.get("FIRE_WINDOW_HOURS") or "4")
+    send = ("--send" in sys.argv) or (os.environ.get("FIRE_ALERT_SEND") == "1")
+    if not (ID and SECRET):
+        print("NAVER_CLIENT_ID/SECRET 미설정 — 감시 불가", file=sys.stderr)
+        sys.exit(2)
+    hits = detect(gather(), now, window)
+    if not hits:
+        print(f"✔ 대형화재 신규 신호 없음 (최근 {window}시간 · {now.strftime('%Y-%m-%d %H:%M')} KST)")
+        return
+    msg = build_alert(hits, now)
+    if send:
+        ok = send_telegram(msg)
+        print(f"🚨 대형화재 알림 발송 {'성공' if ok else '실패/생략'} · {len(hits)}건\n{msg}")
+        if not ok:
+            sys.exit(1)
+    else:
+        print("[dry-run · 발송 안 함 — 실제 발송은 --send 또는 FIRE_ALERT_SEND=1]\n" + msg)
+
+
+if __name__ == "__main__":
+    main()
