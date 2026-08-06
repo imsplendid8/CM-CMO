@@ -88,16 +88,48 @@ html:not([data-admin="1"]) [data-admin-only]{display:none!important;}
 .foot b{color:var(--ink-2);font-weight:700;} .foot a{color:var(--brand-600);font-weight:700;text-decoration:none;}
 .themebtn{width:32px;height:32px;padding:0!important;justify-content:center;font-size:14px;}
 @media(max-width:760px){.hero h1{font-size:20px;} .tr .ext{display:none;} .logo small{display:none;} .home-wrap{padding:28px 18px 60px;}}
-/* 좁은 화면: 메뉴를 로고·우측컨트롤과 같은 줄에 끼우지 말고 아래 전체폭 한 줄로 내림 →
-   170px가 아니라 화면 전체폭에서 wrap 되어 2줄로 정리됨. 세로가 짧은(가로/확대) 화면에선
-   높이를 캡하고 스크롤로 넘겨 .body 공간을 항상 남김(overflow:hidden 대비). */
+/* ===== 모바일 앱형 UI — 상단은 로고+컨트롤만, 메뉴는 하단 탭바(botnav)로 이동 ===== */
 @media(max-width:600px){
-  .top{flex-wrap:wrap;gap:6px 8px;padding:6px 12px;}
-  .logo{margin-right:auto;}                 /* 첫 줄: 로고(좌) + 우측컨트롤(우) */
-  .nav{order:3;flex-basis:100%;width:100%;gap:4px;max-height:42vh;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-top:2px;}
-  .navb{padding:6px 9px;font-size:11.5px;gap:5px;}
-  .navb .ic{font-size:12.5px;}
+  .top{padding:7px 12px;gap:8px;}
+  .logo{margin-right:auto;}                  /* 로고(좌) + 우측 컨트롤(우) */
+  .nav{display:none;}                        /* 상단 wrap 메뉴 숨김 → 하단 탭바로 */
+  .home-wrap{padding:22px 16px 26px;}        /* 하단 탭바가 자체 높이를 차지하므로 하단 여백 축소 */
 }
+/* 하단 탭바 — 모바일에서만 표시. body(flex column)의 마지막 항목으로 자리를 차지해 본문이 그만큼 줄어 겹침이 없음 */
+.botnav{display:none;}
+@media(max-width:600px){
+  .botnav{display:flex;flex:0 0 auto;z-index:40;align-items:stretch;
+    background:color-mix(in srgb,var(--surface) 96%,transparent);
+    -webkit-backdrop-filter:saturate(180%) blur(12px);backdrop-filter:saturate(180%) blur(12px);
+    border-top:1px solid var(--line);box-shadow:0 -2px 12px rgba(15,23,41,.05);
+    padding-bottom:env(safe-area-inset-bottom,0);}
+  .botnav .bn{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    padding:8px 2px 7px;border:none;background:none;font-family:inherit;font-size:10px;font-weight:600;
+    color:var(--muted);cursor:pointer;position:relative;transition:.14s;-webkit-tap-highlight-color:transparent;}
+  .botnav .bn .ic{font-size:20px;line-height:1;opacity:.85;transition:transform .14s,opacity .14s;}
+  .botnav .bn .tx{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.02em;}
+  .botnav .bn:active{background:var(--surface-2);}
+  .botnav .bn.on{color:var(--ac,var(--brand));}
+  .botnav .bn.on .ic{opacity:1;transform:translateY(-1px) scale(1.05);}
+  .botnav .bn.on::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:26px;height:3px;border-radius:0 0 3px 3px;background:var(--ac,var(--brand));}
+}
+/* 전체 메뉴 바텀시트 — '전체' 탭이 열며, 모든 도구+바로가기+관리자 메뉴를 노출 */
+.sheet-mask{position:fixed;inset:0;z-index:90;background:rgba(15,23,41,.5);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;visibility:hidden;transition:opacity .25s;}
+.sheet-mask.on{opacity:1;visibility:visible;}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:91;background:var(--surface);border-top:1px solid var(--line);
+  border-radius:20px 20px 0 0;box-shadow:var(--sh-lg);transform:translateY(101%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+  max-height:84vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 14px calc(20px + env(safe-area-inset-bottom,0));}
+.sheet.on{transform:translateY(0);}
+.sheet .grab{position:sticky;top:0;width:100%;padding:10px 0 4px;background:var(--surface);display:flex;justify-content:center;z-index:1;}
+.sheet .grab::before{content:"";width:38px;height:4px;border-radius:3px;background:var(--line);}
+.sheet .scap{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding:14px 6px 8px;}
+.sheet .sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;}
+.sheet .sitem{display:flex;flex-direction:column;align-items:center;gap:7px;padding:12px 4px 11px;border-radius:14px;border:none;background:none;font-family:inherit;cursor:pointer;text-decoration:none;-webkit-tap-highlight-color:transparent;}
+.sheet .sitem .ic{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:21px;background:color-mix(in srgb,var(--ac,var(--brand)) 13%,transparent);color:var(--ac,var(--brand));transition:.14s;}
+.sheet .sitem .tx{font-size:11px;font-weight:600;color:var(--ink-2);text-align:center;line-height:1.25;letter-spacing:-.02em;}
+.sheet .sitem:active .ic{transform:scale(.94);}
+.sheet .sitem.on .ic{box-shadow:0 0 0 2px var(--ac,var(--brand));}
+.sheet .sitem.on .tx{color:var(--ink);font-weight:700;}
 /* 설정(API 키) 모달 */
 .mask{position:fixed;inset:0;z-index:100;background:rgba(15,23,41,.5);backdrop-filter:blur(3px);display:none;align-items:flex-start;justify-content:center;padding:56px 16px;overflow-y:auto;}
 .mask.on{display:flex;}
@@ -140,6 +172,14 @@ html:not([data-admin="1"]) [data-admin-only]{display:none!important;}
   <iframe id="frame" title="도구"></iframe>
   <div id="home"></div>
 </div>
+<!-- 모바일 앱형 하단 탭바 (데스크톱 숨김) — 핵심 도구 + '전체'(바텀시트) -->
+<nav class="botnav" id="botnav" aria-label="모바일 메뉴"></nav>
+<!-- 전체 메뉴 바텀시트 -->
+<div class="sheet-mask" id="sheetMask"></div>
+<nav class="sheet" id="sheet" aria-label="전체 메뉴">
+  <div class="grab"></div>
+  <div id="sheetBody"></div>
+</nav>
 <!-- API 키 설정 (이 브라우저 localStorage 에만 저장 · 서버·깃 전송/커밋 0) -->
 <div class="mask" id="keyMask">
   <div class="modal" role="dialog" aria-modal="true" aria-label="API 키 설정">
@@ -207,6 +247,8 @@ const CATS=[
   {name:"캘린더",    ids:["eventcal"]},
   {name:"참고",      ids:["papers"]},
 ];
+// 모바일 하단 탭바에 바로 노출할 핵심 도구(나머지는 '전체' 바텀시트). 순서·구성은 여기만 고치면 됨.
+const MOBILE_TABS=["kw","news","adcopy"];
 let ACTIVE="home";
 const toolById=id=>TOOLS.find(t=>t.id===id);
 function renderNav(active){
@@ -220,7 +262,42 @@ function renderNav(active){
   h+=`<a class="navb" data-admin-only href="brief-setup.html" style="text-decoration:none"><span class="ic">📨</span>브리핑 설정</a>`;
   h+=`<button class="navb" data-admin-only data-act="chpw" style="--ac:var(--brand)"><span class="ic">🔑</span>비번 변경</button>`;
   nav.innerHTML=h;
+  renderBotnav();                                                       // 하단 탭바도 같은 ACTIVE로 동기화
 }
+/* ===== 모바일 하단 탭바 + 전체 메뉴 바텀시트 ===== */
+function renderBotnav(){
+  const bn=document.getElementById("botnav"); if(!bn)return;
+  const tab=(id,icon,label,ac,on,act)=>`<button class="bn${on?" on":""}" ${act?`data-act="${act}"`:`data-tool="${id}"`} style="--ac:${ac||"var(--brand)"}"><span class="ic">${icon}</span><span class="tx">${esc(label)}</span></button>`;
+  const featured=MOBILE_TABS.map(toolById).filter(Boolean);
+  const inFeatured=ACTIVE==="home"||featured.some(t=>t.id===ACTIVE);
+  let h=tab("home","🏠","홈",null,ACTIVE==="home");
+  featured.forEach(t=>h+=tab(t.id,t.icon,t.tag,t.ac,ACTIVE===t.id));   // 짧은 라벨(tag) 사용
+  h+=tab(null,"☰","전체",null,!inFeatured,"sheet");                    // 현재 도구가 탭바에 없으면 '전체' 강조
+  bn.innerHTML=h;
+}
+function renderSheet(){
+  const wrap=document.getElementById("sheetBody"); if(!wrap)return;
+  const sBtn=(id,icon,label,ac,on)=>`<button class="sitem${on?" on":""}" data-tool="${id}" style="--ac:${ac||"var(--brand)"}"><span class="ic">${icon}</span><span class="tx">${esc(label)}</span></button>`;
+  const sLink=(href,icon,label,attrs="")=>`<a class="sitem" href="${href}" ${attrs}><span class="ic">${icon}</span><span class="tx">${esc(label)}</span></a>`;
+  let h="";
+  CATS.forEach(c=>{
+    const items=c.ids.map(toolById).filter(Boolean); if(!items.length)return;
+    h+=`<div class="scap">${esc(c.name)}</div><div class="sgrid">`+
+       items.map(t=>sBtn(t.id,t.icon,t.name,t.ac,ACTIVE===t.id)).join("")+`</div>`;
+  });
+  h+=`<div class="scap">바로가기</div><div class="sgrid">`+
+     sBtn("home","🏠","홈",null,ACTIVE==="home")+
+     sLink("overview.html","🗂️","전체 안내")+
+     sLink(WIKI,"📖","위키",'target="_blank" rel="noopener"')+`</div>`;
+  // 관리자 전용(소프트 게이트 · 잠금 시 CSS가 숨김)
+  h+=`<div class="scap" data-admin-only>관리자</div><div class="sgrid" data-admin-only>`+
+     sLink("brief-setup.html","📨","브리핑 설정")+
+     `<button class="sitem" data-act="chpw"><span class="ic">🔑</span><span class="tx">비번 변경</span></button>`+`</div>`;
+  wrap.innerHTML=h;
+}
+function openSheet(){renderSheet();document.getElementById("sheetMask").classList.add("on");document.getElementById("sheet").classList.add("on");}
+function closeSheet(){document.getElementById("sheetMask").classList.remove("on");document.getElementById("sheet").classList.remove("on");}
+function toggleSheet(){document.getElementById("sheet").classList.contains("on")?closeSheet():openSheet();}
 /* ===== 관리자 소프트 게이트 (공개 정적 페이지 — 팀원 눈에서 감추는 용도, 실제 보안 아님) ===== */
 const ADMIN_LS="mf_admin", ADMIN_HASH_LS="mf_admin_hash";
 const DEFAULT_ADMIN_HASH="750ecf6d8509b4c96c6868ab0aeb26f98bbb21cd80cca1bfc38e0992fb657cd7"; // sha256("modooflow") · 기본값, 앱에서 변경 가능
@@ -260,6 +337,7 @@ function renderHome(){
   </div>`;
 }
 function show(id,sub){                                  // sub = 툴 내부 딥링크(#해시) 선택
+  closeSheet();                                         // 도구 전환 시 바텀시트 닫기
   if(id==="home"){home.style.display="block";frame.style.display="none";openTab.href="#";openTab.style.visibility="hidden";renderNav("home");location.hash="";loadUsage();return;}
   const t=TOOLS.find(x=>x.id===id); if(!t)return;
   const suffix=sub||"";
@@ -271,7 +349,7 @@ function show(id,sub){                                  // sub = 툴 내부 딥�
 document.addEventListener("click",e=>{
   const act=e.target.closest("[data-act]");
   if(act){e.preventDefault();const a=act.dataset.act;
-    if(a==="chpw")adminChangePw(); else if(a==="lock")adminLock(); else if(a==="keys")openKeys(); return;}
+    if(a==="chpw")adminChangePw(); else if(a==="lock")adminLock(); else if(a==="keys")openKeys(); else if(a==="sheet")toggleSheet(); return;}
   const b=e.target.closest("[data-tool]"); if(b){e.preventDefault();show(b.dataset.tool);return;}
 });
 document.getElementById("adminBtn").addEventListener("click",()=>{isAdmin()?adminLock():adminUnlock();});
@@ -318,7 +396,9 @@ document.getElementById("keySave").addEventListener("click",()=>{
 document.getElementById("keyClear").addEventListener("click",()=>{
   if(confirm("저장된 API 키를 이 브라우저에서 모두 지울까요?")){localStorage.removeItem(KEYS_LS);renderKeys();ktoast("모두 지움");}
 });
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeKeys();}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeKeys();closeSheet();}});
+document.getElementById("sheetMask").addEventListener("click",closeSheet);
+document.getElementById("sheet").addEventListener("click",e=>{if(e.target.closest("a"))closeSheet();});  // 시트 내 링크 이동 시 닫기
 
 applyAdmin();
 renderHome();
