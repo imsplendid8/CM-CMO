@@ -69,6 +69,7 @@
 - 스케줄: `.github/workflows/daily-email.yml` (cron `30 23 * * *` = **08:30 KST**, 수동 실행도 가능)
 
 ### 설정 (1회) — Gmail SMTP 기준
+> 수신자·발신 계정은 **`brief-setup.html`(관리자 빌더)** 의 '📧 이메일 브리프' 카드에서 입력하면 **EMAIL_TO** 값을 만들어 줍니다(브라우저에만 저장·커밋 안 함). 앱 비밀번호는 빌더에 넣지 말고 Secret에 직접.
 1. 발송용 Gmail 계정에 **2단계 인증**을 켠 뒤 **앱 비밀번호**(16자리)를 발급: Google 계정 → 보안 → 앱 비밀번호.
 2. 저장소 **Settings → Secrets and variables → Actions** 에 추가:
    - `SMTP_USER` = 발송 Gmail 주소 (예: `myaccount@gmail.com`)

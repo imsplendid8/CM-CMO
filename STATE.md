@@ -20,7 +20,7 @@ _최종 갱신: 2026-08-07 · 도구 8개 + 팀 실시간 연동 + 자동화(수
 | 8 | 논문 아카이브 | `papers-tool.html` | `data/papers.json` ← 월 1회 네이버 학술 자동 적립(`papers.yml`) · **제공자 아닌 '주제' 기준 그룹핑**·자료원 분리·제공자 배지 · 검색 | ✅ |
 | 9 | 시즌·이벤트 캘린더 · 뉴스·추천·이벤트 뷰 | `seasonal-tool.html#reco` (구 `event-calendar.html` → 리다이렉트) | `data/events/recommendations.json` ← `scripts/event_engine.py`(규칙 기반·결정론) · 캘린더+시즌+기상+뉴스+검색량 결합 | ✅ **P0-EVENT Phase 1**(문구 엔진) · 시즌 캘린더와 한 툴(사이드바)로 통합 |
 | — | 통합 허브 | `index.html` | **오늘 API 사용량 위젯** · **상단 메뉴 전부 펼침 wrap**(모바일 전체폭·높이 캡) + **관리자 소프트 게이트**(🔒·`[data-admin-only]` 숨김) · 전체 안내 `overview.html` | ✅ |
-| — | 브리핑 설정 빌더 | `brief-setup.html` | 텔레그램 브리핑 **다중 수신자 + 발송시간** 설정 UI(관리자) → `daily-brief.yml`·`daily_brief.py` 반영 | ✅ |
+| — | 브리핑 설정 빌더 | `brief-setup.html` | 텔레그램 **다중 수신자+발송시간** + **이메일 수신자·발신자(EMAIL_TO·SMTP_USER) 빌더**(관리자) → Secrets에 붙여넣기 | ✅ |
 | — | BSA 운영(부서 전용) | **private `imsplendid8/Private`** | 검색광고 관리 API on/off·계약·키워드·검색량 — 민감데이터라 공개 CM-CMO에서 분리 | ✅ |
 | — | 데일리 비서 | `daily_brief.py` + `daily-brief.yml`·`daily-email.yml` | **텔레그램**(08:00·14:00 KST·오늘 할 일 판단형·다중 수신자·기사 링크) + **이메일**(08:30 KST·표 도식형: 핵심 동향+주요 뉴스 상위 8건·SMTP) · 자동화 상태는 브리프 실행 시 재계산(healthy/stale/missing/unknown 분리) | ✅ |
 | — | 상품 마스터 | `data/products.json` + `check_products_sync.py` | 단일 소스 + CI 드리프트 | ✅ |

@@ -114,7 +114,7 @@ html:not([data-admin="1"]) #admGate{display:flex!important;}
     <div class="tr"><button class="icon-btn" id="themeBtn" title="테마">◐</button></div>
   </header>
   <div class="wrap">
-    <div class="gov">🔒 <b>개인정보 주의</b> · 텔레그램 <b>chat_id는 개인 식별자</b>입니다. 이 페이지는 <b>서버로 아무것도 보내지 않고</b>, 입력값은 <b>이 브라우저에만</b>(localStorage) 저장됩니다. 생성된 값은 <b>GitHub Secrets(비공개)</b>에만 붙여넣으세요 — <b>공개 저장소에 chat_id를 커밋하지 마세요.</b></div>
+    <div class="gov">🔒 <b>개인정보 주의</b> · 텔레그램 <b>chat_id·이메일 주소는 개인 식별자</b>입니다. 이 페이지는 <b>서버로 아무것도 보내지 않고</b>, 입력값은 <b>이 브라우저에만</b>(localStorage) 저장됩니다. 생성된 값은 <b>GitHub Secrets(비공개)</b>에만 붙여넣으세요 — <b>공개 저장소에 커밋하지 마세요.</b> 앱 비밀번호(<span class="tk">SMTP_PASS</span>)는 <b>여기 입력하지 말고</b> Secret에 직접 넣으세요.</div>
 
     <!-- 1. 수신자 -->
     <div class="card">
@@ -148,6 +148,40 @@ html:not([data-admin="1"]) #admGate{display:flex!important;}
         <div class="lbl">workflow cron (UTC) <span style="font-weight:600;text-transform:none;color:var(--muted)">← daily-brief.yml 의 schedule 로</span> <button class="btn sm copy" data-copy="cron">복사</button></div>
         <pre id="cronOut"><span class="empty">시간을 추가하면 cron 이 생성됩니다.</span></pre>
       </div>
+    </div>
+
+    <!-- 2.5 이메일 브리프 (텔레그램과 별도) -->
+    <div class="card">
+      <h2><span class="step">📧</span> 이메일 브리프 <span style="font-size:11px;color:var(--muted);font-weight:600">· 매일 08:30 KST · 텔레그램과 별도</span></h2>
+      <div class="sub"><b>발신 계정</b>(Gmail 권장)과 <b>받을 이메일</b>을 추가하면 <b>EMAIL_TO</b> 값을 만들어 드립니다. 앱 비밀번호는 <b>브라우저에 저장하지 않고</b> GitHub Secrets에 직접 넣습니다.</div>
+
+      <div class="rhead" style="grid-template-columns:1fr"><span>발신 계정 (SMTP_USER · 보내는 Gmail 주소)</span></div>
+      <div class="rows"><div class="row" style="grid-template-columns:1fr"><input id="emailSender" type="email" placeholder="예: myaccount@gmail.com" autocomplete="off" maxlength="120"></div></div>
+
+      <div class="rhead"><span>이름(메모·로컬 전용)</span><span>받을 이메일 (EMAIL_TO)</span><span></span></div>
+      <div class="rows" id="emailRows"></div>
+      <button class="btn sm" id="addEmail">+ 받을 이메일 추가</button>
+
+      <div class="out">
+        <div class="lbl">EMAIL_TO <span style="font-weight:600;text-transform:none;color:var(--muted)">← 이 값을 Secret 으로(여러 명=콤마)</span> <button class="btn sm copy" data-copy="email">복사</button></div>
+        <pre id="emailOut"><span class="empty">받을 이메일을 입력하면 여기에 생성됩니다.</span></pre>
+      </div>
+      <div class="out">
+        <div class="lbl">SMTP_USER <span style="font-weight:600;text-transform:none;color:var(--muted)">← 발신 계정을 Secret 으로</span> <button class="btn sm copy" data-copy="sender">복사</button></div>
+        <pre id="senderOut"><span class="empty">발신 계정을 입력하면 여기에 표시됩니다.</span></pre>
+      </div>
+      <div class="warnline" id="ewarn" style="display:none"></div>
+      <details>
+        <summary>적용 방법 · 필요한 Secret 3개</summary>
+        <div class="body">
+          GitHub → <b>Settings → Secrets and variables → Actions</b> 에 등록:<br>
+          · <span class="tk">SMTP_USER</span> = 위 발신 계정(예: myaccount@gmail.com)<br>
+          · <span class="tk">SMTP_PASS</span> = Gmail <b>앱 비밀번호</b>(2단계 인증 후 발급·16자리). <b>이 페이지 입력창엔 넣지 마세요</b> — Secret에 직접.<br>
+          · <span class="tk">EMAIL_TO</span> = 위에서 복사한 값<br>
+          (선택) <span class="tk">SMTP_HOST</span>(기본 smtp.gmail.com)·<span class="tk">SMTP_PORT</span>(기본 587)·<span class="tk">EMAIL_FROM</span>(기본 SMTP_USER).<br>
+          테스트: <b>Actions → Daily Brief (Email) → Run workflow</b>. 발송 시각은 <span class="tk">daily-email.yml</span> 의 cron(08:30 KST = <span class="tk">30 23 * * *</span>).
+        </div>
+      </details>
     </div>
 
     <!-- 3. 적용 방법 -->
@@ -188,14 +222,18 @@ async function _admTry(){
 $("#admGo").addEventListener("click",_admTry);
 $("#admPw").addEventListener("keydown",e=>{if(e.key==="Enter")_admTry();});
 const LS="mf_brief";
-let state={recipients:[{name:"",id:""}],times:["08:00","14:00"]};
+let state={recipients:[{name:"",id:""}],times:["08:00","14:00"],email:{sender:"",recipients:[{name:"",addr:""}]}};
 try{const s=JSON.parse(localStorage.getItem(LS)||"null");if(s&&Array.isArray(s.recipients)&&Array.isArray(s.times))state=s;}catch(_){}
 if(!state.recipients.length)state.recipients=[{name:"",id:""}];
 if(!state.times.length)state.times=["08:00"];
+if(!state.email||typeof state.email!=="object")state.email={sender:"",recipients:[]};   // 이메일 설정 마이그레이션
+if(typeof state.email.sender!=="string")state.email.sender="";
+if(!Array.isArray(state.email.recipients)||!state.email.recipients.length)state.email.recipients=[{name:"",addr:""}];
 
 function save(){try{localStorage.setItem(LS,JSON.stringify(state));}catch(_){}}
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1500);}
 const validId=v=>/^-?\d{5,}$/.test(v.trim());   // 텔레그램 chat_id = (음수 가능) 5자리 이상 정수
+const validEmail=v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((v||"").trim());   // 이메일 형식
 
 function renderRows(){
   $("#rows").innerHTML=state.recipients.map((r,i)=>`
@@ -235,17 +273,52 @@ function renderOut(){
   if(bad.length)warns.push(`시간 형식 오류: ${bad.map(esc).join(", ")}`);
   const w=$("#warn");
   if(warns.length){w.style.display="block";w.textContent="⚠ "+warns.join(" · ");}else{w.style.display="none";}
+  renderEmailOut();
   save();
 }
-function renderAll(){renderRows();renderTimes();renderOut();}
+/* 이메일 수신자·발신자 */
+function renderEmailRows(){
+  $("#emailRows").innerHTML=state.email.recipients.map((r,i)=>`
+    <div class="row erow" data-i="${i}">
+      <input class="ename" data-i="${i}" type="text" placeholder="예: 김한화(팀장)" value="${esc(r.name)}" maxlength="40" autocomplete="off">
+      <input class="eaddr" data-i="${i}" type="email" placeholder="예: boss@company.com" value="${esc(r.addr)}" maxlength="120" autocomplete="off">
+      <button class="del edel" data-i="${i}" title="삭제" aria-label="이메일 삭제">✕</button>
+    </div>`).join("");
+  $("#emailRows").querySelectorAll(".eaddr").forEach(el=>{const v=el.value.trim();if(v&&!validEmail(v))el.classList.add("bad");});
+  const se=$("#emailSender");if(se&&se.value!==(state.email.sender||""))se.value=state.email.sender||"";
+}
+function emailToValue(){
+  const seen=new Set(),out=[];
+  state.email.recipients.forEach(r=>{const v=(r.addr||"").trim();const k=v.toLowerCase();if(v&&validEmail(v)&&!seen.has(k)){seen.add(k);out.push(v);}});
+  return out.join(",");
+}
+function renderEmailOut(){
+  const to=emailToValue();
+  $("#emailOut").innerHTML=to?esc(to):`<span class="empty">받을 이메일을 입력하면 여기에 생성됩니다.</span>`;
+  const sender=(state.email.sender||"").trim();
+  $("#senderOut").innerHTML=sender?esc(sender):`<span class="empty">발신 계정을 입력하면 여기에 표시됩니다.</span>`;
+  const warns=[];
+  const invalid=state.email.recipients.map(r=>(r.addr||"").trim()).filter(v=>v&&!validEmail(v));
+  if(invalid.length)warns.push(`이메일 형식이 아닌 값 ${invalid.length}건`);
+  if(sender&&!validEmail(sender))warns.push("발신 계정이 이메일 형식이 아님");
+  const w=$("#ewarn");
+  if(warns.length){w.style.display="block";w.textContent="⚠ "+warns.join(" · ");}else{w.style.display="none";}
+}
+function renderAll(){renderRows();renderTimes();renderEmailRows();renderOut();}
 
 document.addEventListener("input",e=>{
   const i=e.target.dataset.i;
   if(e.target.classList.contains("rname")){state.recipients[i].name=e.target.value;save();}
   else if(e.target.classList.contains("rid")){state.recipients[i].id=e.target.value;e.target.classList.toggle("bad",!!e.target.value.trim()&&!validId(e.target.value));renderOut();}
   else if(e.target.classList.contains("tinp")){state.times[i]=e.target.value;renderOut();}
+  else if(e.target.classList.contains("ename")){state.email.recipients[i].name=e.target.value;save();}
+  else if(e.target.classList.contains("eaddr")){state.email.recipients[i].addr=e.target.value;e.target.classList.toggle("bad",!!e.target.value.trim()&&!validEmail(e.target.value));renderEmailOut();save();}
+  else if(e.target.id==="emailSender"){state.email.sender=e.target.value;renderEmailOut();save();}
 });
 document.addEventListener("click",e=>{
+  const edel=e.target.closest(".edel");   // 이메일 삭제는 .del 보다 먼저(둘 다 클래스 보유)
+  if(edel){const i=+edel.dataset.i;state.email.recipients.splice(i,1);if(!state.email.recipients.length)state.email.recipients=[{name:"",addr:""}];renderEmailRows();renderEmailOut();save();return;}
+  if(e.target.id==="addEmail"){state.email.recipients.push({name:"",addr:""});renderEmailRows();renderEmailOut();return;}
   const del=e.target.closest(".del");
   if(del){const i=+del.dataset.i;state.recipients.splice(i,1);if(!state.recipients.length)state.recipients=[{name:"",id:""}];renderAll();return;}
   const x=e.target.closest(".timechip .x");
@@ -255,8 +328,8 @@ document.addEventListener("click",e=>{
   const cp=e.target.closest(".copy");
   if(cp){
     const which=cp.dataset.copy;
-    const txt=which==="ids"?idsValue():$("#cronOut").textContent;
-    if(!txt||/생성됩니다/.test(txt)){toast("복사할 값이 없어요");return;}
+    const txt=which==="ids"?idsValue():which==="email"?emailToValue():which==="sender"?(state.email.sender||"").trim():$("#cronOut").textContent;
+    if(!txt||/생성됩니다|표시됩니다/.test(txt)){toast("복사할 값이 없어요");return;}
     (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast("복사됨")).catch(()=>{
       const ta=document.createElement("textarea");ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("복사됨");}catch(_){}ta.remove();});
     return;
