@@ -161,15 +161,13 @@ td.who{font-weight:800;white-space:nowrap;}
     <div class="sb-brand"><div class="brand-logo">🔭</div>
       <div><div class="bn">검색결과 주간 아카이브</div><small>SERP 경쟁분석</small></div></div>
     <nav class="sb-nav" id="sbNav"></nav>
-    <div class="sb-foot"><a href="index.html">← 통합 콘솔(main)로</a><br>스크린샷은 <b>이 브라우저에만</b> 저장(전송 0) · 백업은 내보내기<br>경쟁사 소구포인트는 네이버 검색결과 근거</div>
+    <div class="sb-foot"><a href="index.html">← 통합 콘솔(main)로</a><br>자동 캡쳐(팀 공유)는 <b>배포 주소</b>에서 표시<br>경쟁사 소구포인트는 네이버 검색결과 근거</div>
   </aside>
   <main class="main">
     <header class="topbar">
       <a class="crumb" href="index.html">Modoo ›</a>
       <div><div id="pt">전체 개요</div><div id="pts"></div></div>
       <div class="tr">
-        <button class="btn sm" id="expBtn" title="아카이브 백업(JSON)">⬇ 백업</button>
-        <label class="btn sm" style="cursor:pointer" title="백업 불러오기">⬆ 복원<input type="file" id="impFile" accept=".json" style="display:none"></label>
         <button class="icon-btn" id="themeBtn" title="테마">◐</button>
       </div>
     </header>
@@ -302,7 +300,7 @@ let curKey="__all";
 /* 아카이브 저장소 (localStorage · 이 브라우저에만) */
 const LS="mf_serp";
 function loadArc(){try{return JSON.parse(localStorage.getItem(LS)||"{}")||{};}catch(e){return {};}}
-function saveArc(a){try{localStorage.setItem(LS,JSON.stringify(a));}catch(e){toast("저장공간 초과 — 오래된 캡처를 지우거나 백업 후 정리하세요");}}
+function saveArc(a){try{localStorage.setItem(LS,JSON.stringify(a));}catch(e){toast("저장공간 초과 — 오래된 캡처를 지워 정리하세요");}}
 let ARC=loadArc();
 /* 리포 자동 캡쳐(serp/manifest.json) — Playwright 주간 워크플로우가 채움. 읽기전용 */
 let REPO={};
@@ -524,14 +522,6 @@ document.addEventListener("click",e=>{
   if(e.target.closest("#lb")){$("#lb").classList.remove("show");}
 });
 document.addEventListener("input",e=>{const n=e.target.closest("[data-note]");if(n)editNote(curKey,n.dataset.note,n.value);});
-// 백업/복원
-$("#expBtn").addEventListener("click",()=>{const blob=new Blob([JSON.stringify({app:"modooflow-serp",exportedAt:new Date().toISOString(),archive:ARC},null,2)],{type:"application/json"});
-  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="modooflow-serp-archive-"+todayStr()+".json";a.click();toast("아카이브 백업 파일 저장됨");});
-$("#impFile").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();
-  rd.onload=()=>{try{const o=JSON.parse(rd.result);const inc=o.archive||o;let n=0;
-    Object.keys(inc).forEach(k=>{const s=safeKey(k);if(!s||!Array.isArray(inc[k]))return;ARC[s]=ARC[s]||[];const have=new Set(ARC[s].map(x=>x.id));inc[k].forEach(it=>{if(it&&it.img&&!have.has(it.id)){ARC[s].push(it);n++;}});});
-    saveArc(ARC);toast(n+"개 스크린샷 복원됨");render();}catch(err){toast("복원 실패 — 백업 JSON 파일인지 확인");}};
-  rd.readAsText(f);e.target.value="";});
 $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");try{localStorage.setItem("mf_theme",d?"light":"dark")}catch(_){};});
 if(location.protocol==="file:"){$("#fileBanner").hidden=false;} // 로컬(ZIP) 열람 시 자동 캡쳐 미표시 안내
 render();
