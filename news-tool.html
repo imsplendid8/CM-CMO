@@ -541,7 +541,7 @@ $("#nwSaveBtn").addEventListener("click",()=>{const c=newsCred();if(!c.id||!c.se
 /* 팀 공유 프록시 기본값 — 팀원은 브라우저에 키 입력 없이 이 URL로 실시간 데이터를 받음.
    키는 이 워커에 서버 시크릿(env.NAVER_ID/SECRET)으로 저장되어 팀 전원 공유. ⚙설정창 값은 개인 override용. */
 const DEFAULT_PROXY="https://modooflow-naver-proxy.angle0102.workers.dev";
-function mfKeys(){try{return JSON.parse(localStorage.getItem("mf_keys")||"{}")||{};}catch(e){return {};}}
+function mfKeys(){return {};}   // 개인 API 키 입력 기능 제거 — 항상 팀 공유 프록시(DEFAULT_PROXY) 사용
 function naverCreds(){const k=mfKeys(),c=newsCred();return {id:k.naverId||c.id,sec:k.naverSecret||c.sec,proxy:(k.proxy||DEFAULT_PROXY||"").replace(/\/+$/,"")};}
 function stripTag(s){return String(s||"").replace(/<[^>]*>/g,"").replace(/&quot;/g,'"').replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#39;/g,"'").trim();}
 function hostOf(u){try{return new URL(u).hostname.replace(/^www\./,"");}catch(e){return "";}}

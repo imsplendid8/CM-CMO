@@ -614,7 +614,7 @@ async function applyVolFile(f){
 }
 // 네이버 실시간 연동 — 팀 공유 프록시(기본) 우선, 로컬 서버 폴백
 const DEFAULT_PROXY="https://modooflow-naver-proxy.angle0102.workers.dev";
-function mfKeys(){try{return JSON.parse(localStorage.getItem("mf_keys")||"{}")||{};}catch(e){return {};}}
+function mfKeys(){return {};}   // 개인 API 키 입력 기능 제거 — 항상 팀 공유 프록시(DEFAULT_PROXY) 사용
 function adNum(v){if(v==null)return 0;const s=String(v);if(s.indexOf("<")>=0)return 5;const n=parseInt(s.replace(/[^0-9]/g,""),10);return isNaN(n)?0:n;}
 (function(){try{const s=JSON.parse(localStorage.getItem("nv_keys")||"null");if(s){$("#nvApi").value=s.api||"";$("#nvCust").value=s.cust||"";if(s.sec)$("#nvSec").value=s.sec;$("#nvSave").checked=true;}}catch(e){}})();
 $("#nvGo").addEventListener("click",()=>{
