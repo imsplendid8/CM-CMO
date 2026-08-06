@@ -17,6 +17,11 @@ on:
 permissions:
   contents: read
 
+# 수집 워크플로와 같은 레인 → 수집이 끝난 최신 데이터로 발송(직렬화, 취소 없음).
+concurrency:
+  group: cm-cmo-data-writers
+  cancel-in-progress: false
+
 jobs:
   email:
     runs-on: ubuntu-latest

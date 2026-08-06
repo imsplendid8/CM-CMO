@@ -1,0 +1,34 @@
+name: Automation Health
+
+# 자동화 수집 상태 점검 — 각 산출물(뉴스·신호·검색량·트렌드·논문·SERP)의 실제 최신성을
+# 매번 다시 계산해 Actions 로그·Run 요약에 표시(브리프 직전 체크포인트).
+# check_automation_health 는 '저장 요약'을 신뢰하지 않는 설계 → 파일 커밋 없음(최소 권한 read).
+# 매일 07:40 · 13:40 KST — 뉴스 수집(07:20/13:20) 뒤, 브리프(08:00/14:00) 전.
+
+on:
+  schedule:
+    - cron: "40 22 * * *"   # 07:40 KST (UTC 22:40 전일) — 오전 수집 뒤, 오전 브리프 전
+    - cron: "40 4 * * *"    # 13:40 KST (UTC 04:40) — 오후 수집 뒤, 오후 브리프 전
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cm-cmo-data-writers   # 커밋 워크플로 공유 레인 → 수집이 끝난 상태를 안정적으로 판정(직렬화)
+  cancel-in-progress: false
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 자동화 상태 점검
+        run: |
+          echo "## 🔭 자동화 수집 상태 ($(TZ=Asia/Seoul date '+%F %H:%M') KST)" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          python3 scripts/check_automation_health.py | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"

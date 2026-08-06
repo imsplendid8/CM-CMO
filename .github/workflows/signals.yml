@@ -3,7 +3,7 @@ name: Demand Signals
 # 공공데이터(기상특보·공항여객)로 상품별 실시간 수요 신호 → data/signals.json
 on:
   schedule:
-    - cron: "0 21 * * *"   # 매일 06:00 KST (UTC 21:00)
+    - cron: "30 21 * * *"   # 매일 06:30 KST (UTC 21:30)
   workflow_dispatch:
 
 permissions:
