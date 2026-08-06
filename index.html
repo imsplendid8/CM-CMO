@@ -313,21 +313,16 @@ function renderSheet(){
   const wrap=document.getElementById("sheetBody"); if(!wrap)return;
   const sBtn=(id,icon,label,ac,on)=>`<button class="sitem${on?" on":""}" data-tool="${id}" style="--ac:${ac||"var(--brand)"}"><span class="ic">${icon}</span><span class="tx">${esc(label)}</span></button>`;
   const sLink=(href,icon,label,attrs="")=>`<a class="sitem" href="${href}" ${attrs}><span class="ic">${icon}</span><span class="tx">${esc(label)}</span></a>`;
-  let h="";
-  CATS.forEach(c=>{
-    const items=c.ids.map(toolById).filter(Boolean); if(!items.length)return;
-    h+=`<div class="scap">${esc(c.name)}</div><div class="sgrid">`+
-       items.map(t=>sBtn(t.id,ICON[t.id]||t.icon,t.name,t.ac,ACTIVE===t.id)).join("")+`</div>`;
-  });
-  h+=`<div class="scap">바로가기</div><div class="sgrid">`+
-     sBtn("home",ICON.home,"홈",null,ACTIVE==="home")+
-     sLink("overview.html",ICON.overview,"전체 안내")+
-     sLink(WIKI,ICON.wiki,"위키",'target="_blank" rel="noopener"')+`</div>`;
-  // 관리자 전용(소프트 게이트 · 잠금 시 CSS가 숨김)
-  h+=`<div class="scap" data-admin-only>관리자</div><div class="sgrid" data-admin-only>`+
-     sLink("brief-setup.html",ICON.brief,"브리핑 설정")+
-     `<button class="sitem" data-act="chpw"><span class="ic">${ICON.chpw}</span><span class="tx">비번 변경</span></button>`+`</div>`;
-  wrap.innerHTML=h;
+  // 카테고리 제목 없이 전 도구 + 바로가기를 한 그리드(4열)로 — 총 3줄 (연간플랜·논문도 흐름에 합류)
+  let t="";
+  CATS.forEach(c=>c.ids.map(toolById).filter(Boolean).forEach(x=>t+=sBtn(x.id,ICON[x.id]||x.icon,x.name,x.ac,ACTIVE===x.id)));
+  t+=sBtn("home",ICON.home,"홈",null,ACTIVE==="home");
+  t+=sLink("overview.html",ICON.overview,"전체 안내");
+  t+=sLink(WIKI,ICON.wiki,"위키",'target="_blank" rel="noopener"');
+  // 관리자 전용(소프트 게이트 · 잠금 시 CSS가 개별 타일을 숨김)
+  t+=sLink("brief-setup.html",ICON.brief,"브리핑 설정",'data-admin-only');
+  t+=`<button class="sitem" data-act="chpw" data-admin-only style="--ac:var(--brand)"><span class="ic">${ICON.chpw}</span><span class="tx">비번 변경</span></button>`;
+  wrap.innerHTML=`<div class="sgrid">${t}</div>`;
 }
 function openSheet(){renderSheet();document.getElementById("sheetMask").classList.add("on");document.getElementById("sheet").classList.add("on");}
 function closeSheet(){document.getElementById("sheetMask").classList.remove("on");document.getElementById("sheet").classList.remove("on");}
