@@ -31,7 +31,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 .logo b{font-size:14.5px;font-weight:800;letter-spacing:-.03em;} .logo small{display:block;font-size:9px;color:var(--muted);font-weight:600;letter-spacing:0;}
 .nav{display:flex;align-items:center;flex-wrap:wrap;gap:4px 5px;flex:1 1 auto;min-width:0;}  /* 전부 펼침 + 넘치면 다음 줄로 wrap */
 .navb{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:9px;border:none;background:none;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--ink-2);cursor:pointer;white-space:nowrap;transition:.14s;position:relative;}
-.navb .ic{font-size:14px;opacity:.9;}
+.navb .ic{font-size:14px;opacity:.9;display:inline-flex;align-items:center;}
+.navb .ic svg{width:16px;height:16px;}
 .navb:hover{background:var(--surface-2);color:var(--ink);}
 .navb.on{color:var(--ac,var(--brand));background:color-mix(in srgb,var(--ac,var(--brand)) 11%,transparent);font-weight:700;}
 .navb.on .ic{opacity:1;}
@@ -68,6 +69,7 @@ html:not([data-admin="1"]) [data-admin-only]{display:none!important;}
 .card{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:20px;box-shadow:var(--sh);transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease;position:relative;overflow:hidden;cursor:pointer;}
 .card:hover{box-shadow:var(--sh-lg);transform:translateY(-3px);border-color:color-mix(in srgb,var(--ac) 40%,var(--line));}
 .card .ico{width:40px;height:40px;border-radius:11px;background:color-mix(in srgb,var(--ac) 13%,transparent);color:var(--ac);display:flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:13px;}
+.card .ico svg{width:22px;height:22px;}
 .card h2{font-size:15.5px;font-weight:800;letter-spacing:-.02em;margin-bottom:5px;}
 .card .desc{font-size:12px;color:var(--ink-2);line-height:1.62;flex:1;}
 .card .feats{list-style:none;margin:13px 0 0;display:flex;flex-direction:column;gap:6px;padding-top:13px;border-top:1px solid var(--line-2);}
@@ -106,13 +108,12 @@ html:not([data-admin="1"]) [data-admin-only]{display:none!important;}
   .botnav .bn{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
     padding:8px 2px 7px;border:none;background:none;font-family:inherit;font-size:10px;font-weight:600;
     color:var(--muted);cursor:pointer;position:relative;transition:.14s;-webkit-tap-highlight-color:transparent;}
-  .botnav .bn .ic{font-size:20px;line-height:1;opacity:.9;transition:transform .14s,opacity .14s;display:flex;align-items:center;justify-content:center;height:24px;}
+  .botnav .bn .ic{line-height:1;transition:.16s;display:flex;align-items:center;justify-content:center;height:30px;padding:0 13px;border-radius:11px;}
   .botnav .bn .ic svg{width:24px;height:24px;display:block;}
   .botnav .bn .tx{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.02em;}
   .botnav .bn:active{background:var(--surface-2);}
   .botnav .bn.on{color:var(--ac,var(--brand));}
-  .botnav .bn.on .ic{opacity:1;transform:translateY(-1px) scale(1.05);}
-  .botnav .bn.on::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:26px;height:3px;border-radius:0 0 3px 3px;background:var(--ac,var(--brand));}
+  .botnav .bn.on .ic{background:var(--ac,var(--brand));color:#fff;box-shadow:0 4px 10px color-mix(in srgb,var(--ac,var(--brand)) 38%,transparent);}
 }
 /* 전체 메뉴 바텀시트 — '전체' 탭이 열며, 모든 도구+바로가기+관리자 메뉴를 노출 */
 .sheet-mask{position:fixed;inset:0;z-index:90;background:rgba(15,23,41,.5);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;visibility:hidden;transition:opacity .25s;}
@@ -127,6 +128,7 @@ html:not([data-admin="1"]) [data-admin-only]{display:none!important;}
 .sheet .sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;}
 .sheet .sitem{display:flex;flex-direction:column;align-items:center;gap:7px;padding:12px 4px 11px;border-radius:14px;border:none;background:none;font-family:inherit;cursor:pointer;text-decoration:none;-webkit-tap-highlight-color:transparent;}
 .sheet .sitem .ic{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:21px;background:color-mix(in srgb,var(--ac,var(--brand)) 13%,transparent);color:var(--ac,var(--brand));transition:.14s;}
+.sheet .sitem .ic svg{width:24px;height:24px;}
 .sheet .sitem .tx{font-size:11px;font-weight:600;color:var(--ink-2);text-align:center;line-height:1.25;letter-spacing:-.02em;}
 .sheet .sitem:active .ic{transform:scale(.94);}
 .sheet .sitem.on .ic{box-shadow:0 0 0 2px var(--ac,var(--brand));}
@@ -255,33 +257,43 @@ const toolById=id=>TOOLS.find(t=>t.id===id);
 function renderNav(active){
   ACTIVE=active||ACTIVE;
   const item=(id,icon,name,ac,on)=>`<button class="navb${on?" on":""}" data-tool="${id}" style="--ac:${ac||"var(--brand)"}"><span class="ic">${icon}</span>${esc(name)}</button>`;
-  let h=item("home","🏠","홈",null,ACTIVE==="home");
-  TOOLS.forEach(t=>h+=item(t.id,t.icon,t.name,t.ac,ACTIVE===t.id));      // 도구 전부 펼침(한 줄 안 되면 2줄로 wrap)
-  h+=`<a class="navb" href="overview.html" style="text-decoration:none"><span class="ic">🗂️</span>전체 안내</a>`;
-  h+=`<a class="navb" href="${WIKI}" target="_blank" rel="noopener" style="text-decoration:none"><span class="ic">📖</span>위키</a>`;
+  let h=item("home",ICON.home,"홈",null,ACTIVE==="home");
+  TOOLS.forEach(t=>h+=item(t.id,ICON[t.id]||t.icon,t.name,t.ac,ACTIVE===t.id));   // 도구 전부 펼침(한 줄 안 되면 2줄로 wrap)
+  h+=`<a class="navb" href="overview.html" style="text-decoration:none"><span class="ic">${ICON.overview}</span>전체 안내</a>`;
+  h+=`<a class="navb" href="${WIKI}" target="_blank" rel="noopener" style="text-decoration:none"><span class="ic">${ICON.wiki}</span>위키</a>`;
   // 관리자 전용(소프트 게이트 · 잠금 시 숨김). 키설정(⚙)·잠금(🔒)은 우측 컨트롤에.
-  h+=`<a class="navb" data-admin-only href="brief-setup.html" style="text-decoration:none"><span class="ic">📨</span>브리핑 설정</a>`;
-  h+=`<button class="navb" data-admin-only data-act="chpw" style="--ac:var(--brand)"><span class="ic">🔑</span>비번 변경</button>`;
+  h+=`<a class="navb" data-admin-only href="brief-setup.html" style="text-decoration:none"><span class="ic">${ICON.brief}</span>브리핑 설정</a>`;
+  h+=`<button class="navb" data-admin-only data-act="chpw" style="--ac:var(--brand)"><span class="ic">${ICON.chpw}</span>비번 변경</button>`;
   nav.innerHTML=h;
   renderBotnav();                                                       // 하단 탭바도 같은 ACTIVE로 동기화
 }
 /* ===== 모바일 하단 탭바 + 전체 메뉴 바텀시트 ===== */
-// 하단 탭바용 라인(선) 아이콘 — 이모지 대신 앱 스타일 SVG(stroke=currentColor → 활성 시 브랜드색)
-const NAVICON={
-  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.7 12 3.5l9 7.2"/><path d="M5.5 9.3V20h13V9.3"/><path d="M9.7 20v-5.4h4.6V20"/></svg>',
-  kw:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="m20.5 20.5-4-4"/></svg>',
-  news:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 5.5h13v13a1.5 1.5 0 0 1-1.5 1.5H6a1.5 1.5 0 0 1-1.5-1.5z"/><path d="M17.5 9.5H20v9a1.5 1.5 0 0 1-1.5 1.5"/><path d="M8 9.5h6M8 13h6M8 16.5h4"/></svg>',
-  adcopy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
-  sheet:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>'
+// 앱 스타일 라인(선) 아이콘 — 이모지 대신 SVG(stroke=currentColor → 활성/액센트색 자동). 탭바·시트·카드·상단메뉴 공용.
+const _svg=p=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const ICON={
+  home:_svg('<path d="M3 10.7 12 3.5l9 7.2"/><path d="M5.5 9.3V20h13V9.3"/><path d="M9.7 20v-5.4h4.6V20"/>'),
+  seo:_svg('<line x1="4" y1="8" x2="20" y2="8"/><line x1="4" y1="16" x2="20" y2="16"/><circle cx="9" cy="8" r="2.3"/><circle cx="15" cy="16" r="2.3"/>'),
+  kw:_svg('<circle cx="11" cy="11" r="6.5"/><path d="m20.5 20.5-4-4"/>'),
+  news:_svg('<path d="M4.5 5.5h13v13a1.5 1.5 0 0 1-1.5 1.5H6a1.5 1.5 0 0 1-1.5-1.5z"/><path d="M17.5 9.5H20v9a1.5 1.5 0 0 1-1.5 1.5"/><path d="M8 9.5h6M8 13h6M8 16.5h4"/>'),
+  serp:_svg('<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>'),
+  terms:_svg('<path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v14H6.5A1.5 1.5 0 0 0 5 18.5z"/><path d="M5 18.5A1.5 1.5 0 0 0 6.5 20H19"/>'),
+  adcopy:_svg('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>'),
+  papers:_svg('<path d="M12 4 2 9l10 5 10-5-10-5z"/><path d="M6 11.3V16c0 1.1 2.7 2.4 6 2.4s6-1.3 6-2.4v-4.7"/><path d="M21.5 9.2V14"/>'),
+  eventcal:_svg('<rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/>'),
+  overview:_svg('<rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M3.5 9h17M9 9v11.5"/>'),
+  wiki:_svg('<path d="M12 6.5C10.5 5 8 4.5 4.5 5v12c3.5-.5 6 0 7.5 1.5M12 6.5c1.5-1.5 4-2 7.5-1.5v12c-3.5-.5-6 0-7.5 1.5M12 6.5v12"/>'),
+  brief:_svg('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6 8.5-6"/>'),
+  chpw:_svg('<circle cx="8" cy="15" r="4"/><path d="m11 12 8.5-8.5M16.5 6l2 2M14.5 8l1.5 1.5"/>'),
+  sheet:_svg('<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>')
 };
 function renderBotnav(){
   const bn=document.getElementById("botnav"); if(!bn)return;
   const tab=(id,svg,label,ac,on,act)=>`<button class="bn${on?" on":""}" ${act?`data-act="${act}"`:`data-tool="${id}"`} style="--ac:${ac||"var(--brand)"}"><span class="ic">${svg}</span><span class="tx">${esc(label)}</span></button>`;
   const featured=MOBILE_TABS.map(toolById).filter(Boolean);
   const inFeatured=ACTIVE==="home"||featured.some(t=>t.id===ACTIVE);
-  let h=tab("home",NAVICON.home,"홈",null,ACTIVE==="home");
-  featured.forEach(t=>h+=tab(t.id,NAVICON[t.id]||`<span style="font-size:20px">${t.icon}</span>`,t.tag,t.ac,ACTIVE===t.id));  // 짧은 라벨(tag)
-  h+=tab(null,NAVICON.sheet,"전체",null,!inFeatured,"sheet");            // 현재 도구가 탭바에 없으면 '전체' 강조
+  let h=tab("home",ICON.home,"홈",null,ACTIVE==="home");
+  featured.forEach(t=>h+=tab(t.id,ICON[t.id]||`<span style="font-size:20px">${t.icon}</span>`,t.tag,t.ac,ACTIVE===t.id));  // 짧은 라벨(tag)
+  h+=tab(null,ICON.sheet,"전체",null,!inFeatured,"sheet");               // 현재 도구가 탭바에 없으면 '전체' 강조
   bn.innerHTML=h;
 }
 function renderSheet(){
@@ -292,16 +304,16 @@ function renderSheet(){
   CATS.forEach(c=>{
     const items=c.ids.map(toolById).filter(Boolean); if(!items.length)return;
     h+=`<div class="scap">${esc(c.name)}</div><div class="sgrid">`+
-       items.map(t=>sBtn(t.id,t.icon,t.name,t.ac,ACTIVE===t.id)).join("")+`</div>`;
+       items.map(t=>sBtn(t.id,ICON[t.id]||t.icon,t.name,t.ac,ACTIVE===t.id)).join("")+`</div>`;
   });
   h+=`<div class="scap">바로가기</div><div class="sgrid">`+
-     sBtn("home","🏠","홈",null,ACTIVE==="home")+
-     sLink("overview.html","🗂️","전체 안내")+
-     sLink(WIKI,"📖","위키",'target="_blank" rel="noopener"')+`</div>`;
+     sBtn("home",ICON.home,"홈",null,ACTIVE==="home")+
+     sLink("overview.html",ICON.overview,"전체 안내")+
+     sLink(WIKI,ICON.wiki,"위키",'target="_blank" rel="noopener"')+`</div>`;
   // 관리자 전용(소프트 게이트 · 잠금 시 CSS가 숨김)
   h+=`<div class="scap" data-admin-only>관리자</div><div class="sgrid" data-admin-only>`+
-     sLink("brief-setup.html","📨","브리핑 설정")+
-     `<button class="sitem" data-act="chpw"><span class="ic">🔑</span><span class="tx">비번 변경</span></button>`+`</div>`;
+     sLink("brief-setup.html",ICON.brief,"브리핑 설정")+
+     `<button class="sitem" data-act="chpw"><span class="ic">${ICON.chpw}</span><span class="tx">비번 변경</span></button>`+`</div>`;
   wrap.innerHTML=h;
 }
 function openSheet(){renderSheet();document.getElementById("sheetMask").classList.add("on");document.getElementById("sheet").classList.add("on");}
@@ -335,7 +347,7 @@ function renderHome(){
       <div><h1>Modoo 마케팅 콘솔</h1></div></div>
     <div id="usageBox"></div>
     <div class="grid">${TOOLS.map(t=>`<div class="card" data-tool="${t.id}" style="--ac:${t.ac}">
-      <div class="ico">${t.icon}</div><h2>${esc(t.name)}</h2>
+      <div class="ico">${ICON[t.id]||t.icon}</div><h2>${esc(t.name)}</h2>
       <div class="desc">${esc(t.desc)}</div>
       <ul class="feats">${t.feats.map(f=>`<li>${esc(f)}</li>`).join("")}</ul>
       <div class="go">열기 →</div></div>`).join("")}</div>
