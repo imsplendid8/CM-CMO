@@ -2,7 +2,9 @@
   "asof": "2026-08-07",
   "source": "data.go.kr",
   "weather": {
-    "active": []
+    "active": [
+      "호우"
+    ]
   },
   "travel": {
     "overseas_ratio": 85.2,
@@ -12,6 +14,13 @@
     "basis": "최근 7일 평균 vs 90일"
   },
   "triggers": {
+    "hrmf": {
+      "level": "high",
+      "note": "기상특보 발효 → 호우·태풍 → 누수·침수·풍수재 담보 수요",
+      "kinds": [
+        "호우"
+      ]
+    },
     "overseas": {
       "level": "high",
       "note": "‘여행자보험’ 검색수요 상승(2026-08-06 지수 85.2/평균 77.3) → 성수기 해외여행보험 대응"
