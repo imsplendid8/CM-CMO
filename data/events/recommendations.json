@@ -4,7 +4,7 @@
   "events": 41,
   "recommendations": 32,
   "suppressed_cooldown": 0,
-  "unclassified": 126,
+  "unclassified": 141,
   "transitions": 1
  },
  "events": [
@@ -879,6 +879,78 @@
    "confidence": 0.8
   },
   {
+   "fingerprint": "3f312110e1015fe6",
+   "fact": [
+    "시즌: 명절 장거리 운전 (2월, 9월, 10월)",
+    "뉴스: '\"월 4000원대 운전자보험 등장\"… 삼성화재, '모니모 전용' 파격 할' (dailysmart.co.kr 2026-08-09)",
+    "검색량: '운전자보험' 46,550회/월"
+   ],
+   "product": "driver",
+   "product_name": "운전자보험",
+   "event_id": "season-driver-2-9-10",
+   "event_name": "명절 장거리 운전",
+   "event_type": "계절",
+   "event_state": "emerging",
+   "transition": null,
+   "title": "명절 장거리 운전 운전자보험 미리 대비",
+   "description": "명절 장거리 운전 시기, 운전자보험 보장 범위를 미리 확인해 두세요.",
+   "content_subhead": "명절 장거리 운전 대비 운전자보험 확인 포인트",
+   "purpose": "대비 안내",
+   "reason": "명절 장거리 운전(emerging) 시기의 운전자보험 선제/대비 소구",
+   "data_used": [
+    "clips",
+    "seasonal",
+    "volume"
+   ],
+   "valid_from": "2026-08-09",
+   "valid_to": "2026-09-08",
+   "avoid_phrases": [
+    "끔찍",
+    "참사",
+    "비극",
+    "당신도",
+    "큰일",
+    "불행",
+    "공포",
+    "눈앞의 위험",
+    "지금 안 하면",
+    "이 사고 보고도",
+    "더 늦기 전에 가입",
+    "안 하면 후회",
+    "지금 가입 안 하면",
+    "서둘러 가입",
+    "꼭 가입",
+    "즉시 가입",
+    "사고 전에 가입",
+    "피해 전에 가입",
+    "안 들면 손해",
+    "누구나 가입",
+    "무조건",
+    "반드시",
+    "전액",
+    "100%",
+    "완벽 보장",
+    "모두 보장",
+    "가입 보장",
+    "보험금 확정",
+    "보상 확정",
+    "보장 확정",
+    "즉시 보상",
+    "최대 보장",
+    "최저가",
+    "업계 최고",
+    "가장 저렴",
+    "제일 싸",
+    "필수 보험"
+   ],
+   "channels": [
+    "검색광고"
+   ],
+   "product_basis": "미확인",
+   "review_status": "심의 검토 전 · 운영 후보",
+   "confidence": 0.8
+  },
+  {
    "fingerprint": "d4e97ff3ad932fb3",
    "fact": [
     "시즌: 여름 휴가 성수기 (7월, 8월)",
@@ -1470,76 +1542,6 @@
    "content_subhead": "가을 최성수기 대비 골프보험 확인 포인트",
    "purpose": "대비 안내",
    "reason": "가을 최성수기(emerging) 시기의 골프보험 선제/대비 소구",
-   "data_used": [
-    "seasonal",
-    "volume"
-   ],
-   "valid_from": "2026-08-09",
-   "valid_to": "2026-09-08",
-   "avoid_phrases": [
-    "끔찍",
-    "참사",
-    "비극",
-    "당신도",
-    "큰일",
-    "불행",
-    "공포",
-    "눈앞의 위험",
-    "지금 안 하면",
-    "이 사고 보고도",
-    "더 늦기 전에 가입",
-    "안 하면 후회",
-    "지금 가입 안 하면",
-    "서둘러 가입",
-    "꼭 가입",
-    "즉시 가입",
-    "사고 전에 가입",
-    "피해 전에 가입",
-    "안 들면 손해",
-    "누구나 가입",
-    "무조건",
-    "반드시",
-    "전액",
-    "100%",
-    "완벽 보장",
-    "모두 보장",
-    "가입 보장",
-    "보험금 확정",
-    "보상 확정",
-    "보장 확정",
-    "즉시 보상",
-    "최대 보장",
-    "최저가",
-    "업계 최고",
-    "가장 저렴",
-    "제일 싸",
-    "필수 보험"
-   ],
-   "channels": [
-    "검색광고"
-   ],
-   "product_basis": "미확인",
-   "review_status": "심의 검토 전 · 운영 후보",
-   "confidence": 0.5
-  },
-  {
-   "fingerprint": "3f312110e1015fe6",
-   "fact": [
-    "시즌: 명절 장거리 운전 (2월, 9월, 10월)",
-    "검색량: '운전자보험' 46,550회/월"
-   ],
-   "product": "driver",
-   "product_name": "운전자보험",
-   "event_id": "season-driver-2-9-10",
-   "event_name": "명절 장거리 운전",
-   "event_type": "계절",
-   "event_state": "emerging",
-   "transition": null,
-   "title": "명절 장거리 운전 운전자보험 미리 대비",
-   "description": "명절 장거리 운전 시기, 운전자보험 보장 범위를 미리 확인해 두세요.",
-   "content_subhead": "명절 장거리 운전 대비 운전자보험 확인 포인트",
-   "purpose": "대비 안내",
-   "reason": "명절 장거리 운전(emerging) 시기의 운전자보험 선제/대비 소구",
    "data_used": [
     "seasonal",
     "volume"
@@ -2913,6 +2915,20 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "[포토]한아름,버디 퍼트 들어가라",
+   "src": "edaily.co.kr",
+   "date": "2026-08-08",
+   "url": "https://m.sports.naver.com/golf/article/018/0006347577",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[위클리 생활금융] 생보업계, 생활밀착형 보장 강화…AI 활용도 확산",
+   "src": "the-biz.co.kr",
+   "date": "2026-08-09",
+   "url": "http://www.the-biz.co.kr/news/articleView.html?idxno=725873",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "국민 5명 중 1명은 노인… 생보사, 장수리스크 정조준",
    "src": "it.chosun.com",
    "date": "2026-08-08",
@@ -3046,6 +3062,20 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "이대통령 '미프진' 도입 주문…의료계 \"문제 생기면 누가 책임지나\"",
+   "src": "weekly.chosun.com",
+   "date": "2026-08-09",
+   "url": "https://n.news.naver.com/mnews/article/053/0000060556?sid=102",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "SNS 자살 덫에 빠진 10대…자살 시도자는 절반 이상 방치, 해법은",
+   "src": "mt.co.kr",
+   "date": "2026-08-09",
+   "url": "https://n.news.naver.com/mnews/article/008/0005397345?sid=101",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "李정부 \"결혼하면 손해\" 없애겠다…그런데 청년은 왜 결혼을 미루나?",
    "src": "newsfreezone.co.kr",
    "date": "2026-08-08",
@@ -3141,6 +3171,13 @@
    "src": "news1.kr",
    "date": "2026-08-03",
    "url": "https://n.news.naver.com/mnews/article/421/0009093660?sid=103",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "100원 보험부터 일당 보장까지…기록적 폭염에 ‘기후보험’ 뜬다",
+   "src": "mydaily.co.kr",
+   "date": "2026-08-09",
+   "url": "https://n.news.naver.com/mnews/article/117/0004093049?sid=103",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
@@ -3368,6 +3405,13 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "교보생명, '교보K-맞춤건강보험' 6개월 배타적사용권 획득",
+   "src": "ebn.co.kr",
+   "date": "2026-08-09",
+   "url": "https://www.ebn.co.kr/news/articleView.html?idxno=1719683",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "교보생명, 'K-맞춤건강보험' 복합심사 인수특약 배타적사용권 획득",
    "src": "apnews.kr",
    "date": "2026-08-07",
@@ -3456,6 +3500,69 @@
    "src": "fins.co.kr",
    "date": "2026-08-09",
    "url": "http://www.fins.co.kr/news/articleView.html?idxno=109510",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "NH농협생명, 폭염 대응 농업인 안전망 강화",
+   "src": "ebn.co.kr",
+   "date": "2026-08-09",
+   "url": "https://www.ebn.co.kr/news/articleView.html?idxno=1719678",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "NH농협생명, 폭염 대응 농업인 안전망 강화",
+   "src": "bizwnews.com",
+   "date": "2026-08-09",
+   "url": "http://www.bizwnews.com/news/articleView.html?idxno=142714",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "NH농협손해보험, 반야월농협서 '농기계 사고예방 캠페인' 실시",
+   "src": "gukjenews.com",
+   "date": "2026-08-09",
+   "url": "https://www.gukjenews.com/news/articleView.html?idxno=3659658",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "\"농업인 안전이 모두의 안전\" NH농협생명, 폭염 속 농업인 온열질환 신...",
+   "src": "asiaa.co.kr",
+   "date": "2026-08-09",
+   "url": "https://www.asiaa.co.kr/news/articleView.html?idxno=258004",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "‘흥국·한화·한투’ 3파전...KDB생명 매각, 5000억 간극 좁힐까",
+   "src": "ekn.kr",
+   "date": "2026-08-09",
+   "url": "https://www.ekn.kr/web/view.php?key=20260809025230900",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "롯데손보 공개매각 '안갯속'…\"눈높이 못맞추면 이번에도 '빈손'\"",
+   "src": "asiatime.co.kr",
+   "date": "2026-08-09",
+   "url": "https://www.asiatime.co.kr/article/20260807500263",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "최윤 OK금융 회장, '종합금융' 승부수…비은행 영토 확장 '잰걸음'[오늘...",
+   "src": "sisaon.co.kr",
+   "date": "2026-08-09",
+   "url": "https://www.sisaon.co.kr/news/articleView.html?idxno=203345",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "한화손보, 고려대 안암병원 환아 보호자에 웰니스 키트 전달",
+   "src": "thepublic.kr",
+   "date": "2026-08-09",
+   "url": "https://www.thepublic.kr/news/articleView.html?idxno=314267",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[크립토리뷰] 에이엠매니지먼트, 부산 '블록체인 특화 클러스터 조성 지...",
+   "src": "theguru.co.kr",
+   "date": "2026-08-09",
+   "url": "https://www.theguru.co.kr/news/article.html?no=105552",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
