@@ -1,21 +1,20 @@
 {
-  "asof": "2026-08-12",
+  "asof": "2026-08-13",
   "source": "data.go.kr",
   "weather": {
-    "active": [],
-    "error": "<urlopen error timed out>"
+    "active": []
   },
   "travel": {
-    "overseas_ratio": 82.4,
-    "period": "2026-08-11",
-    "avg": 77.8,
+    "overseas_ratio": 82.7,
+    "period": "2026-08-12",
+    "avg": 78.0,
     "peak": 100,
     "basis": "최근 7일 평균 vs 90일"
   },
   "triggers": {
     "overseas": {
       "level": "high",
-      "note": "‘여행자보험’ 검색수요 상승(2026-08-11 지수 82.4/평균 77.8) → 성수기 해외여행보험 대응"
+      "note": "‘여행자보험’ 검색수요 상승(2026-08-12 지수 82.7/평균 78.0) → 성수기 해외여행보험 대응"
     }
   }
 }
