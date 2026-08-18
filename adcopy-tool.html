@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://*.workers.dev; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="검색광고 문구 소재 제작 — 네이버 파워링크 규격(제목15·설명45) 강제 + 금지표현 린트 + 광고심의 전제">
 <title>Modoo · 검색광고 문구 소재</title>
@@ -12,6 +12,7 @@
 <link rel="apple-touch-icon" href="icons/modoo-180.png">
 <link rel="manifest" href="site.webmanifest">
 <meta name="theme-color" content="#e0850f">
+<meta name="modoo-feedback-endpoint" content="">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Modoo">
@@ -192,6 +193,9 @@ table.sheet .cp:hover{border-color:var(--brand);color:var(--brand-600);}
 </style>
 <script>try{var _r=document.documentElement;_r.setAttribute("data-theme",localStorage.getItem("mf_theme")||"light");if(window.self!==window.top)_r.setAttribute("data-embed","1");}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
 <style>:root[data-embed="1"] .sb-brand,:root[data-embed="1"] .crumb,:root[data-embed="1"] .brand-logo,:root[data-embed="1"] #themeBtn{display:none!important}</style>
+<link rel="stylesheet" href="shared/mobile-sidebar.css">
+<script src="shared/mobile-sidebar.js" defer></script>
+<script src="shared/feedback-client.js"></script>
 </head>
 <body>
 <div class="app">
@@ -716,10 +720,11 @@ function renderReco(){
       <div class="rc-h"><span class="rc-st ${esc(r.event_state)}">${esc(ST[r.event_state]||r.event_state)}</span>
         <span class="rc-pr">${esc(r.product_name)}</span><span class="rc-ev">${esc(r.event_name)}</span>
         <span class="rc-cf">conf ${esc(r.confidence)}</span></div>
-      <div class="rc-l"><span class="k">제목</span><span class="v">${esc(r.title)}</span><button class="cp" data-copy="${esc(r.title)}">복사</button></div>
-      <div class="rc-l"><span class="k">설명</span><span class="v">${esc(r.description)}</span><button class="cp" data-copy="${esc(r.description)}">복사</button></div>
-      ${r.content_subhead?`<div class="rc-l"><span class="k">소제목</span><span class="v">${esc(r.content_subhead)}</span><button class="cp" data-copy="${esc(r.content_subhead)}">복사</button></div>`:""}
+      <div class="rc-l"><span class="k">제목</span><span class="v">${esc(r.title)}</span><button class="cp" data-copy="${esc(r.title)}" data-recommendation-id="${esc(r.fingerprint)}">복사</button></div>
+      <div class="rc-l"><span class="k">설명</span><span class="v">${esc(r.description)}</span><button class="cp" data-copy="${esc(r.description)}" data-recommendation-id="${esc(r.fingerprint)}">복사</button></div>
+      ${r.content_subhead?`<div class="rc-l"><span class="k">소제목</span><span class="v">${esc(r.content_subhead)}</span><button class="cp" data-copy="${esc(r.content_subhead)}" data-recommendation-id="${esc(r.fingerprint)}">복사</button></div>`:""}
       <div class="rc-f">📌 ${(r.fact||[]).map(esc).join(" · ")}</div>
+      <div class="rc-f"><button class="btn sm" data-feedback-action="accepted" data-recommendation-id="${esc(r.fingerprint)}" data-product="${esc(r.product)}">채택</button> <button class="btn sm" data-feedback-action="edit_requested" data-recommendation-id="${esc(r.fingerprint)}" data-product="${esc(r.product)}">수정 필요</button> <button class="btn sm" data-feedback-action="rejected" data-recommendation-id="${esc(r.fingerprint)}" data-product="${esc(r.product)}">반려</button></div>
     </div>`).join(""):`<div class="banner">지금 기준 신뢰도 <b>conf ≥ ${RECO_MINCONF}</b> 추천이 없습니다. (엔진 산출물이 아직 없거나 로컬 파일로 열림 — 배포 주소에서 확인)</div>`;
   $("#content").innerHTML=`
     <div class="banner"><b>근거 기반 추천 소재</b> · 시즌 캘린더·뉴스 클리핑·검색량을 결합해 <b>지금 밀 만한 상품·문구</b>를 자동 제안(신뢰도 <b>conf ≥ ${RECO_MINCONF}</b>만 노출). 모두 <b>운영 후보</b> — 심의·상품근거 검토 후 사용. 상시 세트는 <b>상품별 소재</b> 탭.</div>
@@ -812,7 +817,13 @@ document.addEventListener("click",e=>{
   const bz=e.target.closest("[data-bzoom]"); if(bz){$("#lbImg").src=bz.dataset.bzoom;$("#lbCap").textContent=bz.dataset.bcap||"";$("#lb").classList.add("show");return;}
   if(e.target.closest("#lb")){$("#lb").classList.remove("show");return;}
   const nav=e.target.closest("[data-key]"); if(nav){curKey=nav.dataset.key;render();window.scrollTo({top:0});return;}
+  const fb=e.target.closest("[data-feedback-action]");if(fb){
+    window.ModooFeedback?.record({action:fb.dataset.feedbackAction,tool:"adcopy",productKey:fb.dataset.product||curKey,recommendationId:fb.dataset.recommendationId||"",sourceVersion:RECO.asof||"",reviewStatus:"사람 검토 전 운영 후보"})
+      .then(result=>toast(result&&result.sent?"피드백 기록 완료":"피드백 저장소 미연결 · docs/feedback-loop.md 확인"))
+      .catch(()=>toast("피드백 기록 실패"));return;
+  }
   const cp=e.target.closest("[data-copy]"); if(cp){const t=cp.dataset.copy;
+    window.ModooFeedback?.record({action:"copied",tool:"adcopy",productKey:curKey,recommendationId:cp.dataset.recommendationId||"",sourceVersion:RECO.asof||VOL.asof||"",text:t}).catch(()=>{});
     (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast("복사됨 · "+clen(t)+"자")).catch(()=>{
       const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("복사됨");}catch(_){}ta.remove();});
   }});

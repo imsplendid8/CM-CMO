@@ -95,6 +95,10 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 .workflow-step h3{font-size:13px;margin-bottom:8px;}.workflow-step h3::before{content:counter(flow);display:inline-grid;place-items:center;width:21px;height:21px;margin-right:7px;border-radius:50%;background:var(--brand);color:#fff;font-size:11px;}
 .workflow-links{display:flex;flex-wrap:wrap;gap:6px}.workflow-links button{border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink-2);font:600 11.5px inherit;padding:7px 9px;cursor:pointer}.workflow-links button:hover{color:var(--brand-600);border-color:var(--brand)}
 @media(max-width:700px){.workflow-steps{grid-template-columns:1fr}.workflow{padding:16px}}
+.data-health{margin:14px 0;padding:18px 20px;background:var(--surface);border:1px solid var(--line);border-radius:15px;box-shadow:var(--sh)}
+.data-health h2{font-size:15px;margin-bottom:3px}.data-health>p{font-size:11.5px;color:var(--muted);margin-bottom:12px}.health-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.health-item{padding:10px 11px;border:1px solid var(--line-2);border-radius:10px;background:var(--surface-2);min-width:0}.health-item .row{display:flex;align-items:center;justify-content:space-between;gap:6px}.health-item b{font-size:11.5px}.health-item small{display:block;color:var(--muted);font-size:10px;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.health-state{font-size:9.5px;font-weight:800;padding:3px 6px;border-radius:999px}.health-state.healthy{color:#11723b;background:#e6f5ec}.health-state.partial,.health-state.stale{color:#8a5906;background:#fbf1de}.health-state.missing,.health-state.unknown{color:#b4242a;background:#fcecec}
+@media(max-width:700px){.health-grid{grid-template-columns:1fr 1fr}.data-health{padding:15px}.health-item{padding:9px}}
 .usage{display:flex;gap:14px;flex-wrap:wrap;margin-top:24px;padding:16px 18px;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh);}
 .usage .ut{font-size:11.5px;font-weight:800;color:var(--ink-2);letter-spacing:.01em;display:flex;align-items:center;gap:7px;width:100%;}
 .usage .um{flex:1;min-width:160px;}
@@ -225,9 +229,9 @@ const TOOLS=[
  {id:"terms",icon:"📖",name:"약관 용어 변환",tag:"약관",file:"terms-tool.html",url:"https://imsplendid8.github.io/CM-CMO/terms-tool.html",ac:"#1f9d6b",
   desc:"보험 표준약관의 어려운 용어를 소비자가 이해하는 쉬운 표현으로 변환. 가입화면·검색광고·상세 카피 작성에 바로 복사.",
   feats:["표준약관 원문 → 소비자 쉬운 표현","용어 난이도 등급 + 활용 팁","분류·검색 + 원클릭 복사"]},
- {id:"adcopy",icon:"✍️",name:"SA소재",tag:"소재",file:"adcopy-tool.html",url:"https://imsplendid8.github.io/CM-CMO/adcopy-tool.html",ac:"#e8553d",
-  desc:"네이버 파워링크 실제 등록 양식(광고제목·추가제목·설명·홍보문구·서브링크) 5블록 롤링 소재를 상품별로 생성. 시즌·뉴스 반영분 하이라이트 + 엑셀 내보내기.",
-  feats:["등록 양식 5블록·글자수 자동 카운트","시즌 캘린더+뉴스/SERP 근거를 롤링 풀에 합류","엑셀(.xls) 다운로드 · 심의 표현 린트"]},
+  {id:"adcopy",icon:"✍️",name:"SA소재",tag:"소재",file:"adcopy-tool.html",url:"https://imsplendid8.github.io/CM-CMO/adcopy-tool.html",ac:"#e8553d",
+   desc:"네이버 파워링크 구조를 참고한 내부 검토용 소재를 13상품×50행으로 생성. 공식 템플릿 열 매핑과 심의 확인 전에는 업로드하지 않습니다.",
+   feats:["13상품×50행·글자수·중복 자동 검증","시즌 캘린더+뉴스/SERP 근거를 롤링 풀에 합류","내부 검토 CSV · 공식 템플릿 열 매핑"]},
  {id:"papers",icon:"📚",name:"논문",tag:"참고",file:"papers-tool.html",url:"https://imsplendid8.github.io/CM-CMO/papers-tool.html",ac:"#5b6ee1",
   desc:"CM 다이렉트 마케팅 참고 논문을 매월 1일 네이버 학술 검색으로 자동 적립. 주제 필터·검색·원문 링크. 원문은 링크만, 요약은 공개 서지 기반.",
   feats:["월간 자동 적립(GitHub Actions)","주제별 필터 + 제목·요약 검색","원문 링크 · 담당자 참고 시사점"]},
@@ -251,6 +255,37 @@ function loadUsage(boxId){
       ${meter("검색광고","searchad",u.limits&&u.limits.searchad)}
       <div class="note">한도는 네이버 공개 일한도(검색 25,000·데이터랩 1,000)이며 앱별로 다를 수 있습니다. 검색광고는 초당 제한이라 일누계만 표시.</div></div>`;
   }).catch(()=>{box.innerHTML="";});
+}
+const HEALTH_SOURCES=[
+  {name:"뉴스 클리핑",file:"data/clips/index.json",field:"updated",maxAge:2},
+  {name:"수요 신호",file:"data/signals.json",field:"asof",maxAge:2},
+  {name:"실측 검색량",file:"data/volume.json",field:"asof",maxAge:9},
+  {name:"데이터랩",file:"data/trends.json",field:"asof",maxAge:35},
+  {name:"논문",file:"data/papers.json",field:"updated",maxAge:35},
+  {name:"SERP",file:"serp/manifest.json",field:"asof",maxAge:9},
+];
+function dataErrors(value,out=[],depth=0){
+  if(!value||typeof value!=="object"||depth>4)return out;
+  Object.entries(value).forEach(([key,v])=>{if(key==="error"&&v)out.push(String(v));else if(v&&typeof v==="object")dataErrors(v,out,depth+1);});return out;
+}
+function healthItem(source,data){
+  if(!data)return {...source,state:"missing",date:"—",detail:"파일 누락 또는 읽기 실패"};
+  const raw=data[source.field],date=typeof raw==="string"?raw.slice(0,10):"";
+  const parsed=/^\d{4}-\d{2}-\d{2}$/.test(date)?new Date(date+"T00:00:00Z"):null;
+  if(!parsed||Number.isNaN(parsed.getTime()))return {...source,state:"unknown",date:"—",detail:"기준일 확인 불가"};
+  const age=Math.floor((Date.now()-parsed.getTime())/86400000),errors=dataErrors(data);
+  const state=age<0?"unknown":age>source.maxAge?"stale":errors.length?"partial":"healthy";
+  const src=data.source||data._source||"자동수집";
+  return {...source,state,date,detail:errors.length?errors.slice(0,2).join(" · "):`${src} · ${age}일 전`};
+}
+function loadDataHealth(){
+  const box=document.getElementById("dataHealth");if(!box)return;
+  Promise.all(HEALTH_SOURCES.map(s=>fetch(s.file,{cache:"no-store"}).then(r=>r.ok?r.json():null).catch(()=>null)))
+    .then(data=>{
+      const items=HEALTH_SOURCES.map((s,i)=>healthItem(s,data[i]));
+      const label={healthy:"정상",partial:"일부 실패",stale:"갱신 필요",missing:"누락",unknown:"확인 불가"};
+      box.innerHTML=`<h2>데이터 상태</h2><p>각 산출물의 출처·기준일·부분 오류를 현재 시점에서 다시 확인합니다.</p><div class="health-grid">${items.map(x=>`<div class="health-item" title="${esc(x.detail)}"><div class="row"><b>${esc(x.name)}</b><span class="health-state ${x.state}">${label[x.state]}</span></div><small>${esc(x.date)} · ${esc(x.detail)}</small></div>`).join("")}</div>`;
+    });
 }
 // Pages·로컬·file: → iframe 임베드 / 그 외(아티팩트 샌드박스) → 새 탭
 const LOCAL = location.protocol==="file:" || /github\.io$/.test(location.hostname) || location.hostname==="localhost" || /^127\./.test(location.hostname) || location.hostname==="";
@@ -335,18 +370,20 @@ function renderHome(){
         <div class="workflow-step"><h3>검토</h3><div class="workflow-links"><button data-tool="serp">경쟁 소재</button><button data-tool="seo">SEO</button><button data-tool="terms">약관 표현</button></div></div>
         <div class="workflow-step"><h3>제작·실행</h3><div class="workflow-links"><button data-tool="adcopy">SA 소재 제작</button><button data-tool="papers">근거 보강</button></div></div>
       </div></section>
+    <section class="data-health" id="dataHealth" aria-live="polite"><h2>데이터 상태</h2><p>최신성·출처·부분 오류를 확인하는 중입니다.</p></section>
     <div class="grid">${TOOLS.map(t=>`<div class="card" data-tool="${t.id}" style="--ac:${t.ac}">
       <div class="ico">${ICON[t.id]||t.icon}</div><h2>${esc(t.name)}</h2>
       <div class="desc">${esc(t.desc)}</div>
       <div class="go">열기 →</div></div>`).join("")}</div>
-    <div class="foot"><b>연결 구조</b> · 위 업무 흐름과 상단 메뉴에서 각 작업공간으로 전환합니다. 도구들은 같은 담당 상품 집합(홈·장기7·일반2)을 공유합니다. · <a href="${WIKI}" target="_blank" rel="noopener noreferrer">📖 위키</a><br>
+    <div class="foot"><b>연결 구조</b> · 위 업무 흐름과 상단 메뉴에서 각 작업공간으로 전환합니다. 주요 분석·소재 도구는 같은 13개 상품 마스터를 공유합니다. · <a href="${WIKI}" target="_blank" rel="noopener noreferrer">📖 위키</a><br>
     데이터·카피는 샘플·공개값 기준 · 광고 문구는 배포 전 광고심의 검수 · 검색량/입찰가는 각 광고 플랫폼에서 확정 · 뉴스 요약/시사점은 마케팅 분석(개인정보·영업비밀 미포함).</div>
   </div>`;
+  loadDataHealth();
 }
 function show(id,sub){                                  // sub = 툴 내부 딥링크(#해시) 선택
   closeSheet();                                         // 도구 전환 시 바텀시트 닫기
   setCtx(id);                                           // 헤더 한 줄에 도구 이름(홈이면 비움)
-  if(id==="home"){home.style.display="block";frame.style.display="none";openTab.href="#";openTab.style.visibility="hidden";renderNav("home");location.hash="";loadUsage();return;}
+  if(id==="home"){home.style.display="block";frame.style.display="none";openTab.href="#";openTab.style.visibility="hidden";renderNav("home");location.hash="";loadUsage();loadDataHealth();return;}
   const t=TOOLS.find(x=>x.id===id); if(!t)return;
   const suffix=sub||"";
   openTab.href=(LOCAL?t.file:t.url)+suffix; openTab.style.visibility="visible";
