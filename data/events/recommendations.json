@@ -1,11 +1,11 @@
 {
- "asof": "2026-08-18",
+ "asof": "2026-08-19",
  "counts": {
   "events": 42,
   "recommendations": 33,
   "suppressed_cooldown": 0,
   "unclassified": 190,
-  "transitions": 5
+  "transitions": 0
  },
  "events": [
   {
@@ -442,38 +442,7 @@
    "source": "news"
   }
  ],
- "transitions": [
-  {
-   "event_id": "news-여름철-해외여행-감염병-주의-뎅기열-콜레라-등-확산세",
-   "from": "active",
-   "to": "lifted",
-   "kind": "lifted"
-  },
-  {
-   "event_id": "school-open-fall-2026",
-   "from": "emerging",
-   "to": "active",
-   "kind": "onset"
-  },
-  {
-   "event_id": "summer-vacation-2026",
-   "from": "active",
-   "to": "cooling",
-   "kind": "winddown"
-  },
-  {
-   "event_id": "weather-강풍",
-   "from": "active",
-   "to": "lifted",
-   "kind": "lifted"
-  },
-  {
-   "event_id": "weather-호우",
-   "from": "active",
-   "to": "lifted",
-   "kind": "lifted"
-  }
- ],
+ "transitions": [],
  "recommendations": [
   {
    "fingerprint": "ca072cda39dda068",
@@ -499,7 +468,7 @@
     "clips",
     "volume"
    ],
-   "valid_from": "2026-08-18",
+   "valid_from": "2026-08-19",
    "valid_to": "2026-11-22",
    "avoid_phrases": [
     "끔찍",
@@ -572,7 +541,7 @@
     "clips",
     "volume"
    ],
-   "valid_from": "2026-08-18",
+   "valid_from": "2026-08-19",
    "valid_to": "2026-11-22",
    "avoid_phrases": [
     "끔찍",
@@ -645,8 +614,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-08-18",
-   "valid_to": "2026-09-17",
+   "valid_from": "2026-08-19",
+   "valid_to": "2026-09-18",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -717,8 +686,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-08-18",
-   "valid_to": "2026-09-17",
+   "valid_from": "2026-08-19",
+   "valid_to": "2026-09-18",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -789,8 +758,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-08-18",
-   "valid_to": "2026-09-17",
+   "valid_from": "2026-08-19",
+   "valid_to": "2026-09-18",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -838,7 +807,7 @@
    "confidence": 0.8
   },
   {
-   "fingerprint": "bfcf341959daefd0",
+   "fingerprint": "0455b56cd4347a5a",
    "fact": [
     "예정: 여름 휴가철 2026-07-18~2026-08-17",
     "뉴스: '휴가철 교통사고·치사율↑…보험 보장 어디까지 대비되나' (fins.co.kr 2026-08-14)",
@@ -850,24 +819,18 @@
    "event_name": "여름 휴가철",
    "event_type": "휴가",
    "event_state": "cooling",
-   "transition": {
-    "event_id": "summer-vacation-2026",
-    "from": "active",
-    "to": "cooling",
-    "kind": "winddown"
-   },
+   "transition": null,
    "title": "여름 휴가철 해외여행보험 마무리 점검",
    "description": "여름 휴가철 시기, 해외여행보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "여름 휴가철 대비 해외여행보험 확인 포인트",
-   "purpose": "마무리 전환",
-   "reason": "여름 휴가철 상태 전이(active→cooling)에 따른 해외여행보험 마무리 전환",
+   "purpose": "마무리 안내",
+   "reason": "여름 휴가철(cooling) 시기의 해외여행보험 선제/대비 소구",
    "data_used": [
     "calendar",
     "clips",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-08-18",
+   "valid_from": "2026-08-19",
    "valid_to": "2026-08-24",
    "avoid_phrases": [
     "끔찍",
@@ -917,7 +880,7 @@
    "confidence": 0.64
   },
   {
-   "fingerprint": "94640c45f432cd2c",
+   "fingerprint": "dda73917e29711b7",
    "fact": [
     "예정: 여름 휴가철 2026-07-18~2026-08-17",
     "뉴스: '휴가철 교통사고·치사율↑…보험 보장 어디까지 대비되나' (fins.co.kr 2026-08-14)",
@@ -929,24 +892,18 @@
    "event_name": "여름 휴가철",
    "event_type": "휴가",
    "event_state": "cooling",
-   "transition": {
-    "event_id": "summer-vacation-2026",
-    "from": "active",
-    "to": "cooling",
-    "kind": "winddown"
-   },
+   "transition": null,
    "title": "여름 휴가철 해외장기체류보험 마무리 점검",
    "description": "여름 휴가철 시기, 해외장기체류보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "여름 휴가철 대비 해외장기체류보험 확인 포인트",
-   "purpose": "마무리 전환",
-   "reason": "여름 휴가철 상태 전이(active→cooling)에 따른 해외장기체류보험 마무리 전환",
+   "purpose": "마무리 안내",
+   "reason": "여름 휴가철(cooling) 시기의 해외장기체류보험 선제/대비 소구",
    "data_used": [
     "calendar",
     "clips",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-08-18",
+   "valid_from": "2026-08-19",
    "valid_to": "2026-08-24",
    "avoid_phrases": [
     "끔찍",
@@ -996,7 +953,7 @@
    "confidence": 0.64
   },
   {
-   "fingerprint": "fc17ebf07334f3a4",
+   "fingerprint": "6bcf033a52f0868c",
    "fact": [
     "예정: 여름 휴가철 2026-07-18~2026-08-17",
     "뉴스: '휴가철 교통사고·치사율↑…보험 보장 어디까지 대비되나' (fins.co.kr 2026-08-14)",
@@ -1008,24 +965,18 @@
    "event_name": "여름 휴가철",
    "event_type": "휴가",
    "event_state": "cooling",
-   "transition": {
-    "event_id": "summer-vacation-2026",
-    "from": "active",
-    "to": "cooling",
-    "kind": "winddown"
-   },
+   "transition": null,
    "title": "여름 휴가철 운전자보험 마무리 점검",
    "description": "여름 휴가철 시기, 운전자보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "여름 휴가철 대비 운전자보험 확인 포인트",
-   "purpose": "마무리 전환",
-   "reason": "여름 휴가철 상태 전이(active→cooling)에 따른 운전자보험 마무리 전환",
+   "purpose": "마무리 안내",
+   "reason": "여름 휴가철(cooling) 시기의 운전자보험 선제/대비 소구",
    "data_used": [
     "calendar",
     "clips",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-08-18",
+   "valid_from": "2026-08-19",
    "valid_to": "2026-08-24",
    "avoid_phrases": [
     "끔찍",
@@ -1075,7 +1026,7 @@
    "confidence": 0.64
   },
   {
-   "fingerprint": "065947348d63369e",
+   "fingerprint": "dd574559b13e767b",
    "fact": [
     "예정: 여름 휴가철 2026-07-18~2026-08-17",
     "뉴스: '휴가철 교통사고·치사율↑…보험 보장 어디까지 대비되나' (fins.co.kr 2026-08-14)",
@@ -1087,24 +1038,18 @@
    "event_name": "여름 휴가철",
    "event_type": "휴가",
    "event_state": "cooling",
-   "transition": {
-    "event_id": "summer-vacation-2026",
-    "from": "active",
-    "to": "cooling",
-    "kind": "winddown"
-   },
+   "transition": null,
    "title": "여름 휴가철 홀인원보험 마무리 점검",
    "description": "여름 휴가철 시기, 홀인원보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "여름 휴가철 대비 홀인원보험 확인 포인트",
-   "purpose": "마무리 전환",
-   "reason": "여름 휴가철 상태 전이(active→cooling)에 따른 홀인원보험 마무리 전환",
+   "purpose": "마무리 안내",
+   "reason": "여름 휴가철(cooling) 시기의 홀인원보험 선제/대비 소구",
    "data_used": [
     "calendar",
     "clips",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-08-18",
+   "valid_from": "2026-08-19",
    "valid_to": "2026-08-24",
    "avoid_phrases": [
     "끔찍",
@@ -1154,7 +1099,7 @@
    "confidence": 0.64
   },
   {
-   "fingerprint": "2ff8d6011f9ab965",
+   "fingerprint": "d3094cd06effb326",
    "fact": [
     "예정: 여름 휴가철 2026-07-18~2026-08-17",
     "뉴스: '휴가철 교통사고·치사율↑…보험 보장 어디까지 대비되나' (fins.co.kr 2026-08-14)",
@@ -1166,24 +1111,18 @@
    "event_name": "여름 휴가철",
    "event_type": "휴가",
    "event_state": "cooling",
-   "transition": {
-    "event_id": "summer-vacation-2026",
-    "from": "active",
-    "to": "cooling",
-    "kind": "winddown"
-   },
+   "transition": null,
    "title": "여름 휴가철 골프보험 마무리 점검",
    "description": "여름 휴가철 시기, 골프보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "여름 휴가철 대비 골프보험 확인 포인트",
-   "purpose": "마무리 전환",
-   "reason": "여름 휴가철 상태 전이(active→cooling)에 따른 골프보험 마무리 전환",
+   "purpose": "마무리 안내",
+   "reason": "여름 휴가철(cooling) 시기의 골프보험 선제/대비 소구",
    "data_used": [
     "calendar",
     "clips",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-08-18",
+   "valid_from": "2026-08-19",
    "valid_to": "2026-08-24",
    "avoid_phrases": [
     "끔찍",
@@ -1693,8 +1632,8 @@
     "clips",
     "volume"
    ],
-   "valid_from": "2026-08-18",
-   "valid_to": "2026-09-17",
+   "valid_from": "2026-08-19",
+   "valid_to": "2026-09-18",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1743,7 +1682,7 @@
    "confidence": 0.6
   },
   {
-   "fingerprint": "1a116d58add9d3d1",
+   "fingerprint": "53017b691ff352fd",
    "fact": [
     "예정: 2학기 개학·스쿨존 2026-08-18~2026-08-31",
     "검색량: '운전자보험' 40,050회/월"
@@ -1754,23 +1693,17 @@
    "event_name": "2학기 개학·스쿨존",
    "event_type": "개학",
    "event_state": "active",
-   "transition": {
-    "event_id": "school-open-fall-2026",
-    "from": "emerging",
-    "to": "active",
-    "kind": "onset"
-   },
+   "transition": null,
    "title": "2학기 개학·스쿨존 운전자보험 지금 점검",
    "description": "2학기 개학·스쿨존 시기, 운전자보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "2학기 개학·스쿨존 대비 운전자보험 확인 포인트",
-   "purpose": "본격 대응",
-   "reason": "2학기 개학·스쿨존 상태 전이(emerging→active)에 따른 운전자보험 본격 대응",
+   "purpose": "시즌 대응",
+   "reason": "2학기 개학·스쿨존(active) 시기의 운전자보험 선제/대비 소구",
    "data_used": [
     "calendar",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-08-18",
+   "valid_from": "2026-08-19",
    "valid_to": "2026-09-07",
    "avoid_phrases": [
     "끔찍",
@@ -1819,7 +1752,7 @@
    "confidence": 0.5
   },
   {
-   "fingerprint": "f10115d22db28e78",
+   "fingerprint": "d0346656edd3d165",
    "fact": [
     "예정: 2학기 개학·스쿨존 2026-08-18~2026-08-31",
     "검색량: '미래에셋생명' 79,100회/월"
@@ -1830,23 +1763,17 @@
    "event_name": "2학기 개학·스쿨존",
    "event_type": "개학",
    "event_state": "active",
-   "transition": {
-    "event_id": "school-open-fall-2026",
-    "from": "emerging",
-    "to": "active",
-    "kind": "onset"
-   },
+   "transition": null,
    "title": "2학기 개학·스쿨존 치아보험 지금 점검",
    "description": "2학기 개학·스쿨존 시기, 치아보험 보장 범위를 미리 확인해 두세요.",
    "content_subhead": "2학기 개학·스쿨존 대비 치아보험 확인 포인트",
-   "purpose": "본격 대응",
-   "reason": "2학기 개학·스쿨존 상태 전이(emerging→active)에 따른 치아보험 본격 대응",
+   "purpose": "시즌 대응",
+   "reason": "2학기 개학·스쿨존(active) 시기의 치아보험 선제/대비 소구",
    "data_used": [
     "calendar",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-08-18",
+   "valid_from": "2026-08-19",
    "valid_to": "2026-09-07",
    "avoid_phrases": [
     "끔찍",
@@ -1916,8 +1843,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-08-18",
-   "valid_to": "2026-09-17",
+   "valid_from": "2026-08-19",
+   "valid_to": "2026-09-18",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1986,8 +1913,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-08-18",
-   "valid_to": "2026-09-17",
+   "valid_from": "2026-08-19",
+   "valid_to": "2026-09-18",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2056,8 +1983,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-08-18",
-   "valid_to": "2026-09-17",
+   "valid_from": "2026-08-19",
+   "valid_to": "2026-09-18",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2126,8 +2053,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-08-18",
-   "valid_to": "2026-09-17",
+   "valid_from": "2026-08-19",
+   "valid_to": "2026-09-18",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2196,8 +2123,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-08-18",
-   "valid_to": "2026-09-17",
+   "valid_from": "2026-08-19",
+   "valid_to": "2026-09-18",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2266,8 +2193,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-08-18",
-   "valid_to": "2026-09-17",
+   "valid_from": "2026-08-19",
+   "valid_to": "2026-09-18",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2336,8 +2263,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-08-18",
-   "valid_to": "2026-09-17",
+   "valid_from": "2026-08-19",
+   "valid_to": "2026-09-18",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2831,8 +2758,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-08-18",
-   "valid_to": "2026-09-17",
+   "valid_from": "2026-08-19",
+   "valid_to": "2026-09-18",
    "avoid_phrases": [
     "끔찍",
     "참사",
