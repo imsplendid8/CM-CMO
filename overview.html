@@ -62,8 +62,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .note code{font-family:var(--mono);font-size:11.5px;background:var(--surface-2);padding:1px 6px;border-radius:5px;}
 .foot{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.7;}
 </style>
-<script>try{var _r=document.documentElement;_r.setAttribute("data-theme",localStorage.getItem("mf_theme")||"light");_r.setAttribute("data-admin",localStorage.getItem("mf_admin")==="1"?"1":"0");}catch(e){document.documentElement.setAttribute("data-theme","light");}</script>
-<style>html:not([data-admin="1"]) [data-admin-only]{display:none!important;}</style>
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("mf_theme")||"light");}catch(e){document.documentElement.setAttribute("data-theme","light");}</script>
 </head>
 <body>
 <header class="top">
@@ -99,7 +98,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
     <a class="card" href="news-tool.html"><div class="ic">🗂️</div><div class="t">뉴스 클리핑 아카이브</div><div class="d">하루 2회(09·13시) 카테고리 뉴스 클리핑, 날짜별 아카이브·검색·일/월 요약. 뉴스 툴 사이드바 <b>클리핑 아카이브</b>.</div><span class="path">data/clips/</span></a>
     <a class="card" href="news-tool.html"><div class="ic">🔴</div><div class="t">수요 신호(트리거)</div><div class="d">기상청·검색 트렌드 등 공공/공개 데이터 기반 수요 트리거를 뉴스 툴 상단 배너로 표시.</div><span class="path">data/signals.json</span></a>
     <a class="card" href="https://github.com/imsplendid8/CM-CMO/tree/main/serp" target="_blank" rel="noopener"><div class="ic">📸</div><div class="t">상품 SERP 캡쳐 <span class="ext">↗ GitHub</span></div><div class="d">상품 대표키워드 네이버 검색결과 주간 스크린샷 원본(전/후 diff 아카이브).</div><span class="path">serp/ · 39컷</span></a>
-    <a class="card" href="brief-setup.html" data-admin-only><div class="ic">📨</div><div class="t">데일리 브리핑 설정 <span class="ext">🔐 관리자</span></div><div class="d">텔레그램 브리핑 <b>받을 사람(chat_id)</b>과 <b>발송 시간(KST)</b>을 정하면 <code>TELEGRAM_CHAT_IDS</code>·cron 값을 만들어 줍니다 → GitHub Secrets/워크플로에 붙여넣기. chat_id는 브라우저·Secrets에만(저장소 미커밋).</div><span class="path">brief-setup.html</span></a>
+    <a class="card" href="https://github.com/imsplendid8/CM-CMO/settings/secrets/actions" target="_blank" rel="noopener noreferrer"><div class="ic">🔐</div><div class="t">브리핑 보안 설정 <span class="ext">↗ GitHub</span></div><div class="d">텔레그램·이메일 수신자와 API 자격증명은 공개 페이지가 아니라 <b>GitHub Actions Secrets</b>에서만 관리합니다. 설정 방법은 데일리 브리프 문서를 따릅니다.</div><span class="path">Settings · Secrets and variables · Actions</span></a>
   </div>
 
   <div class="cap">③ 문서·위키</div>

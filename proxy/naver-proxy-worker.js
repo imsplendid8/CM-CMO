@@ -1,11 +1,11 @@
 /*
- * naver-proxy-worker.js — Cloudflare Worker (무료) CORS 프록시 · 팀 전용
+ * naver-proxy-worker.js — Cloudflare Worker (무료) CORS 프록시
  *
  * 목적: 브라우저에서 직접 못 부르는 네이버 API(CORS 차단 + 검색광고 HMAC 서명)를
  *       팀 소유 워커가 대신 호출 → 툴이 "URL에서 바로" 실시간 데이터를 받음.
  *
- * 인증·요청 허용 정책(중요):
- *   ① 출처 화이트리스트 — 허용 Origin(브라우저 CORS) 또는 Referer 접두가 맞는 요청만 처리(그 외 403).
+ * 요청 허용 정책(중요):
+ *   ① 출처 화이트리스트 — 브라우저 CORS 정책용이다. Origin/Referer는 인증 수단이 아니다.
  *   ② 키는 '워커 시크릿만' 사용 — 브라우저 헤더로 키를 받지 않음(x-mf-* override 폐지) → 브라우저 키 노출 0.
  *        wrangler secret put NAVER_ID / NAVER_SECRET            (검색·데이터랩)
  *        wrangler secret put AD_KEY / AD_SECRET / AD_CUSTOMER    (검색광고)
@@ -15,7 +15,7 @@
  * 라우트:
  *   GET  /naver/v1/search/*                → openapi.naver.com (검색: 뉴스 등)
  *   POST /naver/v1/datalab/*               → openapi.naver.com (데이터랩 트렌드)
- *   GET|POST /searchad/*                   → api.searchad.naver.com (검색량, HMAC 자동 서명)
+ *   GET  /searchad/keywordstool            → api.searchad.naver.com (검색량 조회 전용, HMAC 자동 서명)
  *   GET  /usage                            → 사용량(대시보드 위젯, 허용 출처만)
  *   GET  /  ·  /health                     → 상태(공개)
  *
@@ -27,6 +27,8 @@ const ALLOW_ORIGINS = [
   "https://imsplendid8.github.io",
 ];
 const IP_DAILY_MAX = 3000; // KV 있을 때 IP별 하루 요청 상한(초과 시 429). null 이면 무제한.
+const MAX_QUERY_LENGTH = 4096;
+const MAX_BODY_BYTES = 64 * 1024;
 
 const matchOrigin = (v) => {
   if (!v) return null;
@@ -42,6 +44,8 @@ const corsFor = (origin, extra = {}) => ({
   "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
   "Access-Control-Allow-Headers": "content-type",
   "Access-Control-Max-Age": "86400",
+  "Cache-Control": "no-store",
+  "X-Content-Type-Options": "nosniff",
   ...extra,
 });
 const jsonFor = (origin, obj, status = 200) =>
@@ -51,7 +55,8 @@ const jsonFor = (origin, obj, status = 200) =>
 function routeAllowed(method, p) {
   if (p.startsWith("/naver/v1/search/")) return method === "GET";
   if (p.startsWith("/naver/v1/datalab/")) return method === "POST";
-  if (p.startsWith("/searchad/")) return method === "GET" || method === "POST";
+  // 공개 브라우저 경로는 검색량 조회만 허용한다. /ncc/* 등 광고 관리 API는 절대 전달하지 않는다.
+  if (p === "/searchad/keywordstool") return method === "GET";
   return false;
 }
 
@@ -80,7 +85,7 @@ async function rateOk(env, req) {
     const n = parseInt((await env.USAGE.get(k)) || "0", 10) + 1;
     await env.USAGE.put(k, String(n), { expirationTtl: 172800 });
     return n <= IP_DAILY_MAX;
-  } catch (e) { return true; }
+  } catch (e) { return false; }
 }
 async function usageReport(env) {
   const date = today();
@@ -116,6 +121,13 @@ export default {
     // ③ 라우트·메서드 화이트리스트
     if (!routeAllowed(req.method, p)) return jsonFor(origin, { error: "route/method not allowed" }, 404);
 
+    // 비정상적으로 큰 쿼리·본문은 외부 API와 Worker 자원을 사용하기 전에 거부한다.
+    if (url.search.length > MAX_QUERY_LENGTH) return jsonFor(origin, { error: "query too large" }, 414);
+    const contentLength = Number(req.headers.get("content-length") || 0);
+    if (Number.isFinite(contentLength) && contentLength > MAX_BODY_BYTES) {
+      return jsonFor(origin, { error: "request body too large" }, 413);
+    }
+
     // ④ IP·일 요청 상한
     if (!(await rateOk(env, req))) return jsonFor(origin, { error: "rate limit exceeded" }, 429);
 
@@ -134,11 +146,11 @@ export default {
       }
 
       // ── 네이버 검색광고 (HMAC-SHA256 서명, 키=워커 시크릿만) ──
-      if (p.startsWith("/searchad/")) {
+      if (p === "/searchad/keywordstool") {
         const key = env.AD_KEY, secret = env.AD_SECRET, customer = env.AD_CUSTOMER;
         if (!key || !secret || !customer) return jsonFor(origin, { error: "server not configured: AD_KEY/AD_SECRET/AD_CUSTOMER" }, 500);
         const apiPath = p.replace(/^\/searchad/, "");
-        const method = req.method;
+        const method = "GET";
         const ts = Date.now().toString();
         const sign = await hmacSha256B64(secret, `${ts}.${method}.${apiPath}`);
         const target = "https://api.searchad.naver.com" + apiPath + url.search;
@@ -149,7 +161,6 @@ export default {
             "Content-Type": "application/json; charset=UTF-8",
           },
         };
-        if (method === "POST") init.body = await req.text();
         const r = await fetch(target, init);
         const body = await r.text();
         await bump(env, "searchad");
