@@ -38,7 +38,7 @@ Cloudflare 대시보드에서 **폼 입력만** 하면 됩니다:
 |---|---|---|
 | `GET /naver/v1/search/news.json?query=` | openapi.naver.com | 뉴스 |
 | `POST /naver/v1/datalab/search` | openapi.naver.com | 데이터랩 트렌드 |
-| `POST /searchad/keywordstool` | api.searchad.naver.com | 검색량(자동 HMAC 서명) |
+| `GET /searchad/keywordstool` | api.searchad.naver.com | 검색량(자동 HMAC 서명·읽기 전용) |
 
 ## 기존 자동화(Action)와의 관계
 - **데일리 브리프·주간 검색량·트렌드**는 계속 **GitHub Actions + Secrets**로 무인 실행됩니다(변경 없음).

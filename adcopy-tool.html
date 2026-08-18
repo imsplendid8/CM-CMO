@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://*.workers.dev; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="검색광고 문구 소재 제작 — 네이버 파워링크 규격(제목15·설명45) 강제 + 금지표현 린트 + 광고심의 전제">
 <title>Modoo · 검색광고 문구 소재</title>
@@ -12,6 +12,7 @@
 <link rel="apple-touch-icon" href="icons/modoo-180.png">
 <link rel="manifest" href="site.webmanifest">
 <meta name="theme-color" content="#e0850f">
+<meta name="modoo-feedback-endpoint" content="">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Modoo">
@@ -80,6 +81,9 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .xbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
 .xbtn{background:var(--grad);color:#fff;border:none;font-weight:800;box-shadow:0 6px 16px rgba(232,85,61,.3);}
 .xbtn:hover{color:#fff;filter:brightness(1.05);}
+.btn:disabled{opacity:.48;cursor:not-allowed;filter:none!important;}
+.tpl{display:flex;align-items:center;gap:8px;flex-wrap:wrap;width:100%;padding:10px 12px;border:1px dashed var(--line);border-radius:10px;background:var(--surface-2);font-size:11.5px;color:var(--muted);}
+.tpl input{max-width:230px;font:inherit;color:var(--ink-2);}.tpl b{color:var(--ink-2);}.tpl .ok{color:var(--ok);font-weight:800}.tpl .no{color:var(--bad);font-weight:800}
 .xnote{font-size:11px;color:var(--muted);}
 .tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-sm);box-shadow:var(--sh);}
 table.sheet{width:100%;border-collapse:collapse;font-size:12.5px;background:var(--surface);}
@@ -189,6 +193,9 @@ table.sheet .cp:hover{border-color:var(--brand);color:var(--brand-600);}
 </style>
 <script>try{var _r=document.documentElement;_r.setAttribute("data-theme",localStorage.getItem("mf_theme")||"light");if(window.self!==window.top)_r.setAttribute("data-embed","1");}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
 <style>:root[data-embed="1"] .sb-brand,:root[data-embed="1"] .crumb,:root[data-embed="1"] .brand-logo,:root[data-embed="1"] #themeBtn{display:none!important}</style>
+<link rel="stylesheet" href="shared/mobile-sidebar.css">
+<script src="shared/mobile-sidebar.js" defer></script>
+<script src="shared/feedback-client.js"></script>
 </head>
 <body>
 <div class="app">
@@ -227,15 +234,16 @@ function lintBan(s){return BAN.filter(w=>String(s).replace(/\s/g,"").includes(w.
 
 /* 상품별 소구 토큰 — 제목용 short(짧게), 설명용 usp(문장 조각), 담보 covers */
 const PRODUCTS=[
- {key:"home",cat:"사이트",name:"다이렉트 홈",al:"다이렉트",brand:"한화손보 다이렉트",short:["공식","간편가입","보험료"],usp:["필요한 담보만 골라 다이렉트로 간편하게","공식 채널에서 보험료 확인하고 바로"],covers:["자동차·장기 다이렉트"]},
+ {key:"home",cat:"사이트",name:"다이렉트 홈(브랜드)",al:"다이렉트",brand:"한화손보 다이렉트",short:["공식","간편가입","보험료"],usp:["필요한 담보만 골라 다이렉트로 간편하게","공식 채널에서 보험료 확인하고 바로"],covers:["자동차·장기 다이렉트"]},
  {key:"hrmf",cat:"장기",name:"주택화재보험",al:"화재보험",short:["누수·도난","주택맞춤","화재"],usp:["화재·누수·도난·배상책임까지","아파트·빌라·오피스텔 유형별 맞춤으로"],covers:["화재","누수","도난","일상배상책임"]},
  {key:"golf",cat:"장기",name:"골프보험",short:["홀인원","정찰제","선물하기"],usp:["홀인원 축하비용·골프용품까지","팀 단위 정찰제로 부담 없이"],covers:["홀인원 축하비용","골프용품손해","배상책임"]},
  {key:"cncr",cat:"장기",name:"암보험",short:["진단비","표적항암","비갱신"],usp:["암진단비·표적항암까지 든든하게","갱신·비갱신 골라 필요한 담보만"],covers:["암진단비","표적항암약물","항암방사선"]},
  {key:"dntl",cat:"장기",name:"치아보험",short:["임플란트","크라운","실속형"],usp:["임플란트·크라운·충전치료까지","실속형·고급형 골라 부담 없이"],covers:["임플란트","크라운","충전치료"]},
  {key:"driver",cat:"장기",name:"운전자보험",short:["형사합의금","변호사선임","다이렉트"],usp:["형사합의금·변호사선임·벌금까지","다이렉트로 저렴하게 든든하게"],covers:["교통사고처리지원금","변호사선임비용","벌금"]},
  {key:"woman",cat:"장기",name:"여성건강보험",al:"여성보험",short:["여성암","검진연계"],usp:["여성암·주요 질환까지 촘촘하게","검진 시기에 맞춰 미리 준비"],covers:["여성암진단비","자궁·난소 질환"]},
- {key:"birth",cat:"장기",name:"태아보험",short:["출산전가입","서류간편"],usp:["출산 전 가입 적기, 서류는 간편하게","선천이상·신생아 질환까지 미리"],covers:["선천이상","신생아 질환"]},
+ {key:"birth",cat:"장기",name:"임신·출산(태아)보험",al:"태아보험",short:["출산전가입","서류간편"],usp:["출산 전 가입 적기, 서류는 간편하게","선천이상·신생아 질환까지 미리"],covers:["선천이상","신생아 질환"]},
  {key:"overseas",cat:"일반",name:"해외여행보험",al:"여행보험",short:["항공지연","휴대품","다이렉트"],usp:["해외의료비·항공지연·휴대품까지","여행 기간만큼 다이렉트로 간편하게"],covers:["해외의료비","항공지연","휴대품손해"]},
+ {key:"overseaslong",cat:"일반",name:"해외장기체류보험",al:"장기체류보험",short:["유학생","워홀","장기체류"],usp:["유학·워홀·주재원 장기체류 위험을 준비","체류 기간에 맞춰 필요한 담보를 확인"],covers:["해외의료비","배상책임","휴대품손해"]},
  {key:"holeinone",cat:"일반",name:"홀인원보험",short:["4인정찰제","축하비용","선물"],usp:["홀인원 축하비용·선물하기까지","팀 단위 정찰제로 소액·단기 준비"],covers:["홀인원 축하비용","선물하기"]},
  {key:"event",cat:"일반",name:"행사배상책임보험",al:"행사보험",short:["당일가입","행사맞춤"],usp:["공연·체육·행사 배상책임을 폭넓게","전날·당일도 바로 가입해 든든하게"],covers:["행사 중 배상책임"]},
  {key:"chronic",cat:"장기",name:"유병자 간편보험",al:"간편보험",short:["간편심사","3가지고지"],usp:["몇 가지만 답하면 간편하게","지병이 있어도 간편심사로 준비"],covers:["유병자 실손·건강"]},
@@ -452,27 +460,107 @@ function exportXls(p){
   setTimeout(()=>URL.revokeObjectURL(a.href),1500);
   toast("엑셀(.xls) 다운로드 · 빨강=시즌·뉴스");
 }
-/* 네이버 파워링크 '소재 등록' 구조 CSV — 담당자가 바로 등록 · 캠페인 ID는 공란(본인 입력)
-   한 행 = 소재 1개(제목+설명) + 확장소재(추가제목·홍보문구·서브링크). URL·캠페인ID는 담당자가 채움. */
-function exportNaverAds(p){
-  const s=buildSheet(p);
-  const titles=s.brand||[], descs=s.desc||[], subt=s.subt||[], promos=s.promo||[], subs=(s.sub||[]).map(o=>o.tx);
-  if(!titles.length){toast("생성된 제목이 없습니다");return;}
-  const eC=v=>`"${String(v==null?"":v).replace(/"/g,'""')}"`;
-  const camp=`CM_파워링크_${p.name}`, grp=`${p.name} · 기본`;
-  const header=["캠페인 ID(직접 입력)","캠페인 이름","광고그룹 이름","소재 제목","소재 설명","표시 URL","연결 URL(PC)","연결 URL(모바일)","추가제목","홍보문구","서브링크1","서브링크2","서브링크3","서브링크4"];
-  const rows=[header];
-  titles.forEach((t,i)=>{                                   // 제목마다 소재 1행(설명·추가제목은 롤링 순환)
-    const d=descs.length?descs[i%descs.length].tx:"";
-    const at=subt.length?subt[i%subt.length].tx:"";
-    const pr=promos.length?promos[i%promos.length].tx:"";
-    rows.push(["",camp,grp,t.tx,d,"","","",at,pr,subs[0]||"",subs[1]||"",subs[2]||"",subs[3]||""]);
+/* 내부 검토용 소재 배치. 공식 네이버 템플릿을 확인하기 전에는 업로드 가능 파일로 부르지 않는다. */
+const REVIEW_STATUS="초안 · 상품 근거 미확인 · 심의 검토 전";
+const STRATEGIES=[
+  {key:"brand",label:"브랜드·공식"},
+  {key:"coverage",label:"보장·상품 소구"},
+  {key:"situation",label:"문제·상황"},
+  {key:"season",label:"시즌·뉴스"},
+  {key:"action",label:"행동 유도"},
+];
+function validateNaverRow(r){
+  const errors=[];
+  if(!r.title||clen(r.title)>SPEC.titleMax)errors.push("제목 규격");
+  if(!r.description||clen(r.description)<SPEC.descMin||clen(r.description)>SPEC.descMax)errors.push("설명 규격");
+  if(r.extraTitle&&clen(r.extraTitle)>SPEC.titleMax)errors.push("추가제목 규격");
+  if(r.promo&&clen(r.promo)>SPEC.promoMax)errors.push("홍보문구 규격");
+  [r.sublink1,r.sublink2,r.sublink3,r.sublink4].forEach((v,i)=>{if(v&&clen(v)>SPEC.subMax)errors.push(`서브링크${i+1} 규격`);});
+  const banned=lintBan([r.title,r.description,r.extraTitle,r.promo].join(" "));
+  if(banned.length)errors.push(`금칙어:${banned.join("/")}`);
+  return errors;
+}
+function buildNaverRows(p,target=50){
+  const s=buildSheet(p),titles=s.brand||[],descs=s.desc||[],subt=s.subt||[],promos=s.promo||[],subs=(s.sub||[]).map(o=>o.tx);
+  if(!titles.length||!descs.length||!subt.length||!promos.length||subs.length<SPEC.subCount)return [];
+  const rows=[],seen=new Set();
+  const perStrategy=Math.floor(target/STRATEGIES.length),extra=target%STRATEGIES.length;
+  STRATEGIES.forEach((strategy,si)=>{
+    const need=perStrategy+(si<extra?1:0);let made=0;
+    for(let combo=0;combo<5000&&made<need;combo++){
+      const ti=combo%titles.length;
+      const di=Math.floor(combo/titles.length)%descs.length;
+      const ai=Math.floor(combo/(titles.length*descs.length))%subt.length;
+      const pi=(combo+si)%promos.length;
+      const linkStart=(combo+si*2)%subs.length;
+      const links=Array.from({length:SPEC.subCount},(_,j)=>subs[(linkStart+j)%subs.length]);
+      const row={
+        strategy:strategy.label,reviewStatus:REVIEW_STATUS,campaignId:"",
+        campaignName:`CM_파워링크_${p.name}`,adGroupName:`${p.name} · ${strategy.label}`,
+        title:titles[ti].tx,description:descs[di].tx,displayUrl:"",pcUrl:"",mobileUrl:"",
+        extraTitle:subt[ai].tx,promo:promos[pi].tx,
+        sublink1:links[0],sublink2:links[1],sublink3:links[2],sublink4:links[3],
+      };
+      const sig=[row.campaignName,row.adGroupName,row.title,row.description,row.extraTitle,row.promo,...links].join("|");
+      if(seen.has(sig)||validateNaverRow(row).length)continue;
+      seen.add(sig);rows.push(row);made++;
+    }
   });
+  return rows;
+}
+const REVIEW_COLUMNS=[
+  ["검토 상태","reviewStatus"],["전략 그룹","strategy"],["캠페인 ID(직접 입력)","campaignId"],
+  ["캠페인 이름","campaignName"],["광고그룹 이름","adGroupName"],["소재 제목","title"],["소재 설명","description"],
+  ["표시 URL","displayUrl"],["연결 URL(PC)","pcUrl"],["연결 URL(모바일)","mobileUrl"],
+  ["추가제목","extraTitle"],["홍보문구","promo"],["서브링크1","sublink1"],["서브링크2","sublink2"],["서브링크3","sublink3"],["서브링크4","sublink4"],
+];
+const eC=v=>`"${String(v==null?"":v).replace(/"/g,'""')}"`;
+function downloadCsv(rows,name){
   const csv="﻿"+rows.map(r=>r.map(eC).join(",")).join("\n");
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
-  a.download=`${p.name}_네이버소재등록_${todayStr()}.csv`;a.click();
-  setTimeout(()=>URL.revokeObjectURL(a.href),1500);
-  toast(`네이버 소재 등록용 · ${rows.length-1}개 소재 · 캠페인 ID·URL만 채우면 등록`);
+  a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+}
+function exportReviewAds(products,label){
+  const batches=products.map(p=>({p,rows:buildNaverRows(p,50)}));
+  const bad=batches.filter(x=>x.rows.length!==50);
+  if(bad.length){toast(`50행 생성 실패 · ${bad.map(x=>x.p.name+" "+x.rows.length+"행").join(", ")}`);return;}
+  const rows=[REVIEW_COLUMNS.map(x=>x[0])];
+  batches.forEach(x=>x.rows.forEach(r=>rows.push(REVIEW_COLUMNS.map(([,key])=>r[key]))));
+  downloadCsv(rows,`${label}_내부검토용_소재_${todayStr()}.csv`);
+  toast(`내부 검토용 CSV · ${rows.length-1}행 · 공식 템플릿 확인 전 업로드 금지`);
+}
+
+let NAVER_TEMPLATE=null,NAVER_TEMPLATE_MESSAGE="공식 템플릿 CSV/TSV를 불러오면 열 매핑을 검증합니다.";
+const TEMPLATE_ALIASES={
+  "캠페인id":"campaignId","캠페인아이디":"campaignId","캠페인이름":"campaignName","광고그룹이름":"adGroupName",
+  "소재제목":"title","광고제목":"title","제목":"title","소재설명":"description","광고설명":"description","설명":"description",
+  "표시url":"displayUrl","연결urlpc":"pcUrl","pc연결url":"pcUrl","연결url모바일":"mobileUrl","모바일연결url":"mobileUrl",
+  "추가제목":"extraTitle","홍보문구":"promo","서브링크1":"sublink1","서브링크2":"sublink2","서브링크3":"sublink3","서브링크4":"sublink4",
+};
+const normHeader=s=>String(s).toLowerCase().replace(/^﻿/,"").replace(/[\s()[\]{}·._\-/]/g,"");
+function parseDelimitedLine(line,delim){
+  const out=[];let cur="",quoted=false;
+  for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='"'){if(quoted&&line[i+1]==='"'){cur+='"';i++;}else quoted=!quoted;}else if(ch===delim&&!quoted){out.push(cur.trim());cur="";}else cur+=ch;}
+  out.push(cur.trim());return out;
+}
+async function readNaverTemplate(file){
+  const ext=(file.name.split(".").pop()||"").toLowerCase();
+  if(!["csv","tsv","txt"].includes(ext))throw new Error("공식 파일을 CSV 또는 TSV로 저장한 뒤 불러오세요");
+  const text=await file.text(),first=(text.split(/\r?\n/).find(x=>x.trim())||"").replace(/^﻿/,"");
+  const delim=first.includes("\t")?"\t":",";const headers=parseDelimitedLine(first,delim);
+  const mapping=headers.map(h=>TEMPLATE_ALIASES[normHeader(h)]||null);
+  const required=["campaignName","adGroupName","title","description"];
+  const missing=required.filter(k=>!mapping.includes(k));
+  if(missing.length)throw new Error(`필수 열 매핑 실패: ${missing.join(", ")}`);
+  return {name:file.name,headers,mapping,delimiter:delim};
+}
+function exportOfficialTemplate(p){
+  if(!NAVER_TEMPLATE){toast("먼저 공식 템플릿 CSV/TSV를 불러오세요");return;}
+  const batch=buildNaverRows(p,50);if(batch.length!==50){toast(`50행 검증 실패 · ${batch.length}행`);return;}
+  const rows=[NAVER_TEMPLATE.headers];
+  batch.forEach(r=>rows.push(NAVER_TEMPLATE.mapping.map(key=>key?r[key]:"")));
+  downloadCsv(rows,`${p.name}_공식템플릿_매핑_${todayStr()}.csv`);
+  toast(`공식 템플릿 열 순서로 변환 · 50행 · 업로드 전 사람 검토 필요`);
 }
 function copyTSV(p){
   const cols=sheetCols(p), N=Math.max(...cols.map(c=>c[1].length),1), lines=[];
@@ -632,10 +720,11 @@ function renderReco(){
       <div class="rc-h"><span class="rc-st ${esc(r.event_state)}">${esc(ST[r.event_state]||r.event_state)}</span>
         <span class="rc-pr">${esc(r.product_name)}</span><span class="rc-ev">${esc(r.event_name)}</span>
         <span class="rc-cf">conf ${esc(r.confidence)}</span></div>
-      <div class="rc-l"><span class="k">제목</span><span class="v">${esc(r.title)}</span><button class="cp" data-copy="${esc(r.title)}">복사</button></div>
-      <div class="rc-l"><span class="k">설명</span><span class="v">${esc(r.description)}</span><button class="cp" data-copy="${esc(r.description)}">복사</button></div>
-      ${r.content_subhead?`<div class="rc-l"><span class="k">소제목</span><span class="v">${esc(r.content_subhead)}</span><button class="cp" data-copy="${esc(r.content_subhead)}">복사</button></div>`:""}
+      <div class="rc-l"><span class="k">제목</span><span class="v">${esc(r.title)}</span><button class="cp" data-copy="${esc(r.title)}" data-recommendation-id="${esc(r.fingerprint)}">복사</button></div>
+      <div class="rc-l"><span class="k">설명</span><span class="v">${esc(r.description)}</span><button class="cp" data-copy="${esc(r.description)}" data-recommendation-id="${esc(r.fingerprint)}">복사</button></div>
+      ${r.content_subhead?`<div class="rc-l"><span class="k">소제목</span><span class="v">${esc(r.content_subhead)}</span><button class="cp" data-copy="${esc(r.content_subhead)}" data-recommendation-id="${esc(r.fingerprint)}">복사</button></div>`:""}
       <div class="rc-f">📌 ${(r.fact||[]).map(esc).join(" · ")}</div>
+      <div class="rc-f"><button class="btn sm" data-feedback-action="accepted" data-recommendation-id="${esc(r.fingerprint)}" data-product="${esc(r.product)}">채택</button> <button class="btn sm" data-feedback-action="edit_requested" data-recommendation-id="${esc(r.fingerprint)}" data-product="${esc(r.product)}">수정 필요</button> <button class="btn sm" data-feedback-action="rejected" data-recommendation-id="${esc(r.fingerprint)}" data-product="${esc(r.product)}">반려</button></div>
     </div>`).join(""):`<div class="banner">지금 기준 신뢰도 <b>conf ≥ ${RECO_MINCONF}</b> 추천이 없습니다. (엔진 산출물이 아직 없거나 로컬 파일로 열림 — 배포 주소에서 확인)</div>`;
   $("#content").innerHTML=`
     <div class="banner"><b>근거 기반 추천 소재</b> · 시즌 캘린더·뉴스 클리핑·검색량을 결합해 <b>지금 밀 만한 상품·문구</b>를 자동 제안(신뢰도 <b>conf ≥ ${RECO_MINCONF}</b>만 노출). 모두 <b>운영 후보</b> — 심의·상품근거 검토 후 사용. 상시 세트는 <b>상품별 소재</b> 탭.</div>
@@ -645,7 +734,7 @@ function render(){
   if(curKey==="__reco"){renderReco();renderSidebar();window.scrollTo({top:0});return;}
   if(curKey==="__cal"){renderCalendar();renderSidebar();window.scrollTo({top:0});return;}
   if(curKey==="__brand"){renderBrand();renderSidebar();window.scrollTo({top:0});return;}
-  const p=getP(curKey), s=buildSheet(p);
+  const p=getP(curKey), s=buildSheet(p), batch=buildNaverRows(p,50);
   $("#pt").textContent=p.name+" · 파워링크 소재"; $("#pts").textContent="· 롤링 T&D + 시즌·뉴스";
   const ev=EVIDENCE[p.key];
   const evPanel = ev ? `<div class="ev">
@@ -663,10 +752,12 @@ function render(){
   $("#content").innerHTML=`
     <div class="banner"><b>광고심의 전제</b> · 아래 문구는 <b>초안</b>입니다. 보험 광고 문구는 <b>손해보험협회 광고심의</b> 대상이며, 사실 근거 없는 최상급·확정 표현은 사용할 수 없습니다. 담보·보험료·조건은 약관 기준으로 검수 후 게재하세요.</div>
     <div class="xbar">
-      <button class="btn xbtn" id="xExcel">⬇ 엑셀(.xls) 다운로드 — 등록 양식 그대로</button>
-      <button class="btn" id="xAds" title="네이버 파워링크 소재 등록 구조 CSV · 한 행=소재 1개(제목+설명+확장소재) · 캠페인 ID·연결URL만 담당자가 채우면 등록">⬇ 네이버 소재 등록용(CSV)</button>
+      <button class="btn xbtn" id="xExcel">⬇ 문구 검토용 Excel</button>
+      <button class="btn" id="xAds">⬇ 현재 상품 내부 검토 CSV (${batch.length}/50)</button>
+      <button class="btn" id="xAllAds">⬇ 전체 13상품 내부 검토 CSV (650행)</button>
       <button class="btn" id="xTsv">⧉ 표 복사 (엑셀 붙여넣기)</button>
       <span class="xnote">광고제목·추가제목·설명·홍보문구·서브링크 5블록 · <span style="color:var(--bad);font-weight:800">빨강=시즌·뉴스 반영</span></span>
+      <div class="tpl"><b>공식 템플릿 열 매핑</b><input id="naverTpl" type="file" accept=".csv,.tsv,.txt"><button class="btn sm" id="xOfficial" ${NAVER_TEMPLATE?"":"disabled"}>현재 상품 50행 변환</button><span class="${NAVER_TEMPLATE?"ok":NAVER_TEMPLATE_MESSAGE.startsWith("오류")?"no":""}">${esc(NAVER_TEMPLATE?`${NAVER_TEMPLATE.name} · 필수 열 매핑 완료`:NAVER_TEMPLATE_MESSAGE)}</span></div>
     </div>
     <div class="specbar">
       <div class="spec">제목·추가제목 <b>≤${SPEC.titleMax}</b></div>
@@ -698,10 +789,18 @@ function render(){
         <div class="meta"><span class="len" id="edDlen">0/${SPEC.descMax}</span><span class="lint" id="edDlint"></span></div></div>
     </div>
 
-    <div class="note"><b>사용법</b> · <b>엑셀 다운로드</b>는 문구 검토용 시트(5블록). 바로 등록하려면 <b>네이버 소재 등록용(CSV)</b> — 네이버 파워링크 소재 구조 그대로(한 행=소재 1개: 제목·설명 + 추가제목·홍보문구·서브링크), <b>캠페인 ID와 연결URL만 담당자가 채우면</b> 등록됩니다. 개별 문구는 <b>복사</b>, 세밀 조정은 <b>직접 작성</b>란에서 글자수·심의 확인. <span style="color:var(--bad);font-weight:800">빨강 행</span>은 <b>시즌 캘린더·뉴스</b> 반영분입니다. 문구·담보 표현은 <b>최종 광고심의 검수 후</b> 게재하세요.</div>`;
+    <div class="note"><b>사용법</b> · Excel과 CSV는 모두 <b>내부 검토용 초안</b>입니다. 상품별 50행·전체 650행은 규격·금칙어·중복 조합을 자동 검사하지만, 상품 근거와 광고심의는 완료되지 않았습니다. 네이버에서 내려받은 공식 템플릿을 CSV/TSV로 저장해 불러온 경우에만 해당 열 순서로 변환할 수 있으며, 변환 뒤에도 담당자가 필수값·심의 상태를 확인해야 합니다. <span style="color:var(--bad);font-weight:800">빨강 행</span>은 시즌·뉴스 반영분입니다.</div>`;
 
   $("#xExcel").addEventListener("click",()=>exportXls(p));
-  $("#xAds").addEventListener("click",()=>exportNaverAds(p));
+  $("#xAds").addEventListener("click",()=>exportReviewAds([p],p.name));
+  $("#xAllAds").addEventListener("click",()=>exportReviewAds(PRODUCTS,"전체13상품"));
+  $("#xOfficial").addEventListener("click",()=>exportOfficialTemplate(p));
+  $("#naverTpl").addEventListener("change",async e=>{
+    const file=e.target.files&&e.target.files[0];if(!file)return;
+    try{NAVER_TEMPLATE=await readNaverTemplate(file);NAVER_TEMPLATE_MESSAGE="";toast("공식 템플릿 필수 열 매핑 완료");}
+    catch(err){NAVER_TEMPLATE=null;NAVER_TEMPLATE_MESSAGE=`오류 · ${err.message||err}`;toast(NAVER_TEMPLATE_MESSAGE);}
+    render();
+  });
   $("#xTsv").addEventListener("click",()=>copyTSV(p));
   const bind=(inp,lenEl,lintEl,max,min)=>{
     const el=$(inp);
@@ -718,7 +817,13 @@ document.addEventListener("click",e=>{
   const bz=e.target.closest("[data-bzoom]"); if(bz){$("#lbImg").src=bz.dataset.bzoom;$("#lbCap").textContent=bz.dataset.bcap||"";$("#lb").classList.add("show");return;}
   if(e.target.closest("#lb")){$("#lb").classList.remove("show");return;}
   const nav=e.target.closest("[data-key]"); if(nav){curKey=nav.dataset.key;render();window.scrollTo({top:0});return;}
+  const fb=e.target.closest("[data-feedback-action]");if(fb){
+    window.ModooFeedback?.record({action:fb.dataset.feedbackAction,tool:"adcopy",productKey:fb.dataset.product||curKey,recommendationId:fb.dataset.recommendationId||"",sourceVersion:RECO.asof||"",reviewStatus:"사람 검토 전 운영 후보"})
+      .then(result=>toast(result&&result.sent?"피드백 기록 완료":"피드백 저장소 미연결 · docs/feedback-loop.md 확인"))
+      .catch(()=>toast("피드백 기록 실패"));return;
+  }
   const cp=e.target.closest("[data-copy]"); if(cp){const t=cp.dataset.copy;
+    window.ModooFeedback?.record({action:"copied",tool:"adcopy",productKey:curKey,recommendationId:cp.dataset.recommendationId||"",sourceVersion:RECO.asof||VOL.asof||"",text:t}).catch(()=>{});
     (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast("복사됨 · "+clen(t)+"자")).catch(()=>{
       const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("복사됨");}catch(_){}ta.remove();});
   }});

@@ -1,173 +1,91 @@
-# NEXT — CM-CMO 다음 구현
+# NEXT — CM-CMO 제품화 현황과 다음 의사결정
 
-## P0-EVENT — 이벤트 기반 뉴스·시즌 캘린더 추천 엔진
+_최종 갱신: 2026-08-19_
 
-> 상태: **Phase 1(뉴스 캘린더 문구 엔진) 완료 · main 병합됨** · P0-EVENT **전체는 진행 중**.
-> 상세: `docs/news-calendar-copy-engine.md`. 화면 `seasonal-tool.html#reco`(시즌·이벤트 캘린더의 뉴스·추천·이벤트 뷰 · 구 `event-calendar.html`은 리다이렉트).
+이 문서는 아이디어 목록이 아니라 **구현·검증·배포 상태를 분리하는 운영 백로그**다. 완료 표시는 코드가 존재한다는 뜻만으로 쓰지 않는다.
 
-### Phase 1 완료분 (규칙 기반 문구 엔진)
+## 현재 결론
 
-전체 뉴스·시즌 캘린더를 결합해 상품별 문구를 **규칙 기반**으로 추천(LLM 없이 결정론). 특정
-이벤트(장마·폭염)에 하드코딩하지 않음.
-- 소스 결합: 예정 이벤트(`data/events/calendar.json`)·계절(`seasonal.json`)·기상(`signals.json`)·
-  뉴스(`clips/`)·검색량(`volume.json`)·사용 이력(`copy_history.json`)
-- 이벤트 상태 `upcoming/emerging/active/cooling/ended/follow_up` — 상태 바뀌면 목적·유효기간도 변경
-- 추천 1건: 확인된 사실·관련 상품·상태·제목/설명/소제목·이유+데이터·유효기간·피할 표현·채널·
-  상품근거(미확인)·심의(검토 전·운영 후보)·confidence·fingerprint
-- 상품 전체(주택화재·운전자·골프/홀인원·해외여행/장기·행사배상·암/여성/치아/유병자) 매핑
-- 중복 방지: 상품+사건+목적+문구 **fingerprint(어미 제거)** + **cooldown**
-- 가드레일: 공포·사건 이용 압박·담보/보험금 단정·과장/최상급 문구 **생성 금지**, 자동 "심의통과/등록가능" 표시 안 함
-- 분류 불확실 뉴스 → **unclassified 검토 큐**(자동 문구 X). 빈 키워드가 큐를 비우지 않도록 방어
-- 화면 `seasonal-tool.html#reco`: 오늘/7일/30일·예정/진행/종료/후속·상품·이벤트 필터
-- fixture 회귀 테스트 `tests/test_event_engine.py`(22) — 상태·fingerprint·cooldown·가드레일·미분류·비하드코딩·견고성
+CM-CMO는 단순 AI 데모를 넘어 13개 보험상품의 뉴스·시즌·검색·광고소재 업무를 잇는 부서용 도구다. 이번 제품화 작업으로 브라우저 Secret, 과장된 업로드 표현, 모바일 진입 장애, 데이터 신선도 오표시, 650행 검증 부재를 보완했다.
 
-### Phase 2A — 상태 전이(transition/episode) 엔진 ✅ 완료(main 병합 `1671f90`)
+아직 상용 SaaS로 부를 단계는 아니다. 사용자 인증·역할 권한, 서버 저장소, 감사 이력, 완전한 단일 App Shell, 실제 네이버 공식 템플릿 검증은 남아 있다.
 
-이벤트 상태 **변화**를 감지해 목적·유효기간이 바뀌는 전이 추천을 산출. 상태 델타로만 판정하며
-특정 이벤트·날씨에 하드코딩하지 않음.
-- **상태 저널** `data/events/state_history.json` — 매 실행 오늘 스냅샷 append(같은 날짜 멱등, 최근 120일)
-- `detect_transitions()` — 이전 스냅샷 대비: `onset`(→active)·`winddown`(→cooling)·`resurge`(재활성)·
-  `follow_up`·`lifted`(기상특보 해제)·`handoff`(해제 특보 ↔ 신규 특보가 상품 공유 = 장마→폭염식 **전환**)
-- 전이 감지 시 목적이 `PURPOSE_BY_TRANSITION`로 바뀌고 **fingerprint·유효기간도 자동 변경**(별개 추천)
-- 기상특보→상품 매핑을 **속성 규칙**(`_weather_products`)으로 일반화(종류 하드코딩 제거)
-- 화면: `seasonal-tool.html#reco` 카드에 🔄 전이 배지 + 상태 전이 섹션 + KPI
-- 회귀 테스트 `tests/test_event_engine.py`(총 29) — onset/lifted/handoff·**비하드코딩**·전이 fingerprint 변화·결정론
+## 상태 원장
 
-### Phase 2B — 추천 재생성 워크플로 🔶 진행(별도 PR `p0-event/phase2-reco-workflow`)
+| 영역 | 구현 | 자동 검증 | 운영 검증 | 외부 배포 |
+|---|---|---|---|---|
+| 이벤트 추천 엔진 Phase 1·2A·2B | 완료 | 완료 | [Actions 성공](https://github.com/imsplendid8/CM-CMO/actions/runs/32157755526) | main 데이터 갱신 완료 |
+| 자동화 신선도 6종 | 완료 | 완료 | [6/6 healthy](https://github.com/imsplendid8/CM-CMO/actions/runs/32157748716) | main 워크플로 활성 |
+| Fire Watch | 사건성 필터·동일 사건 dedup 완료 | 회귀 테스트 완료 | [브랜치 dry-run 성공](https://github.com/imsplendid8/CM-CMO/actions/runs/32159123102), 후보 16건→사건 2건 | 실제 발송은 계속 opt-in |
+| SearchAd 프록시 제한 | 정확한 GET 경로·크기 제한·fail-closed 구현 | 보안 계약 테스트 완료 | 로컬 정적 검증 완료 | **Cloudflare Worker 재배포 필요** |
+| 광고소재 내보내기 | 상품별 50행·전체 650행·공식 템플릿 매퍼 | 13×50 회귀 검증 완료 | 브라우저 확인 완료 | 공식 템플릿 실파일 검증 필요 |
+| 모바일 도구 진입 | 공유 드로어 적용 | 390px 계약 테스트 완료 | 브라우저 확인 완료 | PR 병합 후 Pages 반영 |
+| 데이터 신선도 UI | 6종 healthy/stale/missing 표시 | 중첩 오류 회귀 검증 완료 | 브라우저 확인 완료 | PR 병합 후 Pages 반영 |
+| 피드백 루프 | 채택/수정/반려 UI·해시·스키마 | 계약 테스트 완료 | 미연결 상태 안내 확인 | **저장 API·D1 미결정** |
+| 완전한 단일 App Shell | 미완료 | — | — | 후속 구조 개편 |
 
-- `.github/workflows/event-reco.yml` — 매일 07:45·13:45 KST(수집 뒤·브리프 전) `event_engine.py` 재생성 →
-  `recommendations.json`·`state_history.json` 커밋. 공유 레인 `cm-cmo-data-writers`·분 분리·안전 push(P0-2)
-- 런북(`docs/automation-runbook.md`) 순서·충돌표 갱신, 정적 회귀 테스트(`tests/test_workflows.py`) 추가
-- 효과: 클리핑 갱신에 따라 stale해지던 `recommendations.json`을 자동 신선화
+## 이번 제품화 작업에서 확정한 결정
 
-### P0-EVENT 남은 작업 (전체 완료 아님)
+### 1. Secret 경계
 
-1. **active window(최근 3일)** 와 **장기 뉴스 archive** 분리·연동 (다음)
-2. 뉴스 캘린더 UI ↔ 기존 데일리 브리프 **통합**
-3. ✅ **긴급 대형화재 감시 → 별도 텔레그램 알림**(2026-08-07) — `scripts/fire_watch.py`(네이버 뉴스 화재 신호 감지·사건문구 필터로 회사명 오탐 회피·최근 N시간 창) + `.github/workflows/fire-watch.yml`(낮 3시간 간격·기본 dry-run, 저장소 Variable `FIRE_ALERT_SEND=1` 옵트인 시 발송)
+- API Secret과 Telegram 자격증명은 브라우저 입력·`localStorage`·정적 HTML에 두지 않는다.
+- 공개 화면의 관리자 비밀번호 모달은 인증으로 보지 않는다. 관련 빌더와 상태를 제거한다.
+- 검색 API는 Worker가 서명하며 `/searchad/keywordstool`의 읽기 전용 GET만 허용한다.
+- Worker 제한 코드는 저장소 반영과 실제 Cloudflare 배포를 별도 상태로 관리한다.
 
-## P0-1 — 브리프 자동화 상태 오표시 수정 ✅ 완료
-> **2026-08-07 확장**: `format_lines`가 stale·missing·unknown을 **항상 분리 표기**(0건이어도). 자동화상태 전용 워크플로 `automation-status.yml`(07:40·13:40) 신설(커밋 없음·Run 요약).
+### 2. 광고소재 결과물의 진실성
 
-> 상태: **완료 · main 병합됨(PR #1, squash `11272fc`)**. `scripts/check_automation_health.py`(순수 함수) +
-> `scripts/daily_brief.py` 연동 + `tests/test_automation_health.py`(15개) + `ci.yml` 반영.
-> Codex 리뷰 P2 2건 반영(미래 날짜 unknown, 논문 no-op 시 papers.json updated 갱신).
+- 기본 다운로드는 **내부 검토용**이다. `심의 검토 전`, `상품 근거 미확인`, `운영 후보` 상태를 유지한다.
+- 공식 네이버 템플릿을 사용자가 불러오고 필수 열 매핑에 성공한 경우에만 공식 형식 내보내기를 활성화한다.
+- 자동 검증 기준은 13개 상품 × 50행 = 650행, 길이 제한, 금지어, 중복 여부다.
+- 보험 광고심의 통과나 네이버 등록 성공은 자동으로 단정하지 않는다.
 
-### 현재 문제
+### 3. UI 통합 방식
 
-scripts/daily_brief.py가 저장된 data/automation_health.json의 summary를 그대로 사용하면,
-상태 파일 자체가 오래된 경우 실제로 stale인 수집도
-“자동수집 6종 정상”으로 표시할 수 있다.
+- 이번 단계에서는 업무 흐름, 공통 모바일 드로어, 데이터 상태를 먼저 통일했다.
+- 독립 HTML을 한 번에 SPA로 바꾸는 전면 재작성은 회귀 위험 때문에 별도 마이그레이션으로 둔다.
+- 다음 구조 개편의 목표는 `오늘의 업무 / 검색 인사이트 / 광고 운영 / 시장·이슈 / 콘텐츠·심의` 5영역과 공통 상품·기간·사용자 상태다.
 
-### 구현 대상
+### 4. 데이터 신뢰도
 
-- scripts/check_automation_health.py
-- scripts/daily_brief.py
-- tests/test_news_brief.py 또는 별도 자동화 상태 테스트
-- 필요할 경우 docs/daily-brief.md
-- 필요할 경우 data/automation_health.json 구조
+- 모든 자동화 상태는 저장된 요약이 아니라 원천 데이터의 시각을 현재 기준으로 다시 계산한다.
+- `healthy`, `stale`, `missing`, `unknown`을 구분하며 실패를 정상으로 바꾸지 않는다.
+- Daily Brief는 문자열·객체가 혼재한 기상 데이터에도 중단되지 않아야 한다.
 
-### 구현 요구사항
+### 5. 피드백 저장
 
-1. scripts/check_automation_health.py의 상태 계산 로직을
-   다른 코드에서 import할 수 있는 순수 함수로 분리한다.
+- 공개 정적 사이트에서 원문 광고문구를 임의의 외부 엔드포인트로 보내지 않는다.
+- 현재는 UI·해시·D1 스키마까지만 제공한다. 저장 API는 인증, 보존기간, 접근권한 결정 후 연결한다.
+- 엔드포인트가 없으면 “저장 완료”라고 표시하지 않는다.
 
-2. 상태 계산 함수는 각 자동화 항목에 대해 다음 상태를 반환한다.
-   - healthy
-   - stale
-   - missing
-   - unknown 또는 unavailable
+## P0 — 병합 전 완료 조건
 
-3. scripts/daily_brief.py는 저장된 summary만 신뢰하지 않는다.
-   브리프 메시지 생성 직전에 현재 상태를 다시 계산한다.
+- [x] 전체 Python 테스트, 상품 동기화, 650행 검증, 전체 HTML/공유 JS 문법 검사 통과
+- [x] 브랜치의 Fire Watch를 `send=false`로 실행해 회고·작품·행사성 기사와 동일 사건 중복 제외
+- [x] Secret·삭제된 `brief-setup.html`·과장된 “바로 등록” 표현 정적 검사
+- [x] 현재 main을 반영해 충돌 없는 브랜치로 푸시
+- [x] [Draft PR #24](https://github.com/imsplendid8/CM-CMO/pull/24) CI 성공 확인 — [104 tests·전체 JS·650행](https://github.com/imsplendid8/CM-CMO/actions/runs/32159365762)
 
-4. Git 이력이나 원천 파일을 읽을 수 없으면
-   “자동수집 정상”으로 처리하지 말고 “상태 확인 불가”로 표시한다.
+## P0 — 병합 후 외부 작업
 
-5. 브리프에는 최소한 다음 내용을 표시한다.
-   - 정상 건수
-   - 갱신 필요 건수
-   - 누락 또는 확인 불가 건수
-   - 갱신이 필요한 자동화 이름
-   - 상태 기준 시각
+1. Cloudflare Worker에 `proxy/naver-proxy-worker.js` 보강본을 재배포하고 `/health`, 허용 Origin, 잘못된 메서드 405, 잘못된 경로 404를 확인한다.
+2. 실제 네이버 대량등록 템플릿 샘플을 개인정보·계정값 제거 후 제공해 열 매핑과 인코딩을 검증한다.
+3. 피드백 저장소를 선택한다. 권장 기본안은 Cloudflare Worker + D1, 사내 SSO/Access, 원문 미저장, 90일 보존이다.
+4. PR 병합 뒤 Pages 배포와 모바일 390px 스모크 테스트를 다시 수행한다.
+5. Fire Watch 실제 발송은 오탐 기준과 수신자를 확인한 뒤 `FIRE_ALERT_SEND=1`로 명시적으로 켠다.
 
-6. 상태 확인만 실행했을 때 data/automation_health.json 등
-   추적 파일이 불필요하게 변경되지 않아야 한다.
+## P1 — 다음 제품화 순서
 
-7. 동일 상태로 재실행하면 결과가 불필요하게 달라지지 않아야 한다.
-
-### 권장 출력 예시
-
-    [데이터 상태]
-    · 정상 4건
-    · 갱신 필요 2건: 뉴스 클리핑, 수요 신호
-    · 누락 0건
-    · 기준 시각: 2026-07-27 08:00 KST
-
-상태 계산이 실패하면:
-
-    [데이터 상태]
-    · 상태 확인 불가
-    · 자동수집이 정상이라고 단정할 수 없음
-
-### 필수 테스트
-
-1. 모든 항목이 최신이면 healthy 개수가 정확한지 확인
-2. 허용 기간을 넘긴 항목이 stale로 표시되는지 확인
-3. 원천 파일이 없으면 missing으로 표시되는지 확인
-4. Git 이력을 사용할 수 없으면 정상으로 오표시하지 않는지 확인
-5. 오래된 automation_health.json fixture가 있어도
-   “자동수집 6종 정상”으로 잘못 표시되지 않는지 확인
-6. dry-run 또는 상태 조회만으로 추적 파일이 변경되지 않는지 확인
-
-### 완료 조건
-
-- 오래된 fixture에서 “자동수집 6종 정상”이 출력되지 않는다.
-- healthy, stale, missing, Git 이력 없음 테스트가 있다.
-- 테스트가 모두 통과한다.
-- 상태 계산 때문에 데이터 스냅샷이 불필요하게 수정되지 않는다.
-- 변경 내용을 문서에 간단히 기록한다.
-- 별도 작업 브랜치에 커밋하고 PR을 만든다.
-
-### 구현 메모(2026-07-27)
-
-- 상태 판정은 **git 이력이 아니라** 각 산출물 내부 날짜 필드(asof/updated)로 한다 → 결정론·재현 가능.
-  시각을 읽을 수 없으면(파일 없음/필드 없음/파싱 실패) healthy 로 처리하지 않는다.
-- 대상 자동화 6종: 뉴스 클리핑(`data/clips/index.json`)·수요 신호(`data/signals.json`)·
-  실측 검색량(`data/volume.json`)·데이터랩 트렌드(`data/trends.json`)·논문 아카이브(`data/papers.json`)·
-  SERP 캡쳐(`serp/manifest.json`). 허용 기간=cron 주기+여유(일간 2·주간 9·월간 35일).
-- `compute_health()`는 읽기 전용. `data/automation_health.json`은 만들지 않는다(저장 요약을 신뢰하지 않으므로 불필요).
-
-## P0-2 — GitHub Actions 실행 순서·write 충돌 정리 ✅ 완료 (2026-08-07 확장)
-> **2026-08-07**: 순서 재정비(signals 06:30→news 07:20→automation-status 07:40→brief 08:00 / 오후 13:20·13:40·14:00). daily-brief·daily-email·automation-status도 `cm-cmo-data-writers` 레인 편입(수집 끝난 데이터로 소비).
-
-> 상태: 별도 브랜치 `p0-2/actions-ordering`에서 구현. 상세는 `docs/automation-runbook.md`.
-
-- **공유 concurrency 레인** `cm-cmo-data-writers` — 커밋 워크플로 6종 직렬화(동시 push 방지)
-- **분(minute) 분리 cron** — 같은 UTC 분 겹침 제거(signals/serp, searchad/trends, news/papers)
-- **안전 push** — `git pull --rebase --autostash` + 3회 재시도, 소진 시 실패(각 워크플로는 겹치지 않는 경로만 커밋)
-- **실행 순서** — signals(06:00)→news(07:30)→브리프(08:00) / news(13:00)→브리프(14:00)
-- **workflow_run 미사용** — 두 수집 fan-in 불가·중복 위험. P0-1 실시간 신선도 계산으로 하드 순서 불필요(늦으면 stale 표시)
-- **정적 회귀 테스트** `tests/test_workflows.py` — 중복 write cron·concurrency 누락·workflow_dispatch·workflow_run 대상 검사
-
-## P0-3 — 다음 작업, 이번 PR에서는 구현하지 않음
-
-검색광고 파일을 내부 검토용과 네이버 업로드 흐름으로 분리한다.
-
-- “사전점검 통과”를 “규격 점검 완료”로 변경
-- 상품 근거 미확인
-- 심의 검토 전
-- 운영 후보
-- 내부 검토용 Excel 명확화
-- 사용자가 내려받은 네이버 대량등록 템플릿을 업로드해 열을 매핑
-- 공식 템플릿 확인 전에는 “네이버 업로드 가능”이라고 표시하지 않음
-- 상품별 50개를 전략 그룹으로 분류
-- 상품별 50행, 전체 650행 다운로드 검증
+1. **App Shell 마이그레이션**: iframe 의존을 줄이고 공통 라우팅·상품·기간·알림 상태를 공유한다.
+2. **업무 결과 연결**: 뉴스/시즌 → 상품 → 검색량/SERP → 문구 → 심의 → 내보내기 → 성과 추적을 한 케이스 ID로 연결한다.
+3. **서버 인증과 역할**: Viewer, Marketer, Reviewer, Admin 역할과 변경 감사 이력을 도입한다.
+4. **피드백 평가**: 채택률, 수정 사유, 상품별 금지 사유를 집계하고 추천 규칙 회귀 평가에 사용한다.
+5. **관찰 가능성**: Pages, Worker, Actions 실패를 한 운영 화면에 모으고 실패 시 알림·재시도·담당자를 명시한다.
 
 ## 사람 승인 없이는 하지 않는 것
 
-- 보험 광고심의 최종 승인
-- 담보·면책·감액·보험료 사실 확정
-- 네이버·GitHub·공공데이터 Secret 생성 또는 저장
+- 보험 광고심의 최종 승인 또는 담보·면책·감액·보험료 사실 확정
+- 실제 광고계정 업로드·예산 변경·캠페인 on/off
+- Telegram 실제 발송, Secret 생성·교체·공개
 - 개인정보·임직원 정보·광고계정 원본 커밋
 - 근거 없는 CTR·전환율·성과 수치 생성

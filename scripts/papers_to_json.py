@@ -64,7 +64,8 @@ def parse(md):
 
 
 def build():
-    md = open(MD, encoding="utf-8").read()
+    with open(MD, encoding="utf-8") as f:
+        md = f.read()
     papers = parse(md)
     topics = []
     for p in papers:
@@ -78,5 +79,6 @@ def build():
 
 if __name__ == "__main__":
     data = build()
-    json.dump(data, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    with open(OUT, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=1)
     print(f"✔ data/papers.json · {data['count']}편 · 주제 {len(data['topics'])}개")

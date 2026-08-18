@@ -50,15 +50,15 @@
 
 > ⚠️ **개인정보**: chat_id는 개인 식별자입니다. **공개 저장소에 커밋하지 말고 GitHub Secrets(비공개)에만** 넣으세요.
 
-## 수신자·발송시간을 대시보드에서 만들기 — `brief-setup.html`
-코드를 건드리지 않고 **설정 빌더**로 값만 생성해 붙여넣을 수 있습니다.
-- `brief-setup.html` 열기 → **① 받을 사람**(이름 메모 + chat_id 행 추가) → `TELEGRAM_CHAT_IDS` 값 **복사** → 위 3번 Secret 에 붙여넣기.
-- **② 발송 시간(KST)** 을 고르면 **cron(UTC)으로 자동 변환** → **복사** 해서 `daily-brief.yml` 의 `schedule:` 블록에 붙여넣기.
-- 이 페이지는 **서버로 아무것도 보내지 않고**(입력은 브라우저 `localStorage` `mf_brief` 에만 저장), chat_id는 저장소에 커밋되지 않습니다.
+## 수신자·발송시간 관리
+공개 GitHub Pages에는 수신자·이메일·API 키를 입력하는 설정 화면을 두지 않습니다.
+- 수신자: 저장소 **Settings → Secrets and variables → Actions**에서 `TELEGRAM_CHAT_IDS`를 직접 관리합니다.
+- 발송 시간: `.github/workflows/daily-brief.yml`의 UTC cron을 PR로 변경합니다.
+- 변경 뒤 **Actions → Daily Brief → Run workflow**로 테스트하고 Run Summary를 확인합니다.
 
 ## 시간·내용 바꾸기
-- 시간: `brief-setup.html` 로 cron 생성(권장) 또는 `daily-brief.yml`의 cron 직접 수정(UTC 기준. 08:00 KST=23:00 UTC, 14:00 KST=05:00 UTC).
-- 수신자: `brief-setup.html` 로 `TELEGRAM_CHAT_IDS` 생성 → Secret 갱신. 파싱은 `scripts/daily_brief.py`의 `recipients()`(콤마·줄바꿈·세미콜론 구분, 중복 제거).
+- 시간: `daily-brief.yml`의 cron을 PR로 수정합니다(UTC 기준. 08:00 KST=23:00 UTC, 14:00 KST=05:00 UTC).
+- 수신자: GitHub Secret `TELEGRAM_CHAT_IDS`를 갱신합니다. 파싱은 `scripts/daily_brief.py`의 `recipients()`(콤마·줄바꿈·세미콜론 구분, 중복 제거).
 - 내용: `scripts/daily_brief.py`(시즌·뉴스·SERP 비중), 시즌 데이터는 `data/seasonal.json`.
 
 ## 이메일로도 받기 (텔레그램과 별도) — 매일 08:30 KST
@@ -69,7 +69,7 @@
 - 스케줄: `.github/workflows/daily-email.yml` (cron `30 23 * * *` = **08:30 KST**, 수동 실행도 가능)
 
 ### 설정 (1회) — Gmail SMTP 기준
-> 수신자·발신 계정은 **`brief-setup.html`(관리자 빌더)** 의 '📧 이메일 브리프' 카드에서 입력하면 **EMAIL_TO** 값을 만들어 줍니다(브라우저에만 저장·커밋 안 함). 앱 비밀번호는 빌더에 넣지 말고 Secret에 직접.
+> 수신자·발신 계정·앱 비밀번호는 공개 페이지나 브라우저 저장소가 아니라 GitHub Actions Secrets에서만 관리합니다.
 1. 발송용 Gmail 계정에 **2단계 인증**을 켠 뒤 **앱 비밀번호**(16자리)를 발급: Google 계정 → 보안 → 앱 비밀번호.
 2. 저장소 **Settings → Secrets and variables → Actions** 에 추가:
    - `SMTP_USER` = 발송 Gmail 주소 (예: `myaccount@gmail.com`)

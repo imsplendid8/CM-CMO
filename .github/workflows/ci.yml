@@ -1,6 +1,6 @@
 name: CI
 
-# push/PR 시 품질 점검: 상품 마스터 드리프트 + 각 도구 JS 문법.
+# push/PR 시 품질 점검: 상품 마스터 드리프트 + 전체 HTML/공유 JS 문법.
 on:
   push:
     branches: [main]
@@ -28,13 +28,19 @@ jobs:
         run: |
           node -e '
             const fs=require("fs");
-            const files=["index.html","seo-audit.html","keyword-tool.html","news-tool.html","serp-tool.html","seasonal-tool.html"];
+            const files=fs.readdirSync(".").filter(f=>f.endsWith(".html")).sort();
             let bad=0;
             for(const f of files){
               const html=fs.readFileSync(f,"utf8");
-              const blocks=html.match(/<script>([\s\S]*?)<\/script>/g)||[];
-              const js=blocks.map(s=>s.replace(/<\/?script>/g,"")).join("\n");
+              const blocks=[...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)];
+              const js=blocks.map(m=>m[1]).join("\n");
               try{new Function(js);console.log("OK  "+f);}catch(e){console.error("SYNTAX ERROR "+f+": "+e.message);bad++;}
             }
             process.exit(bad?1:0);
           '
+      - name: 공유 JS 문법 검사
+        run: |
+          node --check shared/mobile-sidebar.js
+          node --check shared/feedback-client.js
+      - name: 검색광고 소재 13상품 × 50행 검증
+        run: node scripts/check_adcopy_export.mjs

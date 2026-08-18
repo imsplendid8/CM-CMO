@@ -3,7 +3,7 @@ name: Daily Brief (Telegram)
 # 데일리 비서 브리핑을 텔레그램으로 하루 2회(오전 08:00 · 오후 14:00 KST) 발송.
 # 필요 Secrets: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_IDS(다중 수신자·콤마 구분) 또는 TELEGRAM_CHAT_ID(단일)
 #              (선택: NAVER_CLIENT_ID, NAVER_CLIENT_SECRET)
-# 수신자·발송시간(cron) 설정값은 brief-setup.html 빌더로 생성 → GitHub Secrets/워크플로에 붙여넣기.
+# 수신자는 GitHub Actions Secrets, 발송시간은 이 워크플로의 UTC cron에서만 관리한다.
 # 설정법: docs/daily-brief.md
 
 on:

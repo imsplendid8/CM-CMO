@@ -163,14 +163,26 @@ def compute_action_lines(products, main, seasonal, signals, now):
             actions[key] = (pri, text)
 
     # (1) 수요 신호 — 가장 시의성 높음
-    for key, t in (signals.get("triggers") or {}).items():
+    triggers = signals.get("triggers") or {}
+    if not isinstance(triggers, dict):
+        triggers = {}
+    for key, t in triggers.items():
+        if not isinstance(t, dict):
+            continue
         lv = t.get("level")
         if lv in ("high", "medium"):
             icon = "🔥" if lv == "high" else "🌡"
             word = "급등" if lv == "high" else "상승"
             put(key, 0, f"{icon} {name(key)} — 검색수요 {word}: 소재·입찰 강화 + 랜딩 점검")
-    for w in (signals.get("weather", {}) or {}).get("active", []):
-        note = w.get("note") or "기상 특보"
+    weather = signals.get("weather") or {}
+    active_weather = weather.get("active", []) if isinstance(weather, dict) else []
+    if not isinstance(active_weather, list):
+        active_weather = []
+    for w in active_weather:
+        if isinstance(w, dict):
+            note = str(w.get("note") or w.get("name") or "기상 특보").strip()
+        else:
+            note = str(w).strip() or "기상 특보"
         put("hrmf", 0, f"🌧 {name('hrmf')} — {note}: 누수·풍수재 소구 시즌 대응")
 
     # (2) 시즌 이슈, 메인 우선. span(정확 일자) 있으면 엔진과 동일 기준(일자), 없으면 월 폴백.
