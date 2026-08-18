@@ -82,6 +82,25 @@ def naver_news(q, display=30):
     return out
 
 
+def same_event_title(a, b):
+    """띄어쓰기·조사 차이가 있어도 장소/시설/사건 단어 3개 이상이 겹치면 같은 사건으로 본다."""
+    def terms(value):
+        return {x for x in re.findall(r"[가-힣A-Za-z0-9]+", value.lower()) if len(x) >= 2}
+
+    left, right = terms(a), terms(b)
+    matched = 0
+    used = set()
+    for x in sorted(left, key=len, reverse=True):
+        for y in sorted(right, key=len, reverse=True):
+            if y in used:
+                continue
+            if x in y or y in x:
+                used.add(y)
+                matched += 1
+                break
+    return matched >= 3
+
+
 def detect(items, now, window_hours):
     """사건 문구·발생성 필터 + 최근 window 시간 + 제목 dedup + 심각도 점수순."""
     cutoff = now - timedelta(hours=window_hours)
@@ -111,7 +130,7 @@ def detect(items, now, window_hours):
     out, seen = [], set()
     for h in hits:
         k = h["t"][:14]
-        if k in seen:
+        if k in seen or any(same_event_title(h["t"], prev["t"]) for prev in out):
             continue
         seen.add(k)
         out.append(h)

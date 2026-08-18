@@ -48,6 +48,16 @@ class TestFireWatchDetection(unittest.TestCase):
                            self.now - timedelta(minutes=10))]
         self.assertEqual(fw.detect(items, self.now, 4), [])
 
+    def test_deduplicates_different_headlines_for_same_event(self):
+        items = [
+            self.item("평택 위험물 창고 화재원인, 화학반응에 무게", "21시간 만에 진화",
+                      self.now - timedelta(minutes=30)),
+            self.item("수시간 연기 뒤 발화…평택 위험물창고 화재 화학반응 추정", "소방당국 조사",
+                      self.now - timedelta(minutes=20)),
+        ]
+        hits = fw.detect(items, self.now, 4)
+        self.assertEqual(len(hits), 1)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
