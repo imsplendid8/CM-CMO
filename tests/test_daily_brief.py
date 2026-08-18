@@ -8,6 +8,7 @@ chat_id 는 개인 식별자라 저장소에 커밋하지 않고 Secrets 로만 
 import os
 import sys
 import unittest
+from datetime import datetime, timezone
 from unittest import mock
 
 SCRIPTS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts")
@@ -56,6 +57,28 @@ class TestRecipients(unittest.TestCase):
         # 텔레그램 그룹 chat_id 는 음수 — 문자열 그대로 보존(형식 강제 안 함)
         self.assertEqual(recip(TELEGRAM_CHAT_IDS="-1001234567890,777"),
                          ["-1001234567890", "777"])
+
+
+class TestActionLines(unittest.TestCase):
+    def test_weather_active_accepts_string_and_object_entries(self):
+        products = {"hrmf": {"name": "주택화재보험"}, "driver": {"name": "운전자보험"}}
+        signals = {"weather": {"active": ["폭염", {"note": "호우 특보"}]}}
+
+        lines = db.compute_action_lines(
+            products, ["hrmf"], {}, signals,
+            datetime(2026, 8, 18, tzinfo=timezone.utc),
+        )
+
+        self.assertTrue(any("폭염" in line or "호우 특보" in line for line in lines))
+
+    def test_malformed_trigger_and_weather_shapes_do_not_abort_brief(self):
+        lines = db.compute_action_lines(
+            {"hrmf": {"name": "주택화재보험"}, "overseas": {"name": "해외여행보험"}},
+            ["hrmf"], {}, {"triggers": ["급등"], "weather": "오류"},
+            datetime(2026, 8, 18, tzinfo=timezone.utc),
+        )
+
+        self.assertGreaterEqual(len(lines), 1)
 
 
 if __name__ == "__main__":

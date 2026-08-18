@@ -34,6 +34,13 @@ STRONG = ["대형화재", "대형 화재", "산불", "들불", "아파트 화재
           "물류창고 화재", "주택 화재", "상가 화재", "빌딩 화재", "화재 사망", "화재 참사",
           "화재 대피", "화재로 대피", "화재로 숨", "전소", "연쇄 화재", "야산 화재"]
 SEVERITY = ["사망", "숨진", "부상", "실종", "대피", "이재민", "전소", "참사", "완전 소실", "전체 소실"]
+# '화재'가 과거 사건·작품·행사 문맥에 언급된 기사까지 긴급 신호로 잡지 않도록
+# 실제 사고 진행을 나타내는 말이 하나 이상 있어야 한다. 회고/행사성 문맥은 명시적으로 제외한다.
+INCIDENT = ["발생", "불이 나", "불이 났", "화재가", "진화", "대피", "사망", "숨진", "숨져",
+            "부상", "전소", "소방 당국", "소방당국", "번져", "확산", "불길", "잔불"]
+TITLE_EVENT = ["화재", "산불", "들불", "전소", "불이 나", "불이 났", "불길", "진화"]
+NON_INCIDENT = ["재건", "기념", "추모", "북토크", "소설", "작품", "토론회", "세미나", "캠페인",
+                "예방 교육", "대피 훈련", "피해 복구 지원", "후손 도움", "지난해 산불로"]
 
 
 def kst_now():
@@ -76,16 +83,26 @@ def naver_news(q, display=30):
 
 
 def detect(items, now, window_hours):
-    """사건 문구 필터 + 최근 window 시간 + 제목 dedup + 심각도 점수순."""
+    """사건 문구·발생성 필터 + 최근 window 시간 + 제목 dedup + 심각도 점수순."""
     cutoff = now - timedelta(hours=window_hours)
+    future_limit = now + timedelta(minutes=10)
     hits = []
     for it in items:
-        text = (it.get("t", "") + " " + it.get("gist", ""))
+        title = it.get("t", "")
+        text = title + " " + it.get("gist", "")
         strong = [w for w in STRONG if w in text]
         if not strong:
             continue
+        if not any(w in text for w in INCIDENT):
+            continue
+        if any(w in text for w in NON_INCIDENT):
+            continue
+        # 긴급 알림은 제목 자체에도 사건 종류가 드러나야 한다. 본문에서 과거 화재를
+        # 배경으로만 언급한 문화·후원·정책 기사는 여기서 빠진다.
+        if not any(w in title for w in TITLE_EVENT):
+            continue
         dt = it.get("dt")
-        if dt is not None and dt < cutoff:      # 오래된 기사 제외(시각 없으면 통과)
+        if dt is None or dt < cutoff or dt > future_limit:  # 시각 불명·오래됨·비정상 미래 시각은 fail-closed
             continue
         sev = [w for w in SEVERITY if w in text]
         it = dict(it, score=len(strong) * 2 + len(sev), kw=strong + sev)
