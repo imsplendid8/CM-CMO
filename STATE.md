@@ -10,7 +10,7 @@ Modooflow는 13개 보험상품의 SEO·키워드·뉴스·SERP·시즌·광고�
 
 - 브랜치: `agent/full-hardening`
 - 목적: 공개 Secret 제거, SearchAd 프록시 제한, 13×50 소재 내보내기, 모바일 진입, 데이터 신선도, 피드백 루프, 운영 자동화 검증
-- 상태: 로컬 구현·브라우저 검증 완료, 전체 테스트·푸시·Draft PR가 마지막 단계
+- 상태: 로컬 구현·브라우저·운영 드라이런 완료, 원격 푸시 및 [Draft PR #24](https://github.com/imsplendid8/CM-CMO/pull/24) 생성. CI 확인 중
 - 상세 완료 조건과 외부 작업은 `NEXT.md` 참조
 
 ## 사용자 화면
@@ -64,7 +64,7 @@ Modooflow는 13개 보험상품의 SEO·키워드·뉴스·SERP·시즌·광고�
 | `event-reco.yml` | 이벤트 추천·상태 저널 재생성 | 2026-08-19 수동 실행 성공, main 갱신 |
 | `daily-brief.yml` | Telegram 브리프 | 최근 예약 실행 성공; 수동 발송 금지 |
 | `daily-email.yml` | 이메일 브리프 | 예약 실행 |
-| `fire-watch.yml` | 긴급 화재 뉴스 감시 | 2026-08-19 `send=false` 성공; 오탐 필터 보강 중 |
+| `fire-watch.yml` | 긴급 화재 뉴스 감시 | 2026-08-19 브랜치 `send=false` 성공; 후보 16건→사건 2건, 실제 발송 없음 |
 | `searchad.yml` | 주간 검색량 | 데이터 신선도에 포함 |
 | `trends.yml` | 월간 트렌드 | 데이터 신선도에 포함 |
 | `serp-capture.yml` | 주간 SERP 캡처 | 데이터 신선도에 포함 |

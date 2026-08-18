@@ -16,7 +16,7 @@ CM-CMO는 단순 AI 데모를 넘어 13개 보험상품의 뉴스·시즌·검�
 |---|---|---|---|---|
 | 이벤트 추천 엔진 Phase 1·2A·2B | 완료 | 완료 | [Actions 성공](https://github.com/imsplendid8/CM-CMO/actions/runs/32157755526) | main 데이터 갱신 완료 |
 | 자동화 신선도 6종 | 완료 | 완료 | [6/6 healthy](https://github.com/imsplendid8/CM-CMO/actions/runs/32157748716) | main 워크플로 활성 |
-| Fire Watch | 사건성 필터 보강 완료 | 회귀 테스트 완료 | [기존 코드 dry-run 성공](https://github.com/imsplendid8/CM-CMO/actions/runs/32157752109), 보강본은 PR 브랜치 재검증 대상 | 실제 발송은 계속 opt-in |
+| Fire Watch | 사건성 필터·동일 사건 dedup 완료 | 회귀 테스트 완료 | [브랜치 dry-run 성공](https://github.com/imsplendid8/CM-CMO/actions/runs/32159123102), 후보 16건→사건 2건 | 실제 발송은 계속 opt-in |
 | SearchAd 프록시 제한 | 정확한 GET 경로·크기 제한·fail-closed 구현 | 보안 계약 테스트 완료 | 로컬 정적 검증 완료 | **Cloudflare Worker 재배포 필요** |
 | 광고소재 내보내기 | 상품별 50행·전체 650행·공식 템플릿 매퍼 | 13×50 회귀 검증 완료 | 브라우저 확인 완료 | 공식 템플릿 실파일 검증 필요 |
 | 모바일 도구 진입 | 공유 드로어 적용 | 390px 계약 테스트 완료 | 브라우저 확인 완료 | PR 병합 후 Pages 반영 |
@@ -60,11 +60,11 @@ CM-CMO는 단순 AI 데모를 넘어 13개 보험상품의 뉴스·시즌·검�
 
 ## P0 — 병합 전 완료 조건
 
-- 전체 Python 테스트, 상품 동기화, 650행 검증, 전체 HTML/공유 JS 문법 검사 통과
-- 브랜치의 Fire Watch를 `send=false`로 다시 실행해 회고·작품·행사성 기사가 제외되는지 확인
-- Secret·삭제된 `brief-setup.html`·과장된 “바로 등록” 표현 정적 검사
-- 현재 main을 반영해 충돌 없는 브랜치로 푸시
-- Draft PR에서 CI 성공 확인
+- [x] 전체 Python 테스트, 상품 동기화, 650행 검증, 전체 HTML/공유 JS 문법 검사 통과
+- [x] 브랜치의 Fire Watch를 `send=false`로 실행해 회고·작품·행사성 기사와 동일 사건 중복 제외
+- [x] Secret·삭제된 `brief-setup.html`·과장된 “바로 등록” 표현 정적 검사
+- [x] 현재 main을 반영해 충돌 없는 브랜치로 푸시
+- [ ] [Draft PR #24](https://github.com/imsplendid8/CM-CMO/pull/24) CI 성공 확인
 
 ## P0 — 병합 후 외부 작업
 
