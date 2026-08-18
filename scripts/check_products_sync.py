@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """상품 마스터 드리프트 검사 — data/products.json 이 단일 소스.
 
-각 도구 HTML의 인라인 `PRODUCTS`에 캐노니컬 10개 상품이 모두 있고
+각 도구 HTML의 인라인 `PRODUCTS`에 캐노니컬 13개 상품이 모두 있고
 key별 name·cat 이 data/products.json 과 일치하는지 확인한다(자체완결 HTML 원칙상
 런타임 공유 대신 이 검사로 동기화를 강제). CI(.github/workflows/ci.yml)에서 실행.
 
@@ -11,7 +11,7 @@ key별 name·cat 이 data/products.json 과 일치하는지 확인한다(자체�
 import json, re, sys, os
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FILES = ["seo-audit.html", "keyword-tool.html", "news-tool.html", "serp-tool.html", "seasonal-tool.html"]
+FILES = ["seo-audit.html", "keyword-tool.html", "news-tool.html", "serp-tool.html", "seasonal-tool.html", "adcopy-tool.html"]
 ALLOWED_EXTRA = {"pro", "__pro", "__all"}   # 범용 생성기 등 도구별 허용 키
 
 def canonical():

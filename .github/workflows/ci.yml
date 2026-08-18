@@ -38,3 +38,5 @@ jobs:
             }
             process.exit(bad?1:0);
           '
+      - name: 검색광고 소재 13상품 × 50행 검증
+        run: node scripts/check_adcopy_export.mjs
