@@ -10,7 +10,7 @@ Modooflow는 13개 보험상품의 SEO·키워드·뉴스·SERP·시즌·광고�
 
 - 브랜치: `agent/full-hardening`
 - 목적: 공개 Secret 제거, SearchAd 프록시 제한, 13×50 소재 내보내기, 모바일 진입, 데이터 신선도, 피드백 루프, 운영 자동화 검증
-- 상태: 로컬 구현·브라우저·운영 드라이런 완료, 원격 푸시 및 [Draft PR #24](https://github.com/imsplendid8/CM-CMO/pull/24) 생성. CI 확인 중
+- 상태: 로컬 구현·브라우저·운영 드라이런 완료, 원격 푸시 및 [Draft PR #24](https://github.com/imsplendid8/CM-CMO/pull/24) 생성. CI 104개 테스트·전체 JS·650행 검증 성공
 - 상세 완료 조건과 외부 작업은 `NEXT.md` 참조
 
 ## 사용자 화면
@@ -69,7 +69,7 @@ Modooflow는 13개 보험상품의 SEO·키워드·뉴스·SERP·시즌·광고�
 | `trends.yml` | 월간 트렌드 | 데이터 신선도에 포함 |
 | `serp-capture.yml` | 주간 SERP 캡처 | 데이터 신선도에 포함 |
 | `papers.yml` | 월간 논문 아카이브 | 데이터 신선도에 포함 |
-| `ci.yml` | 테스트, 전체 HTML/공유 JS, 상품·650행 계약 검사 | PR에서 확인 |
+| `ci.yml` | 테스트, 전체 HTML/공유 JS, 상품·650행 계약 검사 | PR #24 성공 |
 
 과거 Daily Brief 실패 원인은 `signals.weather.active`에 문자열이 들어왔는데 객체로 가정한 것이었다. 현재 브랜치에서 문자열·객체 혼재와 잘못된 상위 데이터 형식을 방어하고 회귀 테스트를 추가했다.
 

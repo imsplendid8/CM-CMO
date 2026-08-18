@@ -64,7 +64,7 @@ CM-CMO는 단순 AI 데모를 넘어 13개 보험상품의 뉴스·시즌·검�
 - [x] 브랜치의 Fire Watch를 `send=false`로 실행해 회고·작품·행사성 기사와 동일 사건 중복 제외
 - [x] Secret·삭제된 `brief-setup.html`·과장된 “바로 등록” 표현 정적 검사
 - [x] 현재 main을 반영해 충돌 없는 브랜치로 푸시
-- [ ] [Draft PR #24](https://github.com/imsplendid8/CM-CMO/pull/24) CI 성공 확인
+- [x] [Draft PR #24](https://github.com/imsplendid8/CM-CMO/pull/24) CI 성공 확인 — [104 tests·전체 JS·650행](https://github.com/imsplendid8/CM-CMO/actions/runs/32159365762)
 
 ## P0 — 병합 후 외부 작업
 
