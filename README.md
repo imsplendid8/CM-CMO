@@ -1,58 +1,72 @@
-# CM-CMO · 장기CM 테크니컬 SEO(Technical SEO) 콘솔
+# CM-CMO · Modooflow
 
-한화손해보험 다이렉트 **CM사업부 장기CM** 담당 상품 페이지의 **테크니컬 SEO** 진단 → 개발 실행 To-Do를 한 화면에서 다루는 자체완결 웹 콘솔입니다. 컨설팅 리포트가 아니라 **현행 화면 실측 → 할 일 → before/after 코드 → 완료 체크**로 SEO 개발자가 바로 착수하도록 만든 실행 보드입니다.
+한화손해보험 장기CM 마케팅 업무를 위한 정적 대시보드입니다. 13개 담당 상품의 검색·뉴스·시즌·SERP·광고소재 업무를 한 허브에서 연결하고, GitHub Actions가 공개·비식별 데이터를 주기적으로 갱신합니다.
 
-> **범위는 순수 테크니컬 SEO** — 제목/메타/OG 태그, H 구조, canonical, hreflang/모바일 alternate, 구조화 데이터(JSON-LD), robots/sitemap, **분기(리다이렉트) 처리** 등 크롤·색인·마크업 레이어. 콘텐츠 마케팅·백링크 등은 범위 외.
+> 이 저장소의 문구와 추천은 **내부 검토용 초안**입니다. 보험 광고심의 통과, 담보 사실, 네이버 등록 성공을 자동으로 보장하지 않습니다.
 
-- 단일 HTML · 외부 의존성 0 · 라이트/다크 · 서버 불필요 (`index.html`을 열면 동작)
-- 데이터: 네이버 웹문서 색인 실측(2026-07-18). 라이브 DOM(H·alt·OG)은 대상 사이트 봇차단(HTTP 403)으로 미수집 → 실측 확정 필요.
+## 주요 업무
 
-## 상단 3토글 구성
-
-| 토글 | 내용 |
-|---|---|
-| **장기 (7)** | 주택화재·골프·암·치아(한화 다이렉트 직접) / 운전자·여성건강·임신출산(캐롯 분기) |
-| **일반 (1)** | 해외여행(캐롯 분기) |
-| **범용 PRO** | 아무 URL의 크롤링 값 입력 → 점수·To-Do·코드·카피 자동생성 |
-
-+ **다이렉트 홈(메인 태그)** 은 양쪽 토글에 고정 노출. TM·오프라인·자동차 등 담당 외 상품은 제외.
-
-### 분기(carrotBridge) 처리 — 이 솔루션의 핵심 테크니컬 이슈
-`m.hanwhadirect.com/cmcom/carrotBridge.do?carrot=…` 는 **캐롯으로 URL이 분기(리다이렉트)** 되는 페이지입니다. 실측상 브릿지 자체는 색인 자산이 거의 없고(전체 55건) **랭킹·링크에쿼티를 캐롯이 가져갑니다.** 각 브릿지 상품에 최우선 To-Do로 `301 + canonical` 통일, `campaignId` 파라미터 중복 정리, 또는 CM이 직접 랭킹을 확보할 콘텐츠 랜딩 신설을 제시합니다.
-
-## 오픈소스 적용 (추천 파이프라인)
-
-**unlighthouse(실측 크롤) → 이 콘솔(진단·To-Do·카피) → next-seo · schema-dts(적용)**
-
-| 도구 | 용도 | 라이선스 |
+| 영역 | 화면 | 역할 |
 |---|---|---|
-| [harlan-zw/unlighthouse](https://github.com/harlan-zw/unlighthouse) | 담당 라우트 전체 테크니컬 SEO 크롤(title·meta·image-alt·heading). 결과 JSON을 PRO에 붙여넣으면 폼 자동 프리필 | MIT |
-| [garmeeh/next-seo](https://github.com/garmeeh/next-seo) | After 카피 → `<NextSeo>` 설정 코드 생성 | MIT |
-| [google/schema-dts](https://github.com/google/schema-dts) | Product·FAQPage **JSON-LD** 생성·타입검증 | Apache-2.0 |
+| 오늘의 업무 | `index.html` | 업무 흐름, 6종 데이터 신선도, 도구 진입 |
+| 검색 인사이트 | `seo-audit.html`, `keyword-tool.html`, `serp-tool.html` | SEO 진단, 키워드·검색량, 검색결과 관측 |
+| 시장·이슈 | `news-tool.html`, `seasonal-tool.html` | 뉴스 클리핑, 시즌·이벤트 추천과 상태 전이 |
+| 콘텐츠·심의 | `terms-tool.html`, `adcopy-tool.html` | 소비자 표현, 검색광고 소재 후보와 내부 검토 |
+| 자료 | `papers-tool.html` | 공개 논문 아카이브 |
 
-### 바로 실행되는 적용 파일 (이 저장소에 포함)
-| 파일 | 설명 |
-|---|---|
-| `unlighthouse.config.ts` | **담당 URL만** 크롤하도록 구성된 unlighthouse 설정(모바일·SEO 카테고리). `npx unlighthouse --config-file unlighthouse.config.ts` |
-| `.github/workflows/technical-seo.yml` | 매월/수동으로 unlighthouse CI 실행 → 리포트 아티팩트 저장 (SEO 회귀 감지) |
+광고소재 도구는 상품별 50행, 전체 650행을 생성·검증합니다. 공식 네이버 템플릿을 불러와 필수 열을 매핑하기 전까지 결과물은 업로드 파일이 아니라 내부 검토용입니다.
 
-크롤 결과 JSON을 **범용 PRO 탭 → "⚡ 크롤러 결과 불러오기"** 에 붙여넣으면 진단·To-Do가 자동 생성됩니다. Lighthouse 원본(`audits` 포함) JSON도 그대로 인식(`image-alt`·`meta-description` 감사 사용).
+## 실행
 
-## 파일
+서버 빌드가 없는 정적 사이트라 저장소 루트에서 간단한 HTTP 서버로 확인할 수 있습니다.
 
-| 파일 | 역할 |
-|---|---|
-| `index.html` | 배포/Pages용 전체 문서(모바일 viewport) |
-| `seo-audit.html` | 동일 콘텐츠 프래그먼트본 |
-| `unlighthouse.config.ts` · `.github/workflows/technical-seo.yml` | 적용형 테크니컬 SEO 자산 |
+```bash
+python -m http.server 8765
+```
 
-## 바로 보기
+그다음 `http://localhost:8765/`를 엽니다. 운영본은 [GitHub Pages](https://imsplendid8.github.io/CM-CMO/)에서 확인합니다.
 
-- **GitHub Pages**: Settings → Pages → Source: *Deploy from a branch* → Branch `main`, 폴더 **`/(root)`** → Save → `https://imsplendid8.github.io/CM-CMO/`
-  - `/(root)` = 저장소 최상위에 있는 `index.html`을 사이트로 사용한다는 뜻.
-- **즉시(설정 불필요)**: `https://htmlpreview.github.io/?https://github.com/imsplendid8/CM-CMO/blob/main/index.html`
+## 데이터와 자동화
 
-## 유의
-- 추천 카피는 광고심의 준수 초안(과장표현 배제) — 배포 전 보험협회 광고심의 검수 필요.
-- 점수는 6개 축(제목·메타·시맨틱·URL·소셜·신뢰도) 가중 추정값으로 실제 순위를 보장하지 않습니다.
-- 데이터·카피는 샘플·공개값 기준(개인정보·영업비밀 미포함).
+- 브라우저는 네이버 Secret을 저장하지 않습니다. 실시간 조회는 Cloudflare Worker가 서버 Secret으로 서명합니다.
+- GitHub Actions가 뉴스, 수요 신호, 검색량, 트렌드, 논문, SERP와 이벤트 추천을 갱신합니다.
+- 화면과 Daily Brief는 원천 데이터 시각으로 `healthy`, `stale`, `missing`, `unknown`을 다시 계산합니다.
+- Event Recommendations, Automation Health, Fire Watch는 수동 `workflow_dispatch`를 지원합니다. Fire Watch 실제 발송은 명시적 opt-in입니다.
+
+설정과 운영 문서는 다음을 참조하세요.
+
+- `docs/api-from-url.md` — Worker Secret과 허용 경로
+- `docs/automation-runbook.md` — Actions 순서와 충돌 방지
+- `docs/daily-brief.md` — Telegram·이메일 브리프
+- `docs/feedback-loop.md` — 채택/수정/반려 이벤트와 저장소 결정
+- `NEXT.md` — 구현·검증·배포 상태 및 남은 의사결정
+
+## 보안 경계
+
+- Secret, Telegram 토큰, 광고계정 원본, 개인정보를 정적 HTML·`localStorage`·커밋에 넣지 않습니다.
+- `/searchad/keywordstool`은 Worker의 읽기 전용 GET만 허용합니다.
+- 공개 화면의 숨김 메뉴나 클라이언트 비밀번호는 인증 수단이 아닙니다.
+- 관리자·피드백 저장 기능은 서버 인증과 보존 정책을 정한 뒤 연결합니다.
+
+## 검증
+
+```bash
+python scripts/check_products_sync.py
+python -m unittest discover -s tests -p "test_*.py" -v
+node scripts/check_adcopy_export.mjs
+node --check shared/mobile-sidebar.js
+node --check shared/feedback-client.js
+```
+
+CI는 루트의 모든 HTML 인라인 JavaScript도 문법 검사합니다.
+
+## 배포
+
+`main` 변경은 GitHub Pages 워크플로로 배포됩니다. Worker 코드는 저장소 변경만으로 배포되지 않으므로 `proxy/naver-proxy-worker.js`를 Cloudflare에 별도 배포하고 `/health`, Origin 제한, 경로·메서드 거부를 확인해야 합니다.
+
+## 현재 한계
+
+- 여러 독립 HTML을 허브에서 여는 구조라 완전한 단일 App Shell과 공통 사용자 상태는 아직 없습니다.
+- 사용자 인증, 역할 기반 권한, 감사 이력, 서버 데이터베이스는 미구현입니다.
+- 피드백 UI와 D1 스키마는 있으나 저장 API는 연결하지 않았습니다.
+- 검색광고 공식 템플릿은 실제 샘플로 최종 검증해야 합니다.
