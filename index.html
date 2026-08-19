@@ -7,11 +7,11 @@
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="Modoo — 한화손보 CM SEO·SEM 마케팅 콘솔 허브(전 기능 상단 고정)">
 <title>Modoo · 한화손보 CM 마케팅 콘솔</title>
+<link rel="icon" type="image/svg+xml" href="icons/modoo-mark.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/modoo-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="icons/modoo-16.png">
 <link rel="apple-touch-icon" href="icons/modoo-180.png">
 <link rel="manifest" href="site.webmanifest">
-<meta name="theme-color" content="#e0850f">
+<meta name="theme-color" content="#111827">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Modoo">
@@ -118,7 +118,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 @media(max-width:600px){
   .top{padding:7px 12px;gap:8px;}
   .logo{margin-right:8px;}                    /* 로고(좌) */
-  .logo b{display:none;}                      /* 'Modoo' 글자 숨김 → 도구 이름 공간 확보(짤림 방지). ◆ 아이콘은 유지 */
+  .logo b{display:none;}                      /* 'Modoo' 글자 숨김 → 도구 이름 공간 확보, 브랜드 마크는 유지 */
   .ctx{display:flex;flex:1 1 auto;}          /* 로고 옆 한 줄에 현재 도구 이름 */
   .nav{display:none;}                        /* 상단 wrap 메뉴 숨김 → 하단 탭바로 */
   .home-wrap{padding:8px 16px 24px;}         /* 상단 여백 축소 + 하단 탭바 높이 고려 */
@@ -184,17 +184,19 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 .ktoast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:120;background:var(--ink);color:var(--surface);font-size:12.5px;font-weight:700;padding:11px 18px;border-radius:10px;box-shadow:var(--sh-lg);opacity:0;transition:.25s;pointer-events:none;}
 .ktoast.on{opacity:1;}
 </style>
+<link rel="stylesheet" href="shared/ui-polish.css">
+<script src="shared/ui-icons.js" defer></script>
 <script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("mf_theme")||"light");}catch(e){document.documentElement.setAttribute("data-theme","light");}</script>
 </head>
 <body>
 <header class="top">
-  <a class="logo" href="#" data-tool="home"><span class="m">◆</span><span><b>Modoo</b><small>한화손보 CM 마케팅 콘솔</small></span></a>
+  <a class="logo" href="#" data-tool="home"><span class="m"><img class="ui-brand-mark" src="icons/modoo-mark.svg" alt=""></span><span><b>Modoo</b><small>한화손보 CM 마케팅 콘솔</small></span></a>
   <span class="ctx" id="ctxName"></span>
   <nav class="nav" id="nav"></nav>
   <div class="tr">
     <button class="themebtn" id="homeBtn" data-tool="home" title="홈"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.7 12 3.5l9 7.2"/><path d="M5.5 9.3V20h13V9.3"/><path d="M9.7 20v-5.4h4.6V20"/></svg></button>
     <a class="ext" id="openTab" href="#" target="_blank" rel="noopener" title="현재 화면을 새 탭에서 열기">↗ 새 탭</a>
-    <button class="themebtn" id="themeBtn" title="테마 전환">◐</button>
+    <button class="themebtn" id="themeBtn" type="button" aria-label="테마 전환"></button>
   </div>
 </header>
 <div class="body">
@@ -214,30 +216,30 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 "use strict";
 const WIKI="https://github.com/imsplendid8/CM-CMO/blob/main/docs/README.md";
 const TOOLS=[
- {id:"seo",icon:"🔧",name:"SEO",tag:"SEO",file:"seo-audit.html",url:"https://claude.ai/code/artifact/8a9868bf-142c-4134-b1e7-d48525ae31b7",ac:"#e0850f",
+ {id:"seo",name:"SEO",tag:"SEO",file:"seo-audit.html",url:"https://claude.ai/code/artifact/8a9868bf-142c-4134-b1e7-d48525ae31b7",ac:"#e0850f",
   desc:"담당 상품 현행 화면(제목·메타·OG·H·robots·분기)을 실측 진단하고, 화면에 바로 붙이는 HTML 태깅 가이드·robots.txt 제공.",
-  feats:["상품별 우선순위 To-Do + before/after 코드","화면 적용용 HTML(head·h1)·robots.txt","네이버 웹마스터도구 반영·Excel/PPT 전달"]},
- {id:"kw",icon:"🔎",name:"SA키워드",tag:"키워드",file:"keyword-tool.html",url:"https://claude.ai/code/artifact/42429a9c-b8eb-4175-ae0b-0e72aafd8a7e",ac:"#2b6cb0",
-  desc:"상품 시드 × 수식어로 검색광고 키워드를 대량 추출·분류·CSV. 네이버 실시간 검색량(프록시) 매핑 지원.",
-  feats:["거래·정보·브랜드·담보·AI검색 자동 분류","네이버 실시간 검색량(프록시) 매핑","광고그룹별 CSV 내보내기(업로드용)"]},
- {id:"news",icon:"📰",name:"카테고리 뉴스",tag:"뉴스",file:"news-tool.html",url:"https://claude.ai/code/artifact/5b1757b0-f0e2-4255-8cdf-bd51a22e1fba",ac:"#0e9e8e",
+  feats:["상품별 우선순위 To-Do + before/after 코드","월간 FAQ 4개 + FAQPage JSON-LD","네이버 웹마스터도구 반영·Excel 전달"]},
+ {id:"kw",name:"SA키워드",tag:"키워드",file:"keyword-tool.html",url:"https://claude.ai/code/artifact/42429a9c-b8eb-4175-ae0b-0e72aafd8a7e",ac:"#2b6cb0",
+  desc:"상품 시드 × 수식어로 검색광고 키워드를 추출·분류하고 SearchAd 월검색량과 신규·급상승 변화를 함께 검토합니다.",
+  feats:["거래·정보·브랜드·담보·AI검색 자동 분류","SearchAd 월검색량·경쟁도·월간 변화","광고그룹별 내부 검토 CSV"]},
+ {id:"news",name:"카테고리 뉴스",tag:"뉴스",file:"news-tool.html",url:"https://claude.ai/code/artifact/5b1757b0-f0e2-4255-8cdf-bd51a22e1fba",ac:"#0e9e8e",
   desc:"상품과 같은 카테고리 기준 경쟁·시장 뉴스를 모아 동향 요약·마케팅 시사점 제공, 로컬 서버로 실시간 갱신.",
   feats:["상품별 동향 요약 + 담당자 참고 시사점","이슈-업계영향-참고포인트 관점 분석","주택화재 ‘대형화재사고’ 추가 감시"]},
- {id:"serp",icon:"🔭",name:"소재 모니터링",tag:"SERP",file:"serp-tool.html",url:"https://claude.ai/code/artifact/72a87db9-596e-42b6-9d23-7b40f11d2fa3",ac:"#7c5cd6",
+ {id:"serp",name:"소재 모니터링",tag:"SERP",file:"serp-tool.html",url:"https://claude.ai/code/artifact/72a87db9-596e-42b6-9d23-7b40f11d2fa3",ac:"#7c5cd6",
   desc:"대표키워드(PC) 네이버 검색결과를 매주 스크린샷 아카이빙하고, 전/후 시각 diff로 변화·경쟁사 소구포인트 분석.",
   feats:["주간 스크린샷 아카이브 + 전/후 비교","전/후 시각 diff 자동 변화감지","경쟁사 소구포인트·한화 상위노출 갭"]},
- {id:"terms",icon:"📖",name:"약관 용어 변환",tag:"약관",file:"terms-tool.html",url:"https://imsplendid8.github.io/CM-CMO/terms-tool.html",ac:"#1f9d6b",
+ {id:"terms",name:"약관 용어 변환",tag:"약관",file:"terms-tool.html",url:"https://imsplendid8.github.io/CM-CMO/terms-tool.html",ac:"#1f9d6b",
   desc:"보험 표준약관의 어려운 용어를 소비자가 이해하는 쉬운 표현으로 변환. 가입화면·검색광고·상세 카피 작성에 바로 복사.",
   feats:["표준약관 원문 → 소비자 쉬운 표현","용어 난이도 등급 + 활용 팁","분류·검색 + 원클릭 복사"]},
-  {id:"adcopy",icon:"✍️",name:"SA소재",tag:"소재",file:"adcopy-tool.html",url:"https://imsplendid8.github.io/CM-CMO/adcopy-tool.html",ac:"#e8553d",
+  {id:"adcopy",name:"SA소재",tag:"소재",file:"adcopy-tool.html",url:"https://imsplendid8.github.io/CM-CMO/adcopy-tool.html",ac:"#e8553d",
    desc:"네이버 파워링크 구조를 참고한 내부 검토용 소재를 13상품×50행으로 생성. 공식 템플릿 열 매핑과 심의 확인 전에는 업로드하지 않습니다.",
    feats:["13상품×50행·글자수·중복 자동 검증","시즌 캘린더+뉴스/SERP 근거를 롤링 풀에 합류","내부 검토 CSV · 공식 템플릿 열 매핑"]},
- {id:"papers",icon:"📚",name:"논문",tag:"참고",file:"papers-tool.html",url:"https://imsplendid8.github.io/CM-CMO/papers-tool.html",ac:"#5b6ee1",
+ {id:"papers",name:"논문",tag:"참고",file:"papers-tool.html",url:"https://imsplendid8.github.io/CM-CMO/papers-tool.html",ac:"#5b6ee1",
   desc:"CM 다이렉트 마케팅 참고 논문을 매월 1일 네이버 학술 검색으로 자동 적립. 주제 필터·검색·원문 링크. 원문은 링크만, 요약은 공개 서지 기반.",
   feats:["월간 자동 적립(GitHub Actions)","주제별 필터 + 제목·요약 검색","원문 링크 · 담당자 참고 시사점"]},
- {id:"eventcal",icon:"🗓️",name:"연간플랜",tag:"캘린더",file:"seasonal-tool.html",url:"https://imsplendid8.github.io/CM-CMO/seasonal-tool.html",ac:"#d6456f",
-  desc:"시즌과 이벤트를 한 툴로 — 사이드바에서 ▦ 연간 캘린더(상품별 계절 이슈·연간 매트릭스·데이터랩 검색량 추세)와 📰 뉴스·추천·이벤트(예정·계절·기상·뉴스·검색량 결합 규칙 기반 문구·상태머신)를 오가며 봅니다. 시즌 데이터는 단일 소스(data/seasonal.json). 문구는 사람 검토 전 운영 후보.",
-  feats:["사이드바 한 앱: 연간 캘린더 + 뉴스·추천·이벤트","연간 매트릭스·정확 일자 시즌·데이터랩 검색량 추세","이벤트 상태머신(13종) · 담보 단정 문구 금지(가드레일)"]},
+ {id:"eventcal",name:"연간플랜",tag:"캘린더",file:"seasonal-tool.html",url:"https://imsplendid8.github.io/CM-CMO/seasonal-tool.html",ac:"#d6456f",
+  desc:"선택월 실행안과 익월 준비안을 나란히 보고 시즌 이슈, 데이터랩 추세와 SearchAd 월검색량을 함께 검토합니다.",
+  feats:["기준월 선택 + 당월 실행·익월 준비","연간 매트릭스·데이터랩 추세·SearchAd 검색량","상품별 시즌 대응과 소재 작업 연결"]},
 ];
 const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
 // 팀 공유 프록시(사용량 위젯·툴 실시간 연동에 사용)
@@ -291,15 +293,16 @@ function loadDataHealth(){
 const LOCAL = location.protocol==="file:" || /github\.io$/.test(location.hostname) || location.hostname==="localhost" || /^127\./.test(location.hostname) || location.hostname==="";
 const frame=document.getElementById("frame"),home=document.getElementById("home"),nav=document.getElementById("nav"),openTab=document.getElementById("openTab");
 
-// 도구를 카테고리로 묶어 드롭다운 하나로(12개 가로나열 → 홈·도구▾·전체안내·위키 4개)
+// 핵심 업무는 상단에, 나머지는 더보기 메뉴에 배치한다.
 const CATS=[
   {name:"분석·진단", ids:["seo","kw","news","serp"]},
   {name:"제작",      ids:["terms","adcopy"]},
   {name:"캘린더",    ids:["eventcal"]},
   {name:"참고",      ids:["papers"]},
 ];
+const DESKTOP_CORE=["eventcal","kw","adcopy","news"];
 // 모바일 하단 탭바에 바로 노출할 핵심 도구(나머지는 '전체' 바텀시트). 순서·구성은 여기만 고치면 됨.
-const MOBILE_TABS=["kw","news","adcopy","eventcal"];   // 홈은 우측상단으로 이동 · 연간플랜 하단 편입
+const MOBILE_TABS=["eventcal","kw","adcopy","news"];   // 업무 순서: 플랜 → 키워드 → 소재 → 뉴스
 let ACTIVE="home";
 // 헤더 한 줄에 표시할 도구 이름(도구 자체 타이틀과 동일). 임베드 시 도구의 둘째 줄 브랜드는 숨김.
 const HDR={seo:"테크니컬 SEO",kw:"검색광고 키워드 추출",news:"카테고리 뉴스 모니터링",serp:"검색결과 주간 아카이브",terms:"약관 쉬운 용어 변환",adcopy:"검색광고 문구 소재",papers:"논문 아카이브",eventcal:"시즌·이벤트 캘린더"};
@@ -309,13 +312,17 @@ const toolById=id=>TOOLS.find(t=>t.id===id);
 function renderNav(active){
   ACTIVE=active||ACTIVE;
   const item=(id,icon,name,ac,on)=>`<button class="navb${on?" on":""}" data-tool="${id}" style="--ac:${ac||"var(--brand)"}"><span class="ic">${icon}</span>${esc(name)}</button>`;
-  let h=item("home",ICON.home,"홈",null,ACTIVE==="home");
-  TOOLS.forEach(t=>h+=item(t.id,ICON[t.id]||t.icon,t.name,t.ac,ACTIVE===t.id));   // 도구 전부 펼침(한 줄 안 되면 2줄로 wrap)
-  h+=`<a class="navb" href="overview.html" style="text-decoration:none"><span class="ic">${ICON.overview}</span>전체 안내</a>`;
-  h+=`<a class="navb" href="${WIKI}" target="_blank" rel="noopener" style="text-decoration:none"><span class="ic">${ICON.wiki}</span>위키</a>`;
+  const secondary=TOOLS.filter(t=>!DESKTOP_CORE.includes(t.id)),secondaryActive=secondary.some(t=>t.id===ACTIVE);
+  const dditem=t=>`<button class="dditem${ACTIVE===t.id?" on":""}" data-tool="${t.id}" role="menuitem" style="--ac:${t.ac}"><span class="ic">${ICON[t.id]||t.icon}</span><span>${esc(t.name)}</span></button>`;
+  let h="";
+  DESKTOP_CORE.map(toolById).filter(Boolean).forEach(t=>h+=item(t.id,ICON[t.id]||t.icon,t.id==="eventcal"?"연간플랜":t.name,t.ac,ACTIVE===t.id));
+  h+=`<div class="navdd"><button class="navb ddbtn${secondaryActive?" on":""}" data-act="tools" aria-haspopup="menu" aria-expanded="false"><span class="ic">${ICON.sheet}</span><span>${secondaryActive?esc((toolById(ACTIVE)||{}).name||"더보기"):"더보기"}</span><span class="cx">⌄</span></button>
+    <div class="ddpanel" id="toolMenu" role="menu">${secondary.map(dditem).join("")}<div class="ddsep"></div><a class="dditem" role="menuitem" href="overview.html"><span class="ic">${ICON.overview}</span><span>전체 안내</span></a><a class="dditem" role="menuitem" href="${WIKI}" target="_blank" rel="noopener"><span class="ic">${ICON.wiki}</span><span>위키</span></a></div></div>`;
   nav.innerHTML=h;
   renderBotnav();                                                       // 하단 탭바도 같은 ACTIVE로 동기화
 }
+function closeToolMenu(){const panel=document.getElementById("toolMenu"),button=document.querySelector('[data-act="tools"]');panel?.classList.remove("on");button?.setAttribute("aria-expanded","false");}
+function toggleToolMenu(){const panel=document.getElementById("toolMenu"),button=document.querySelector('[data-act="tools"]');if(!panel||!button)return;const open=!panel.classList.contains("on");panel.classList.toggle("on",open);button.setAttribute("aria-expanded",open?"true":"false");}
 /* ===== 모바일 하단 탭바 + 전체 메뉴 바텀시트 ===== */
 // 앱 스타일 라인(선) 아이콘 — 이모지 대신 SVG(stroke=currentColor → 활성/액센트색 자동). 탭바·시트·카드·상단메뉴 공용.
 const _svg=p=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
@@ -358,11 +365,13 @@ function renderSheet(){
   t+=sLink(WIKI,ICON.wiki,"위키",'target="_blank" rel="noopener"');
   wrap.innerHTML=`<div id="usageSheet"></div><div class="sgrid">${t}</div>`;
 }
-function openSheet(){renderSheet();loadUsage("usageSheet");document.getElementById("sheetMask").classList.add("on");document.getElementById("sheet").classList.add("on");}
+function openSheet(){closeToolMenu();renderSheet();loadUsage("usageSheet");document.getElementById("sheetMask").classList.add("on");document.getElementById("sheet").classList.add("on");}
 function closeSheet(){document.getElementById("sheetMask").classList.remove("on");document.getElementById("sheet").classList.remove("on");}
 function toggleSheet(){document.getElementById("sheet").classList.contains("on")?closeSheet():openSheet();}
 function renderHome(){
   home.innerHTML=`<div class="home-wrap">
+    <section class="home-hero" aria-labelledby="homeTitle"><div><div class="home-eyebrow">CM Marketing Workspace</div><h1 id="homeTitle">오늘의 근거를<br>실행 가능한 소재로</h1><p>월간 플랜, 실제 검색 수요, 뉴스와 경쟁 소재를 한 흐름으로 검토하고 승인 가능한 초안을 만듭니다.</p></div>
+      <div class="quick-actions" aria-label="빠른 시작"><button data-tool="eventcal">${ICON.eventcal}<span>이번 달 플랜 보기</span></button><button data-tool="kw">${ICON.kw}<span>급상승 키워드</span></button><button data-tool="adcopy">${ICON.adcopy}<span>소재 만들기</span></button></div></section>
     <div id="usageBox"></div>
     <section class="workflow" aria-labelledby="workflowTitle"><h2 id="workflowTitle">오늘의 업무 흐름</h2><p>근거를 찾고 검토한 뒤, 승인 가능한 소재로 연결합니다.</p>
       <div class="workflow-steps">
@@ -371,8 +380,8 @@ function renderHome(){
         <div class="workflow-step"><h3>제작·실행</h3><div class="workflow-links"><button data-tool="adcopy">SA 소재 제작</button><button data-tool="papers">근거 보강</button></div></div>
       </div></section>
     <section class="data-health" id="dataHealth" aria-live="polite"><h2>데이터 상태</h2><p>최신성·출처·부분 오류를 확인하는 중입니다.</p></section>
-    <div class="grid">${TOOLS.map(t=>`<div class="card" data-tool="${t.id}" style="--ac:${t.ac}">
-      <div class="ico">${ICON[t.id]||t.icon}</div><h2>${esc(t.name)}</h2>
+    <div class="grid">${TOOLS.map(t=>`<div class="card" data-tool="${t.id}" style="--ac:${t.ac}" tabindex="0" role="button" aria-label="${esc(t.name)} 열기">
+      <div class="card-top"><div class="ico">${ICON[t.id]||t.icon}</div><span class="card-kicker">${esc(t.tag)}</span></div><h2>${esc(t.name)}</h2>
       <div class="desc">${esc(t.desc)}</div>
       <div class="go">열기 →</div></div>`).join("")}</div>
     <div class="foot"><b>연결 구조</b> · 위 업무 흐름과 상단 메뉴에서 각 작업공간으로 전환합니다. 주요 분석·소재 도구는 같은 13개 상품 마스터를 공유합니다. · <a href="${WIKI}" target="_blank" rel="noopener noreferrer">📖 위키</a><br>
@@ -381,6 +390,7 @@ function renderHome(){
   loadDataHealth();
 }
 function show(id,sub){                                  // sub = 툴 내부 딥링크(#해시) 선택
+  closeToolMenu();
   closeSheet();                                         // 도구 전환 시 바텀시트 닫기
   setCtx(id);                                           // 헤더 한 줄에 도구 이름(홈이면 비움)
   if(id==="home"){home.style.display="block";frame.style.display="none";openTab.href="#";openTab.style.visibility="hidden";renderNav("home");location.hash="";loadUsage();loadDataHealth();return;}
@@ -393,14 +403,16 @@ function show(id,sub){                                  // sub = 툴 내부 딥�
 }
 document.addEventListener("click",e=>{
   const act=e.target.closest("[data-act]");
-  if(act){e.preventDefault();const a=act.dataset.act;if(a==="sheet")toggleSheet();return;}
+  if(act){e.preventDefault();const a=act.dataset.act;if(a==="sheet")toggleSheet();if(a==="tools")toggleToolMenu();return;}
   const b=e.target.closest("[data-tool]"); if(b){e.preventDefault();show(b.dataset.tool);return;}
+  if(!e.target.closest(".navdd"))closeToolMenu();
 });
+document.addEventListener("keydown",e=>{const card=e.target.closest('.card[data-tool]');if(card&&(e.key==="Enter"||e.key===" ")){e.preventDefault();show(card.dataset.tool);}});
 document.getElementById("themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const isDark=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;const nt=isDark?"light":"dark";document.documentElement.setAttribute("data-theme",nt);try{localStorage.setItem("mf_theme",nt)}catch(_){}; try{if(frame&&frame.contentDocument)frame.contentDocument.documentElement.setAttribute("data-theme",nt);}catch(_){}});
 
 function ktoast(m){const t=document.getElementById("ktoast");t.textContent=m;t.classList.add("on");setTimeout(()=>t.classList.remove("on"),1900);}
 try{localStorage.removeItem("mf_keys");}catch(e){}   // 개인 API 키 입력 기능 제거 — 남아있던 개인 override도 정리(팀 전원 프록시로 통일)
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeSheet();}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeSheet();closeToolMenu();}});
 document.getElementById("sheetMask").addEventListener("click",closeSheet);
 document.getElementById("sheet").addEventListener("click",e=>{if(e.target.closest("a"))closeSheet();});  // 시트 내 링크 이동 시 닫기
 

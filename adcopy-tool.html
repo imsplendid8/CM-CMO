@@ -7,11 +7,11 @@
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="검색광고 문구 소재 제작 — 네이버 파워링크 규격(제목15·설명45) 강제 + 금지표현 린트 + 광고심의 전제">
 <title>Modoo · 검색광고 문구 소재</title>
+<link rel="icon" type="image/svg+xml" href="icons/modoo-mark.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/modoo-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="icons/modoo-16.png">
 <link rel="apple-touch-icon" href="icons/modoo-180.png">
 <link rel="manifest" href="site.webmanifest">
-<meta name="theme-color" content="#e0850f">
+<meta name="theme-color" content="#111827">
 <meta name="modoo-feedback-endpoint" content="">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -197,14 +197,16 @@ table.sheet .cp:hover{border-color:var(--brand);color:var(--brand-600);}
 <script>try{var _r=document.documentElement;_r.setAttribute("data-theme",localStorage.getItem("mf_theme")||"light");if(window.self!==window.top)_r.setAttribute("data-embed","1");}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
 <style>:root[data-embed="1"] .sb-brand,:root[data-embed="1"] .crumb,:root[data-embed="1"] .brand-logo,:root[data-embed="1"] #themeBtn{display:none!important}</style>
 <link rel="stylesheet" href="shared/mobile-sidebar.css">
+<link rel="stylesheet" href="shared/ui-polish.css">
 <script src="shared/mobile-sidebar.js" defer></script>
 <script src="shared/feedback-client.js"></script>
 <script src="shared/planning-context.js"></script>
+<script src="shared/ui-icons.js" defer></script>
 </head>
 <body>
 <div class="app">
   <aside class="sidebar">
-    <div class="sb-brand"><div class="brand-logo">✍️</div>
+    <div class="sb-brand"><div class="brand-logo" aria-hidden="true"></div>
       <div><div class="bn">검색광고 소재</div><small>파워링크 문구 제작</small></div></div>
     <nav class="sb-nav" id="sbNav"></nav>
     <div class="sb-foot"><a href="index.html">← 통합 콘솔(main)로</a><br>규격: 제목 15자 · 설명 20~45자<br><b>광고심의 검수 전 초안</b> · 문구는 손해보험협회 심의 대상</div>
@@ -213,7 +215,7 @@ table.sheet .cp:hover{border-color:var(--brand);color:var(--brand-600);}
     <header class="topbar">
       <a class="crumb" href="index.html">Modoo ›</a>
       <div><div id="pt">검색광고 문구 소재</div><div id="pts"></div></div>
-      <div class="tr"><label class="month-picker"><span>플랜 기준월</span><select id="planMonth" aria-label="소재 기준월"></select></label><button class="icon-btn" id="themeBtn" title="테마">◐</button></div>
+      <div class="tr"><label class="month-picker"><span>플랜 기준월</span><select id="planMonth" aria-label="소재 기준월"></select></label><button class="icon-btn" id="themeBtn" type="button" aria-label="테마 전환"></button></div>
     </header>
     <div class="content" id="content"></div>
   </main>

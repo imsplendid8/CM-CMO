@@ -59,4 +59,4 @@ docs/ · STATE.md · CLAUDE.md         문서
 - **팀 실시간 연동**: `proxy/naver-proxy-worker.js`(Cloudflare Worker)가 네이버 CORS·HMAC을 대신 처리. 툴은 `DEFAULT_PROXY`로 호출, 키는 워커 시크릿에 있어 팀원은 설정 0. 뉴스(`/naver`)·검색량(`/searchad`) 연결됨. 상세 → `api-from-url.md`.
 - **사용량 위젯**: 워커가 호출수를 KV(`USAGE`)에 일별 집계 → 허브 홈 "오늘 API 사용량"(`/usage`). KV 없으면 숨김.
 - **SERP 자동 캡쳐**: `scripts/capture_serp.mjs` + `serp-capture.yml`(주간). Playwright로 네이버 SERP 캡쳐→`serp/`. serp-tool이 `manifest.json` 로드해 병합.
-- **디자인 시스템**: Clean SaaS Light. 각 도구 `<head>`의 `id="mf-saas-theme"` 블록이 통일 뉴트럴 토큰 + Pretendard 자체호스팅(`fonts/`) 주입. 툴별 액센트색은 유지. 되돌리려면 그 블록만 제거.
+- **디자인 시스템**: `shared/ui-polish.css`가 간격·표면·포커스·모바일 조작 영역을, `shared/ui-icons.js`가 선형 SVG 아이콘과 테마 상태를 통일한다. `icons/modoo-mark.svg`가 파비콘·PWA 아이콘의 원본이며 툴별 액센트색은 상태 구분에만 유지한다. 상세 규칙은 `docs/ui-system.md`.

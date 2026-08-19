@@ -7,11 +7,11 @@
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="한화손보 CM 검색광고 키워드 추출 대시보드 — 네이버+구글 조합">
 <title>Modoo SEM · 검색광고 키워드 추출</title>
+<link rel="icon" type="image/svg+xml" href="icons/modoo-mark.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/modoo-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="icons/modoo-16.png">
 <link rel="apple-touch-icon" href="icons/modoo-180.png">
 <link rel="manifest" href="site.webmanifest">
-<meta name="theme-color" content="#e0850f">
+<meta name="theme-color" content="#111827">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Modoo">
@@ -139,12 +139,14 @@ td.kw{font-weight:700;color:var(--ink);white-space:normal;} td.c{text-align:cent
 <script>try{var _r=document.documentElement;_r.setAttribute("data-theme",localStorage.getItem("mf_theme")||"light");if(window.self!==window.top)_r.setAttribute("data-embed","1");}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
 <style>:root[data-embed="1"] .sb-brand,:root[data-embed="1"] .crumb,:root[data-embed="1"] .brand-logo,:root[data-embed="1"] #themeBtn{display:none!important}</style>
 <link rel="stylesheet" href="shared/mobile-sidebar.css">
+<link rel="stylesheet" href="shared/ui-polish.css">
 <script src="shared/mobile-sidebar.js" defer></script>
+<script src="shared/ui-icons.js" defer></script>
 </head>
 <body>
 <div class="app">
   <aside class="sidebar">
-    <div class="sb-brand"><div class="brand-logo">KW</div>
+    <div class="sb-brand"><div class="brand-logo" aria-hidden="true"></div>
       <div><div class="bn">검색광고 키워드 추출</div><small>한화손보 CM</small></div></div>
     <nav class="sb-nav" id="sbNav"></nav>
     <div class="sb-foot">엔진 참고 · <a href="https://github.com/eliasdabbas/advertools" target="_blank" rel="noopener">advertools</a> kw_generate · 네이버 검색광고/데이터랩 · 구글 <a href="https://github.com/GeneralMills/pytrends" target="_blank" rel="noopener">pytrends</a><br>검색량·경쟁도는 각 광고 플랫폼에서 확정</div>
@@ -161,7 +163,7 @@ td.kw{font-weight:700;color:var(--ink);white-space:normal;} td.c{text-align:cent
         </div>
         <button class="btn primary" id="expNaver" title="네이버 검색광고 구조를 참고한 내부 검토용 CSV · 공식 대량등록 템플릿 확인 전 업로드 금지">네이버 내부검토 CSV(70원)</button>
         <button class="btn" id="exp" title="전체 키워드 CSV(플랫폼·매치타입 포함)">CSV 내보내기</button>
-        <button class="icon-btn" id="themeBtn" title="테마">◐</button>
+        <button class="icon-btn" id="themeBtn" type="button" aria-label="테마 전환"></button>
       </div>
     </header>
     <details class="imp" id="livePanel" style="border-color:var(--nav-ink)"><summary style="color:var(--nav-ink)">🔌 네이버 실시간 검색량 <span style="color:var(--muted);font-weight:600">(팀 프록시 연결됨 · 키 입력 없이 바로)</span></summary>

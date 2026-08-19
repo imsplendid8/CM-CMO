@@ -7,11 +7,11 @@
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="한화손보 CM 연간 시즈널 이슈 키워드 캘린더 — 상품별 계절 이슈·키워드·선제 대응 시점">
 <title>Modoo Season · 연간 시즈널 이슈 캘린더</title>
+<link rel="icon" type="image/svg+xml" href="icons/modoo-mark.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/modoo-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="icons/modoo-16.png">
 <link rel="apple-touch-icon" href="icons/modoo-180.png">
 <link rel="manifest" href="site.webmanifest">
-<meta name="theme-color" content="#e0850f">
+<meta name="theme-color" content="#111827">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Modoo">
@@ -225,13 +225,15 @@ table.mcal thead th.rl{z-index:3;}
 <script>try{var _r=document.documentElement;_r.setAttribute("data-theme",localStorage.getItem("mf_theme")||"light");if(window.self!==window.top)_r.setAttribute("data-embed","1");}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
 <style>:root[data-embed="1"] .sb-brand,:root[data-embed="1"] .crumb,:root[data-embed="1"] .brand-logo,:root[data-embed="1"] #themeBtn{display:none!important}</style>
 <link rel="stylesheet" href="shared/mobile-sidebar.css">
+<link rel="stylesheet" href="shared/ui-polish.css">
 <script src="shared/mobile-sidebar.js" defer></script>
 <script src="shared/planning-context.js"></script>
+<script src="shared/ui-icons.js" defer></script>
 </head>
 <body>
 <div class="app">
   <aside class="sidebar">
-    <div class="sb-brand"><div class="brand-logo">🗓️</div>
+    <div class="sb-brand"><div class="brand-logo" aria-hidden="true"></div>
       <div><div class="bn">시즌·이벤트 캘린더</div><small>연간 시즌 매트릭스·검색량 추세</small></div></div>
     <nav class="sb-nav" id="sbNav"></nav>
     <div class="sb-foot"><a href="index.html">← 통합 콘솔</a><br>시즌 이슈·키워드는 마케팅 캘린더 기준<br>추세 검증은 네이버 데이터랩 · 근거 기반 <b>추천 소재</b>는 SA소재 탭으로 이동</div>
@@ -240,7 +242,7 @@ table.mcal thead th.rl{z-index:3;}
     <header class="topbar">
       <a class="crumb" href="index.html">Modoo ›</a>
       <div><div id="pt">시즌·이벤트 캘린더</div><div id="pts"></div></div>
-      <div class="tr"><label class="month-picker"><span>기준월</span><select id="planMonth" aria-label="연간플랜 기준월"></select></label><button class="icon-btn" id="themeBtn" title="테마">◐</button></div>
+      <div class="tr"><label class="month-picker"><span>기준월</span><select id="planMonth" aria-label="연간플랜 기준월"></select></label><button class="icon-btn" id="themeBtn" type="button" aria-label="테마 전환"></button></div>
     </header>
     <div class="content" id="content"></div>
   </main>

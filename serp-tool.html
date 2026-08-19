@@ -7,11 +7,11 @@
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="한화손보 CM SERP 주간 아카이브 — 대표키워드 네이버 검색결과 스크린샷 아카이빙·변화 추적·경쟁사 소구포인트 분석">
 <title>Modoo SERP · 검색결과 주간 아카이브·경쟁분석</title>
+<link rel="icon" type="image/svg+xml" href="icons/modoo-mark.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/modoo-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="icons/modoo-16.png">
 <link rel="apple-touch-icon" href="icons/modoo-180.png">
 <link rel="manifest" href="site.webmanifest">
-<meta name="theme-color" content="#e0850f">
+<meta name="theme-color" content="#111827">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Modoo">
@@ -164,12 +164,14 @@ td.who{font-weight:800;white-space:nowrap;}
 <script>try{var _r=document.documentElement;_r.setAttribute("data-theme",localStorage.getItem("mf_theme")||"light");if(window.self!==window.top)_r.setAttribute("data-embed","1");}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
 <style>:root[data-embed="1"] .sb-brand,:root[data-embed="1"] .crumb,:root[data-embed="1"] .brand-logo,:root[data-embed="1"] #themeBtn{display:none!important}</style>
 <link rel="stylesheet" href="shared/mobile-sidebar.css">
+<link rel="stylesheet" href="shared/ui-polish.css">
 <script src="shared/mobile-sidebar.js" defer></script>
+<script src="shared/ui-icons.js" defer></script>
 </head>
 <body>
 <div class="app">
   <aside class="sidebar">
-    <div class="sb-brand"><div class="brand-logo">🔭</div>
+    <div class="sb-brand"><div class="brand-logo" aria-hidden="true"></div>
       <div><div class="bn">검색결과 주간 아카이브</div><small>SERP 경쟁분석</small></div></div>
     <nav class="sb-nav" id="sbNav"></nav>
     <div class="sb-foot"><a href="index.html">← 통합 콘솔(main)로</a><br>자동 캡쳐(팀 공유)는 <b>배포 주소</b>에서 표시<br>경쟁사 소구포인트는 네이버 검색결과 근거</div>
@@ -179,7 +181,7 @@ td.who{font-weight:800;white-space:nowrap;}
       <a class="crumb" href="index.html">Modoo ›</a>
       <div><div id="pt">전체 개요</div><div id="pts"></div></div>
       <div class="tr">
-        <button class="icon-btn" id="themeBtn" title="테마">◐</button>
+        <button class="icon-btn" id="themeBtn" type="button" aria-label="테마 전환"></button>
       </div>
     </header>
     <div class="filebanner" id="fileBanner" hidden>

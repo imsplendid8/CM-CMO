@@ -3,11 +3,11 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://*.workers.dev; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="no-referrer">
 <title>Modoo SEO · 테크니컬 SEO 콘솔</title>
+<link rel="icon" type="image/svg+xml" href="icons/modoo-mark.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/modoo-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="icons/modoo-16.png">
 <link rel="apple-touch-icon" href="icons/modoo-180.png">
 <link rel="manifest" href="site.webmanifest">
-<meta name="theme-color" content="#e0850f">
+<meta name="theme-color" content="#111827">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Modoo">
@@ -333,11 +333,13 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:10px;font-size:12.5px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:50;box-shadow:var(--sh-lg);}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
+<link rel="stylesheet" href="shared/ui-polish.css">
+<script src="shared/ui-icons.js" defer></script>
 
 <div class="app">
   <aside class="sidebar">
     <div class="sb-brand">
-      <div class="brand-logo">◆</div>
+      <div class="brand-logo" aria-hidden="true"></div>
       <div><div class="bn">테크니컬 SEO</div><small>한화손보 CM</small></div>
     </div>
     <nav class="sb-nav" id="sbNav"></nav>
@@ -349,7 +351,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
       <div class="ts-right">
         <span class="ws">워크스페이스 · <b>한화손보 CM</b></span>
         <span class="usage">담당 상품 <b id="productCount">—</b>종</span>
-        <button class="icon-btn" id="themeBtn" title="라이트/다크 전환">◐</button>
+        <button class="icon-btn" id="themeBtn" type="button" aria-label="테마 전환"></button>
         <div class="avatar" title="한화손보 CM">CM</div>
       </div>
     </header>
