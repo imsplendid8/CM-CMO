@@ -15,6 +15,11 @@ TOOLS = [
 
 
 class TestMobileAndHealth(unittest.TestCase):
+    def test_keyword_product_count_comes_from_product_master(self):
+        html = (ROOT / "keyword-tool.html").read_text(encoding="utf-8")
+        self.assertIn('PRODUCTS.length+"개 상품(광고그룹)"', html)
+        self.assertNotRegex(html, r'\d+개 상품\(광고그룹\)')
+
     def test_sidebar_tools_load_shared_mobile_drawer(self):
         for name in TOOLS:
             html = (ROOT / name).read_text(encoding="utf-8")

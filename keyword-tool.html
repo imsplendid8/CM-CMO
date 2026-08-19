@@ -329,7 +329,7 @@ function renderOverview(){
   }).join("");
   $("#content").innerHTML=`
     <div class="kpi-row">
-      ${kpi(total,"총 키워드","10개 상품(광고그룹)")}
+      ${kpi(total,"총 키워드",PRODUCTS.length+"개 상품(광고그룹)")}
       ${kpi(pc.네이버+pc.공통,"네이버 우선","거래·브랜드형 중심","var(--nav-ink)")}
       ${kpi(pc.구글+pc.공통,"구글 우선","정보·롱테일 중심","var(--goo-ink)")}
       ${kpi(ic.거래,"거래형 키워드","가입·보험료·비교","var(--trx)")}
