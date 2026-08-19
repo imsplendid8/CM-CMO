@@ -19,8 +19,8 @@ CM-CMO는 단순 AI 데모를 넘어 13개 보험상품의 뉴스·시즌·검�
 | Fire Watch | 사건성 필터·동일 사건 dedup 완료 | 회귀 테스트 완료 | [브랜치 dry-run 성공](https://github.com/imsplendid8/CM-CMO/actions/runs/32159123102), 후보 16건→사건 2건 | 실제 발송은 계속 opt-in |
 | SearchAd 프록시 제한 | 정확한 GET 경로·크기 제한·fail-closed 구현 | 보안 계약 테스트 완료 | 로컬 정적 검증 완료 | **Cloudflare Worker 재배포 필요** |
 | 광고소재 내보내기 | 상품별 50행·전체 650행·공식 템플릿 매퍼 | 13×50 회귀 검증 완료 | 브라우저 확인 완료 | 공식 템플릿 실파일 검증 필요 |
-| 모바일 도구 진입 | 공유 드로어 적용 | 390px 계약 테스트 완료 | 브라우저 확인 완료 | PR 병합 후 Pages 반영 |
-| 데이터 신선도 UI | 6종 healthy/stale/missing 표시 | 중첩 오류 회귀 검증 완료 | 브라우저 확인 완료 | PR 병합 후 Pages 반영 |
+| 모바일 도구 진입 | 공유 드로어 적용 | 390px 계약 테스트 완료 | 브라우저 확인 완료 | main 병합 완료·Pages 재확인 필요 |
+| 데이터 신선도 UI | 6종 healthy/stale/missing 표시 | 중첩 오류 회귀 검증 완료 | 브라우저 확인 완료 | main 병합 완료·Pages 재확인 필요 |
 | 피드백 루프 | 채택/수정/반려 UI·해시·스키마 | 계약 테스트 완료 | 미연결 상태 안내 확인 | **저장 API·D1 미결정** |
 | 완전한 단일 App Shell | 미완료 | — | — | 후속 구조 개편 |
 
@@ -58,23 +58,33 @@ CM-CMO는 단순 AI 데모를 넘어 13개 보험상품의 뉴스·시즌·검�
 - 현재는 UI·해시·D1 스키마까지만 제공한다. 저장 API는 인증, 보존기간, 접근권한 결정 후 연결한다.
 - 엔드포인트가 없으면 “저장 완료”라고 표시하지 않는다.
 
-## P0 — 병합 전 완료 조건
+## P0 — PR #24 병합 완료 조건(기록)
 
 - [x] 전체 Python 테스트, 상품 동기화, 650행 검증, 전체 HTML/공유 JS 문법 검사 통과
 - [x] 브랜치의 Fire Watch를 `send=false`로 실행해 회고·작품·행사성 기사와 동일 사건 중복 제외
 - [x] Secret·삭제된 `brief-setup.html`·과장된 “바로 등록” 표현 정적 검사
 - [x] 현재 main을 반영해 충돌 없는 브랜치로 푸시
-- [x] [Draft PR #24](https://github.com/imsplendid8/CM-CMO/pull/24) CI 성공 확인 — [104 tests·전체 JS·650행](https://github.com/imsplendid8/CM-CMO/actions/runs/32159365762)
+- [x] [PR #24](https://github.com/imsplendid8/CM-CMO/pull/24) 병합 완료(2026-08-19) — [104 tests·전체 JS·650행](https://github.com/imsplendid8/CM-CMO/actions/runs/32159365762)
 
 ## P0 — 병합 후 외부 작업
 
 1. Cloudflare Worker에 `proxy/naver-proxy-worker.js` 보강본을 재배포하고 `/health`, 허용 Origin, 잘못된 메서드 405, 잘못된 경로 404를 확인한다.
 2. 실제 네이버 대량등록 템플릿 샘플을 개인정보·계정값 제거 후 제공해 열 매핑과 인코딩을 검증한다.
 3. 피드백 저장소를 선택한다. 권장 기본안은 Cloudflare Worker + D1, 사내 SSO/Access, 원문 미저장, 90일 보존이다.
-4. PR 병합 뒤 Pages 배포와 모바일 390px 스모크 테스트를 다시 수행한다.
+4. Pages 배포와 모바일 390px 스모크 테스트를 다시 수행한다.
 5. Fire Watch 실제 발송은 오탐 기준과 수신자를 확인한 뒤 `FIRE_ALERT_SEND=1`로 명시적으로 켠다.
 
-## P1 — 다음 제품화 순서
+## P1 — 다음 운영 자동화 순서
+
+세부 기준과 자동화 경계는 [가드레일 기반 자동화 루프](docs/guarded-automation-loops.md)를 따른다. 아래 항목은 **구현 완료가 아니라 다음 도입 순서**다.
+
+1. **월간 수요 발견**: SearchAd 월 스냅샷과 데이터랩 추세로 후보를 만들고 채택·보류·제외를 사람이 기록한다.
+2. **데이터 장애 복구**: 6개 데이터 산출물을 검사하고 자동 재시도 1회, incident 중복 제거, 복구 상태를 남긴다.
+3. **핵심 5화면 시각 회귀**: Playwright 사용 범위를 UI로 확장하고 데스크톱·390px 차이 artifact를 제공한다.
+4. **FAQ 상품 1개 파일럿**: 화면 답변·JSON-LD·상품 근거의 일치 여부를 검증한다.
+5. **추천 품질 피드백**: 인증·D1 결정 후 채택 상태와 사유 코드를 월간 변경 PR에 반영한다.
+
+## P2 — 다음 제품화 순서
 
 1. **App Shell 마이그레이션**: iframe 의존을 줄이고 공통 라우팅·상품·기간·알림 상태를 공유한다.
 2. **업무 결과 연결**: 뉴스/시즌 → 상품 → 검색량/SERP → 문구 → 심의 → 내보내기 → 성과 추적을 한 케이스 ID로 연결한다.

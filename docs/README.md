@@ -10,6 +10,7 @@
 - **[roadmap.md](roadmap.md)** — 진행 현황·고도화 아이디어(OSS 활용 포함)
 - **[api-from-url.md](api-from-url.md)** — 팀 실시간 연동(Cloudflare 프록시·워커 시크릿·KV 사용량)
 - **[oss-leverage.md](oss-leverage.md)** — 활용 OSS(Pretendard·Playwright·pixelmatch 등)
+- **[guarded-automation-loops.md](guarded-automation-loops.md)** — 도입 우선순위·운영 루프·사람 승인 경계
 - **[daily-brief.md](daily-brief.md)** — 데일리 텔레그램 비서 브리핑 설정
 - **[논문-아카이브.md](논문-아카이브.md)** — CM 마케팅 참고 논문(월 1회 GitHub Actions 자동 적립)
 - **[../serp/README.md](../serp/README.md)** — SERP 자동 캡쳐 아카이브
