@@ -9,6 +9,9 @@
 - **[검색광고-BSA-로드맵.md](검색광고-BSA-로드맵.md)** — 검색광고(SA)·브랜드검색(BSA) 솔루션 로드맵(A1~A6·B1~B3)
 - **[roadmap.md](roadmap.md)** — 진행 현황·고도화 아이디어(OSS 활용 포함)
 - **[api-from-url.md](api-from-url.md)** — 팀 실시간 연동(Cloudflare 프록시·워커 시크릿·KV 사용량)
+- **[automation-runbook.md](automation-runbook.md)** — 자동화 일정·데이터 소유권·실패 복구 운영 기준
+- **[feedback-loop.md](feedback-loop.md)** — 추천 피드백 저장·월간 개선 PR 원칙
+- **[news-calendar-copy-engine.md](news-calendar-copy-engine.md)** — 뉴스·시즌 이벤트 추천 엔진의 상태·중복 방지·가드레일
 - **[oss-leverage.md](oss-leverage.md)** — 활용 OSS(Pretendard·Playwright·pixelmatch 등)
 - **[daily-brief.md](daily-brief.md)** — 데일리 텔레그램 비서 브리핑 설정
 - **[논문-아카이브.md](논문-아카이브.md)** — CM 마케팅 참고 논문(월 1회 GitHub Actions 자동 적립)

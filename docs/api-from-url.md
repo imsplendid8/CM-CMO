@@ -43,3 +43,26 @@ Cloudflare 대시보드에서 **폼 입력만** 하면 됩니다:
 ## 기존 자동화(Action)와의 관계
 - **데일리 브리프·주간 검색량·트렌드**는 계속 **GitHub Actions + Secrets**로 무인 실행됩니다(변경 없음).
 - 이 프록시는 **대시보드에서 즉석으로** 실시간 데이터를 볼 때 쓰는 경로입니다(키를 파일에 안 붙여도 됨). 둘은 병행 가능합니다.
+
+### 검색광고 검색량 자동 갱신
+
+`.github/workflows/searchad.yml`이 매주 `scripts/naver_searchad_volume.py`를 실행해
+`data/volume.json`을 갱신합니다. 키워드 도구는 시작할 때 이 파일을 읽어 상품별
+월간 검색량과 경쟁도를 매핑합니다.
+
+```json
+{
+  "source": "searchad",
+  "products": {
+    "cncr": {
+      "keywords": {
+        "암보험": { "pc": 9000, "mobile": 76000, "comp": "높음" },
+        "암보험 비교": { "pc": 250, "mobile": 1900, "comp": "중간" }
+      }
+    }
+  }
+}
+```
+
+과거 수동 CLI 파이프라인은 프록시와 주간 Action으로 대체되어 삭제됐습니다.
+필요한 이전 구현은 Git 이력에서 확인할 수 있습니다.
