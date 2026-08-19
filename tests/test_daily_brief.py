@@ -60,6 +60,13 @@ class TestRecipients(unittest.TestCase):
 
 
 class TestActionLines(unittest.TestCase):
+    PRODUCTS = {
+        "hrmf": {"name": "주택화재보험"},
+        "golf": {"name": "골프보험"},
+        "driver": {"name": "운전자보험"},
+        "overseas": {"name": "해외여행보험"},
+    }
+
     def test_weather_active_accepts_string_and_object_entries(self):
         products = {"hrmf": {"name": "주택화재보험"}, "driver": {"name": "운전자보험"}}
         signals = {"weather": {"active": ["폭염", {"note": "호우 특보"}]}}
@@ -78,7 +85,95 @@ class TestActionLines(unittest.TestCase):
             datetime(2026, 8, 18, tzinfo=timezone.utc),
         )
 
-        self.assertGreaterEqual(len(lines), 1)
+        self.assertEqual(lines, [])
+
+    def test_afternoon_omits_unchanged_planning_actions(self):
+        lines = db.compute_action_lines(
+            self.PRODUCTS, ["hrmf"],
+            {"hrmf": [{"m": [8], "tag": "여름 위험"}]},
+            {"triggers": {"overseas": {"level": "high"}}},
+            datetime(2026, 8, 18, 14, tzinfo=timezone.utc),
+        )
+
+        self.assertEqual(lines, [])
+
+    def test_afternoon_message_labels_repeat_suppression(self):
+        afternoon = datetime(2026, 8, 18, 14, tzinfo=timezone.utc)
+        context = (
+            self.PRODUCTS, list(self.PRODUCTS), ["hrmf"], {},
+            {"triggers": {"overseas": {"level": "high"}}}, None, afternoon,
+        )
+        with mock.patch.object(db, "_load_context", return_value=context), \
+                mock.patch.object(db.cah, "compute_health", side_effect=RuntimeError):
+            message = db.build_message()
+
+        self.assertIn("오후 업데이트", message)
+        self.assertIn("오전 계획 반복 생략", message)
+        self.assertNotIn("오늘 할 일 (우선순위)", message)
+
+    def test_demand_action_requests_review_instead_of_forced_bid_raise(self):
+        lines = db.compute_action_lines(
+            self.PRODUCTS, ["hrmf"], {},
+            {"triggers": {"overseas": {"level": "high"}}},
+            datetime(2026, 8, 18, 8, tzinfo=timezone.utc),
+        )
+
+        self.assertTrue(any("입찰 조정 검토" in line for line in lines))
+        self.assertFalse(any("입찰 강화" in line for line in lines))
+
+    def test_medium_signal_is_limited_to_monday_and_thursday(self):
+        signals = {"triggers": {"overseas": {"level": "medium"}}}
+        monday = db.compute_action_lines(
+            self.PRODUCTS, [], {}, signals,
+            datetime(2026, 8, 17, 8, tzinfo=timezone.utc),
+        )
+        tuesday = db.compute_action_lines(
+            self.PRODUCTS, [], {}, signals,
+            datetime(2026, 8, 18, 8, tzinfo=timezone.utc),
+        )
+
+        self.assertTrue(any("검색수요 상승" in line for line in monday))
+        self.assertFalse(any("검색수요 상승" in line for line in tuesday))
+
+    def test_seasonal_and_serp_routines_run_weekly(self):
+        seasonal = {"hrmf": [{"m": [8], "tag": "여름 위험"}]}
+        monday = db.compute_action_lines(
+            self.PRODUCTS, ["hrmf"], seasonal, {},
+            datetime(2026, 8, 17, 8, tzinfo=timezone.utc),
+        )
+        tuesday = db.compute_action_lines(
+            self.PRODUCTS, ["hrmf"], seasonal, {},
+            datetime(2026, 8, 18, 8, tzinfo=timezone.utc),
+        )
+
+        self.assertTrue(any("여름 위험" in line for line in monday))
+        self.assertTrue(any("주간 SERP 점검" in line for line in monday))
+        self.assertEqual(tuesday, [])
+
+    def test_next_month_prep_runs_only_on_twentieth(self):
+        seasonal = {"hrmf": [{"m": [9], "tag": "가을 준비"}]}
+        before = db.compute_action_lines(
+            self.PRODUCTS, ["hrmf"], seasonal, {},
+            datetime(2026, 8, 19, 8, tzinfo=timezone.utc),
+        )
+        due = db.compute_action_lines(
+            self.PRODUCTS, ["hrmf"], seasonal, {},
+            datetime(2026, 8, 20, 8, tzinfo=timezone.utc),
+        )
+
+        self.assertFalse(any("가을 준비" in line for line in before))
+        self.assertTrue(any("가을 준비" in line for line in due))
+
+    def test_span_boundary_surfaces_outside_weekly_cadence(self):
+        seasonal = {
+            "hrmf": [{"m": [8], "tag": "호우 기간", "span": [["08-18", "08-25"]]}]
+        }
+        lines = db.compute_action_lines(
+            self.PRODUCTS, ["hrmf"], seasonal, {},
+            datetime(2026, 8, 18, 8, tzinfo=timezone.utc),
+        )
+
+        self.assertTrue(any("호우 기간" in line for line in lines))
 
 
 if __name__ == "__main__":

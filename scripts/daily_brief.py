@@ -151,10 +151,43 @@ def _load_context():
     return products, order, main, seasonal, signals, clip, now
 
 
+def _annual_date(mmdd, year):
+    """MM-DD를 해당 연도의 date로 변환. 잘못된 값은 None."""
+    try:
+        month, day = (int(x) for x in str(mmdd).split("-")[:2])
+        return datetime(year, month, day).date()
+    except (TypeError, ValueError):
+        return None
+
+
+def _span_transition_day(today, spans):
+    """계절 구간의 시작일 또는 종료 다음 날인지 판정."""
+    for span in spans or []:
+        if not (isinstance(span, (list, tuple)) and len(span) == 2):
+            continue
+        for year in (today.year - 1, today.year, today.year + 1):
+            start = _annual_date(span[0], year)
+            end = _annual_date(span[1], year)
+            if not (start and end):
+                continue
+            if end < start:
+                end = _annual_date(span[1], year + 1)
+            if today == start or (end and today == end + timedelta(days=1)):
+                return True
+    return False
+
+
 def compute_action_lines(products, main, seasonal, signals, now):
-    """오늘 할 일(우선순위) 텍스트 목록 산출 — 번호 없이 반환(채널별로 번호 부여)."""
+    """오전 계획형 할 일 산출. 오후에는 반복 계획을 생략한다."""
+    if now.hour >= 12:
+        return []
+
     m = now.month
     nm = m % 12 + 1  # 다음 달
+    today = now.date()
+    weekly_review = today.weekday() == 0       # 월요일
+    medium_review = today.weekday() in (0, 3)  # 월·목
+    next_month_review = today.day == 20
     name = lambda k: products.get(k, {}).get("name", k)
     actions = {}  # key -> (priority, text)   낮을수록 우선
 
@@ -170,10 +203,10 @@ def compute_action_lines(products, main, seasonal, signals, now):
         if not isinstance(t, dict):
             continue
         lv = t.get("level")
-        if lv in ("high", "medium"):
+        if lv == "high" or (lv == "medium" and medium_review):
             icon = "🔥" if lv == "high" else "🌡"
             word = "급등" if lv == "high" else "상승"
-            put(key, 0, f"{icon} {name(key)} — 검색수요 {word}: 소재·입찰 강화 + 랜딩 점검")
+            put(key, 0, f"{icon} {name(key)} — 검색수요 {word}: 근거 확인 후 소재·랜딩·입찰 조정 검토")
     weather = signals.get("weather") or {}
     active_weather = weather.get("active", []) if isinstance(weather, dict) else []
     if not isinstance(active_weather, list):
@@ -185,30 +218,30 @@ def compute_action_lines(products, main, seasonal, signals, now):
             note = str(w).strip() or "기상 특보"
         put("hrmf", 0, f"🌧 {name('hrmf')} — {note}: 누수·풍수재 소구 시즌 대응")
 
-    # (2) 시즌 이슈, 메인 우선. span(정확 일자) 있으면 엔진과 동일 기준(일자), 없으면 월 폴백.
-    today = now.date()
+    # (2) 시즌 이슈 — 월요일 또는 구간 전환일만. 다음 달 준비는 매월 20일 한 번.
     for key, wins in seasonal.items():
         for w in wins:
             span = w.get("span")
             if span:
                 st = ee.state_from_span(today, span)
-                if st in ("active", "cooling"):
+                if st in ("active", "cooling") and (weekly_review or _span_transition_day(today, span)):
                     pri = 1 if key in main else 2
                     put(key, pri, f"{'★' if key in main else '·'} {name(key)} — {w['tag']}(진행 중): 시즌 소재 등록·랜딩 점검")
-                elif st in ("emerging", "upcoming") and key in main:
+                elif st in ("emerging", "upcoming") and key in main and next_month_review:
                     put(key, 3, f"★ {name(key)} — {w['tag']}(대비): 시즌 소재 미리 준비")
             else:
-                if m in w["m"]:
+                if m in w["m"] and (weekly_review or today.day == 1):
                     pri = 1 if key in main else 2
                     put(key, pri, f"{'★' if key in main else '·'} {name(key)} — {w['tag']}(이번 달): 시즌 소재 등록·랜딩 점검")
-                elif nm in w["m"] and key in main:
+                elif nm in w["m"] and key in main and next_month_review:
                     put(key, 3, f"★ {name(key)} — {w['tag']}(다음 달): 시즌 소재 미리 준비")
 
-    # (3) SERP 상위노출 갭 — 메인 중 요일 순환 1건
-    gaps = ["hrmf", "golf", "driver", "overseas"]
-    g = gaps[now.day % len(gaps)]
-    put(g, 4 if g in [k for k, _ in actions.items()] else 2.5,
-        f"🔭 {name(g)} — SERP 상위노출 갭: 검색결과 점검·소구 보완")
+    # (3) SERP 상위노출 갭 — 월요일에만 주차별 1건
+    if weekly_review:
+        gaps = ["hrmf", "golf", "driver", "overseas"]
+        g = gaps[today.isocalendar().week % len(gaps)]
+        put(g, 4 if g in actions else 2.5,
+            f"🔭 {name(g)} — 주간 SERP 점검: 검색결과·경쟁 소구 확인")
 
     return [txt for _, txt in sorted(actions.values(), key=lambda x: x[0])[:5]]
 
@@ -220,8 +253,12 @@ def build_message():
     news_lines = pick_news(clip, products)
 
     part = "오전" if now.hour < 12 else "오후"
-    parts = [f"🗓️ Modooflow · {now.month}/{now.day}({wd}) {part} — 오늘 할 일 {len(action_lines)}", ""]
-    parts += ["✅ 오늘 할 일 (우선순위)"] + (action_lines or ["· 오늘 특이 액션 없음 — 정기 점검만"])
+    if now.hour < 12:
+        parts = [f"🗓️ Modooflow · {now.month}/{now.day}({wd}) {part} — 오늘 할 일 {len(action_lines)}", ""]
+        parts += ["✅ 오늘 할 일 (우선순위)"] + (action_lines or ["· 오늘 신규·주기 도래 액션 없음 — 반복 점검 생략"])
+    else:
+        parts = [f"🗓️ Modooflow · {now.month}/{now.day}({wd}) {part} — 오후 업데이트", ""]
+        parts += ["✅ 오후 변경 사항", "· 오전 계획 반복 생략 — 새 뉴스·데이터 상태만 확인"]
     if news_lines:
         parts += ["", "📰 주목할 뉴스"] + news_lines
     # 자동화 수집 상태 — 저장된 요약을 믿지 않고 지금 다시 계산해 표시.
