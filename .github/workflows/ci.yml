@@ -42,5 +42,8 @@ jobs:
         run: |
           node --check shared/mobile-sidebar.js
           node --check shared/feedback-client.js
+          node --check shared/planning-context.js
       - name: 검색광고 소재 13상품 × 50행 검증
         run: node scripts/check_adcopy_export.mjs
+      - name: 월간 신규·급상승 키워드 판정 검증
+        run: node scripts/check_keyword_monthly.mjs

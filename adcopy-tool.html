@@ -51,7 +51,10 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .main{min-width:0;display:flex;flex-direction:column;}
 .topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 24px;background:var(--surface);border-bottom:1px solid var(--line);}
 .topbar #pt{font-size:16px;font-weight:800;letter-spacing:-.02em;} .topbar #pts{font-size:11.5px;color:var(--muted);}
-.tr{margin-left:auto;display:flex;gap:8px;}
+.tr{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.month-picker{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:800;color:var(--muted);}
+.month-picker select{font-family:inherit;font-size:12px;font-weight:800;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 28px 7px 10px;cursor:pointer;}
+@media(max-width:720px){.month-picker span{display:none;}}
 .btn{padding:8px 13px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:.15s;}
 .btn:hover{border-color:var(--brand);color:var(--brand-600);} .btn.sm{padding:5px 9px;font-size:11px;}
 .icon-btn{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);cursor:pointer;font-size:14px;}
@@ -196,6 +199,7 @@ table.sheet .cp:hover{border-color:var(--brand);color:var(--brand-600);}
 <link rel="stylesheet" href="shared/mobile-sidebar.css">
 <script src="shared/mobile-sidebar.js" defer></script>
 <script src="shared/feedback-client.js"></script>
+<script src="shared/planning-context.js"></script>
 </head>
 <body>
 <div class="app">
@@ -209,7 +213,7 @@ table.sheet .cp:hover{border-color:var(--brand);color:var(--brand-600);}
     <header class="topbar">
       <a class="crumb" href="index.html">Modoo ›</a>
       <div><div id="pt">검색광고 문구 소재</div><div id="pts"></div></div>
-      <div class="tr"><button class="icon-btn" id="themeBtn" title="테마">◐</button></div>
+      <div class="tr"><label class="month-picker"><span>플랜 기준월</span><select id="planMonth" aria-label="소재 기준월"></select></label><button class="icon-btn" id="themeBtn" title="테마">◐</button></div>
     </header>
     <div class="content" id="content"></div>
   </main>
@@ -249,7 +253,7 @@ const PRODUCTS=[
  {key:"chronic",cat:"장기",name:"유병자 간편보험",al:"간편보험",short:["간편심사","3가지고지"],usp:["몇 가지만 답하면 간편하게","지병이 있어도 간편심사로 준비"],covers:["유병자 실손·건강"]},
 ];
 /* 시즌 캘린더 이슈(seasonal-tool과 동일 데이터) — m:월배열, tag:이슈, why:설명, kws:키워드 */
-const SEASONAL={
+let SEASONAL={
  home:[{m:[1,2],tag:"신년 보험 리모델링",why:"새해 재무점검으로 보험 재정비·비교 수요 증가.",kws:["보험 리모델링","보험 점검","다이렉트 보험 비교"]}],
  hrmf:[{m:[6,7,8],tag:"장마·집중호우·태풍",why:"장마·호우로 누수·침수·풍수재 사고 급증(대표 예: 7월 장마 누수).",kws:["누수","침수","풍수재","벽지 곰팡이"]},
   {m:[11,12,1,2],tag:"겨울 난방화재·동파",why:"전기장판·난로 등 난방기구 화재와 한파 동파 피해 증가.",kws:["전기장판 화재","동파","난방 화재"]},
@@ -284,11 +288,20 @@ const SEASONAL={
  chronic:[{m:[1],tag:"신년 건강계획",why:"새해 건강·보장 점검 — 유병력자 간편심사 관심 상승.",kws:["간편심사보험","유병력자 실손"]},
   {m:[11,12],tag:"연말정산·보장 점검",why:"연말 보장 재점검 시즌 — 고령·유병자 가입 수요.",kws:["간편심사","보험 리모델링"]}],
 };
-const CM=new Date().getMonth()+1;
-const monthDist=o=>Math.min(...o.m.map(m=>(m-CM+12)%12));
-const proxLabel=o=>{const d=monthDist(o);return d===0?"이번 달":d===1?"다음 달":d+"개월 뒤";};
+const PLANNING=globalThis.ModooPlanning||{
+  getMonth:()=>new Date().getMonth()+1,nextMonth:month=>month%12+1,
+  optionMarkup:()=>"",setMonth:value=>Number(value)||new Date().getMonth()+1
+};
+let PLANM=PLANNING.getMonth();
+const planNext=()=>PLANNING.nextMonth(PLANM);
+const monthDist=o=>Math.min(...o.m.map(m=>(m-PLANM+12)%12));
+const proxLabel=o=>(o.m||[]).includes(PLANM)?"선택월":(o.m||[]).includes(planNext())?"익월":"참고";
 const shortWord=tag=>tag.split(/[·,()]/)[0].trim();
-function nearestIssue(p){const a=(SEASONAL[p.key]||[]).slice().sort((x,y)=>monthDist(x)-monthDist(y));return a[0];}
+function planningIssues(p){
+  const next=planNext();
+  return (SEASONAL[p.key]||[]).filter(o=>(o.m||[]).includes(PLANM)||(o.m||[]).includes(next))
+    .sort((a,b)=>((a.m||[]).includes(PLANM)?0:1)-((b.m||[]).includes(PLANM)?0:1)||monthDist(a)-monthDist(b));
+}
 function genSeasonTitles(p,iss){
   const sw=shortWord(iss.tag), a=al(p);
   const pool=[...iss.kws, ...iss.kws.map(k=>k.includes(a)?k:`${k} ${a}`), `${sw} ${a}`, `${a} ${sw}`, `${sw} 미리 대비`];
@@ -421,7 +434,7 @@ function renderSidebar(){
   $("#sbNav").innerHTML=h;
 }
 function buildSheet(p){
-  const issues=(SEASONAL[p.key]||[]).slice().sort((a,b)=>monthDist(a)-monthDist(b));
+  const issues=planningIssues(p);
   const sT=[],sD=[];
   issues.forEach(o=>{genSeasonTitles(p,o).forEach(x=>sT.push(x));genSeasonDescs(p,o).forEach(x=>sD.push(x));});
   const dd=arr=>{const m=new Map();arr.forEach(o=>{if(!m.has(o.tx))m.set(o.tx,o);});return [...m.values()];};
@@ -454,7 +467,7 @@ function exportXls(p){
   for(let i=0;i<N;i++){body+="<tr>"+cols.map(c=>{const o=c[1][i];if(!o)return "<td></td><td></td>";
     const st=o.ss?' style="color:#c0392b"':"";return `<td${st}>${eX(o.tx)}</td><td align="center"${st}>${o.len}</td>`;}).join("")+"</tr>";}
   const html=`<html><head><meta charset="utf-8"></head><body><table border="1" cellspacing="0" cellpadding="2">${head}${sub}${body}</table>`
-    +`<p>한화손보 다이렉트 · ${eX(p.name)} · 네이버 파워링크 소재 <b>초안</b>(광고심의 검수 전) · <span style="color:#c0392b">빨강 = 시즌·뉴스 반영</span> · ${todayStr()}</p></body></html>`;
+    +`<p>한화손보 다이렉트 · ${eX(p.name)} · 네이버 파워링크 소재 <b>초안</b>(광고심의 검수 전) · 플랜 기준 ${PLANM}월→${planNext()}월 · <span style="color:#c0392b">빨강 = 시즌·뉴스 반영</span> · ${todayStr()}</p></body></html>`;
   const blob=new Blob(["﻿"+html],{type:"application/vnd.ms-excel;charset=utf-8"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`${p.name}_파워링크소재_${todayStr()}.xls`;a.click();
   setTimeout(()=>URL.revokeObjectURL(a.href),1500);
@@ -610,6 +623,7 @@ function weatherSection(p){
 /* ── 실측 월검색량(data/volume.json · 검색광고 API 주간 갱신) ── */
 let VOL={asof:null,products:{}};
 function loadVolume(){return fetch("data/volume.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(m=>{if(m&&m.products)VOL=m;}).catch(()=>{});}
+function loadSeasonal(){return fetch("data/seasonal.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(m=>{if(m&&m.seasonal)SEASONAL=m.seasonal;}).catch(()=>{});}
 function volList(pkey){const kw=(VOL.products&&VOL.products[pkey]&&VOL.products[pkey].keywords)||{};
   return Object.keys(kw).map(k=>{const o=kw[k]||{},pc=+o.pc||0,mo=+o.mobile||0;return {kw:k,total:pc+mo,comp:o.comp||""};})
     .filter(v=>v.total>0).sort((a,b)=>b.total-a.total);}
@@ -667,8 +681,9 @@ const oneDay=86400000;
 function weekStart(d){const x=new Date(d);const g=(x.getDay()+6)%7;x.setDate(x.getDate()-g);x.setHours(0,0,0,0);return x;}
 const fmtMD=d=>`${d.getMonth()+1}/${d.getDate()}`;
 function renderCalendar(){
-  $("#pt").textContent="주차별 소재 캘린더"; $("#pts").textContent="· 시즌 캘린더 + 경쟁사 광고소재 → 주차별 소재";
-  const base=weekStart(new Date());
+  $("#pt").textContent="주차별 소재 캘린더"; $("#pts").textContent=`· ${PLANM}월 선택 · 당월·익월 시즌 + 경쟁사 광고소재`;
+  const real=new Date(),year=real.getFullYear()+(PLANM<real.getMonth()+1?1:0);
+  const base=weekStart(new Date(year,PLANM-1,1));
   const cards=[];
   for(let i=0;i<6;i++){
     const s=new Date(base.getTime()+i*7*oneDay), e=new Date(s.getTime()+6*oneDay);
@@ -735,7 +750,7 @@ function render(){
   if(curKey==="__cal"){renderCalendar();renderSidebar();window.scrollTo({top:0});return;}
   if(curKey==="__brand"){renderBrand();renderSidebar();window.scrollTo({top:0});return;}
   const p=getP(curKey), s=buildSheet(p), batch=buildNaverRows(p,50);
-  $("#pt").textContent=p.name+" · 파워링크 소재"; $("#pts").textContent="· 롤링 T&D + 시즌·뉴스";
+  $("#pt").textContent=p.name+" · 파워링크 소재"; $("#pts").textContent=`· ${PLANM}월·${planNext()}월 플랜 + 실측 검색량`;
   const ev=EVIDENCE[p.key];
   const evPanel = ev ? `<div class="ev">
     <div class="ev-row"><span class="ev-lb news">📰 뉴스 동향</span><div class="ev-tx">${esc(ev.news)}</div></div>
@@ -750,7 +765,7 @@ function render(){
   </div>` : "";
   const seasonChips = s.issues.length ? s.issues.map(o=>`<span class="spec">🗓 <b>${esc(shortWord(o.tag))}</b> · ${esc(proxLabel(o))}</span>`).join("") : "";
   $("#content").innerHTML=`
-    <div class="banner"><b>광고심의 전제</b> · 아래 문구는 <b>초안</b>입니다. 보험 광고 문구는 <b>손해보험협회 광고심의</b> 대상이며, 사실 근거 없는 최상급·확정 표현은 사용할 수 없습니다. 담보·보험료·조건은 약관 기준으로 검수 후 게재하세요.</div>
+    <div class="banner"><b>연간플랜 연동 · ${PLANM}월→${planNext()}월</b> · 선택월과 익월에 해당하는 시즌 이슈만 소재에 반영해 다른 달의 ‘신년’ 같은 문구가 섞이지 않습니다. 아래 문구는 <b>초안</b>이며 담보·보험료·조건은 약관과 광고심의 기준으로 검수 후 게재하세요.</div>
     <div class="xbar">
       <button class="btn xbtn" id="xExcel">⬇ 문구 검토용 Excel</button>
       <button class="btn" id="xAds">⬇ 현재 상품 내부 검토 CSV (${batch.length}/50)</button>
@@ -828,8 +843,10 @@ document.addEventListener("click",e=>{
       const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("복사됨");}catch(_){}ta.remove();});
   }});
 $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");try{localStorage.setItem("mf_theme",d?"light":"dark")}catch(_){};});
+$("#planMonth").innerHTML=PLANNING.optionMarkup(PLANM);
+$("#planMonth").addEventListener("change",e=>{PLANM=PLANNING.setMonth(e.target.value);render();});
 render();
-Promise.all([loadBrandManifest(),loadVolume(),loadSignals()]).then(()=>{renderSidebar();render();}); // 경쟁사 브랜드검색 + 실측 검색량 + 기상특보(있으면)
+Promise.all([loadBrandManifest(),loadVolume(),loadSignals(),loadSeasonal()]).then(()=>{renderSidebar();render();}); // 경쟁사 브랜드검색 + 실측 검색량 + 기상특보 + 연간플랜
 // 실측 관측 소재 분석(있으면) — 생성 문구의 경쟁 공통 소구 회피·차별 근거
 fetch("serp/ad_analysis.json").then(r=>r.ok?r.json():null).then(d=>{if(d&&d.products){AD_ANALYSIS=d.products;render();}}).catch(()=>{});
 // 근거 기반 추천 소재(event_engine 산출물 · 연간플랜에서 병합) — 사이드바 카운트·본문 갱신

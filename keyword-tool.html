@@ -112,6 +112,15 @@ td.kw{font-weight:700;color:var(--ink);white-space:normal;} td.c{text-align:cent
 .legend span{display:inline-flex;align-items:center;gap:5px;} .lg{width:9px;height:9px;border-radius:2px;}
 .note{font-size:11.5px;color:var(--ink-2);line-height:1.7;margin-top:18px;padding:13px 15px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);}
 .note b{font-weight:800;} .note a{color:var(--brand-600);font-weight:700;text-decoration:none;} .note a:hover{text-decoration:underline;}
+.mover-panel{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--nav);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh);margin-bottom:16px;}
+.mover-head{display:flex;align-items:center;gap:8px;justify-content:space-between;flex-wrap:wrap;margin-bottom:9px;}
+.mover-head b{font-size:13px;} .mover-head span{font-size:10.5px;color:var(--muted);font-weight:700;}
+.mover-list{display:flex;flex-wrap:wrap;gap:7px;}
+.mover{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:9px;padding:6px 9px;background:var(--surface-2);font-size:11px;}
+.mover .kind{font-size:9.5px;font-weight:800;padding:2px 6px;border-radius:99px;}
+.mover.new .kind{background:var(--nav-bg);color:var(--nav-ink);}.mover.rising .kind{background:var(--trx-bg);color:var(--trx);}
+.mover .delta{font-family:var(--mono);font-size:10px;color:var(--muted);font-weight:700;}
+.move-tag{display:inline-flex;margin-left:5px;font-size:9px;font-weight:800;padding:1px 5px;border-radius:99px;background:var(--nav-bg);color:var(--nav-ink);vertical-align:1px;}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:10px;font-size:12.5px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:50;box-shadow:var(--sh-lg);}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
@@ -234,7 +243,8 @@ function genKeywords(p){
 const ALL={}; PRODUCTS.forEach(p=>ALL[p.key]=genKeywords(p));
 const INTENT_COL={거래:"var(--trx)",정보:"var(--inf)",브랜드:"var(--brd)",담보:"var(--brand)"};
 
-let curKey="__all", pf="all", VOL={};
+let curKey="__all", pf="all", VOL={},VOL_META={asof:null,source:"none"},VOL_HISTORY={snapshots:{}};
+const NEW_MIN=100,RISING_MIN_BASE=10,RISING_MIN_DELTA=50,RISING_MIN_RATE=.5;
 const nk=s=>String(s).replace(/\s/g,"");
 const hasVol=()=>Object.keys(VOL).length>0;
 const volOf=kw=>VOL[nk(kw)]||null;
@@ -269,6 +279,7 @@ function importMap(map,target){
 /* 검색광고 API 실검색량 자동 반영 (data/volume.json · Pages/서버) — 상품별 조용히 병합 */
 function applyVolumeData(vd){
   if(!vd||vd.source!=="searchad"||!vd.products)return;
+  VOL_META=vd;
   Object.keys(vd.products).forEach(key=>{
     if(!PRODUCTS.some(p=>p.key===key))return;
     const map=(vd.products[key]||{}).keywords||{};
@@ -282,6 +293,40 @@ function applyVolumeData(vd){
     if(add.length)IMPORTED[key]=(IMPORTED[key]||[]).concat(add);
   });
   render();
+}
+function applyVolumeHistory(history){
+  if(history&&history.source==="searchad"&&history.snapshots)VOL_HISTORY=history;
+  render();
+}
+function snapshotKeywordMap(period,key){
+  const snapshot=(VOL_HISTORY.snapshots||{})[period]||{};
+  const keywords=(((snapshot.products||{})[key]||{}).keywords)||{},mapped=new Map();
+  Object.keys(keywords).forEach(keyword=>{const row=keywords[keyword]||{};mapped.set(nk(keyword),{keyword,total:+row.total||(+row.pc||0)+(+row.mobile||0),comp:row.comp||""});});
+  return mapped;
+}
+function monthlyMovers(key){
+  const periods=Object.keys(VOL_HISTORY.snapshots||{}).sort(),current=periods[periods.length-1]||null,previous=periods[periods.length-2]||null;
+  if(!current||!previous)return {current,previous,rows:[]};
+  const now=snapshotKeywordMap(current,key),before=snapshotKeywordMap(previous,key),rows=[];
+  now.forEach((row,normal)=>{const prev=(before.get(normal)||{}).total||0,delta=row.total-prev,rate=prev>0?delta/prev:null;
+    if(prev===0&&row.total>=NEW_MIN)rows.push({...row,previous:prev,delta,rate,kind:"new"});
+    else if(prev>=RISING_MIN_BASE&&delta>=RISING_MIN_DELTA&&rate>=RISING_MIN_RATE)rows.push({...row,previous:prev,delta,rate,kind:"rising"});
+  });
+  rows.sort((a,b)=>b.delta-a.delta||b.total-a.total);
+  return {current,previous,rows};
+}
+function combinedMovers(key){
+  const keys=key==="__all"?PRODUCTS.map(p=>p.key):[key],all=[];let current=null,previous=null;
+  keys.forEach(productKey=>{const report=monthlyMovers(productKey);current=report.current||current;previous=report.previous||previous;
+    report.rows.forEach(row=>all.push({...row,productKey,productName:(getP(productKey)||{}).name||productKey}));});
+  all.sort((a,b)=>b.delta-a.delta||b.total-a.total);return {current,previous,rows:all};
+}
+function moverPanel(key){
+  const report=combinedMovers(key),scope=key==="__all"?"전체 상품":"현재 상품";
+  if(!report.previous)return `<div class="mover-panel"><div class="mover-head"><b>📈 월간 신규·급상승 키워드</b><span>네이버 검색광고 키워드도구 실측</span></div><div style="font-size:11.5px;color:var(--ink-2);line-height:1.65">${report.current?`${esc(report.current)} 스냅샷 수집 완료. 전월 스냅샷이 생기면 자동 비교합니다.`:"월별 검색량 이력 수집 전입니다."} 신규는 전월 0·당월 ${NEW_MIN}회 이상, 급상승은 전월 ${RISING_MIN_BASE}회 이상이면서 +${RISING_MIN_DELTA}회·+${RISING_MIN_RATE*100}% 이상일 때 표시합니다.</div></div>`;
+  const rows=report.rows.slice(0,key==="__all"?16:12);
+  return `<div class="mover-panel"><div class="mover-head"><b>📈 ${report.previous}→${report.current} 신규·급상승 · ${scope}</b><span>${rows.length}개 후보 · 현재 키워드셋에 자동 반영됨</span></div>
+    ${rows.length?`<div class="mover-list">${rows.map(row=>`<div class="mover ${row.kind}"><span class="kind">${row.kind==="new"?"신규":"급상승"}</span><b>${esc(row.keyword)}</b>${key==="__all"?`<span>${esc(row.productName)}</span>`:""}<span class="delta">${fmtVol(row.previous)}→${fmtVol(row.total)} · +${row.rate==null?"신규":Math.round(row.rate*100)+"%"}</span></div>`).join("")}</div>`:`<div style="font-size:11.5px;color:var(--muted)">설정한 기준을 충족한 후보가 없습니다.</div>`}</div>`;
 }
 function importKeywords(text){
   text=(text||"").trim(); if(!text)return;
@@ -312,7 +357,7 @@ function pfCounts(rows){const c={네이버:0,구글:0,공통:0,AI:0};rows.forEac
 
 
 function renderOverview(){
-  $("#pt").textContent="전체 개요"; $("#pts").textContent="· 10개 광고그룹 통합";
+  $("#pt").textContent="전체 개요"; $("#pts").textContent=`· ${PRODUCTS.length}개 광고그룹 · 검색량 ${VOL_META.asof||"연동 대기"}`;
   const total=PRODUCTS.reduce((s,p)=>s+filt(rowsOf(p.key)).length,0);
   const allrows=PRODUCTS.flatMap(p=>filt(rowsOf(p.key)));
   const ic=intentCounts(allrows), pc=pfCounts(allrows);
@@ -329,11 +374,12 @@ function renderOverview(){
   }).join("");
   $("#content").innerHTML=`
     <div class="kpi-row">
-      ${kpi(total,"총 키워드","10개 상품(광고그룹)")}
+      ${kpi(total,"총 키워드",`${PRODUCTS.length}개 상품(광고그룹)`)}
       ${kpi(pc.네이버+pc.공통,"네이버 우선","거래·브랜드형 중심","var(--nav-ink)")}
       ${kpi(pc.구글+pc.공통,"구글 우선","정보·롱테일 중심","var(--goo-ink)")}
       ${kpi(ic.거래,"거래형 키워드","가입·보험료·비교","var(--trx)")}
     </div>
+    ${moverPanel("__all")}
     <div class="sec-lbl">상품별 키워드 집합 <span style="font-weight:600;color:var(--muted);text-transform:none">· 카드를 클릭하면 상세</span></div>
     <div class="ov-grid">${cards}</div>
     <div class="legend">
@@ -351,9 +397,11 @@ function productBody(p){
   const kpi=(n,l,col)=>`<div class="kpi"><div class="n"${col?` style="color:${col}"`:""}>${n}</div><div class="l">${l}</div></div>`;
   const vh=hasVol();
   const rows2=vh?rows.slice().sort((a,b)=>{const va=volOf(a.kw),vb=volOf(b.kw);return((vb?vb.pc+vb.mobile:-1)-(va?va.pc+va.mobile:-1));}):rows;
-  const trows=rows2.map(r=>{const v=volOf(r.kw);const vol=v?(v.pc||0)+(v.mobile||0):null;
-    return `<tr><td class="kw">${esc(r.kw)}</td><td class="c"><span class="src ${r.src||"도구"}">${r.src||"도구"}</span></td><td class="c gram">${r.gram}단어</td><td class="c"><span class="pill ${r.intent}">${r.intent}</span></td><td class="c"><span class="pill ${r.pf}">${r.pf}</span></td><td class="c gram">${r.mt}</td>`+(vh?`<td class="c" style="font-family:var(--mono);font-weight:700">${vol!=null?fmtVol(vol):"—"}</td><td class="c gram">${v?esc(v.comp||"—"):"—"}</td>`:"")+`</tr>`;}).join("");
+  const movement=new Map(monthlyMovers(p.key).rows.map(row=>[nk(row.keyword),row]));
+  const trows=rows2.map(r=>{const v=volOf(r.kw),move=movement.get(nk(r.kw)),vol=v?(v.pc||0)+(v.mobile||0):null;
+    return `<tr><td class="kw">${esc(r.kw)}${move?`<span class="move-tag">${move.kind==="new"?"신규":"▲ "+Math.round(move.rate*100)+"%"}</span>`:""}</td><td class="c"><span class="src ${r.src||"도구"}">${r.src||"도구"}</span></td><td class="c gram">${r.gram}단어</td><td class="c"><span class="pill ${r.intent}">${r.intent}</span></td><td class="c"><span class="pill ${r.pf}">${r.pf}</span></td><td class="c gram">${r.mt}</td>`+(vh?`<td class="c" style="font-family:var(--mono);font-weight:700">${vol!=null?fmtVol(vol):"—"}</td><td class="c gram">${v?esc(v.comp||"—"):"—"}</td>`:"")+`</tr>`;}).join("");
   return `<div class="kpi-row">${kpi(rows.length,"총 키워드")}${kpi(nvCnt,"네이버 도구 추가","var(--nav-ink)")}${kpi(ic.거래+ic.담보,"거래·담보형","var(--trx)")}${kpi(pc.구글+pc.공통+ic.AI,"구글·AI","var(--goo-ink)")}</div>
+    ${moverPanel(p.key)}
     <div class="sec-lbl">키워드셋 <span style="font-weight:600;color:var(--muted);text-transform:none">· 도구 생성 + 네이버 실시간 검색량(프록시) · 인텐트·플랫폼 자동 분류</span></div>
     <div class="tbl-wrap"><table><thead><tr><th>키워드</th><th class="c">출처</th><th class="c">구성</th><th class="c">인텐트</th><th class="c">추천 플랫폼</th><th class="c">매치타입</th>${vh?'<th class="c">월검색량</th><th class="c">경쟁도</th>':''}</tr></thead><tbody>${trows}</tbody></table></div>`;
 }
@@ -532,7 +580,8 @@ $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.ge
 render();
 // 검색광고 실검색량 자동 로드(Pages/서버 동일출처 · 아티팩트/file은 조용히 생략)
 fetch("data/volume.json").then(r=>r.ok?r.json():null).then(d=>{if(d)applyVolumeData(d);}).catch(()=>{});
-// 상품별 월 검색추세(이달의 추천 키워드용) — 로드되면 개요 갱신
+// 월별 스냅샷이 2개 이상 쌓이면 신규·급상승 후보를 자동 계산한다.
+fetch("data/volume-history.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)applyVolumeHistory(d);}).catch(()=>{});
 </script>
 
 </body>
