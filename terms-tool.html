@@ -7,11 +7,11 @@
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="한화손보 CM 약관 용어 → 소비자 쉬운 표현 변환 콘솔">
 <title>Modoo 약관 · 쉬운 용어 변환</title>
+<link rel="icon" type="image/svg+xml" href="icons/modoo-mark.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/modoo-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="icons/modoo-16.png">
 <link rel="apple-touch-icon" href="icons/modoo-180.png">
 <link rel="manifest" href="site.webmanifest">
-<meta name="theme-color" content="#e0850f">
+<meta name="theme-color" content="#111827">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Modoo">
@@ -84,12 +84,14 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 <script>try{var _r=document.documentElement;_r.setAttribute("data-theme",localStorage.getItem("mf_theme")||"light");if(window.self!==window.top)_r.setAttribute("data-embed","1");}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
 <style>:root[data-embed="1"] .sb-brand,:root[data-embed="1"] .crumb,:root[data-embed="1"] .brand-logo,:root[data-embed="1"] #themeBtn{display:none!important}</style>
 <link rel="stylesheet" href="shared/mobile-sidebar.css">
+<link rel="stylesheet" href="shared/ui-polish.css">
 <script src="shared/mobile-sidebar.js" defer></script>
+<script src="shared/ui-icons.js" defer></script>
 </head>
 <body>
 <div class="app">
   <aside class="sidebar">
-    <div class="sb-brand"><span class="brand-logo">가</span><span><span class="bn">약관 쉬운 용어 변환</span><small>가입화면·검색광고 카피</small></span></div>
+    <div class="sb-brand"><span class="brand-logo" aria-hidden="true"></span><span><span class="bn">약관 쉬운 용어 변환</span><small>가입화면·검색광고 카피</small></span></div>
     <nav class="sb-nav" id="sbNav"></nav>
     <div class="sb-foot"><a href="index.html">← 통합 콘솔(main)로</a><br>표준약관 용어를 소비자 표현으로 · 가입화면·카피 작성용</div>
   </aside>
@@ -98,7 +100,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
       <div><span id="pt">전체 용어</span> <span id="pts"></span></div>
       <div class="tr">
         <div class="search">🔎 <input id="q" placeholder="용어·뜻 검색" autocomplete="off"></div>
-        <button class="icon-btn" id="themeBtn" title="테마 전환">◐</button>
+        <button class="icon-btn" id="themeBtn" type="button" aria-label="테마 전환"></button>
       </div>
     </div>
     <div class="content" id="content"></div>

@@ -7,11 +7,11 @@
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="CM 다이렉트 마케팅 참고 논문 아카이브 — 월간 자동 적립(네이버 학술)">
 <title>Modoo · 논문 아카이브</title>
+<link rel="icon" type="image/svg+xml" href="icons/modoo-mark.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/modoo-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="icons/modoo-16.png">
 <link rel="apple-touch-icon" href="icons/modoo-180.png">
 <link rel="manifest" href="site.webmanifest">
-<meta name="theme-color" content="#e0850f">
+<meta name="theme-color" content="#111827">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Modoo">
@@ -75,15 +75,17 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 </style>
 <script>try{var _r=document.documentElement;_r.setAttribute("data-theme",localStorage.getItem("mf_theme")||"light");if(window.self!==window.top)_r.setAttribute("data-embed","1");}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
 <style>:root[data-embed="1"] .sb-brand,:root[data-embed="1"] .crumb,:root[data-embed="1"] .brand-logo,:root[data-embed="1"] #themeBtn{display:none!important}</style>
+<link rel="stylesheet" href="shared/ui-polish.css">
+<script src="shared/ui-icons.js" defer></script>
 </head>
 <body>
 <main class="main">
   <header class="topbar">
-    <div class="brand-logo">📚</div>
+    <div class="brand-logo" aria-hidden="true"></div>
     <div><a class="crumb" href="index.html">Modoo ›</a><div id="pt">논문 아카이브</div></div>
     <div class="tr">
       <div class="search">🔎<input id="q" placeholder="제목·요약 검색" autocomplete="off"></div>
-      <button class="icon-btn" id="themeBtn" title="테마">◐</button>
+      <button class="icon-btn" id="themeBtn" type="button" aria-label="테마 전환"></button>
     </div>
   </header>
   <div class="content" id="content"><div class="empty">불러오는 중…</div></div>

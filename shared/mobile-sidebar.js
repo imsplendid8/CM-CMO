@@ -8,7 +8,8 @@
     const button = document.createElement("button");
     button.type = "button";
     button.className = "mobile-sidebar-toggle";
-    button.textContent = "상품·보기";
+    button.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>상품·보기</span>';
+    button.setAttribute("aria-label", "상품과 화면 메뉴 열기");
     button.setAttribute("aria-controls", sidebar.id);
     button.setAttribute("aria-expanded", "false");
 
@@ -22,6 +23,7 @@
       mask.classList.toggle("on", open);
       document.body.classList.toggle("mobile-sidebar-open", open);
       button.setAttribute("aria-expanded", open ? "true" : "false");
+      button.setAttribute("aria-label", open ? "상품과 화면 메뉴 닫기" : "상품과 화면 메뉴 열기");
     };
 
     button.addEventListener("click", () => setOpen(!sidebar.classList.contains("mobile-open")));

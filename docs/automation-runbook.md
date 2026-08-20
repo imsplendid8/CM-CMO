@@ -12,7 +12,7 @@ CM-CMO의 데이터 수집·브리프 워크플로 **실행 순서와 충돌 방
 | automation-status.yml | Automation Health | schedule·dispatch | `40 22 * * *` / `40 4 * * *` | 매일 07:40 / 13:40 | (없음·상태 점검) | ✖(read) | `cm-cmo-data-writers` |
 | daily-brief.yml | Daily Brief (Telegram) | schedule·dispatch | `0 23 * * *` / `0 5 * * *` | 매일 08:00 / 14:00 | (없음·텔레그램) | ✖(read) | `cm-cmo-data-writers` |
 | daily-email.yml | Daily Brief (Email) | schedule·dispatch | `30 23 * * *` | 매일 08:30 | (없음·이메일 SMTP) | ✖(read) | `cm-cmo-data-writers` |
-| searchad.yml | Naver SearchAd Volume | schedule·dispatch | `0 20 * * 0` | 일 05:00 | `data/volume.json` | ✅ | `cm-cmo-data-writers` |
+| searchad.yml | Naver SearchAd Volume | schedule·dispatch | `0 20 * * 0` | 일 05:00 | `data/volume.json`·`data/volume-history.json` | ✅ | `cm-cmo-data-writers` |
 | serp-capture.yml | SERP Capture | schedule·dispatch | `20 21 * * 0` | 월 06:20 | `serp/` | ✅ | `cm-cmo-data-writers` |
 | trends.yml | Naver Trends (DataLab) | schedule·dispatch | `10 20 1 * *` | 1일 05:10 | `data/trends.json` | ✅ | `cm-cmo-data-writers` |
 | papers.yml | Papers Archive | schedule·dispatch | `0 0 1 * *` | 1일 09:00 | `docs/논문-아카이브.md`·`data/papers.json` | ✅ | `cm-cmo-data-writers` |

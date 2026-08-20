@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Modoo</title>
+  <defs>
+    <linearGradient id="mark-gradient" x1="13" y1="15" x2="52" y2="49" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFB020"/>
+      <stop offset="0.52" stop-color="#FF7A1A"/>
+      <stop offset="1" stop-color="#FF4D5A"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="17" fill="#111827"/>
+  <path d="M15 44V22.5c0-2.4 2.9-3.5 4.5-1.8L32 34l12.5-13.3c1.6-1.7 4.5-.6 4.5 1.8V44" fill="none" stroke="url(#mark-gradient)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="50" cy="15" r="4" fill="#FFF7ED"/>
+</svg>

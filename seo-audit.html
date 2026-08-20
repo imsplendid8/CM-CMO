@@ -3,17 +3,18 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://*.workers.dev; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="no-referrer">
 <title>Modoo SEO · 테크니컬 SEO 콘솔</title>
+<link rel="icon" type="image/svg+xml" href="icons/modoo-mark.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/modoo-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="icons/modoo-16.png">
 <link rel="apple-touch-icon" href="icons/modoo-180.png">
 <link rel="manifest" href="site.webmanifest">
-<meta name="theme-color" content="#e0850f">
+<meta name="theme-color" content="#111827">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Modoo">
 
 <link rel="stylesheet" href="shared/mobile-sidebar.css">
 <script src="shared/mobile-sidebar.js" defer></script>
+<script src="shared/planning-context.js"></script>
 <script>try{var _r=document.documentElement;_r.setAttribute("data-theme",localStorage.getItem("mf_theme")||"light");if(window.self!==window.top)_r.setAttribute("data-embed","1");}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
 <style>:root[data-embed="1"] .sb-brand,:root[data-embed="1"] .crumb,:root[data-embed="1"] .brand-logo,:root[data-embed="1"] #themeBtn{display:none!important}</style>
 <style>
@@ -316,16 +317,29 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .badge{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:999px;white-space:nowrap;}
 .badge.good{background:var(--good-bg);color:var(--good-ink);} .badge.mid{background:var(--mid-bg);color:var(--mid-ink);}
 .badge.bad{background:var(--bad-bg);color:var(--bad-ink);} .badge.ghost{background:var(--line-2);color:var(--ink-2);}
+.faq-panel{margin:20px 0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;box-shadow:var(--sh);}
+.faq-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+.faq-head h3{font-size:14px;font-weight:800;} .faq-head p{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.55;}
+.faq-list{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.faq-card{border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 13px;background:var(--surface-2);}
+.faq-card .fq-top{display:flex;align-items:center;gap:7px;margin-bottom:7px;}
+.faq-card .fq-cycle{font-size:9.5px;font-weight:800;color:var(--brand-600);background:var(--brand-50);padding:2px 7px;border-radius:99px;}
+.faq-card .fq-q{font-size:12.5px;font-weight:800;line-height:1.55;}
+.faq-card .fq-a{font-size:11.5px;color:var(--ink-2);line-height:1.65;margin-top:6px;}
+.faq-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px;}
+@media(max-width:720px){.faq-list{grid-template-columns:1fr;}}
 .foot-note{font-size:11px;color:var(--muted);line-height:1.6;margin-top:18px;padding:12px 14px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);}
 .foot-note b{color:var(--ink-2);font-weight:800;}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:10px;font-size:12.5px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:50;box-shadow:var(--sh-lg);}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
+<link rel="stylesheet" href="shared/ui-polish.css">
+<script src="shared/ui-icons.js" defer></script>
 
 <div class="app">
   <aside class="sidebar">
     <div class="sb-brand">
-      <div class="brand-logo">◆</div>
+      <div class="brand-logo" aria-hidden="true"></div>
       <div><div class="bn">테크니컬 SEO</div><small>한화손보 CM</small></div>
     </div>
     <nav class="sb-nav" id="sbNav"></nav>
@@ -336,8 +350,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
       <div id="pageTitle">대시보드</div>
       <div class="ts-right">
         <span class="ws">워크스페이스 · <b>한화손보 CM</b></span>
-        <span class="usage">담당 상품 <b>10</b>종</span>
-        <button class="icon-btn" id="themeBtn" title="라이트/다크 전환">◐</button>
+        <span class="usage">담당 상품 <b id="productCount">—</b>종</span>
+        <button class="icon-btn" id="themeBtn" type="button" aria-label="테마 전환"></button>
         <div class="avatar" title="한화손보 CM">CM</div>
       </div>
     </header>
@@ -488,6 +502,48 @@ const USP={
   event:"행사 전날·당일 24시간 가입 · 공연·체육·불꽃놀이 배상책임",
   chronic:"간편심사(3.5.5·5.10.5) · 고혈압·당뇨 유병력자 가입(출시 예정)"
 };
+
+/* ── 월간 FAQ 제안: 연간플랜 + 네이버 검색광고 실측 검색량 ── */
+let SEO_SEASONAL={},SEO_VOL={asof:null,source:"none",products:{}};
+const FAQ_TERMS={
+  home:["한화손보다이렉트","다이렉트보험"],hrmf:["주택화재","화재보험","누수"],golf:["골프보험","홀인원"],
+  cncr:["암보험","유사암","진단비"],dntl:["치아보험","임플란트","스케일링"],driver:["운전자보험","벌금","변호사"],
+  woman:["여성보험","여성건강","여성암"],birth:["태아보험","임신보험","출산"],overseas:["여행자보험","해외여행보험","항공지연"],
+  overseaslong:["장기체류보험","유학생보험","워홀"],holeinone:["홀인원보험","투게더홀인원"],event:["행사보험","행사배상책임"],
+  chronic:["유병자보험","간편심사","유병력자"]
+};
+const faqNorm=s=>String(s||"").replace(/\s/g,"").toLowerCase();
+function faqIssue(p,month){return (SEO_SEASONAL[p.key]||[]).find(w=>(w.m||[]).includes(month))||null;}
+function faqTopKeyword(p){
+  const map=((SEO_VOL.products||{})[p.key]||{}).keywords||{},terms=FAQ_TERMS[p.key]||[p.name];
+  return Object.keys(map).map(kw=>{const row=map[kw]||{};return {kw,total:(+row.pc||0)+(+row.mobile||0),comp:row.comp||""};})
+    .filter(row=>terms.some(term=>faqNorm(row.kw).includes(faqNorm(term))))
+    .sort((a,b)=>b.total-a.total)[0]||null;
+}
+function monthlyFaqs(p){
+  const month=window.ModooPlanning.getMonth(),next=window.ModooPlanning.nextMonth(month);
+  const current=faqIssue(p,month),upcoming=faqIssue(p,next),top=faqTopKeyword(p);
+  const common="실제 보장 여부·가입 조건·한도·자기부담금·면책 및 지급 제한은 상품설명서와 약관에서 확인해야 합니다.";
+  const currentQ=current?`${month}월 ${current.tag} 시기에 ${p.name}에서 무엇을 확인해야 하나요?`:`${month}월에 ${p.name} 정보를 찾을 때 무엇을 먼저 확인해야 하나요?`;
+  const currentA=current?`${current.why} 이 시기에는 ${current.kws.slice(0,3).join("·")} 관련 질문을 중심으로 안내하되, ${common}`:`시기별 관심사가 달라질 수 있으므로 최신 상품 안내와 주요 담보, 가입 조건을 함께 비교하세요. ${common}`;
+  const nextQ=upcoming?`${next}월 ${upcoming.tag} 전에 어떤 내용을 미리 준비해야 하나요?`:`${next}월을 앞두고 ${p.name} FAQ에서 새로 점검할 내용은 무엇인가요?`;
+  const nextA=upcoming?`${upcoming.act}. 검색 수요와 실제 상품 내용을 다시 확인한 뒤 FAQ를 교체하고, ${common}`:`익월 검색량과 뉴스·시즌 이슈를 확인해 질문을 교체하세요. 변경된 상품 내용이 없다면 확정적인 문구를 새로 만들지 말고 ${common}`;
+  const kw=top?top.kw:(FAQ_TERMS[p.key]||[p.name])[0],volume=top?` 최근 네이버 검색광고 키워드도구에서 PC+모바일 월 ${top.total.toLocaleString("ko-KR")}회로 관측된 검색어입니다.`:"";
+  return [
+    {cycle:"월간 교체",q:currentQ,a:currentA},
+    {cycle:"월간 교체",q:nextQ,a:nextA},
+    {cycle:"수요 반영",q:`‘${kw}’를 검색한 이용자는 어떤 정보를 먼저 확인해야 하나요?`,a:`${kw} 관련 페이지에서는 보장 범위, 가입 대상, 보험기간과 보험료 산출 조건을 먼저 확인하세요.${volume} 검색량은 수요 판단 근거이며 상품의 유리함이나 가입 적합성을 뜻하지 않습니다.`},
+    {cycle:"상시 유지",q:`${p.name} 가입 전에 공통으로 확인할 사항은 무엇인가요?`,a:common+" 필요하면 보험계약 전 알릴 의무와 해지·갱신 조건도 함께 확인하세요."}
+  ];
+}
+function faqSection(p){
+  const month=window.ModooPlanning.getMonth(),next=window.ModooPlanning.nextMonth(month),faqs=monthlyFaqs(p);
+  const schema={"@context":"https://schema.org","@type":"FAQPage",mainEntity:faqs.map(row=>({"@type":"Question",name:row.q,acceptedAnswer:{"@type":"Answer",text:row.a}}))};
+  const jsonld=`<script type="application/ld+json">\n${JSON.stringify(schema,null,2)}\n<\/script>`;
+  return `<section class="faq-panel"><div class="faq-head"><div><h3>❓ ${month}월 FAQ 제안 4개</h3><p>당월·익월 연간플랜과 네이버 실측 검색량을 반영 · 1~3번은 매월 교체, 4번은 상시 유지</p></div><a class="btn" href="seasonal-tool.html?month=${month}" target="_blank" rel="noopener">연간플랜 ${month}월→${next}월 보기 ↗</a></div>
+    <div class="faq-list">${faqs.map((row,i)=>`<article class="faq-card"><div class="fq-top"><span class="fq-cycle">${esc(row.cycle)}</span><button class="cp" data-copy="${esc(row.q+"\n"+row.a)}">Q&A 복사</button></div><div class="fq-q">${i+1}. ${esc(row.q)}</div><div class="fq-a">${esc(row.a)}</div></article>`).join("")}</div>
+    <div class="faq-actions"><button class="btn" data-copy="${esc(jsonld)}">FAQ JSON-LD 복사</button><span style="font-size:11px;color:var(--muted)">화면 Q&A와 JSON-LD 문구를 동일하게 배포하고, 상품 담당자·심의 검토 후 사용하세요.</span></div></section>`;
+}
 
 /* ── 유틸 ── */
 const $=(s,el=document)=>el.querySelector(s);
@@ -745,6 +801,7 @@ function renderScreen(){
       <button class="btn" data-xls="__all">전체 상품 Excel</button></div>
     <div class="sec-lbl">이 화면에서 할 일 (우선순위 상→하)</div>
     ${ts.map(t=>todoHtml(p,t)).join("")}
+    ${faqSection(p)}
     ${implSection(p,COPY[p.key],{brand:p.brand})}
     ${p.delivery==="home"?webStdPanel():""}
     <div class="foot-note"><b>참고</b> · 상단 점수(구글·네이버)는 네이버 색인 실측값(2026-07-18) 기준이며, 반영 여부는 <b>적용/미적용</b>으로만 기록합니다(추정 점수·자동측정 없음 — 실측이 필요하면 봇차단 403 해제 후 unlighthouse). 브릿지 상품은 <b>캐롯 목적지 페이지</b> 색인값 기준이며, 브릿지 자체는 색인이 거의 없습니다(분기 처리 To-Do 참고). H1·alt·OG 원본은 사이트 봇차단(403)으로 미수집 → 템플릿 예시이니 실제 DOM에 맞춰 반영. After 카피는 광고심의 검수 후 배포.<br><b>네이버 웹마스터도구 가이드</b> · 제목 15자·설명 45자 이내 권장, 제목=설명·키워드 반복·낚시성 금지, robots.txt와 로봇 메타태그 <b>둘 다 허용</b>, 리다이렉트는 <b>HTTP 301</b>, 사이트맵·RSS 제출.</div>`;
@@ -846,6 +903,7 @@ function runPro(){
 /* ── 대시보드 ── */
 function renderDash(){
   const rows=PRODUCTS.map(p=>({p,g:gScore(p),n:nScore(p)}));
+  const longCount=catProducts("장기").length,generalCount=catProducts("일반").length;
   const avgG=Math.round(rows.reduce((s,x)=>s+x.g,0)/rows.length);
   const avgN=Math.round(rows.reduce((s,x)=>s+x.n,0)/rows.length);
   let tot=0,done=0;PRODUCTS.forEach(p=>{const ts=todosFor(p,COPY[p.key]);tot+=ts.length;done+=ts.filter(t=>isDone(`cm:${p.key}:${t.id}`)).length;});
@@ -857,7 +915,7 @@ function renderDash(){
   const kpi=(num,lbl,sub,col)=>`<div class="kpi"><div class="k-num"${col?` style="color:${col}"`:""}>${num}</div><div class="k-lbl">${lbl}</div>${sub?`<div class="k-sub" style="color:${col||"var(--muted)"}">${sub}</div>`:""}</div>`;
   $("#v-dash").innerHTML=`
     <div class="kpi-row">
-      ${kpi(PRODUCTS.length,"담당 상품","장기 7 · 일반 2 · 홈")}
+      ${kpi(PRODUCTS.length,"담당 상품",`장기 ${longCount} · 일반 ${generalCount} · 홈 1`)}
       ${kpi(avgG,"평균 구글 점수","100점 만점",gcol(avgG))}
       ${kpi(avgN,"평균 네이버 점수","웹표준 기준",gcol(avgN))}
       ${kpi(pct+"%","To-Do 완료","전체 "+done+"/"+tot,"var(--brand-600)")}
@@ -874,7 +932,7 @@ function renderDash(){
         <h3>⚡ 빠른 작업</h3>
         <div class="qa">
           <button data-nav="pro"><span class="qa-ico">🔍</span><span>범용 진단 실행<small>URL·크롤 JSON → To-Do 자동생성</small></span></button>
-          <button data-xls="__all"><span class="qa-ico">📊</span><span>전체 태깅가이드 Excel<small>담당 10상품 통합표 다운로드</small></span></button>
+          <button data-xls="__all"><span class="qa-ico">📊</span><span>전체 태깅가이드 Excel<small>담당 ${PRODUCTS.length}상품 통합표 다운로드</small></span></button>
         </div>
       </div>
     </div>
@@ -897,8 +955,8 @@ function renderSidebar(){
   $("#sbNav").innerHTML=
     `<button class="sb-item${view==="dash"?" on":""}" data-nav="dash"><span class="sb-ico">▦</span>대시보드</button>`+
     `<div class="sb-cap">사이트</div>`+prodBtn(PRODUCTS.find(p=>p.key==="home"))+
-    `<div class="sb-cap">장기 · 7</div>`+catProducts("장기").map(prodBtn).join("")+
-    `<div class="sb-cap">일반 · 2</div>`+catProducts("일반").map(prodBtn).join("")+
+    `<div class="sb-cap">장기 · ${catProducts("장기").length}</div>`+catProducts("장기").map(prodBtn).join("")+
+    `<div class="sb-cap">일반 · ${catProducts("일반").length}</div>`+catProducts("일반").map(prodBtn).join("")+
     `<div class="sb-cap">도구</div>`+
     `<button class="sb-item${view==="pro"?" on":""}" data-nav="pro"><span class="sb-ico">⚡</span>범용 진단</button>`;
 }
@@ -930,5 +988,10 @@ $("#themeBtn").addEventListener("click",()=>{
   document.documentElement.setAttribute("data-theme",dark?"light":"dark");try{localStorage.setItem("mf_theme",dark?"light":"dark")}catch(_){}});
 
 /* ── init ── */
+$("#productCount").textContent=PRODUCTS.length;
 setView("dash");
+Promise.all([
+  fetch("data/seasonal.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.seasonal)SEO_SEASONAL=d.seasonal;}).catch(()=>{}),
+  fetch("data/volume.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.source==="searchad"&&d.products)SEO_VOL=d;}).catch(()=>{})
+]).then(()=>{if(view==="product")renderScreen();});
 </script>

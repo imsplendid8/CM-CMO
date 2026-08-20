@@ -1,6 +1,7 @@
 name: Naver SearchAd Volume
 
-# 매주 월 05:00 KST(=일 20:00 UTC) 네이버 검색광고 키워드도구로 실검색량 갱신 → data/volume.json.
+# 매주 월 05:00 KST(=일 20:00 UTC) 네이버 검색광고 키워드도구로 실검색량 갱신
+# → data/volume.json(현재) + data/volume-history.json(월별 최근 13개월).
 # 필요 Secrets(검색/데이터랩 키와 '다름'): NAVER_AD_API_KEY, NAVER_AD_SECRET, NAVER_AD_CUSTOMER
 #   발급: searchad.naver.com → 도구 → API 사용 관리. 없으면 source=none(도구에 미반영).
 # 수동 실행: Actions → Naver SearchAd Volume → Run workflow
@@ -35,9 +36,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/volume.json
+          git add data/volume.json data/volume-history.json
           if git diff --staged --quiet; then echo "변경 없음"; else
-            git commit -m "chore: 검색광고 실검색량 갱신 (data/volume.json)"
+            git commit -m "chore: 검색광고 실검색량·월별 이력 갱신"
             for i in 1 2 3; do
               git pull --rebase --autostash origin main && git push && break
               echo "push 재시도 $i (main 갱신 감지)"; sleep $((i*5))

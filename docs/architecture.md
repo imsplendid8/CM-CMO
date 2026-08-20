@@ -1,19 +1,23 @@
 # 아키텍처
 
 ## 원칙
-- **자체완결 단일 HTML**: 도구 1개 = 파일 1개. 외부 라이브러리·빌드·런타임 호출 0. → GitHub Pages 직접접속 + Artifact 발행 둘 다 쉬움.
-- **정적·클라이언트 전용**: 데이터는 파일 안에 상수로. 사용자 데이터(예: SERP 스크린샷)는 `localStorage`에만(전송 0).
-- **공유 상품 집합**: 5개 도구 모두 동일한 상품 10종(홈·장기7·일반2)을 다룸.
+- **정적 HTML 중심**: 빌드 없이 GitHub Pages에서 직접 실행한다. 공통 월 선택 로직은 `shared/planning-context.js`, 운영 데이터는 `data/*.json`에서 읽는다.
+- **클라이언트 중심**: 공개·비식별 운영 데이터만 정적 JSON으로 배포한다. 개인 업로드 데이터는 `localStorage`에만 둔다.
+- **공유 상품 집합**: 상품 기반 6개 도구 모두 동일한 상품 13종을 다룬다.
 
 ## 저장소 구조
 ```
-index.html            허브(5개 작업공간 진입)
+index.html            허브(8개 작업공간 진입)
 seo-audit.html        1. 테크니컬 SEO 콘솔 (앰버)
 keyword-tool.html     2. 검색광고 키워드 추출 (블루)
 news-tool.html        3. 카테고리 뉴스 모니터링 (틸)
 serp-tool.html        4. 검색결과 주간 아카이브 (바이올렛)
 seasonal-tool.html    5. 연간 시즈널 이슈 캘린더 (로즈)
-data/                 상품 마스터(products.json)·시즌(seasonal.json) 캐노니컬 소스
+terms-tool.html       6. 약관 용어 변환
+adcopy-tool.html      7. 검색광고 소재
+papers-tool.html      8. 논문 아카이브
+shared/               도구 간 월 선택 등 공통 브라우저 로직
+data/                 상품·시즌 캐노니컬과 SearchAd·뉴스 등 운영 스냅샷
 scripts/              네이버 연동 로컬서버 · 데일리 브리핑 · 드리프트 검사
 .claude/skills/cm-news-analysis/   분석 산출물 톤 스킬
 .github/workflows/    pages.yml(배포) · ci.yml(드리프트·문법) · daily-brief.yml(텔레그램)
@@ -21,9 +25,9 @@ docs/ · STATE.md · CLAUDE.md         문서
 ```
 
 ## 상품 마스터 단일화 (data/products.json)
-- `data/products.json`이 상품 10종의 **캐노니컬 소스**(key·name·cat·tier·core·special·serpKw·newsQuery).
-- 자체완결 HTML 원칙상 런타임 fetch는 하지 않고, 각 도구의 인라인 `PRODUCTS`를 이 파일에 맞춰 유지.
-- `scripts/check_products_sync.py`가 CI에서 5개 도구의 key 집합(+표준 도구는 name·cat)이 캐노니컬과 일치하는지 검사 → 드리프트 방지.
+- `data/products.json`이 상품 13종의 **캐노니컬 소스**(key·name·cat·tier·core·special·serpKw·newsQuery).
+- 초기 화면을 즉시 그리기 위해 각 도구의 인라인 `PRODUCTS`를 이 파일에 맞춰 유지하고, 운영 스냅샷은 런타임에 정적 JSON으로 불러온다.
+- `scripts/check_products_sync.py`가 CI에서 상품 기반 6개 도구의 key 집합(+표준 도구는 name·cat)이 캐노니컬과 일치하는지 검사 → 드리프트 방지.
 - 상품 추가/변경 시: `data/products.json` + 각 도구 인라인 PRODUCTS를 함께 수정(로컬 `python3 scripts/check_products_sync.py`로 확인).
 
 ## 디자인 시스템
@@ -55,4 +59,4 @@ docs/ · STATE.md · CLAUDE.md         문서
 - **팀 실시간 연동**: `proxy/naver-proxy-worker.js`(Cloudflare Worker)가 네이버 CORS·HMAC을 대신 처리. 툴은 `DEFAULT_PROXY`로 호출, 키는 워커 시크릿에 있어 팀원은 설정 0. 뉴스(`/naver`)·검색량(`/searchad`) 연결됨. 상세 → `api-from-url.md`.
 - **사용량 위젯**: 워커가 호출수를 KV(`USAGE`)에 일별 집계 → 허브 홈 "오늘 API 사용량"(`/usage`). KV 없으면 숨김.
 - **SERP 자동 캡쳐**: `scripts/capture_serp.mjs` + `serp-capture.yml`(주간). Playwright로 네이버 SERP 캡쳐→`serp/`. serp-tool이 `manifest.json` 로드해 병합.
-- **디자인 시스템**: Clean SaaS Light. 각 도구 `<head>`의 `id="mf-saas-theme"` 블록이 통일 뉴트럴 토큰 + Pretendard 자체호스팅(`fonts/`) 주입. 툴별 액센트색은 유지. 되돌리려면 그 블록만 제거.
+- **디자인 시스템**: `shared/ui-polish.css`가 간격·표면·포커스·모바일 조작 영역을, `shared/ui-icons.js`가 선형 SVG 아이콘과 테마 상태를 통일한다. `icons/modoo-mark.svg`가 파비콘·PWA 아이콘의 원본이며 툴별 액센트색은 상태 구분에만 유지한다. 상세 규칙은 `docs/ui-system.md`.
