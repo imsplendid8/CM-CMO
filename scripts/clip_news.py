@@ -11,7 +11,6 @@
 - 공개 뉴스 헤드라인·링크만 저장(데이터 거버넌스).
 """
 import os, sys, json, re, datetime, urllib.parse, urllib.request
-import humanize_korean as hk
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CLIPS = os.path.join(ROOT, "data", "clips")
@@ -55,8 +54,9 @@ def naver_news(q, display=10):
         pd = it.get("pubDate", "")
         try: dt = datetime.datetime.strptime(pd[:25], "%a, %d %b %Y %H:%M:%S").strftime("%Y-%m-%d")
         except Exception: dt = TODAY
-        out.append({"t": strip(it.get("title")), "src": host(it.get("originallink") or u), "date": dt, "url": u,
-                    "gist": hk.excerpt(strip(it.get("description")), 120)})
+        # 채널 공통 브리프가 문장 단위로 요약할 수 있도록 검색 설명문을 충분히 보존한다.
+        # 원문 전체가 아니라 네이버 검색 API가 제공한 공개 설명문만 저장한다.
+        out.append({"t": strip(it.get("title")), "src": host(it.get("originallink") or u), "date": dt, "url": u, "gist": strip(it.get("description"))[:320]})
     return out
 
 def build_sample(cats):
@@ -120,6 +120,30 @@ def main():
     idx["months"] = months
     idx["updated"] = TODAY
     json.dump(idx, open(ipath, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+
+    # 대시보드·텔레그램·이메일이 함께 읽는 공통 의사결정형 뉴스 브리프.
+    # 채널마다 별도 요약을 만들지 않아 최신성·표현 불일치를 막는다.
+    try:
+        import content_brief
+        pdata = json.load(open(os.path.join(ROOT, "data", "products.json"), encoding="utf-8"))
+        plist = pdata if isinstance(pdata, list) else pdata.get("products", [])
+        products = {p["key"]: p for p in plist}
+        main_keys = [] if isinstance(pdata, list) else pdata.get("main", [])
+        digest = content_brief.build_digest(day, products, main_keys)
+        brief_dir = os.path.join(ROOT, "data", "briefing")
+        os.makedirs(brief_dir, exist_ok=True)
+        for name in (f"{TODAY}.json", "latest.json"):
+            with open(os.path.join(brief_dir, name), "w", encoding="utf-8") as f:
+                json.dump(digest, f, ensure_ascii=False, indent=1)
+        keep_briefs = {(NOW.date() - datetime.timedelta(days=i)).isoformat() for i in range(14)}
+        for fn in os.listdir(brief_dir):
+            mm = re.match(r"^(\d{4}-\d{2}-\d{2})\.json$", fn)
+            if mm and mm.group(1) not in keep_briefs:
+                try: os.remove(os.path.join(brief_dir, fn))
+                except OSError: pass
+    except Exception as e:
+        print(f"  ! 공통 뉴스 브리프 생성 실패: {e}", file=sys.stderr)
+        raise
 
     # 최신 30일치만 보관 — 보관 기간을 벗어난 이전 일자 파일 정리
     pruned = 0

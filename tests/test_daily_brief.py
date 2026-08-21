@@ -80,17 +80,34 @@ class TestActionLines(unittest.TestCase):
 
         self.assertGreaterEqual(len(lines), 1)
 
+    def test_unchanged_season_tasks_rotate_instead_of_all_repeating_daily(self):
+        products = {
+            "hrmf": {"name": "주택화재보험"}, "driver": {"name": "운전자보험"},
+            "golf": {"name": "골프보험"}, "overseas": {"name": "여행보험"},
+        }
+        seasonal = {
+            "hrmf": [{"tag": "장마", "m": [8]}],
+            "driver": [{"tag": "휴가철", "m": [8]}],
+        }
+        day1 = db.compute_action_lines(products, ["hrmf", "driver"], seasonal, {}, datetime(2026, 8, 21, tzinfo=timezone.utc))
+        day2 = db.compute_action_lines(products, ["hrmf", "driver"], seasonal, {}, datetime(2026, 8, 22, tzinfo=timezone.utc))
+        season1 = [line for line in day1 if "이번 달" in line]
+        season2 = [line for line in day2 if "이번 달" in line]
+        self.assertEqual(len(season1), 1)
+        self.assertEqual(len(season2), 1)
+        self.assertNotEqual(season1, season2)
+
 
 class TestHumanizedNews(unittest.TestCase):
-    def test_telegram_gist_uses_word_boundary_excerpt(self):
+    def test_shared_digest_humanizes_news_for_all_channels(self):
         clip = {"categories": {"driver": {"name": "운전자보험", "items": [{
             "t": "운전자보험 할인 이벤트 출시", "src": "example.com", "date": "2026-08-21",
             "url": "https://example.com/news", "gist": "작성되어진 설명을 자연스럽게 고치고 가입 조건과 제외 조건을 함께 안내합니다."
         }]}}}
-        lines = db.pick_news(clip, {"driver": {"name": "운전자보험"}})
-        self.assertEqual(len(lines), 1)
-        self.assertIn("작성된 설명", lines[0])
-        self.assertNotIn("작성되어진", lines[0])
+        digest = db.content_brief.build_digest(clip, {"driver": {"name": "운전자보험"}}, ["driver"])
+        self.assertEqual(len(digest["stories"]), 1)
+        self.assertIn("작성된 설명", digest["stories"][0]["what"])
+        self.assertNotIn("작성되어진", digest["stories"][0]["what"])
 
 
 if __name__ == "__main__":

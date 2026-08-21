@@ -8,7 +8,7 @@
 필요 환경변수(Secrets):
   TELEGRAM_BOT_TOKEN   (필수) @BotFather 로 만든 봇 토큰
   TELEGRAM_CHAT_ID     (필수) 내 chat id (봇과 대화 후 getUpdates 로 확인)
-  NAVER_CLIENT_ID/SECRET (선택) 있으면 메인 3종 최신 뉴스 1건씩 포함
+  뉴스는 news-clip 워크플로가 만든 data/briefing/latest.json을 사용
 표준 라이브러리만 사용.
 """
 import os, json, sys, urllib.parse, urllib.request
@@ -18,6 +18,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import check_automation_health as cah   # 자동화 상태를 브리프 직전 재계산(저장 요약 미신뢰)
 import event_engine as ee               # 시즌 span 일자 판정 공유(월 전체가 아닌 정확 기간)
 import humanize_korean as hk             # im-not-ai light 호환 한국어 후처리
+import content_brief                     # 대시보드·텔레그램·이메일 공통 뉴스 분석
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HUB = "imsplendid8.github.io/CM-CMO"
@@ -36,12 +37,6 @@ def load_opt(p, default=None):
 def kst_now():
     return datetime.now(timezone.utc).astimezone(timezone(timedelta(hours=9)))
 
-# 뉴스에서 '행동가치'가 있는 신호만 추림(단순 헤드라인 노이즈 제외)
-# 경쟁사 상품·가격 움직임 + 수요 트리거 위주. 모든 기사에 최소 1개 요구.
-ACTION_KW = ["출시", "개편", "리뉴얼", "신상품", "인상", "인하", "할인", "이벤트", "다이렉트",
-             "점유", "1위", "리콜", "제재", "과징금", "손해율", "적자", "보험료",
-             "사고", "화재", "폭우", "호우", "침수", "폭염", "한파", "급증"]
-
 def latest_clip():
     """오늘(없으면 최근) 뉴스 클리핑 파일을 로드."""
     idx = load_opt("data/clips/index.json", {}) or {}
@@ -51,89 +46,18 @@ def latest_clip():
             return c
     return None
 
+def shared_digest(clip, products, main):
+    """저장된 공통 브리프를 우선 사용하고, 최신 클리핑과 날짜가 다르면 즉시 재계산한다."""
+    saved = load_opt("data/briefing/latest.json", {}) or {}
+    if saved.get("date") == (clip or {}).get("date") and saved.get("stories"):
+        return saved
+    return content_brief.build_digest(clip or {}, products, main)
+
 def esc(s):
     """텔레그램 HTML parse_mode용 이스케이프(제목·요약·URL 등 동적 텍스트)."""
     return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
-def pick_news(clip, products):
-    """행동가치 있는 뉴스만 2~3건: [경쟁사 동향] / [트리거]. 요약(gist)+바로가기 링크 포함."""
-    if not clip:
-        return []
-    comp_names = {"ind_samsung": "삼성화재", "ind_db": "DB손보", "ind_hyundai": "현대해상",
-                  "ind_kb": "KB손보", "ind_meritz": "메리츠화재"}
-    cands = []
-    for key, cat in clip.get("categories", {}).items():
-        is_comp = key in comp_names
-        for it in cat.get("items", [])[:6]:
-            t = it.get("t", "")
-            hit = [w for w in ACTION_KW if w in t]
-            if not hit:            # 행동 키워드 없는 단순 헤드라인은 제외
-                continue
-            if is_comp:
-                tag = f"[경쟁사·{comp_names[key]}]"
-                score = 2 + len(hit)   # 경쟁사 움직임 가중
-            else:
-                tag = f"[{cat.get('name', key)}]"
-                score = len(hit)
-            cands.append((score, it.get("date", ""), tag, t, it.get("src", ""),
-                          it.get("url", ""), it.get("gist", "")))
-    # 점수·최신 우선, 제목 앞부분 dedup
-    cands.sort(key=lambda x: (x[0], x[1]), reverse=True)
-    out, seen = [], set()
-    for sc, dt, tag, t, src, url, gist in cands:
-        k = t[:12]
-        if k in seen:
-            continue
-        seen.add(k)
-        line = f"· {esc(tag)} {esc(t[:44])} ({esc(src)})"
-        g = str(gist).strip()
-        if g:                                   # 요약(gist) 반영
-            line += f"\n  ⤷ {esc(hk.excerpt(g, 88))}"
-        if url:                                 # 링크 텍스트를 '바로가기'로(HTML 하이퍼링크)
-            line += f'\n  🔗 <a href="{esc(url)}">바로가기</a>'
-        out.append(line)
-        if len(out) >= 3:
-            break
-    return out
-
-
 EMAIL_NEWS_N = 8   # 이메일 '주요 뉴스' 표시 개수(전체 통틀어, 카테고리별 아님) — 5~10 권장
-
-
-def rank_news(clip, products, main, n=EMAIL_NEWS_N):
-    """전체 카테고리에서 '행동가치' 뉴스를 점수화해 상위 n건 반환 — (태그, item) 목록. 경쟁사 가중·제목 dedup."""
-    if not clip:
-        return []
-    comp = {"ind_samsung": "삼성화재", "ind_db": "DB손보", "ind_hyundai": "현대해상",
-            "ind_kb": "KB손보", "ind_meritz": "메리츠화재", "ind_biz": "업계 전반"}
-    cands = []
-    for key, cat in clip.get("categories", {}).items():
-        is_comp = key in comp
-        pname = products.get(key, {}).get("name", cat.get("name", key))
-        for it in cat.get("items", [])[:6]:
-            t = it.get("t", "")
-            hit = [w for w in ACTION_KW if w in t]
-            if not hit:
-                continue
-            if is_comp:
-                tag, score = f"경쟁사·{comp[key]}", 2 + len(hit)
-            else:
-                tag, score = pname, len(hit) + (1 if key in main else 0)
-            cands.append((score, it.get("date", ""), tag, it))
-    cands.sort(key=lambda x: (x[0], x[1]), reverse=True)
-    out, seen, per_tag = [], set(), {}
-    for score, dt, tag, it in cands:
-        k = it.get("t", "")[:12]
-        if k in seen:
-            continue
-        if per_tag.get(tag, 0) >= 2:          # 한 상품/경쟁사가 동일 이벤트 기사로 상위를 도배하지 않게(카테고리당 최대 2건)
-            continue
-        seen.add(k)
-        per_tag[tag] = per_tag.get(tag, 0) + 1
-        out.append((tag, it))
-        if len(out) >= n:
-            break
-    return out
 
 # 업계·경쟁사(뉴스 클리핑·news-tool INDUSTRY와 동일 키) — 이메일 동향 섹션 순서
 INDUSTRY = [("ind_biz", "손보업계 전반"), ("ind_samsung", "삼성화재"), ("ind_db", "DB손해보험"),
@@ -211,14 +135,30 @@ def compute_action_lines(products, main, seasonal, signals, now):
     put(g, 4 if g in [k for k, _ in actions.items()] else 2.5,
         f"🔭 {name(g)} — SERP 상위노출 갭: 검색결과 점검·소구 보완")
 
-    return [txt for _, txt in sorted(actions.values(), key=lambda x: x[0])[:5]]
+    ordered = sorted(actions.values(), key=lambda x: x[0])
+    urgent = [txt for pri, txt in ordered if pri <= 0]
+    serp = [txt for _, txt in ordered if "SERP" in txt]
+    routine = [txt for pri, txt in ordered if pri > 0 and "SERP" not in txt]
+    # 근거 변화가 없는 시즌 할 일을 매일 모두 반복하지 않고 하루 한 건만 순환한다.
+    # 급등·기상 등 새로운 신호는 언제나 우선 노출한다.
+    focus = [routine[now.toordinal() % len(routine)]] if routine else []
+    return (urgent[:2] + focus + serp[:1])[:4]
 
 
 def build_message():
     products, order, main, seasonal, signals, clip, now = _load_context()
     wd = "월화수목금토일"[now.weekday()]
     action_lines = [f"{i+1}. {t}" for i, t in enumerate(compute_action_lines(products, main, seasonal, signals, now))]
-    news_lines = pick_news(clip, products)
+    digest = shared_digest(clip, products, main)
+    news_lines = []
+    for story in digest.get("stories", [])[:3]:
+        link = f' · <a href="{esc(story.get("url"))}">원문</a>' if story.get("url") else ""
+        news_lines.append(
+            f"· <b>[{esc(story.get('tag'))}] {esc(story.get('title'))}</b>\n"
+            f"  무슨 일 · {esc(story.get('what'))}\n"
+            f"  왜 중요 · {esc(story.get('why'))}\n"
+            f"  오늘 대응 · {esc(story.get('action'))}{link}"
+        )
 
     part = "오전" if now.hour < 12 else "오후"
     parts = [f"🗓️ Modooflow · {now.month}/{now.day}({wd}) {part} — 오늘 할 일 {len(action_lines)}", ""]
@@ -234,17 +174,6 @@ def build_message():
                   "· 자동수집이 정상이라고 단정할 수 없음"]
     parts += ["", f"🔭 전체 대시보드 → https://{HUB}"]
     return "\n".join(parts)
-
-def load_newsmon():
-    """news-tool.html의 큐레이션 '동향 요약'·'마케팅 시사점'(단일 소스)을 키별 추출 → 이메일 재사용."""
-    try:
-        html = open(os.path.join(ROOT, "news-tool.html"), encoding="utf-8").read()
-    except Exception:
-        return {}
-    import re
-    pat = re.compile(r'(\w+):\{summary:"([^"]*)",\s*insight:"([^"]*)"', re.S)
-    return {mm.group(1): {"summary": mm.group(2), "insight": mm.group(3)} for mm in pat.finditer(html)}
-
 
 # ── 이메일(표 도식형) 스타일 토큰 — 인라인 CSS(메일 클라이언트 호환), 이미지 없음 ──
 _ES = {
@@ -267,8 +196,8 @@ def render_email():
     """데일리 브리핑을 표 도식형 이메일(HTML+텍스트)로 렌더. returns (subject, html, plain).
     구성: ① 핵심 동향(메인 3종+업계 요약) ② 주요 뉴스(전체 상위 N건)."""
     products, order, main, seasonal, signals, clip, now = _load_context()
-    newsmon = load_newsmon()
-    cats = (clip or {}).get("categories", {})
+    digest = shared_digest(clip, products, main)
+    newsmon = digest.get("categories", {})
     wd = "월화수목금토일"[now.weekday()]
     part = "오전" if now.hour < 12 else "오후"
     subject = f"(장기CM사업부) {now.strftime('%y.%m.%d')} 뉴스 모니터링"
@@ -283,27 +212,33 @@ def render_email():
             return ""
         cat_style = f"font-size:13.5px;font-weight:800;background:#f4f6f8;border-left:4px solid {accent};padding:7px 11px;border-radius:7px 7px 0 0;margin-top:12px;"
         return (f'<div style="{cat_style}">{esc(name(key))}</div>'
-                f'<div style="{S["sumbox"]}border-radius:0 0 7px 7px;margin-bottom:6px;"><span style="{S["bg"]}">동향 요약</span>{esc(hk.humanize(nmn["summary"]))}</div>')
+                f'<div style="{S["sumbox"]}border-radius:0;"><span style="{S["bg"]}">무슨 일</span>{esc(hk.humanize(nmn["summary"]))}</div>'
+                f'<div style="{S["insbox"]}"><span style="{S["ba"]}">권장 대응</span>{esc(hk.humanize(nmn.get("insight", "원문 근거를 확인한 뒤 반영 여부를 판단하세요.")))}</div>')
 
     # ① 핵심 동향 — 메인 3종(★) + 업계 전반만(전체 카테고리 아님)
     focus = [k for k in main if k in newsmon] + (["ind_biz"] if "ind_biz" in newsmon else [])
+    if not focus:
+        focus = list(newsmon)[:4]
     trend_body = "".join(trend_card(k, "#b45309" if k == "ind_biz" else "#1f7a4d") for k in focus)
     trend_html = f'<h3 style="{S["h3"]}">📊 핵심 동향 <span style="font-size:12px;color:#6b7280;font-weight:600">· 메인 상품 + 업계 전반</span></h3>' + (trend_body or '<div style="font-size:12.5px;color:#6b7280">동향 데이터가 없습니다.</div>')
 
     # ② 주요 뉴스 — 전체 통틀어 상위 N건(카테고리별 아님)
-    news = rank_news(clip, products, main, EMAIL_NEWS_N)
+    news = digest.get("stories", [])[:EMAIL_NEWS_N]
     if news:
         nrows = ""
-        for tag, it in news:
-            t = esc(it.get("t", ""))
-            g = esc(hk.excerpt(it.get("gist") or "", 110))
-            src = esc(it.get("src", ""))
+        for it in news:
+            tag = it.get("tag", "")
+            t = esc(it.get("title", ""))
+            g = esc(hk.humanize(it.get("what", "")))
+            src = esc(it.get("source", ""))
             dt = esc(it.get("date", ""))
             url = it.get("url", "")
             comp = tag.startswith("경쟁사")
             tag_style = f'font-size:10.5px;font-weight:800;white-space:nowrap;vertical-align:top;padding:7px 10px;border-bottom:1px solid #eef0f3;color:{"#9a6b12" if comp else "#1f7a4d"}'
             title = f'<a href="{esc(url)}" style="color:#1f2937;text-decoration:none;font-weight:600">{t}</a>' if url else f"<b>{t}</b>"
-            gh = f'<div style="color:#6b7280;font-size:11.5px;margin-top:3px">{g}</div>' if g else ""
+            gh = (f'<div style="color:#6b7280;font-size:11.5px;margin-top:3px">{g}</div>'
+                  f'<div style="color:#9a6b12;font-size:11.5px;margin-top:3px"><b>왜 중요</b> · {esc(it.get("why", ""))}</div>'
+                  f'<div style="color:#1f7a4d;font-size:11.5px;margin-top:3px"><b>권장 대응</b> · {esc(it.get("action", ""))}</div>')
             nrows += (f'<tr><td style="{tag_style}">{esc(tag)}</td>'
                       f'<td style="{S["td"]}">{title}{gh}</td>'
                       f'<td style="{S["tdr"]}">{src}<br>{dt}</td></tr>')
@@ -334,11 +269,11 @@ def render_email():
         if nmn.get("summary"):
             P.append(f"■ {name(k)}: {hk.humanize(nmn['summary'])}")
     P += ["", f"[주요 뉴스 · 전체 상위 {len(news)}건]"]
-    for tag, it in news:
-        P.append(f"· ({tag}) {it.get('t','')} ({it.get('src','')}·{it.get('date','')})")
-        g = (it.get("gist") or "").strip()
-        if g:
-            P.append(f"  ⤷ {hk.excerpt(g, 110)}")
+    for it in news:
+        P.append(f"· ({it.get('tag','')}) {it.get('title','')} ({it.get('source','')}·{it.get('date','')})")
+        P.append(f"  무슨 일 · {hk.humanize(it.get('what',''))}")
+        P.append(f"  왜 중요 · {hk.humanize(it.get('why',''))}")
+        P.append(f"  권장 대응 · {hk.humanize(it.get('action',''))}")
         if it.get("url"):
             P.append(f"  {it['url']}")
     P += ["", f"🔭 전체 대시보드 → https://{HUB}"]

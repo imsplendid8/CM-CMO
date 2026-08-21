@@ -32,10 +32,10 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A data/clips/   # 신규·수정 + 30일 보관 초과분 삭제까지 스테이징
+          git add -A data/clips/ data/briefing/   # 클리핑 + 채널 공통 요약 + 보관 초과분 삭제
           if git diff --cached --quiet; then echo "변경 없음"; else
             git commit -m "chore(clips): 뉴스 클리핑 $(TZ=Asia/Seoul date '+%F %H:%M')"
-            # 안전 push: main 갱신 시 rebase 후 재시도(이 워크플로는 data/clips/ 만 건드려 겹침 없음)
+            # 안전 push: main 갱신 시 rebase 후 재시도(클리핑·파생 브리프만 건드려 겹침 없음)
             for i in 1 2 3; do
               git pull --rebase --autostash origin main && git push && break
               echo "push 재시도 $i (main 갱신 감지)"; sleep $((i*5))

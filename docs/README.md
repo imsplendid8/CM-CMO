@@ -11,6 +11,7 @@
 - **[api-from-url.md](api-from-url.md)** — 팀 실시간 연동(Cloudflare 프록시·워커 시크릿·KV 사용량)
 - **[monthly-planning-loop.md](monthly-planning-loop.md)** — 기준월·당월/익월 플랜·FAQ·소재·신규/급상승 키워드 연결
 - **[ui-system.md](ui-system.md)** — 새 브랜드 마크·공통 아이콘·허브/도구 UI·접근성 규칙
+- **[content-briefing.md](content-briefing.md)** — 세 채널 공통 뉴스 요약·반복 억제·논문 3분 브리프
 - **[oss-leverage.md](oss-leverage.md)** — 활용 OSS(Pretendard·Playwright·pixelmatch 등)
 - **[daily-brief.md](daily-brief.md)** — 데일리 텔레그램 비서 브리핑 설정
 - **[논문-아카이브.md](논문-아카이브.md)** — CM 마케팅 참고 논문(월 1회 GitHub Actions 자동 적립)

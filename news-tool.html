@@ -362,7 +362,7 @@ function renderSidebar(){
 function naverMore(p){return "https://search.naver.com/search.naver?where=news&sort=1&query="+encodeURIComponent(p.q);}
 function newsPanel(p){
   const n=NEWSMON[p.key]; if(!n)return "";
-  const stamp=n.live?`실시간 ${esc(n.live)}`:n.auto?`자동수집 ${esc(n.auto)}`:`스냅샷 ${esc(NEWS_ASOF)}`;
+  const stamp=n.live?`실시간 ${esc(n.live)}`:n.digest?`공통 브리프 ${esc(n.digest)}`:n.auto?`자동수집 ${esc(n.auto)}`:`스냅샷 ${esc(NEWS_ASOF)}`;
   const trg=TRIGGERS[p.key]||[];const trgKws=trg.map(t=>t.kw);
   const hot=title=>trgKws.some(k=>String(title).indexOf(k)>=0);
   const cards=n.items.map((it,i)=>{const h=hot(it.t);return `<a class="nm-card${h?" hot":""}" href="${esc(it.url)}" target="_blank" rel="noopener">
@@ -393,7 +393,7 @@ function renderProduct(){
     <div class="seedbar"><div class="st"><h2>${esc(p.name)}</h2><span class="tier">${esc(p.cat)} · ${esc(p.tier)}</span>
       <span style="margin-left:auto;font-size:11.5px;color:var(--muted)">카테고리 뉴스 모니터링</span></div></div>
     ${newsPanel(p)}
-    <div class="note"><b>활용</b> · 동향 요약·시사점으로 이 카테고리의 경쟁·시즌 이슈를 파악하고, <b>SEO 콘솔</b>의 태그·<b>키워드 도구</b>의 검색광고 키워드에 반영하세요. 헤드라인은 <b>클리핑 아카이브(하루 2회 자동수집)</b> 최신분을 자동 반영하며, <b>🔄 실시간 갱신</b>으로 즉시 조회하거나 <b>네이버 뉴스</b> 링크로 더 볼 수 있습니다.</div>`;
+    <div class="note"><b>활용</b> · 동향 요약·시사점은 텔레그램·이메일과 같은 <b>공통 뉴스 브리프</b>를 사용합니다. 공개 검색 결과의 제목·설명문 기반이므로 중요한 판단 전에는 원문을 확인하세요. <b>SEO 콘솔</b>의 태그·<b>키워드 도구</b>의 검색광고 키워드에 반영할 때도 근거 링크를 함께 남기세요.</div>`;
 }
 function renderOverview(){
   $("#pt").textContent="전체 개요"; $("#pts").textContent=`· ${PRODUCTS.filter(p=>NEWSMON[p.key]).length}개 카테고리`;
@@ -461,6 +461,24 @@ function autofillFromClips(){
       if(n)render();                                                 // 현재 화면 다시 그림
     });
   });
+}
+
+/* 채널 공통 요약: 클리핑에서 선별·분석한 동일 JSON을 대시보드·텔레그램·이메일이 함께 사용한다. */
+function applyUnifiedBrief(){
+  fetch("data/briefing/latest.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{
+    if(!d||!d.categories)return;
+    let changed=0;
+    Object.entries(d.categories).forEach(([key,c])=>{
+      const n=NEWSMON[key];if(!n||!c.summary)return;
+      n.summary=c.summary;
+      n.insight=c.insight||n.insight;
+      n.digest=d.asof||d.date;
+      const items=(c.stories||[]).map(s=>({t:s.title,src:s.source,date:s.date,url:s.url,gist:s.what})).filter(it=>it.t&&it.url);
+      if(items.length)n.items=items;
+      changed++;
+    });
+    if(changed)render();
+  }).catch(()=>{});
 }
 function render(){curKey==="__all"?renderOverview():curKey==="__clips"?renderClips():curKey.startsWith("ind_")?renderIndustry():renderProduct();renderSidebar();window.scrollTo({top:0});}
 
@@ -594,6 +612,7 @@ document.addEventListener("click",e=>{
 $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");try{localStorage.setItem("mf_theme",d?"light":"dark")}catch(_){};});
 render();
 autofillFromClips();                                                 // 카드 헤드라인을 클리핑 아카이브 최신분으로 자동 반영
+applyUnifiedBrief();                                                 // 세 채널 공통 요약·시사점으로 정적 문구를 최신화
 fetch("data/signals.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(s=>{if(s&&s.triggers){SIGNALS=s;render();}}).catch(()=>{}); // 실시간 수요 신호(있으면)
 </script>
 </body>
