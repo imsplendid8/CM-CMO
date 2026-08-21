@@ -80,6 +80,23 @@ class TestActionLines(unittest.TestCase):
 
         self.assertGreaterEqual(len(lines), 1)
 
+    def test_unchanged_season_tasks_rotate_instead_of_all_repeating_daily(self):
+        products = {
+            "hrmf": {"name": "주택화재보험"}, "driver": {"name": "운전자보험"},
+            "golf": {"name": "골프보험"}, "overseas": {"name": "여행보험"},
+        }
+        seasonal = {
+            "hrmf": [{"tag": "장마", "m": [8]}],
+            "driver": [{"tag": "휴가철", "m": [8]}],
+        }
+        day1 = db.compute_action_lines(products, ["hrmf", "driver"], seasonal, {}, datetime(2026, 8, 21, tzinfo=timezone.utc))
+        day2 = db.compute_action_lines(products, ["hrmf", "driver"], seasonal, {}, datetime(2026, 8, 22, tzinfo=timezone.utc))
+        season1 = [line for line in day1 if "이번 달" in line]
+        season2 = [line for line in day2 if "이번 달" in line]
+        self.assertEqual(len(season1), 1)
+        self.assertEqual(len(season2), 1)
+        self.assertNotEqual(season1, season2)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
