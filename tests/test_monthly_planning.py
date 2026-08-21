@@ -85,6 +85,7 @@ class TestMonthlyPlanningUiContract(unittest.TestCase):
         self.assertIn('"@type":"FAQPage"', seo)
         self.assertIn("대표키워드·연관 검색의도·당월/익월 시즌·가입 전환 질문", seo)
         self.assertIn("FAQ_KEYWORDS", seo)
+        self.assertIn("function faqTopic", seo)
         self.assertIn('cycle:"대표키워드"', seo)
         self.assertIn('cycle:"연관 검색의도"', seo)
         self.assertIn('cycle:"전환 검색의도"', seo)
