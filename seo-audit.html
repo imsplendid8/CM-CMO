@@ -530,6 +530,11 @@ const FAQ_EDITORIAL_GUIDE={
   review:"배포 전 상품명·상품 버전·근거 기준일·심의번호·심의 유효기간·검토자를 기록하고, 미확인 또는 만료 시 게시하지 않음"
 };
 const faqNorm=s=>String(s||"").replace(/\s/g,"").toLowerCase();
+function faqTopic(word){
+  const text=String(word||""),last=[...text].pop()||"",code=last.charCodeAt(0);
+  const hasBatchim=code>=0xac00&&code<=0xd7a3?(code-0xac00)%28!==0:!/([aeiouy])$/i.test(last);
+  return text+(hasBatchim?"은":"는");
+}
 function faqIssue(p,month){return (SEO_SEASONAL[p.key]||[]).find(w=>(w.m||[]).includes(month))||null;}
 function faqKeywordRows(p){
   const strategy=FAQ_KEYWORDS[p.key]||{primary:p.name,related:[]},map=((SEO_VOL.products||{})[p.key]||{}).keywords||{};
@@ -555,11 +560,11 @@ function monthlyFaqs(p){
   const primaryRow=faqKeywordRows(p).find(row=>faqNorm(row.kw)===faqNorm(primary)),support=related?related.kw:(strategy.related[0]||primary);
   const usp=(USP[p.key]||"보장 범위와 가입 조건").replace(/\s*·\s*/g,", ");
   const common="실제 보장 여부와 가입 조건, 한도, 자기부담금, 면책·감액 및 지급 제한은 최신 상품설명서와 약관에서 확인해 보세요.";
-  const seasonMonth=current?month:next,seasonQ=issue?`${seasonMonth}월 ${issue.tag} 시기에 ${primary}은 무엇을 확인해야 하나요?`:`${primary} 가입 전 어떤 보장 조건을 먼저 확인해야 하나요?`;
+  const seasonMonth=current?month:next,seasonQ=issue?`${seasonMonth}월 ${issue.tag} 시기에 ${faqTopic(primary)} 무엇을 확인해야 하나요?`:`${primary} 가입 전 어떤 보장 조건을 먼저 확인해야 하나요?`;
   const seasonA=issue?`${issue.tag} 시기에는 ${issue.kws.slice(0,3).join(", ")}와 관련된 위험이 내 보장에 포함되는지 먼저 확인해 보세요. ${common}`:`필요한 보장과 가입 대상, 보험기간을 먼저 비교해 보세요. ${common}`;
   const volumeMeta=row=>row?`네이버 검색광고 키워드도구 PC+모바일 월 ${row.total.toLocaleString("ko-KR")}회 · ${SEO_VOL.asof||"기준일 미확인"}`:"검색량 미확인 · 대표키워드 전략 기준";
   return [
-    {cycle:"대표키워드",intent:"정의·핵심보장",keyword:primary,meta:volumeMeta(primaryRow),q:`${primary}은 어떤 보험인가요?`,a:`${p.name} 페이지에서는 ${usp} 관련 내용을 확인할 수 있어요. ${common}`},
+    {cycle:"대표키워드",intent:"정의·핵심보장",keyword:primary,meta:volumeMeta(primaryRow),q:`${faqTopic(primary)} 어떤 보험인가요?`,a:`${p.name} 페이지에서는 ${usp} 관련 내용을 확인할 수 있어요. ${common}`},
     {cycle:"연관 검색의도",intent:"비교·탐색",keyword:support,meta:volumeMeta(related),q:faqIntentQuestion(support,primary),a:`먼저 보장 대상과 지급 조건, 한도, 보험기간을 같은 기준으로 비교해 보세요. ${common}`},
     {cycle:"월간 시즌",intent:"시기·상황",keyword:primary,meta:`${seasonMonth}월 ${issue?issue.tag:"상시 가입 검토"}`,q:seasonQ,a:seasonA},
     {cycle:"전환 검색의도",intent:"보험료·가입조건",keyword:primary,meta:"상시 유지 · 가입 판단",q:`${primary} 보험료와 가입 조건은 어떻게 확인하나요?`,a:`보험료와 가입 가능 여부는 나이, 보장 구성, 보험기간과 가입 조건 등에 따라 달라질 수 있어요. 실제 가입 화면에서 내 조건으로 산출하고 상품설명서와 약관을 함께 확인해 보세요.`}
