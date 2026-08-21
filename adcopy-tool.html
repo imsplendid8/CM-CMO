@@ -145,6 +145,14 @@ table.sheet .cp:hover{border-color:var(--brand);color:var(--brand-600);}
 .issue-why{font-size:11.5px;color:var(--ink-2);line-height:1.5;margin-bottom:10px;}
 .note{background:var(--surface);border:1px dashed var(--brand);border-radius:var(--r);padding:13px 15px;font-size:12px;color:var(--ink-2);line-height:1.7;margin-top:16px;box-shadow:var(--sh);}
 .note b{color:var(--brand-600);}
+.serp-grid,.power-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-bottom:16px;}
+.serp-card,.power-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 15px;box-shadow:var(--sh);}
+.serp-card h3,.power-card h3{font-size:13px;margin-bottom:8px;}.serp-card p,.power-card p{font-size:11.5px;color:var(--ink-2);line-height:1.65;}
+.serp-ad{padding:8px 0;border-top:1px solid var(--line-2);}.serp-ad:first-of-type{border-top:0;}.serp-ad b{font-size:11px}.serp-ad small{display:block;color:var(--muted);margin-top:2px;}
+.source-pill{display:inline-block;font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:99px;background:var(--brand-50);color:var(--brand-600);margin-left:5px;}
+.power-pick{width:100%;max-width:340px;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);font:700 12px var(--sans);margin-bottom:16px;}
+.power-line{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line-2);font-size:12px}.power-line .v{flex:1}.power-line .cp{border:1px solid var(--line);background:var(--surface-2);border-radius:6px;padding:3px 8px;color:var(--ink-2);cursor:pointer}
+.checklist{padding-left:18px;font-size:11.5px;color:var(--ink-2);line-height:1.8}.stale{color:var(--bad);font-weight:800}.fresh{color:var(--good);font-weight:800}
 .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:12.5px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:60;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .sb-cap.top{padding-top:6px;}
@@ -362,7 +370,8 @@ const EVIDENCE={
 };
 
 let curKey=PRODUCTS[0].key;
-let AD_ANALYSIS={};                          // 실측 관측 소재 분석(serp/ad_analysis.json · serp-tool과 공유)
+let AD_ANALYSIS={},AD_META={asof:"",window_days:35}; // 실측 관측 소재 분석(serp/ad_analysis.json · serp-tool과 공유)
+let POWER_KEY=PRODUCTS[0].key;
 let RECO={recommendations:[],asof:""};       // 근거 기반 추천 소재(event_engine.py 산출물 · 연간플랜에서 병합)
 const MAIN=["driver","hrmf","golf"];        // 메인 3종(운전자·주택화재·골프)
 const getP=k=>PRODUCTS.find(p=>p.key===k);
@@ -425,11 +434,29 @@ function genSubs(p){
   return wrap(pool,2,SPEC.subMax);
 }
 
+/* SERP는 경쟁 문구 복사 원천이 아니라 반복 소구를 피하고 우리 근거를 찾는 관측 신호다. */
+function serpIdeas(p){
+  const a=AD_ANALYSIS[p.key]||{}, common=a.common_soju||[];
+  const overlaps=x=>common.some(c=>x.includes(c)||c.includes(x));
+  const own=(p.covers||[]).filter(x=>!overlaps(x));
+  const angle=own[0]||p.short.find(x=>!overlaps(x))||"가입 전 보장 확인";
+  const demand=(((typeof topVol==="function"?topVol(p.key,3):[])[0])||{}).kw||al(p);
+  const hasEvidence=Boolean((a.observed_ads||[]).length||a.n);
+  const titles=(hasEvidence?wrap([`${demand} 공식`,`${angle} 확인`,`${al(p)} 보장 체크`],4,SPEC.titleMax):[]).map(o=>({...o,serp:true}));
+  const descs=(hasEvidence?wrap([
+    `${angle}부터 가입 조건까지, 공식 다이렉트에서 확인하세요.`,
+    `${demand} 찾는다면 보장 범위와 제외 조건을 먼저 확인하세요.`,
+    `${al(p)} 필요한 담보만 살펴보고 온라인에서 보험료를 확인하세요.`,
+  ],SPEC.descMin,SPEC.descMax):[]).map(o=>({...o,serp:true}));
+  return {titles,descs,angle,common,observed:a.observed_ads||[],latest:a.latest_date||AD_META.asof||""};
+}
+
 function renderSidebar(){
   const item=(k,label,on)=>`<button class="sb-item${on?" on":""}" data-key="${k}"><span>${esc(label)}</span></button>`;
   let h=`<div class="sb-cap top">보기</div>`;
   h+=item("__reco",`✨ 추천 소재${usableRecs().length?` (${usableRecs().length})`:""}`,curKey==="__reco");
   h+=item("__cal","🗓 주차별 소재 캘린더",curKey==="__cal");
+  h+=item("__power","📝 파워컨텐츠 제안",curKey==="__power");
   h+=item("__brand",`🏷 경쟁사 브랜드검색${brandCount()?` (${brandCount()})`:""}`,curKey==="__brand");
   [...new Set(PRODUCTS.map(p=>p.cat))].forEach(cat=>{h+=`<div class="sb-cap">${esc(cat)} 소재</div>`;
     PRODUCTS.filter(p=>p.cat===cat).forEach(p=>{h+=item(p.key,p.name,curKey===p.key);});});
@@ -440,17 +467,18 @@ function buildSheet(p){
   const sT=[],sD=[];
   issues.forEach(o=>{genSeasonTitles(p,o).forEach(x=>sT.push(x));genSeasonDescs(p,o).forEach(x=>sD.push(x));});
   const dd=arr=>{const m=new Map();arr.forEach(o=>{if(!m.has(o.tx))m.set(o.tx,o);});return [...m.values()];};
-  return { issues,
+  const serp=serpIdeas(p);
+  return { issues,serp,
     brand: genBrandTitles(p),
-    subt:  dd([...genSubTitles(p), ...sT]),   // 추가제목(롤링): 소구 + 시즌·뉴스
-    desc:  dd([...genDescs(p), ...sD]),        // 설명(롤링): 기본 + 시즌·뉴스
+    subt:  dd([...serp.titles, ...genSubTitles(p), ...sT]), // 실측 SERP 차별 + 소구 + 시즌·뉴스
+    desc:  dd([...serp.descs, ...genDescs(p), ...sD]),
     promo: genPromos(p),
     sub:   genSubs(p).slice(0,12) };
 }
 /* 시트형 표 (문구 | 글자수 | 복사) — 시즌·뉴스 반영분은 ss 하이라이트 */
 function tbl(rows,max){
   return `<div class="tblwrap"><table class="sheet"><thead><tr><th>문구</th><th class="c">글자수 <small>≤${max}</small></th><th class="c">복사</th></tr></thead><tbody>${
-    rows.length?rows.map(o=>`<tr class="${o.ss?"ss":""}"><td>${esc(o.tx)}${o.ss?'<span class="ssb">시즌·뉴스</span>':""}</td><td class="c mono">${o.len}</td><td class="c"><button class="cp" data-copy="${esc(o.tx)}">복사</button></td></tr>`).join("")
+    rows.length?rows.map(o=>`<tr class="${o.ss?"ss":""}"><td>${esc(o.tx)}${o.ss?'<span class="ssb">시즌·뉴스</span>':""}${o.serp?'<span class="source-pill">SERP 차별</span>':""}</td><td class="c mono">${o.len}</td><td class="c"><button class="cp" data-copy="${esc(o.tx)}">복사</button></td></tr>`).join("")
       :`<tr><td colspan="3" class="c muted">규격에 맞는 후보 없음</td></tr>`}</tbody></table></div>`;
 }
 function block(lbl,rows,max,ss){
@@ -747,9 +775,56 @@ function renderReco(){
     <div class="banner"><b>근거 기반 추천 소재</b> · 시즌 캘린더·뉴스 클리핑·검색량을 결합해 <b>지금 밀 만한 상품·문구</b>를 자동 제안(신뢰도 <b>conf ≥ ${RECO_MINCONF}</b>만 노출). 모두 <b>운영 후보</b> — 심의·상품근거 검토 후 사용. 상시 세트는 <b>상품별 소재</b> 탭.</div>
     <div class="rc-wrap">${cards}</div>`;
 }
+
+const dayAge=s=>{const d=new Date(`${s}T00:00:00`);return Number.isNaN(d.getTime())?null:Math.max(0,Math.floor((Date.now()-d.getTime())/86400000));};
+function serpMonitorPanel(p){
+  const s=serpIdeas(p),age=dayAge(s.latest),stale=age===null||age>14;
+  const ads=s.observed.slice(0,4).map(o=>`<div class="serp-ad"><b>${esc(o.brand||"관측 광고")} · ${esc(o.keyword||"키워드 미기록")}</b><p>${esc(o.title||"—")}<br>${esc(o.desc||"—")}</p><small>${esc(o.date||"날짜 미기록")} · ${o.rank?`${esc(o.rank)}위 · `:""}공개 SERP 관측</small></div>`).join("");
+  const pairs=Math.max(s.titles.length,s.descs.length);
+  const ideas=Array.from({length:pairs},(_,i)=>`<div class="power-line"><span class="v"><b>${esc((s.titles[i%s.titles.length]||{}).tx||"")}</b><br>${esc((s.descs[i%s.descs.length]||{}).tx||"")}</span></div>`).join("");
+  return `<div class="sec-lbl">🔎 경쟁사 SERP 모니터링 기반 SA 차별화</div>
+    <div class="serp-grid">
+      <section class="serp-card"><h3>공개 광고 관측 <span class="${stale?"stale":"fresh"}">${stale?"갱신 필요":"최근 관측"}</span></h3>
+        <p>기준 ${esc(s.latest||"—")}${age!==null?` · ${age}일 전`:""}. 경쟁 문구는 복사하지 않고 반복 소구 탐지에만 사용합니다.</p>${ads||'<p>구조화된 관측 소재가 없습니다.</p>'}</section>
+      <section class="serp-card"><h3>차별화 규칙</h3><p>경쟁 공통 소구: <b>${s.common.map(esc).join(" · ")||"감지 없음"}</b><br>우리 우선 각도: <b>${esc(s.angle)}</b><br>가격·할인·1위 표현은 자사 근거가 연결되기 전 자동 제안에서 제외합니다.</p></section>
+      <section class="serp-card"><h3>규격 통과 SA 후보</h3>${ideas||'<p>규격을 통과한 후보가 없습니다.</p>'}</section>
+    </div>`;
+}
+
+const pcFit=(s,min,max)=>{let x=String(s);const tail=" 가입 전 약관과 보장 제외 조건을 함께 확인해 보세요.";while(clen(x)<min)x+=tail;return [...x].slice(0,max).join("");};
+function powerBrief(p){
+  const vol=topVol(p.key,5),kw=(vol[0]||{}).kw||al(p),issue=planningIssues(p)[0];
+  const topic=issue?shortWord(issue.tag):p.short[0],angle=serpIdeas(p).angle;
+  const titlePool=[`${kw}, 가입 전 무엇을 확인할까요`,`${topic}에 ${josa(al(p),"이","가")} 필요한 이유`,`${kw} 보장 내용과 체크포인트`];
+  const titles=titlePool.map(x=>[...x].slice(0,28).join("")).filter(x=>clen(x)>=7);
+  const material=`${kw}를 찾는 분이 가입 전에 확인할 ${angle}, 보장 범위와 제외 조건을 쉬운 말로 정리합니다. ${topic} 상황에서 무엇을 먼저 비교할지 살펴보고, 상품별 세부 내용은 약관을 기준으로 확인해 보세요.`;
+  const adDesc=pcFit(material,80,110);
+  return {kw,topic,angle,titles,adDesc,
+    summary:[`${josa(kw,"은","는")} 가격보다 보장 범위와 제외 조건을 먼저 확인해요.`,`${josa(angle,"은","는")} 가입 조건과 특약 선택에 따라 달라질 수 있어요.`,`최종 판단 전 상품설명서와 약관의 지급 요건을 확인해요.`],
+    outline:[`${kw}가 필요한 상황`,`핵심 보장과 가입 조건`,`보장하지 않는 경우`,`비교할 때 보는 체크리스트`,`자주 묻는 질문`],
+    faq:[`${josa(kw,"은","는")} 어떤 상황에서 필요한가요?`,`${josa(angle,"은","는")} 모두 보장되나요?`,`${kw} 가입 전 어떤 조건을 확인해야 하나요?`,`보상에서 제외될 수 있는 경우는 무엇인가요?`]};
+}
+function renderPower(){
+  const p=getP(POWER_KEY),b=powerBrief(p);
+  $("#pt").textContent="파워컨텐츠 소재 제안";$("#pts").textContent=`· ${p.name} · ${PLANM}월→${planNext()}월`;
+  $("#content").innerHTML=`<div class="banner"><b>캐롯 블로그형 정보 구조 + 네이버 파워컨텐츠 규격</b> · 대표키워드와 직접 관련된 제목·설명·본문 브리프를 함께 제안합니다. 캐롯 블로그의 질문형 도입·3줄 요약·체크리스트·FAQ 흐름만 참고하며 문장은 복제하지 않습니다.</div>
+    <select class="power-pick" id="powerProduct" aria-label="파워컨텐츠 상품 선택">${PRODUCTS.map(x=>`<option value="${esc(x.key)}" ${x.key===p.key?"selected":""}>${esc(x.name)}</option>`).join("")}</select>
+    <div class="specbar"><div class="spec">대표키워드 <b>${esc(b.kw)}</b></div><div class="spec">제목 <b>7~28자</b></div><div class="spec">설명 <b>80~110자</b></div><div class="spec">콘텐츠 흐름 <b>3줄 요약→체크리스트→FAQ</b></div></div>
+    <div class="power-grid">
+      <section class="power-card"><h3>소재 제목 3안</h3>${b.titles.map(t=>`<div class="power-line"><span class="v">${esc(t)} <small>(${clen(t)}자)</small></span><button class="cp" data-copy="${esc(t)}">복사</button></div>`).join("")}</section>
+      <section class="power-card"><h3>소재 설명</h3><div class="power-line"><span class="v">${esc(b.adDesc)} <small>(${clen(b.adDesc)}자)</small></span><button class="cp" data-copy="${esc(b.adDesc)}">복사</button></div></section>
+      <section class="power-card"><h3>본문 3줄 요약</h3><ol class="checklist">${b.summary.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></section>
+      <section class="power-card"><h3>권장 목차</h3><ol class="checklist">${b.outline.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></section>
+      <section class="power-card"><h3>FAQ 4개</h3><ol class="checklist">${b.faq.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></section>
+      <section class="power-card"><h3>게재 전 필수 검수</h3><ul class="checklist"><li>키워드–소재–랜딩 본문의 주제 일치</li><li>담보명·한도·면책·대기기간은 최신 약관 대조</li><li>가격·할인·비교우위는 근거와 기준일 표시</li><li>심의필 번호와 상품 기준일은 승인본에서만 입력</li></ul></section>
+    </div>
+    <div class="note"><b>참고 기준</b> · <a href="https://blog.carrotins.com/" target="_blank" rel="noopener">한화손보 캐롯 블로그 ↗</a>의 정보 구조와 <a href="https://ads.naver.com/adguide/1205" target="_blank" rel="noopener">네이버 파워컨텐츠 운영원칙 ↗</a>을 참고한 내부 초안입니다.</div>`;
+  $("#powerProduct").addEventListener("change",e=>{POWER_KEY=e.target.value;renderPower();});
+}
 function render(){
   if(curKey==="__reco"){renderReco();renderSidebar();window.scrollTo({top:0});return;}
   if(curKey==="__cal"){renderCalendar();renderSidebar();window.scrollTo({top:0});return;}
+  if(curKey==="__power"){renderPower();renderSidebar();window.scrollTo({top:0});return;}
   if(curKey==="__brand"){renderBrand();renderSidebar();window.scrollTo({top:0});return;}
   const p=getP(curKey), s=buildSheet(p), batch=buildNaverRows(p,50);
   $("#pt").textContent=p.name+" · 파워링크 소재"; $("#pts").textContent=`· ${PLANM}월·${planNext()}월 플랜 + 실측 검색량`;
@@ -787,6 +862,7 @@ function render(){
     <div class="sec-lbl">📌 근거 · 실측 검색량 · 뉴스 동향 · 경쟁사 SERP</div>
     ${volPanel}
     ${evPanel}
+    ${serpMonitorPanel(p)}
 
     ${block("① 광고 제목 (브랜드형)",s.brand,SPEC.titleMax)}
     ${block("② 추가제목 · 롤링 (소구·시즌)",s.subt,SPEC.titleMax,true)}
@@ -850,7 +926,7 @@ $("#planMonth").addEventListener("change",e=>{PLANM=PLANNING.setMonth(e.target.v
 render();
 Promise.all([loadBrandManifest(),loadVolume(),loadSignals(),loadSeasonal()]).then(()=>{renderSidebar();render();}); // 경쟁사 브랜드검색 + 실측 검색량 + 기상특보 + 연간플랜
 // 실측 관측 소재 분석(있으면) — 생성 문구의 경쟁 공통 소구 회피·차별 근거
-fetch("serp/ad_analysis.json").then(r=>r.ok?r.json():null).then(d=>{if(d&&d.products){AD_ANALYSIS=d.products;render();}}).catch(()=>{});
+fetch("serp/ad_analysis.json").then(r=>r.ok?r.json():null).then(d=>{if(d&&d.products){AD_META={asof:d.asof||"",window_days:d.window_days||35};AD_ANALYSIS=d.products;render();}}).catch(()=>{});
 // 근거 기반 추천 소재(event_engine 산출물 · 연간플랜에서 병합) — 사이드바 카운트·본문 갱신
 fetch("data/events/recommendations.json").then(r=>r.ok?r.json():null).then(d=>{if(d&&d.recommendations){RECO=d;renderSidebar();if(curKey==="__reco")render();}}).catch(()=>{});
 </script>
