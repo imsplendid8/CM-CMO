@@ -1,21 +1,37 @@
 {
-  "asof": "2026-08-20",
+  "asof": "2026-08-21",
   "source": "data.go.kr",
   "weather": {
-    "active": [],
-    "error": "<urlopen error timed out>"
+    "active": [
+      "강풍",
+      "호우"
+    ]
   },
   "travel": {
-    "overseas_ratio": 77.8,
-    "period": "2026-08-19",
-    "avg": 78.2,
+    "overseas_ratio": 77.4,
+    "period": "2026-08-20",
+    "avg": 78.5,
     "peak": 100,
     "basis": "최근 7일 평균 vs 90일"
   },
   "triggers": {
+    "hrmf": {
+      "level": "high",
+      "note": "기상특보 발효 → 호우·태풍 → 누수·침수·풍수재 담보 수요",
+      "kinds": [
+        "호우"
+      ]
+    },
+    "driver": {
+      "level": "high",
+      "note": "대설·강풍·한파 특보 → 빙판·사고 위험·운전자보험 관심↑",
+      "kinds": [
+        "강풍"
+      ]
+    },
     "overseas": {
       "level": "high",
-      "note": "‘여행자보험’ 검색수요 상승(2026-08-19 지수 77.8/평균 78.2) → 성수기 해외여행보험 대응"
+      "note": "‘여행자보험’ 검색수요 상승(2026-08-20 지수 77.4/평균 78.5) → 성수기 해외여행보험 대응"
     }
   }
 }
