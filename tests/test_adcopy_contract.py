@@ -39,6 +39,7 @@ class TestAdcopyContract(unittest.TestCase):
     def test_copy_candidates_use_shared_korean_humanizer(self):
         self.assertIn('shared/humanize-ko.js', ADCOPY)
         self.assertIn('dw(HUMANIZE.light(x))', ADCOPY)
+        self.assertIn('node --check shared/humanize-ko.js', CI)
 
 
 if __name__ == "__main__":
