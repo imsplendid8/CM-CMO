@@ -69,8 +69,9 @@ def naver_doc(q, display=5):
             continue
         if not relevant(title):
             continue
+        # 논문 3분 브리프가 문장 단위로 정리할 수 있도록 공개 서지·초록 설명을 충분히 보존한다.
         out.append({"title": title, "link": link,
-                    "desc": strip(it.get("description"))[:90], "q": q})
+                    "desc": strip(it.get("description"))[:500], "q": q})
     return out
 
 def existing_keys(md):
