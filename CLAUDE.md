@@ -16,7 +16,7 @@
 | 팀 실시간 프록시 | `proxy/naver-proxy-worker.js` (Cloudflare Worker · 키=워커 시크릿) |
 | 폰트 | `fonts/PretendardVariable.woff2` (자체호스팅) |
 | 스크립트 | `scripts/` (workflow용: `naver_searchad_volume`·`naver_trends`·`daily_brief`·`capture_serp`·`check_products_sync`; 로컬 폴백: `naver_local_server`) |
-| 스킬 3종 | `.claude/skills/` — `cm-news-analysis`(뉴스·동향 분석) · `card-news-summary`(카드뉴스 요약) · `insurance-terms`(약관 용어 순화) |
+| 스킬 4종 | `.claude/skills/` — `cm-news-analysis`(뉴스·동향 분석) · `card-news-summary`(카드뉴스 요약) · `insurance-terms`(약관 용어 순화) · `humanize-korean`(im-not-ai 원칙의 한국어 보수 윤문) |
 | 배포·자동화 | `.github/workflows/` — pages·ci·daily-brief·trends·searchad·serp-capture(브랜드검색)·news-clip(하루 2회)·signals(수요 신호)·papers(논문 월간)·technical-seo |
 
 ## 작업 규칙

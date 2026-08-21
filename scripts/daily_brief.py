@@ -17,6 +17,7 @@ from datetime import datetime, timezone, timedelta
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import check_automation_health as cah   # 자동화 상태를 브리프 직전 재계산(저장 요약 미신뢰)
 import event_engine as ee               # 시즌 span 일자 판정 공유(월 전체가 아닌 정확 기간)
+import humanize_korean as hk             # im-not-ai light 호환 한국어 후처리
 import content_brief                     # 대시보드·텔레그램·이메일 공통 뉴스 분석
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -211,8 +212,8 @@ def render_email():
             return ""
         cat_style = f"font-size:13.5px;font-weight:800;background:#f4f6f8;border-left:4px solid {accent};padding:7px 11px;border-radius:7px 7px 0 0;margin-top:12px;"
         return (f'<div style="{cat_style}">{esc(name(key))}</div>'
-                f'<div style="{S["sumbox"]}border-radius:0;"><span style="{S["bg"]}">무슨 일</span>{esc(nmn["summary"])}</div>'
-                f'<div style="{S["insbox"]}"><span style="{S["ba"]}">권장 대응</span>{esc(nmn.get("insight", "원문 근거를 확인한 뒤 반영 여부를 판단하세요."))}</div>')
+                f'<div style="{S["sumbox"]}border-radius:0;"><span style="{S["bg"]}">무슨 일</span>{esc(hk.humanize(nmn["summary"]))}</div>'
+                f'<div style="{S["insbox"]}"><span style="{S["ba"]}">권장 대응</span>{esc(hk.humanize(nmn.get("insight", "원문 근거를 확인한 뒤 반영 여부를 판단하세요.")))}</div>')
 
     # ① 핵심 동향 — 메인 3종(★) + 업계 전반만(전체 카테고리 아님)
     focus = [k for k in main if k in newsmon] + (["ind_biz"] if "ind_biz" in newsmon else [])
@@ -228,7 +229,7 @@ def render_email():
         for it in news:
             tag = it.get("tag", "")
             t = esc(it.get("title", ""))
-            g = esc(it.get("what", ""))
+            g = esc(hk.humanize(it.get("what", "")))
             src = esc(it.get("source", ""))
             dt = esc(it.get("date", ""))
             url = it.get("url", "")
@@ -266,13 +267,13 @@ def render_email():
     for k in focus:
         nmn = newsmon.get(k, {})
         if nmn.get("summary"):
-            P.append(f"■ {name(k)}: {nmn['summary']}")
+            P.append(f"■ {name(k)}: {hk.humanize(nmn['summary'])}")
     P += ["", f"[주요 뉴스 · 전체 상위 {len(news)}건]"]
     for it in news:
         P.append(f"· ({it.get('tag','')}) {it.get('title','')} ({it.get('source','')}·{it.get('date','')})")
-        P.append(f"  무슨 일 · {it.get('what','')}")
-        P.append(f"  왜 중요 · {it.get('why','')}")
-        P.append(f"  권장 대응 · {it.get('action','')}")
+        P.append(f"  무슨 일 · {hk.humanize(it.get('what',''))}")
+        P.append(f"  왜 중요 · {hk.humanize(it.get('why',''))}")
+        P.append(f"  권장 대응 · {hk.humanize(it.get('action',''))}")
         if it.get("url"):
             P.append(f"  {it['url']}")
     P += ["", f"🔭 전체 대시보드 → https://{HUB}"]

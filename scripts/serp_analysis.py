@@ -75,6 +75,13 @@ def analyze(observations, window_days=DEFAULT_WINDOW_DAYS):
                 prices.append(o["price"])
         # 2개 이상 브랜드가 함께 쓰는 소구 = 경쟁 공통(차별화 위해 회피/우회 대상)
         common = sorted(c for c, bs in cover_brands.items() if len({x for x in bs if x}) >= 2)
+        observed_ads = sorted(({
+            "brand": o.get("brand", ""), "keyword": o.get("keyword", ""),
+            "date": o.get("date", ""), "rank": o.get("rank"),
+            "title": o.get("title", ""), "desc": o.get("desc", ""),
+            "promo": o.get("promo", ""),
+        } for o in obs), key=lambda x: (x["date"], -(x["rank"] or 999), x["brand"]), reverse=True)
+        dated = [o["date"] for o in observed_ads if o["date"]]
         out[pk] = {
             "n": len(obs),
             "brands": sorted(brands),
@@ -83,6 +90,9 @@ def analyze(observations, window_days=DEFAULT_WINDOW_DAYS):
             "promos": _rank(promos),
             "cta": _rank(ctas),
             "prices": sorted(set(prices)),
+            # 공개 SERP 원문은 비교·회피 근거로만 UI에 노출한다. 우리 문구 생성기에 복사하지 않는다.
+            "latest_date": max(dated) if dated else "",
+            "observed_ads": observed_ads,
         }
     return out
 

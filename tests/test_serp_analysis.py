@@ -13,7 +13,8 @@ import serp_analysis as sa  # noqa: E402
 ROOT = os.path.dirname(SCRIPTS)
 
 OBS = [
-    {"product": "driver", "brand": "현대해상", "covers": ["형사합의금", "변호사선임", "벌금"],
+    {"product": "driver", "brand": "현대해상", "keyword": "운전자보험", "date": "2026-07-26", "rank": 1,
+     "title": "현대 운전자보험", "desc": "관측 설명", "covers": ["형사합의금", "변호사선임", "벌금"],
      "promo": "7% 할인", "cta": "가입", "price": "7% 할인"},
     {"product": "driver", "brand": "DB손보", "covers": ["형사합의금", "변호사선임", "벌금"],
      "promo": "10년 1위", "cta": "비교", "price": ""},
@@ -51,6 +52,12 @@ class TestAnalyze(unittest.TestCase):
         self.assertIn(["7% 할인", 1], a["promos"])
         self.assertIn(["가입", 1], a["cta"])
         self.assertIn("7% 할인", a["prices"])
+
+    def test_preserves_dated_public_ad_evidence(self):
+        a = sa.analyze(OBS)["driver"]
+        self.assertEqual(a["latest_date"], "2026-07-26")
+        self.assertEqual(a["observed_ads"][0]["keyword"], "운전자보험")
+        self.assertEqual(a["observed_ads"][0]["title"], "현대 운전자보험")
 
     def test_empty_safe(self):
         self.assertEqual(sa.analyze([]), {})

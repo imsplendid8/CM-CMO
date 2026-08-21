@@ -98,5 +98,17 @@ class TestActionLines(unittest.TestCase):
         self.assertNotEqual(season1, season2)
 
 
+class TestHumanizedNews(unittest.TestCase):
+    def test_shared_digest_humanizes_news_for_all_channels(self):
+        clip = {"categories": {"driver": {"name": "운전자보험", "items": [{
+            "t": "운전자보험 할인 이벤트 출시", "src": "example.com", "date": "2026-08-21",
+            "url": "https://example.com/news", "gist": "작성되어진 설명을 자연스럽게 고치고 가입 조건과 제외 조건을 함께 안내합니다."
+        }]}}}
+        digest = db.content_brief.build_digest(clip, {"driver": {"name": "운전자보험"}}, ["driver"])
+        self.assertEqual(len(digest["stories"]), 1)
+        self.assertIn("작성된 설명", digest["stories"][0]["what"])
+        self.assertNotIn("작성되어진", digest["stories"][0]["what"])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

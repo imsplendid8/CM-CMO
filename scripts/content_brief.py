@@ -13,6 +13,8 @@ import os
 import re
 from datetime import datetime, timezone, timedelta
 
+import humanize_korean as hk
+
 KST = timezone(timedelta(hours=9))
 
 ACTION_TERMS = {
@@ -110,7 +112,7 @@ def concise(value, limit=180):
     picked = picked.rstrip(" ,;:")
     if picked and picked[-1] not in ".!?다요":
         picked += "…"
-    return picked
+    return hk.humanize(picked)
 
 
 def _fingerprint(title):
