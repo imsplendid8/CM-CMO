@@ -84,8 +84,13 @@ class TestMonthlyPlanningUiContract(unittest.TestCase):
         self.assertIn("FAQ 제안 4개", seo)
         self.assertIn('"@type":"FAQPage"', seo)
         self.assertIn("1~3번은 매월 교체, 4번은 상시 유지", seo)
-        self.assertIn("상품 담당자·심의 검토 후 사용", seo)
+        self.assertIn("상품 담당자·준법·광고심의 검토 후 사용", seo)
+        self.assertIn('FAQ_REFERENCE_URL="https://blog.carrotins.com/"', seo)
+        self.assertIn("실제 이용자의 상황을 질문으로 쓰고", seo)
+        self.assertIn("심의번호·심의 유효기간·검토자를 기록", seo)
+        self.assertIn("캐롯 문구나 심의번호를 그대로 재사용하지 않습니다", seo)
 
 
 if __name__ == "__main__":
     unittest.main()
+
