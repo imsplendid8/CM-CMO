@@ -11,6 +11,7 @@
 - 공개 뉴스 헤드라인·링크만 저장(데이터 거버넌스).
 """
 import os, sys, json, re, datetime, urllib.parse, urllib.request
+import humanize_korean as hk
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CLIPS = os.path.join(ROOT, "data", "clips")
@@ -54,7 +55,8 @@ def naver_news(q, display=10):
         pd = it.get("pubDate", "")
         try: dt = datetime.datetime.strptime(pd[:25], "%a, %d %b %Y %H:%M:%S").strftime("%Y-%m-%d")
         except Exception: dt = TODAY
-        out.append({"t": strip(it.get("title")), "src": host(it.get("originallink") or u), "date": dt, "url": u, "gist": strip(it.get("description"))[:80]})
+        out.append({"t": strip(it.get("title")), "src": host(it.get("originallink") or u), "date": dt, "url": u,
+                    "gist": hk.excerpt(strip(it.get("description")), 120)})
     return out
 
 def build_sample(cats):

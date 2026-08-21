@@ -188,6 +188,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 <link rel="stylesheet" href="shared/mobile-sidebar.css">
 <link rel="stylesheet" href="shared/ui-polish.css">
 <script src="shared/mobile-sidebar.js" defer></script>
+<script src="shared/humanize-ko.js"></script>
 <script src="shared/ui-icons.js" defer></script>
 </head>
 <body>
@@ -341,6 +342,7 @@ let SIGNALS={triggers:{}};
 
 const $=(s,el=document)=>el.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const HUMANIZE=globalThis.ModooHumanizeKo||{light:s=>String(s),excerpt:(s,n)=>[...String(s)].slice(0,n).join("")};
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1600);}
 const ALLMON=[...PRODUCTS,...INDUSTRY];
 const getP=k=>ALLMON.find(p=>p.key===k);
@@ -366,7 +368,7 @@ function newsPanel(p){
   const cards=n.items.map((it,i)=>{const h=hot(it.t);return `<a class="nm-card${h?" hot":""}" href="${esc(it.url)}" target="_blank" rel="noopener">
       <div class="nm-card-h"><span class="num">${String(i+1).padStart(2,"0")}</span>${h?`<span class="hotbadge">🔥 수요 트리거</span>`:""}<span class="mt">${esc(it.src||"")} · ${esc(it.date||"")}</span></div>
       <div class="nm-card-t">${esc(it.t)}</div>
-      ${it.gist?`<div class="nm-card-g">${esc(it.gist)}</div>`:""}</a>`;}).join("");
+      ${it.gist?`<div class="nm-card-g">${esc(HUMANIZE.light(it.gist))}</div>`:""}</a>`;}).join("");
   const sig=(SIGNALS.triggers||{})[p.key];
   const sigBanner=(sig&&sig.level==="high")?`<div class="sig-live">🔴 <b>실시간 수요 신호</b> ${esc(sig.note||"")} <span class="src">· 공공데이터 ${esc(SIGNALS.asof||"")}</span></div>`:"";
   const trgBox=trg.length?`<div class="nm-box nm-trg"><span class="lb">🔥 수요 트리거 <small>이 이벤트가 뜨면 검색·가입 급증 → 검색광고·콘텐츠 선제 대응</small></span>${sigBanner}
@@ -378,8 +380,8 @@ function newsPanel(p){
       <button class="nm-refresh" data-refresh="${esc(p.key)}" title="프록시/로컬서버로 최신 뉴스 가져오기">🔄 실시간 갱신</button>
       <a class="more" href="${naverMore(p)}" target="_blank" rel="noopener">네이버 뉴스 ↗</a>${extraLinks}</div>
     <div class="nm-body">
-      <div class="nm-box nm-sum"><span class="lb">동향 요약</span>${esc(n.summary)}</div>
-      <div class="nm-box nm-ins"><span class="lb">마케팅 시사점</span>${esc(n.insight)}</div>
+      <div class="nm-box nm-sum"><span class="lb">동향 요약</span>${esc(HUMANIZE.light(n.summary))}</div>
+      <div class="nm-box nm-ins"><span class="lb">마케팅 시사점</span>${esc(HUMANIZE.light(n.insight))}</div>
       ${trgBox}
       <div class="nm-cards">${cards}</div>
     </div></div>`;
@@ -400,8 +402,8 @@ function renderOverview(){
   // 최신순 통합 헤드라인 (상위 6)
   const all=[];PRODUCTS.forEach(p=>{const n=NEWSMON[p.key];if(n)n.items.forEach(it=>all.push(Object.assign({cat:p.name,key:p.key},it)));});
   all.sort((a,b)=>(b.date||"").localeCompare(a.date||""));
-  const top=all.slice(0,6).map(it=>`<li class="nm-item"><a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.t)}<span class="gs">${esc(it.cat)} · ${esc(it.gist||"")}</span></a><span class="mt">${esc(it.src||"")}<br>${esc(it.date||"")}</span></li>`).join("");
-  const ovcard=p=>{const n=NEWSMON[p.key];if(!n)return "";const s=n.summary.length>96?n.summary.slice(0,96)+"…":n.summary;
+  const top=all.slice(0,6).map(it=>`<li class="nm-item"><a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.t)}<span class="gs">${esc(it.cat)} · ${esc(HUMANIZE.light(it.gist||""))}</span></a><span class="mt">${esc(it.src||"")}<br>${esc(it.date||"")}</span></li>`).join("");
+  const ovcard=p=>{const n=NEWSMON[p.key];if(!n)return "";const s=HUMANIZE.excerpt(n.summary,96);
     const trg=(TRIGGERS[p.key]||[]).length;
     return `<div class="ov-card" data-key="${p.key}"><div class="ct">${esc(p.name)}<span style="font-size:10.5px;color:var(--nav-ink);font-weight:700">${trg?`🔥${trg} · `:""}${n.live?"실시간":n.auto?"자동 "+n.items.length:"뉴스 "+n.items.length}</span></div><div class="cs">${esc(s)}</div></div>`;};
   const indCards=INDUSTRY.map(ovcard).join("");
@@ -429,7 +431,7 @@ function loadAutoClips(){
       const box=$("#autoClipBox"),lbl=$("#autoClipLbl");
       if(!j||!box||curKey!=="__all")return;                          // 화면 벗어났으면 무시
       const items=(j.summary&&j.summary.top)||[]; if(!items.length)return;
-      const li=items.slice(0,6).map(it=>`<li class="nm-item"><a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.t)}${it.gist?`<span class="gs">${esc(it.gist)}</span>`:""}</a><span class="mt">${esc(it.src||"")}<br>${esc(it.date||"")}</span></li>`).join("");
+      const li=items.slice(0,6).map(it=>`<li class="nm-item"><a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.t)}${it.gist?`<span class="gs">${esc(HUMANIZE.light(it.gist))}</span>`:""}</a><span class="mt">${esc(it.src||"")}<br>${esc(it.date||"")}</span></li>`).join("");
       if(lbl){lbl.textContent=`🔄 자동 수집 최신 · ${j.asof||latest} · 매일 2회 자동`;lbl.style.display="";}
       box.innerHTML=`<div class="newsmon"><div class="nm-body"><ul class="nm-list" style="margin-top:0">${li}</ul></div></div>`;
     }).catch(()=>{});
@@ -470,8 +472,8 @@ function renderIndustry(){
   const compCard=p=>{const n=NEWSMON[p.key];if(!n)return "";
     const top=(n.items||[]).slice(0,2).map(it=>`<a class="ci-it" href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.t)}<span>${esc(it.src||"")} · ${esc(it.date||"")}</span></a>`).join("");
     return `<div class="ci-card"><div class="ci-h">${esc(p.name)}<button class="nm-refresh" data-refresh="${esc(p.key)}" title="실시간 갱신">🔄</button></div>
-      <div class="ci-sum">${esc(n.summary)}</div>
-      <div class="ci-ins"><b>시사점</b> ${esc(n.insight)}</div>
+      <div class="ci-sum">${esc(HUMANIZE.light(n.summary))}</div>
+      <div class="ci-ins"><b>시사점</b> ${esc(HUMANIZE.light(n.insight))}</div>
       ${top?`<div class="ci-items">${top}</div>`:""}
       <a class="more" href="${naverMore(p)}" target="_blank" rel="noopener">${esc(p.q)} 뉴스 ↗</a></div>`;};
   $("#content").innerHTML=`

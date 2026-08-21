@@ -36,6 +36,10 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn("키워드–소재–랜딩 본문의 주제 일치", ADCOPY)
         self.assertIn("https://blog.carrotins.com/", ADCOPY)
 
+    def test_copy_candidates_use_shared_korean_humanizer(self):
+        self.assertIn('shared/humanize-ko.js', ADCOPY)
+        self.assertIn('dw(HUMANIZE.light(x))', ADCOPY)
+
 
 if __name__ == "__main__":
     unittest.main()

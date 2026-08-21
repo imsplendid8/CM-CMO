@@ -17,6 +17,7 @@ from datetime import datetime, timezone, timedelta
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import check_automation_health as cah   # 자동화 상태를 브리프 직전 재계산(저장 요약 미신뢰)
 import event_engine as ee               # 시즌 span 일자 판정 공유(월 전체가 아닌 정확 기간)
+import humanize_korean as hk             # im-not-ai light 호환 한국어 후처리
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HUB = "imsplendid8.github.io/CM-CMO"
@@ -87,7 +88,7 @@ def pick_news(clip, products):
         line = f"· {esc(tag)} {esc(t[:44])} ({esc(src)})"
         g = str(gist).strip()
         if g:                                   # 요약(gist) 반영
-            line += f"\n  ⤷ {esc(g[:88])}" + ("…" if len(g) > 88 else "")
+            line += f"\n  ⤷ {esc(hk.excerpt(g, 88))}"
         if url:                                 # 링크 텍스트를 '바로가기'로(HTML 하이퍼링크)
             line += f'\n  🔗 <a href="{esc(url)}">바로가기</a>'
         out.append(line)
@@ -282,7 +283,7 @@ def render_email():
             return ""
         cat_style = f"font-size:13.5px;font-weight:800;background:#f4f6f8;border-left:4px solid {accent};padding:7px 11px;border-radius:7px 7px 0 0;margin-top:12px;"
         return (f'<div style="{cat_style}">{esc(name(key))}</div>'
-                f'<div style="{S["sumbox"]}border-radius:0 0 7px 7px;margin-bottom:6px;"><span style="{S["bg"]}">동향 요약</span>{esc(nmn["summary"])}</div>')
+                f'<div style="{S["sumbox"]}border-radius:0 0 7px 7px;margin-bottom:6px;"><span style="{S["bg"]}">동향 요약</span>{esc(hk.humanize(nmn["summary"]))}</div>')
 
     # ① 핵심 동향 — 메인 3종(★) + 업계 전반만(전체 카테고리 아님)
     focus = [k for k in main if k in newsmon] + (["ind_biz"] if "ind_biz" in newsmon else [])
@@ -295,7 +296,7 @@ def render_email():
         nrows = ""
         for tag, it in news:
             t = esc(it.get("t", ""))
-            g = esc((it.get("gist") or "")[:110])
+            g = esc(hk.excerpt(it.get("gist") or "", 110))
             src = esc(it.get("src", ""))
             dt = esc(it.get("date", ""))
             url = it.get("url", "")
@@ -331,13 +332,13 @@ def render_email():
     for k in focus:
         nmn = newsmon.get(k, {})
         if nmn.get("summary"):
-            P.append(f"■ {name(k)}: {nmn['summary']}")
+            P.append(f"■ {name(k)}: {hk.humanize(nmn['summary'])}")
     P += ["", f"[주요 뉴스 · 전체 상위 {len(news)}건]"]
     for tag, it in news:
         P.append(f"· ({tag}) {it.get('t','')} ({it.get('src','')}·{it.get('date','')})")
         g = (it.get("gist") or "").strip()
         if g:
-            P.append(f"  ⤷ {g[:110]}")
+            P.append(f"  ⤷ {hk.excerpt(g, 110)}")
         if it.get("url"):
             P.append(f"  {it['url']}")
     P += ["", f"🔭 전체 대시보드 → https://{HUB}"]

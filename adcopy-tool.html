@@ -209,6 +209,7 @@ table.sheet .cp:hover{border-color:var(--brand);color:var(--brand-600);}
 <script src="shared/mobile-sidebar.js" defer></script>
 <script src="shared/feedback-client.js"></script>
 <script src="shared/planning-context.js"></script>
+<script src="shared/humanize-ko.js"></script>
 <script src="shared/ui-icons.js" defer></script>
 </head>
 <body>
@@ -376,12 +377,13 @@ let RECO={recommendations:[],asof:""};       // 근거 기반 추천 소재(even
 const MAIN=["driver","hrmf","golf"];        // 메인 3종(운전자·주택화재·골프)
 const getP=k=>PRODUCTS.find(p=>p.key===k);
 const uniq=a=>[...new Set(a)];
+const HUMANIZE=globalThis.ModooHumanizeKo||{light:s=>String(s),excerpt:(s,n)=>[...String(s)].slice(0,n).join("")};
 const al=p=>p.al||p.name;                 // 제목/서브링크용 짧은 상품명
 // 받침 유무에 따른 조사(으로/로, 은/는 등)
 function josa(w,c,v){const ch=String(w).trim().slice(-1),code=ch.charCodeAt(0);const jong=(code>=0xAC00&&code<=0xD7A3)?(code-0xAC00)%28:0;return w+(jong?c:v);}
 // 인접 중복/접두 단어 정리("다이렉트 다이렉트로"→"다이렉트로")
 function dw(s){const out=[];for(const t of String(s).split(" ")){const p=out[out.length-1];if(p&&(p===t||t.startsWith(p)||p.startsWith(t))){if(t.length>p.length)out[out.length-1]=t;continue;}out.push(t);}return out.join(" ");}
-const wrap=(arr,mn,mx,ss)=>uniq(arr.map(dw)).map(x=>({tx:x,len:clen(x),ban:lintBan(x),ss:!!ss})).filter(o=>o.len>=mn&&o.len<=mx&&!o.ban.length);
+const wrap=(arr,mn,mx,ss)=>uniq(arr.map(x=>dw(HUMANIZE.light(x)))).map(x=>({tx:x,len:clen(x),ban:lintBan(x),ss:!!ss})).filter(o=>o.len>=mn&&o.len<=mx&&!o.ban.length);
 
 /* ① 광고 제목 (브랜드형, ≤15자) — 실제 시트 2번 컬럼 */
 const BRANDS=["한화손보 다이렉트","한화다이렉트 대표","한화다이렉트 공식","한화손보 공식","한화 다이렉트","한화손보"];

@@ -55,3 +55,4 @@
 ## 분석 스킬 — `.claude/skills/`
 - `cm-news-analysis`: 뉴스·SERP·시즌 분석 산출물의 톤·포맷 표준(핵심요약+상세 2단계, 이슈–영향–참고 3요소, 메인 3종 강조).
 - `card-news-summary`: 카드뉴스 요약. `insurance-terms`: 약관 용어 순화.
+- `humanize-korean`: `epoko77-ai/im-not-ai`의 의미 보존 원칙을 적용한 한국어 윤문. 소재·뉴스·텔레그램·이메일에 공통 적용하며 수치·날짜·상품명 보존과 변경률 30% 상한을 강제한다.
