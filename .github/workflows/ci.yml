@@ -47,11 +47,14 @@ jobs:
           node --check shared/mobile-sidebar.js
           node --check shared/feedback-client.js
           node --check shared/humanize-ko.js
+          node --check shared/insurance-ad-review.js
           node --check shared/naver-material-specs.js
           node --check shared/planning-context.js
           node --check shared/ui-icons.js
       - name: 검색광고 소재 13상품 × 50행 검증
         run: node scripts/check_adcopy_export.mjs
+      - name: 보험광고 법령 기반 사전검수 검증
+        run: node scripts/check_insurance_ad_review.mjs
       - name: 파워컨텐츠 13상품 소재 품질 검증
         run: node scripts/check_powercontent.mjs
       - name: 월간 신규·급상승 키워드 판정 검증

@@ -209,6 +209,7 @@ table.sheet .cp:hover{border-color:var(--brand);color:var(--brand-600);}
 <script src="shared/planning-context.js"></script>
 <script src="shared/humanize-ko.js"></script>
 <script src="shared/naver-material-specs.js"></script>
+<script src="shared/insurance-ad-review.js"></script>
 <script src="shared/ui-icons.js" defer></script>
 </head>
 <body>
@@ -254,12 +255,11 @@ const SPEC={
   subMaxCount:MATERIAL_SPEC.extension.sublink.maxPerAd,
   subSiteMax:MATERIAL_SPEC.extension.sublink.maxPerSite,
 };
-/* 광고심의 자제 표현 — 손해보험협회 광고심의기준(2023.4.18) 기반.
-   ① 최상급/배타적(Ⅳ.1): 객관 통계·출처 증빙 없으면 금지 → 근거 없는 초안에선 배제.
-   ② 단정/보장 오인(Ⅲ·Ⅳ): 무조건·100%·확정·평생보장·원금보장 등.
-   자세한 맥락 검수(근거·출처·지급제한 병기·다이렉트 매칭)는 insurance-ad-review 스킬로. */
-const BAN=["최고","최상","최저가","최저","제일","1위","일등","넘버원","넘버1","유일","단독","최초","업계최초","국내최초","제1위","가장","무조건","100%","완벽","절대","확정","무심사","누구나","전원","공짜","완전무료","보장 확정","원금보장","평생보장","저렴"];
-function lintBan(s){return BAN.filter(w=>String(s).replace(/\s/g,"").includes(w.replace(/\s/g,"")));}
+/* 공개 법령 기반 1차 휴리스틱. 협회·준법 심의 결과를 대신하지 않는다. */
+const AD_REVIEW=globalThis.ModooInsuranceAdReview;
+function reviewAdText(value){return AD_REVIEW.review(value,{channel:"sa"});}
+function lintBan(value){return [...new Set(reviewAdText(value).findings.filter(f=>f.generationBlocking).flatMap(f=>f.matches))];}
+function lintMessage(value){const findings=reviewAdText(value).findings.filter(f=>f.generationBlocking);return findings.map(f=>`${f.statusLabel} · ${f.matches.join("/")}`).join(" | ");}
 
 /* 상품별 소구 토큰 — 제목용 short(짧게), 설명용 usp(문장 조각), 담보 covers */
 const PRODUCTS=[
@@ -548,7 +548,7 @@ function exportXls(p){
   toast("엑셀(.xls) 다운로드 · 빨강=시즌·뉴스");
 }
 /* 내부 검토용 소재 배치. 공식 네이버 템플릿을 확인하기 전에는 업로드 가능 파일로 부르지 않는다. */
-const REVIEW_STATUS="초안 · 상품 근거 미확인 · 심의 검토 전";
+const REVIEW_STATUS="자동 위험표현 없음 · 상품 근거·사람 심의 필요";
 const STRATEGIES=[
   {key:"brand",label:"브랜드·공식"},
   {key:"coverage",label:"보장·상품 소구"},
@@ -567,8 +567,9 @@ function validateNaverRow(r){
   if(sublinks.length<SPEC.subMinCount||sublinks.length>SPEC.subMaxCount)errors.push("서브링크 개수");
   if(new Set(sublinks).size!==sublinks.length)errors.push("서브링크 중복");
   sublinks.forEach((v,i)=>{if(clen(v)>SPEC.subMax)errors.push(`서브링크${i+1} 규격`);});
-  const banned=lintBan([r.title,r.description,r.extraTitle,r.additionalDescription,r.promo].join(" "));
-  if(banned.length)errors.push(`금칙어:${banned.join("/")}`);
+  const compliance=AD_REVIEW.reviewFields({title:r.title,description:r.description,extraTitle:r.extraTitle,additionalDescription:r.additionalDescription,promo:r.promo},{channel:"sa"});
+  const blocking=[...new Set(compliance.findings.filter(f=>f.generationBlocking).map(f=>f.ruleId))];
+  if(blocking.length)errors.push(`심의 사전검수:${blocking.join("/")}`);
   MATERIAL_SPEC.manualOnlyFields.forEach(key=>{if(r[key])errors.push(`${key} 자동 입력 금지`);});
   return errors;
 }
@@ -893,7 +894,7 @@ function render(){
       <div class="spec">서브링크 <b>≤${SPEC.subMax}</b>·${SPEC.subMinCount}~${SPEC.subMaxCount}개</div>
       ${seasonChips}
     </div>
-    <div class="banner"><b>소재 가이드 검수 ${esc(MATERIAL_SPEC.verifiedAt)}</b> · 홍보문구는 실제 할인·이벤트 근거가 있을 때만 교체해 사용하세요. 계산 URL·서브링크 URL·이미지 ID는 실제 랜딩과 등록 자산을 확인해 직접 입력합니다. <a href="${esc(MATERIAL_SPEC.guideUrl)}" target="_blank" rel="noopener">네이버 등록 가이드 ↗</a></div>
+    <div class="banner"><b>소재 가이드 ${esc(MATERIAL_SPEC.verifiedAt)} · 보험광고 사전검수 ${esc(AD_REVIEW.verifiedAt)}</b> · 자동 차단·근거 필요·필수 고지 필요 표현은 소재 생성에서 제외합니다. 결과는 협회·준법 승인이 아니며 상품자료·약관·랜딩을 사람이 확인해야 합니다. <a href="${esc(AD_REVIEW.sources.knia.url)}" target="_blank" rel="noopener">손해보험협회 심의시스템 ↗</a> · <a href="${esc(MATERIAL_SPEC.guideUrl)}" target="_blank" rel="noopener">네이버 등록 가이드 ↗</a></div>
 
     <div class="sec-lbl">📌 상품·시장 참고</div>
     ${volPanel}
@@ -936,7 +937,7 @@ function render(){
     const el=$(inp);
     const upd=()=>{const v=el.value,n=clen(v);const L=$(lenEl);L.textContent=`${n}/${max}`;
       L.className="len "+((n>=(min||1)&&n<=max)?"ok":"no");
-      const b=lintBan(v);$(lintEl).textContent=b.length?("⚠ "+b.join(", ")):"";};
+      const message=lintMessage(v);$(lintEl).textContent=message?("⚠ "+message):"";};
     el.addEventListener("input",upd);upd();
   };
   bind("#edT","#edTlen","#edTlint",SPEC.titleMax,1);

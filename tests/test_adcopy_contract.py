@@ -8,7 +8,10 @@ POWER = (ROOT / "powercontent-tool.html").read_text(encoding="utf-8")
 KEYWORD = (ROOT / "keyword-tool.html").read_text(encoding="utf-8")
 CI = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
 MATERIAL_SPECS = (ROOT / "shared" / "naver-material-specs.js").read_text(encoding="utf-8")
+AD_REVIEW = (ROOT / "shared" / "insurance-ad-review.js").read_text(encoding="utf-8")
 MATERIAL_GUIDE = (ROOT / "docs" / "naver-ad-material-guide.md").read_text(encoding="utf-8")
+REVIEW_SKILL = (ROOT / ".claude" / "skills" / "insurance-ad-review" / "SKILL.md").read_text(encoding="utf-8")
+REGULATORY_BASIS = (ROOT / ".claude" / "skills" / "insurance-ad-review" / "references" / "regulatory-basis.md").read_text(encoding="utf-8")
 
 
 class TestAdcopyContract(unittest.TestCase):
@@ -49,12 +52,14 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn("data/adcopy/powercontent-title-opportunities.json", POWER)
         self.assertIn("SEO 검색 근거", POWER)
         self.assertIn("GSC가 확인되지 않으면 추천을 확정하지 않고", POWER)
-        self.assertIn("최신 상품자료·약관·준법·광고심의 확인", POWER)
+        self.assertIn("담보·지급사유·면책·감액·한도", POWER)
         self.assertIn("키워드–소재–랜딩 본문의 주제", POWER)
 
     def test_sa_and_power_content_share_material_review_rules(self):
         self.assertIn('shared/naver-material-specs.js', ADCOPY)
         self.assertIn('shared/naver-material-specs.js', POWER)
+        self.assertIn('shared/insurance-ad-review.js', ADCOPY)
+        self.assertIn('shared/insurance-ad-review.js', POWER)
         self.assertIn('additionalDescription', ADCOPY)
         self.assertIn('function extensionBrief(p,c)', POWER)
         self.assertIn('function validateExtensions(value)', POWER)
@@ -62,6 +67,23 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn('minPerAd: 3, maxPerAd: 4, maxPerSite: 4', MATERIAL_SPECS)
         self.assertIn('서브링크 URL 1~4', MATERIAL_GUIDE)
         self.assertIn('node --check shared/naver-material-specs.js', CI)
+        self.assertIn('node --check shared/insurance-ad-review.js', CI)
+
+    def test_insurance_ad_review_uses_current_public_basis_and_human_gate(self):
+        self.assertIn("금융소비자보호법 제22조", AD_REVIEW)
+        self.assertIn("금융소비자보호법 시행령 제18조~제19조", AD_REVIEW)
+        self.assertIn("금융소비자보호법 시행령 제20조", AD_REVIEW)
+        self.assertIn("금융소비자 보호에 관한 감독규정 제17조~제19조", AD_REVIEW)
+        self.assertIn("손해보험협회 광고심의 관리시스템", AD_REVIEW)
+        self.assertIn("자동 사전검수 결과이며", AD_REVIEW)
+        self.assertIn("reviewPowerMaterial", POWER)
+        self.assertIn("AD_REVIEW.reviewFields", ADCOPY)
+        self.assertIn("references/regulatory-basis.md", REVIEW_SKILL)
+        self.assertIn("자동 위험표현 없음", REVIEW_SKILL)
+        self.assertNotIn("심의 통과 리스크", REVIEW_SKILL)
+        self.assertIn("확인일: 2026-08-25", REGULATORY_BASIS)
+        self.assertIn("법령에 수록된 공식 금칙어 목록이 아니다", REGULATORY_BASIS)
+        self.assertIn("node scripts/check_insurance_ad_review.mjs", CI)
 
     def test_urls_and_asset_ids_are_manual_only(self):
         for field in (

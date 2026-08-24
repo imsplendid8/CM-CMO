@@ -4,6 +4,7 @@ import vm from "node:vm";
 const root = new URL("../", import.meta.url);
 const html = fs.readFileSync(new URL("powercontent-tool.html", root), "utf8");
 const materialSpecs = fs.readFileSync(new URL("shared/naver-material-specs.js", root), "utf8");
+const insuranceAdReview = fs.readFileSync(new URL("shared/insurance-ad-review.js", root), "utf8");
 const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((match) => match[1]);
 const appScript = scripts.find((source) => source.includes("function titleCandidates"));
 if (!appScript) throw new Error("powercontent-tool.html에서 후보 생성 로직을 찾지 못했습니다.");
@@ -18,10 +19,11 @@ const context = {
 };
 vm.createContext(context);
 vm.runInContext(materialSpecs, context, { filename: "shared/naver-material-specs.js" });
+vm.runInContext(insuranceAdReview, context, { filename: "shared/insurance-ad-review.js" });
 vm.runInContext(
   `${pureSection}
   ;globalThis.__POWER_CHECK__={
-    PRODUCTS,titleCandidates,descriptionFor,extensionBrief,validateExtensions,volumeRows,inScope,clen,
+    PRODUCTS,titleCandidates,descriptionFor,briefFor,extensionBrief,validateExtensions,reviewPowerMaterial,volumeRows,inScope,clen,
     setData:(volume,seasonal,titles)=>{DATA={volume,seasonal,titles};}
   };`,
   context,
@@ -63,6 +65,9 @@ for (const product of check.PRODUCTS) {
   const extensions = check.extensionBrief(product, candidates[0]);
   const extensionErrors = check.validateExtensions(extensions);
   if (extensionErrors.length) throw new Error(`${product.name}: ${extensionErrors.join(", ")}`);
+  const brief = check.briefFor(product, candidates[0]);
+  const compliance = check.reviewPowerMaterial(product, candidates[0], brief, extensions);
+  if (compliance.generationBlocking) throw new Error(`${product.name}: 보험광고 사전검수 ${compliance.statusLabel}`);
   for (const key of context.ModooNaverMaterialSpecs.manualOnlyFields) {
     if (extensions.manual[key] !== "") throw new Error(`${product.name}: ${key} 자동 입력됨`);
   }

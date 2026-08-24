@@ -16,7 +16,7 @@
 | 팀 실시간 프록시 | `proxy/naver-proxy-worker.js` (Cloudflare Worker · 키=워커 시크릿) |
 | 폰트 | `fonts/PretendardVariable.woff2` (자체호스팅) |
 | 스크립트 | `scripts/` (workflow용: `naver_searchad_volume`·`naver_trends`·`daily_brief`·`capture_serp`·`check_products_sync`; 로컬 폴백: `naver_local_server`) |
-| 스킬 8종 | `.claude/skills/` — 뉴스·카드뉴스·한국어 윤문 + 근거 원장·SERP 소재·FAQ·보험 광고 검토·`cm-seo-title-ops`(SearchAd/GSC 기반 파워컨텐츠 제목 운영) |
+| 스킬 8종 | `.claude/skills/` — 뉴스·카드뉴스·한국어 윤문 + 근거 원장·SERP 소재·FAQ·`insurance-ad-review`(현행 금소법·시행령·감독규정 기반 사전검수)·`cm-seo-title-ops`(SearchAd/GSC 기반 파워컨텐츠 제목 운영) |
 | 배포·자동화 | `.github/workflows/` — pages·ci·daily-brief·trends·searchad·serp-capture(브랜드검색)·news-clip(하루 2회)·signals(수요 신호)·technical-seo |
 
 ## 작업 규칙
@@ -30,7 +30,7 @@
 ## ⚠️ 데이터 거버넌스 (최우선)
 - 고객·임직원 개인정보·회사 영업비밀은 **외부 AI/커밋 금지**. 반드시 **샘플·공개·비식별/가상 데이터**만.
 - 뉴스 헤드라인·링크·SERP는 공개 정보만. 요약·시사점은 자체 분석.
-- 광고성 문구는 배포 전 광고심의 검수 전제. 검색량/입찰가는 각 광고 플랫폼에서 확정.
+- 광고성 문구는 `shared/insurance-ad-review.js`로 1차 검수하고 최신 상품자료·약관·준법감시인·손해보험협회 최종 심의를 거친다. `자동 위험표현 없음`은 심의 승인이 아니다. 검색량/입찰가는 각 광고 플랫폼에서 확정.
 
 ## 분석 산출물 톤 (cm-news-analysis 스킬)
 인사말·미사여구 없이 **[핵심 요약]→[상세]** 2단계, 뉴스는 **이슈–업계영향–담당자 참고** 3요소, **메인 3종(운전자·주택화재·골프)** 비중 강조.

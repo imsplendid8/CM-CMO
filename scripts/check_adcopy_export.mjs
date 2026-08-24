@@ -3,6 +3,7 @@ import vm from "node:vm";
 
 const html = fs.readFileSync(new URL("../adcopy-tool.html", import.meta.url), "utf8");
 const materialSpecs = fs.readFileSync(new URL("../shared/naver-material-specs.js", import.meta.url), "utf8");
+const insuranceAdReview = fs.readFileSync(new URL("../shared/insurance-ad-review.js", import.meta.url), "utf8");
 const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
 const appScript = scripts.find((source) => source.includes("function buildNaverRows"));
 
@@ -14,6 +15,7 @@ const pureSection = appScript.split("/* ── 날씨 대응")[0];
 const context = { console };
 vm.createContext(context);
 vm.runInContext(materialSpecs, context, { filename: "shared/naver-material-specs.js" });
+vm.runInContext(insuranceAdReview, context, { filename: "shared/insurance-ad-review.js" });
 vm.runInContext(
   `${pureSection}\n;globalThis.__AD_CHECK__={PRODUCTS,buildSheet,buildNaverRows,validateNaverRow,setPlanMonth:(month)=>{PLANM=month;}};`,
   context,
