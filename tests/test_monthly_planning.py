@@ -80,12 +80,14 @@ class TestMonthlyPlanningUiContract(unittest.TestCase):
 
     def test_seo_proposes_four_review_gated_faqs_without_retired_rich_result(self):
         seo = self.read("seo-audit.html")
-        self.assertIn("function monthlyFaqs", seo)
+        self.assertIn("function faqCandidates", seo)
         self.assertIn("고객 질문형 FAQ 콘텐츠 4개", seo)
         self.assertNotIn('"@type":"FAQPage"', seo)
         self.assertNotIn("검색 데이터가 찾은 다음 FAQ 후보", seo)
         self.assertNotIn("Google FAQ 리치결과", seo)
-        self.assertIn("월 이름을 억지로 넣지 않고", seo)
+        self.assertNotIn("월 이름을 억지로 넣지 않고", seo)
+        self.assertNotIn("월 시즌 근거 보기", seo)
+        self.assertNotIn("ModooPlanning", seo)
         self.assertNotIn("`${month}월 ${current.tag} 시기에", seo)
         self.assertNotIn("`${next}월을 앞두고", seo)
         self.assertIn("유병자보험은 일반건강보험보다 보험료가 비싼가요?", seo)
@@ -93,7 +95,8 @@ class TestMonthlyPlanningUiContract(unittest.TestCase):
         self.assertIn("유병자보험은 무심사보험인가요?", seo)
         self.assertIn("건강이 좋아지면 일반심사형 보험으로 바꿀 수 있나요?", seo)
         self.assertNotIn("답변은 최신 상품 자료와 약관을 확인한 뒤 사용하세요", seo)
-        self.assertIn('FAQ_REFERENCE_URL="https://blog.carrotins.com/"', seo)
+        self.assertNotIn("FAQ_EDITORIAL_GUIDE", seo)
+        self.assertNotIn("FAQ_REFERENCE_URL", seo)
         self.assertNotIn("캐롯 블로그 표현 참고 기준", seo)
 
 

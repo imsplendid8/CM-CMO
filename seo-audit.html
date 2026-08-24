@@ -14,7 +14,6 @@
 
 <link rel="stylesheet" href="shared/mobile-sidebar.css">
 <script src="shared/mobile-sidebar.js" defer></script>
-<script src="shared/planning-context.js"></script>
 <script>try{var _r=document.documentElement;_r.setAttribute("data-theme",localStorage.getItem("mf_theme")||"light");if(window.self!==window.top)_r.setAttribute("data-embed","1");}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
 <style>:root[data-embed="1"] .sb-brand,:root[data-embed="1"] .crumb,:root[data-embed="1"] .brand-logo,:root[data-embed="1"] #themeBtn{display:none!important}</style>
 <style>
@@ -318,8 +317,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .badge.good{background:var(--good-bg);color:var(--good-ink);} .badge.mid{background:var(--mid-bg);color:var(--mid-ink);}
 .badge.bad{background:var(--bad-bg);color:var(--bad-ink);} .badge.ghost{background:var(--line-2);color:var(--ink-2);}
 .faq-panel{margin:20px 0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;box-shadow:var(--sh);}
-.faq-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
-.faq-head h3{font-size:14px;font-weight:800;} .faq-head p{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.55;}
+.faq-head{margin-bottom:12px;}
+.faq-head h3{font-size:14px;font-weight:800;}
 .faq-list{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .faq-card{border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 13px;background:var(--surface-2);}
 .faq-card .fq-top{display:flex;align-items:center;gap:7px;margin-bottom:7px;}
@@ -512,12 +511,6 @@ const FAQ_TERMS={
   overseaslong:["장기체류보험","유학생보험","워홀"],holeinone:["홀인원보험","투게더홀인원"],event:["행사보험","행사배상책임"],
   chronic:["유병자보험","간편심사","유병력자"]
 };
-const FAQ_REFERENCE_URL="https://blog.carrotins.com/";
-const FAQ_EDITORIAL_GUIDE={
-  tone:"실제 이용자의 상황을 질문으로 쓰고, 첫 문장에서 쉬운 답을 준 뒤 조건·예외와 확인 경로를 덧붙이는 해요체",
-  evidence:"보장명·가입 대상·보험료·할인율·지급 조건·한도·면책·감액은 현재 상품설명서·약관·가입 설계 근거가 있을 때만 기재",
-  review:"배포 전 상품명·상품 버전·근거 기준일·심의번호·심의 유효기간·검토자를 기록하고, 미확인 또는 만료 시 게시하지 않음"
-};
 const faqNorm=s=>String(s||"").replace(/\s/g,"").toLowerCase();
 function faqTopKeyword(p){
   const map=((SEO_VOL.products||{})[p.key]||{}).keywords||{},terms=FAQ_TERMS[p.key]||[p.name];
@@ -605,7 +598,7 @@ const FAQ_CONTENT={
     ["행사보험을 가입하려면 어떤 정보가 필요한가요?","행사명과 종류, 장소, 기간, 예상 인원과 주요 프로그램을 준비하세요. 불꽃놀이나 수상활동처럼 별도 확인이 필요한 행사가 포함됐는지도 알려야 해요."]
   ]
 };
-function monthlyFaqs(p){
+function faqCandidates(p){
   const top=faqTopKeyword(p),rows=FAQ_CONTENT[p.key]||FAQ_CONTENT.home;
   return rows.map((row,i)=>({
     cycle:i===0&&top?`검색 수요 · ${top.kw}`:"고객 질문",
@@ -613,9 +606,9 @@ function monthlyFaqs(p){
   }));
 }
 function faqSection(p){
-  const month=window.ModooPlanning.getMonth(),faqs=monthlyFaqs(p);
+  const faqs=faqCandidates(p);
   const faqDraft=faqs.map((row,i)=>`${i+1}. ${row.q}\n${row.a}`).join("\n\n");
-  return `<section class="faq-panel"><div class="faq-head"><div><h3>❓ 고객 질문형 FAQ 콘텐츠 4개</h3><p>월 이름을 억지로 넣지 않고, 검색자가 실제로 궁금해할 가입·보장 질문에 바로 답합니다.</p></div><a class="btn" href="seasonal-tool.html?month=${month}" target="_blank" rel="noopener">${month}월 시즌 근거 보기 ↗</a></div>
+  return `<section class="faq-panel"><div class="faq-head"><h3>❓ 고객 질문형 FAQ 콘텐츠 4개</h3></div>
     <div class="faq-list">${faqs.map((row,i)=>`<article class="faq-card"><div class="fq-top"><span class="fq-cycle">${esc(row.cycle)}</span><button class="cp" data-copy="${esc(row.q+"\n"+row.a)}">Q&A 복사</button></div><div class="fq-q">${i+1}. ${esc(row.q)}</div><div class="fq-a">${esc(row.a)}</div></article>`).join("")}</div>
     <div class="faq-actions"><button class="btn" data-copy="${esc(faqDraft)}">FAQ 검토본 복사</button></div></section>`;
 }
