@@ -326,6 +326,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .faq-card .fq-cycle{font-size:9.5px;font-weight:800;color:var(--brand-600);background:var(--brand-50);padding:2px 7px;border-radius:99px;}
 .faq-card .fq-q{font-size:12.5px;font-weight:800;line-height:1.55;}
 .faq-card .fq-a{font-size:11.5px;color:var(--ink-2);line-height:1.65;margin-top:6px;}
+.faq-card .fq-meta{font-size:10px;color:var(--muted);line-height:1.5;margin-top:7px;padding-top:7px;border-top:1px dashed var(--line);}
 .faq-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px;}
 .faq-guide{margin-top:12px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--brand-50);font-size:11px;color:var(--ink-2);line-height:1.7;}
 .faq-guide b{color:var(--ink);}.faq-guide a{color:var(--brand-600);font-weight:800;text-decoration:none;}.faq-guide a:hover{text-decoration:underline;}
@@ -507,12 +508,20 @@ const USP={
 
 /* ── 월간 FAQ 제안: 연간플랜 + 네이버 검색광고 실측 검색량 ── */
 let SEO_SEASONAL={},SEO_VOL={asof:null,source:"none",products:{}};
-const FAQ_TERMS={
-  home:["한화손보다이렉트","다이렉트보험"],hrmf:["주택화재","화재보험","누수"],golf:["골프보험","홀인원"],
-  cncr:["암보험","유사암","진단비"],dntl:["치아보험","임플란트","스케일링"],driver:["운전자보험","벌금","변호사"],
-  woman:["여성보험","여성건강","여성암"],birth:["태아보험","임신보험","출산"],overseas:["여행자보험","해외여행보험","항공지연"],
-  overseaslong:["장기체류보험","유학생보험","워홀"],holeinone:["홀인원보험","투게더홀인원"],event:["행사보험","행사배상책임"],
-  chronic:["유병자보험","간편심사","유병력자"]
+const FAQ_KEYWORDS={
+  home:{primary:"한화손보다이렉트",related:["한화다이렉트보험","다이렉트보험"]},
+  hrmf:{primary:"주택화재보험",related:["아파트화재보험","아파트누수보험","누수피해보상","화재보험"]},
+  golf:{primary:"골프보험",related:["홀인원보험","골프상해보험","골프배상책임"]},
+  cncr:{primary:"암보험",related:["암진단비","유사암보험","비갱신암보험","암보험비교"]},
+  dntl:{primary:"치아보험",related:["임플란트보험","치아보험보장","스케일링보험"]},
+  driver:{primary:"운전자보험",related:["운전자보험보장","운전자보험비교","변호사선임비용","교통사고처리지원금"]},
+  woman:{primary:"여성건강보험",related:["여성보험","여성암보험","출산보험","난임보험"]},
+  birth:{primary:"태아보험",related:["태아보험가입시기","임신보험","출산보험","태아보험비교"]},
+  overseas:{primary:"해외여행보험",related:["여행자보험","해외여행보험료","항공지연보험","여행보험비교"]},
+  overseaslong:{primary:"해외장기체류보험",related:["유학생보험","장기체류보험","워홀보험","해외의료비보험"]},
+  holeinone:{primary:"홀인원보험",related:["투게더홀인원보험","홀인원비용","골프보험선물"]},
+  event:{primary:"행사배상책임보험",related:["행사보험","축제보험","공연배상책임보험","행사보험가입"]},
+  chronic:{primary:"유병자보험",related:["간편심사보험","유병력자보험","고령자보험","유병자보험가입"]}
 };
 const FAQ_REFERENCE_URL="https://blog.carrotins.com/";
 const FAQ_EDITORIAL_GUIDE={
@@ -521,35 +530,52 @@ const FAQ_EDITORIAL_GUIDE={
   review:"배포 전 상품명·상품 버전·근거 기준일·심의번호·심의 유효기간·검토자를 기록하고, 미확인 또는 만료 시 게시하지 않음"
 };
 const faqNorm=s=>String(s||"").replace(/\s/g,"").toLowerCase();
+function faqTopic(word){
+  const text=String(word||""),last=[...text].pop()||"",code=last.charCodeAt(0);
+  const hasBatchim=code>=0xac00&&code<=0xd7a3?(code-0xac00)%28!==0:!/([aeiouy])$/i.test(last);
+  return text+(hasBatchim?"은":"는");
+}
 function faqIssue(p,month){return (SEO_SEASONAL[p.key]||[]).find(w=>(w.m||[]).includes(month))||null;}
-function faqTopKeyword(p){
-  const map=((SEO_VOL.products||{})[p.key]||{}).keywords||{},terms=FAQ_TERMS[p.key]||[p.name];
+function faqKeywordRows(p){
+  const strategy=FAQ_KEYWORDS[p.key]||{primary:p.name,related:[]},map=((SEO_VOL.products||{})[p.key]||{}).keywords||{};
+  const allowed=[strategy.primary,...strategy.related].map(faqNorm);
   return Object.keys(map).map(kw=>{const row=map[kw]||{};return {kw,total:(+row.pc||0)+(+row.mobile||0),comp:row.comp||""};})
-    .filter(row=>terms.some(term=>faqNorm(row.kw).includes(faqNorm(term))))
-    .sort((a,b)=>b.total-a.total)[0]||null;
+    .filter(row=>allowed.some(term=>faqNorm(row.kw)===term||faqNorm(row.kw).includes(term)||term.includes(faqNorm(row.kw))))
+    .sort((a,b)=>b.total-a.total);
+}
+function faqRelatedKeyword(p,primary){
+  const strategy=FAQ_KEYWORDS[p.key]||{related:[]},rows=faqKeywordRows(p),primaryNorm=faqNorm(primary);
+  return rows.find(row=>faqNorm(row.kw)!==primaryNorm&&strategy.related.some(term=>faqNorm(row.kw).includes(faqNorm(term))||faqNorm(term).includes(faqNorm(row.kw))))||null;
+}
+function faqIntentQuestion(keyword,primary){
+  if(/보험료|가격|비용/.test(keyword))return `${keyword}는 무엇에 따라 달라지나요?`;
+  if(/가입|시기/.test(keyword))return `${keyword} 전에 어떤 조건을 확인해야 하나요?`;
+  if(/보장|진단비|의료비|선임비용|지원금/.test(keyword))return `${keyword}의 보장 범위는 어떻게 확인하나요?`;
+  return `${keyword}를 알아볼 때 ${primary}에서 무엇을 비교해야 하나요?`;
 }
 function monthlyFaqs(p){
   const month=window.ModooPlanning.getMonth(),next=window.ModooPlanning.nextMonth(month);
-  const current=faqIssue(p,month),upcoming=faqIssue(p,next),top=faqTopKeyword(p);
+  const current=faqIssue(p,month),upcoming=faqIssue(p,next),issue=current||upcoming;
+  const strategy=FAQ_KEYWORDS[p.key]||{primary:p.name,related:[]},primary=strategy.primary,related=faqRelatedKeyword(p,primary);
+  const primaryRow=faqKeywordRows(p).find(row=>faqNorm(row.kw)===faqNorm(primary)),support=related?related.kw:(strategy.related[0]||primary);
+  const usp=(USP[p.key]||"보장 범위와 가입 조건").replace(/\s*·\s*/g,", ");
   const common="실제 보장 여부와 가입 조건, 한도, 자기부담금, 면책·감액 및 지급 제한은 최신 상품설명서와 약관에서 확인해 보세요.";
-  const currentQ=current?`${month}월 ${current.tag} 시기에 ${p.name}에서 무엇을 확인해야 하나요?`:`${month}월에 ${p.name} 정보를 찾을 때 무엇을 먼저 확인해야 하나요?`;
-  const currentA=current?`${current.why} 먼저 ${current.kws.slice(0,3).join("·")}와 관련해 내 상황에 해당하는 조건을 살펴보세요. ${common}`:`시기별로 관심사가 달라질 수 있어요. 최신 상품 안내에서 주요 담보와 가입 조건을 먼저 비교하고, ${common}`;
-  const nextQ=upcoming?`${next}월 ${upcoming.tag} 전에 어떤 내용을 미리 준비해야 하나요?`:`${next}월을 앞두고 ${p.name} FAQ에서 새로 점검할 내용은 무엇인가요?`;
-  const nextA=upcoming?`${upcoming.act}. 검색 수요가 있어도 실제 상품에 적용되는지는 다를 수 있어요. 최신 안내를 확인한 뒤 FAQ를 교체하고, ${common}`:`익월 검색량과 뉴스·시즌 이슈를 확인해 질문을 교체해 보세요. 변경 근거가 없다면 새로운 혜택처럼 단정하지 말고, ${common}`;
-  const kw=top?top.kw:(FAQ_TERMS[p.key]||[p.name])[0],volume=top?` 최근 네이버 검색광고 키워드도구에서 PC+모바일 월 ${top.total.toLocaleString("ko-KR")}회로 관측된 검색어입니다.`:"";
+  const seasonMonth=current?month:next,seasonQ=issue?`${seasonMonth}월 ${issue.tag} 시기에 ${faqTopic(primary)} 무엇을 확인해야 하나요?`:`${primary} 가입 전 어떤 보장 조건을 먼저 확인해야 하나요?`;
+  const seasonA=issue?`${issue.tag} 시기에는 ${issue.kws.slice(0,3).join(", ")}와 관련된 위험이 내 보장에 포함되는지 먼저 확인해 보세요. ${common}`:`필요한 보장과 가입 대상, 보험기간을 먼저 비교해 보세요. ${common}`;
+  const volumeMeta=row=>row?`네이버 검색광고 키워드도구 PC+모바일 월 ${row.total.toLocaleString("ko-KR")}회 · ${SEO_VOL.asof||"기준일 미확인"}`:"검색량 미확인 · 대표키워드 전략 기준";
   return [
-    {cycle:"월간 교체",q:currentQ,a:currentA},
-    {cycle:"월간 교체",q:nextQ,a:nextA},
-    {cycle:"수요 반영",q:`‘${kw}’를 찾고 있다면 어떤 내용을 먼저 확인하면 좋을까요?`,a:`먼저 보장 범위, 가입 대상, 보험기간과 보험료 산출 조건을 살펴보세요.${volume} 검색량은 관심도를 보여주는 참고값일 뿐, 이 상품이 누구에게나 유리하거나 적합하다는 뜻은 아니에요.`},
-    {cycle:"상시 유지",q:`${p.name} 가입 전에는 무엇을 꼭 확인해야 하나요?`,a:`내 상황에 필요한 보장인지부터 확인해 보세요. ${common} 보험계약 전 알릴 의무와 해지·갱신 조건도 함께 살펴보는 것이 좋아요.`}
+    {cycle:"대표키워드",intent:"정의·핵심보장",keyword:primary,meta:volumeMeta(primaryRow),q:`${faqTopic(primary)} 어떤 보험인가요?`,a:`${p.name} 페이지에서는 ${usp} 관련 내용을 확인할 수 있어요. ${common}`},
+    {cycle:"연관 검색의도",intent:"비교·탐색",keyword:support,meta:volumeMeta(related),q:faqIntentQuestion(support,primary),a:`먼저 보장 대상과 지급 조건, 한도, 보험기간을 같은 기준으로 비교해 보세요. ${common}`},
+    {cycle:"월간 시즌",intent:"시기·상황",keyword:primary,meta:`${seasonMonth}월 ${issue?issue.tag:"상시 가입 검토"}`,q:seasonQ,a:seasonA},
+    {cycle:"전환 검색의도",intent:"보험료·가입조건",keyword:primary,meta:"상시 유지 · 가입 판단",q:`${primary} 보험료와 가입 조건은 어떻게 확인하나요?`,a:`보험료와 가입 가능 여부는 나이, 보장 구성, 보험기간과 가입 조건 등에 따라 달라질 수 있어요. 실제 가입 화면에서 내 조건으로 산출하고 상품설명서와 약관을 함께 확인해 보세요.`}
   ];
 }
 function faqSection(p){
   const month=window.ModooPlanning.getMonth(),next=window.ModooPlanning.nextMonth(month),faqs=monthlyFaqs(p);
   const schema={"@context":"https://schema.org","@type":"FAQPage",mainEntity:faqs.map(row=>({"@type":"Question",name:row.q,acceptedAnswer:{"@type":"Answer",text:row.a}}))};
   const jsonld=`<script type="application/ld+json">\n${JSON.stringify(schema,null,2)}\n<\/script>`;
-  return `<section class="faq-panel"><div class="faq-head"><div><h3>❓ ${month}월 FAQ 제안 4개</h3><p>당월·익월 연간플랜과 네이버 실측 검색량을 반영 · 1~3번은 매월 교체, 4번은 상시 유지</p></div><a class="btn" href="seasonal-tool.html?month=${month}" target="_blank" rel="noopener">연간플랜 ${month}월→${next}월 보기 ↗</a></div>
-    <div class="faq-list">${faqs.map((row,i)=>`<article class="faq-card"><div class="fq-top"><span class="fq-cycle">${esc(row.cycle)}</span><button class="cp" data-copy="${esc(row.q+"\n"+row.a)}">Q&A 복사</button></div><div class="fq-q">${i+1}. ${esc(row.q)}</div><div class="fq-a">${esc(row.a)}</div></article>`).join("")}</div>
+  return `<section class="faq-panel"><div class="faq-head"><div><h3>❓ ${month}월 콘텐츠 SEO FAQ 스니펫 4개</h3><p>상품 대표키워드·연관 검색의도·당월/익월 시즌·가입 전환 질문을 반영 · 검색 결과에 답이 바로 드러나는 2문장형</p></div><a class="btn" href="seasonal-tool.html?month=${month}" target="_blank" rel="noopener">연간플랜 ${month}월→${next}월 보기 ↗</a></div>
+    <div class="faq-list">${faqs.map((row,i)=>`<article class="faq-card"><div class="fq-top"><span class="fq-cycle">${esc(row.cycle)}</span><button class="cp" data-copy="${esc(row.q+"\n"+row.a)}">Q&A 복사</button></div><div class="fq-q">${i+1}. ${esc(row.q)}</div><div class="fq-a">${esc(row.a)}</div><div class="fq-meta">${esc(row.intent)} · ${esc(row.keyword)} · ${esc(row.meta)} · 답변 ${[...row.a].length}자</div></article>`).join("")}</div>
     <div class="faq-guide"><b>캐롯 블로그 표현 참고 기준</b> · ${esc(FAQ_EDITORIAL_GUIDE.tone)}. <a href="${FAQ_REFERENCE_URL}" target="_blank" rel="noopener">blog.carrotins.com 참고 ↗</a><br><b>사실·심의 체크</b> · ${esc(FAQ_EDITORIAL_GUIDE.evidence)}. ${esc(FAQ_EDITORIAL_GUIDE.review)}. 캐롯 문구나 심의번호를 그대로 재사용하지 않습니다.</div>
     <div class="faq-actions"><button class="btn" data-copy="${esc(jsonld)}">FAQ JSON-LD 복사</button><span style="font-size:11px;color:var(--muted)">화면 Q&A와 JSON-LD 문구를 동일하게 배포하고, 상품 담당자·준법·광고심의 검토 후 사용하세요.</span></div></section>`;
 }
