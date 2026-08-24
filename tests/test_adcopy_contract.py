@@ -33,31 +33,43 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn("function serpIdeas(p)", ADCOPY)
         self.assertIn("경쟁사 광고와 SA 제안", ADCOPY)
         self.assertIn("observed_ads", ADCOPY)
-        self.assertIn('strategy:"핵심 보장 확인"', ADCOPY)
-        self.assertIn('strategy:"가입 전 체크"', ADCOPY)
-        self.assertIn('strategy:"보험료·보장 비교"', ADCOPY)
+        self.assertIn('strategy:"상황·담보"', ADCOPY)
+        self.assertIn('strategy:"간편 전환"', ADCOPY)
+        self.assertIn('strategy:"담보 묶음"', ADCOPY)
         self.assertIn("SA 소재 제안", ADCOPY)
         self.assertIn('const OUT_OF_SCOPE_VOLUME=["자동차보험","자동차 보험","한화생명"]', ADCOPY)
         self.assertNotIn("공개 광고 관측", ADCOPY)
         self.assertNotIn("공개 SERP 관측", ADCOPY)
-        self.assertIn('data-copy="${esc(o.title)}"', ADCOPY)
-        self.assertIn('data-copy="${esc(o.desc)}"', ADCOPY)
+        self.assertIn("경쟁사 구조 활용", ADCOPY)
+        self.assertNotIn("data-copy", ADCOPY)
+        self.assertNotIn("navigator.clipboard", ADCOPY)
+
+    def test_sa_uses_attached_review_draft_structure_without_manual_editor(self):
+        self.assertIn("const REVIEW_REFERENCE", ADCOPY)
+        self.assertIn("20260730 한화CM 검색광고 운전자보험 심의안", ADCOPY)
+        self.assertIn("실제 포맷 심의안 초안", ADCOPY)
+        for label in ("1. 썸네일 이미지", "2. 광고 제목", "3. 추가제목 (롤링)",
+                      "4. 설명 (롤링)", "5. 홍보문구 (택 1)", "6. 서브링크 (택 4)",
+                      "7. 이미지형 서브링크"):
+            self.assertIn(label, ADCOPY)
+        self.assertNotIn('id="edT"', ADCOPY)
+        self.assertNotIn('id="edD"', ADCOPY)
 
     def test_power_content_is_a_separate_guarded_workspace(self):
         self.assertNotIn('__power', ADCOPY)
         self.assertNotIn("powercontent-title-opportunities.json", ADCOPY)
         self.assertIn("파워콘텐츠 소재", POWER)
-        self.assertIn("const EDITORIAL=MATERIAL_SPEC.powerContentEditorial", POWER)
-        self.assertIn("내부 편집 기준", POWER)
+        self.assertIn("const POWER_SPEC=MATERIAL_SPEC.powerContent", POWER)
         self.assertIn("data/adcopy/powercontent-title-opportunities.json", POWER)
-        self.assertIn("SEO 검색 근거", POWER)
         self.assertNotIn("GSC", POWER)
         self.assertNotIn("gscLabel", POWER)
         self.assertNotIn("candidate-weak", POWER)
-        self.assertIn("SearchAd 검색수요와 시즌 이슈", POWER)
-        self.assertIn("자동 점검 ${pass}/${checks.length} 통과", POWER)
-        self.assertIn("담보·지급사유·면책·감액·한도", POWER)
-        self.assertIn("소재 제목 3안", POWER)
+        self.assertIn("1. 블로그 포스팅 소재", POWER)
+        self.assertIn("2. 광고 소재 등록 초안", POWER)
+        self.assertIn("설명은 랜딩 원문 연속 문장만 사용", POWER)
+        for removed in ("추가제목", "홍보문구", "서브링크", "FAQ 후보", "선택 포스팅 소재", "검색 의도", "상품 소구"):
+            self.assertNotIn(removed, POWER)
+        self.assertNotIn("data-copy", POWER)
 
     def test_sa_and_power_content_share_material_review_rules(self):
         self.assertIn('shared/naver-material-specs.js', ADCOPY)
@@ -65,8 +77,8 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn('shared/insurance-ad-review.js', ADCOPY)
         self.assertIn('shared/insurance-ad-review.js', POWER)
         self.assertIn('additionalDescription', ADCOPY)
-        self.assertIn('function extensionBrief(p,c)', POWER)
-        self.assertIn('function validateExtensions(value)', POWER)
+        self.assertIn('description: freeze({ minLength: 80, maxLength: 110, source: "landing_continuous_excerpt" })', MATERIAL_SPECS)
+        self.assertIn('maxPerAdGroup: 5', MATERIAL_SPECS)
         self.assertIn('maxLength: 14, maxPerGroup: 2', MATERIAL_SPECS)
         self.assertIn('minPerAd: 3, maxPerAd: 4, maxPerSite: 4', MATERIAL_SPECS)
         self.assertIn('서브링크 URL 1~4', MATERIAL_GUIDE)
@@ -97,18 +109,17 @@ class TestAdcopyContract(unittest.TestCase):
             "sublinkImageId1",
         ):
             self.assertIn(field, ADCOPY)
-            self.assertIn(field, POWER)
             self.assertIn(field, MATERIAL_SPECS)
         self.assertIn('MATERIAL_SPEC.manualOnlyFields.forEach', ADCOPY)
-        self.assertIn('MATERIAL_SPEC.manualOnlyFields.forEach', POWER)
+        self.assertNotIn('MATERIAL_SPEC.manualOnlyFields.forEach', POWER)
 
     def test_power_content_rejects_out_of_scope_topics_and_exports_brief(self):
         for term in ("자동차보험", "공개관측", "공개 관측", "한화생명", "고객센터"):
             self.assertIn(term, POWER)
         self.assertIn("function inScope(p,text)", POWER)
         self.assertIn("function exportCsv()", POWER)
-        self.assertIn('id="copyBrief"', POWER)
         self.assertIn('id="exportCsv"', POWER)
+        self.assertIn("등록 초안 CSV", POWER)
 
     def test_copy_candidates_use_shared_korean_humanizer(self):
         self.assertIn('shared/humanize-ko.js', ADCOPY)

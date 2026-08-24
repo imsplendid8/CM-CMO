@@ -79,12 +79,15 @@ class TestSerpCopyAgent(unittest.TestCase):
         self.assertEqual(result["selected_angle"], "변호사선임")
         self.assertEqual(result["serp_diff"]["entered_brands"], ["A"])
         self.assertTrue(result["candidates"])
+        self.assertEqual({row["strategy"] for row in result["candidates"]}, {"상황·담보", "간편 전환", "담보 묶음"})
         for row in result["candidates"]:
             self.assertLessEqual(row["title_length"], 15)
             self.assertGreaterEqual(row["description_length"], 20)
             self.assertLessEqual(row["description_length"], 45)
             self.assertEqual(row["evidence_status"], "product_evidence_required")
             self.assertEqual(row["review_status"], "human_review_required")
+            self.assertTrue(row["pattern_note"])
+            self.assertNotIn("보장 여부와 가입 조건을 확인", row["description"])
 
     def test_brand_home_and_excluded_products_are_never_suggested(self):
         agent = module("serp_copy_agent")

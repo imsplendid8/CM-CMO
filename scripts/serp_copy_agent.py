@@ -116,19 +116,21 @@ def generate(products, analysis, volume, claims):
                 if not out_of_scope(x, p) and not any(x in c or c in x for c in common)]
         angle = (gaps or p.get("core") or [p["name"]])[0]
         short_name = p.get("serpKw") or p["name"]
-        intent_title = f"{keyword} 가입 전 확인"
-        if len(intent_title) > TITLE_MAX:
-            intent_title = f"{short_name} 가입조건"
+        observed_brands = "·".join(dict.fromkeys(a.get("brand") for a in ads if a.get("brand"))) or "경쟁사"
+        last_angle = (p.get("special") or p.get("core") or [angle])[-1]
         raw = [
-            ("핵심 보장 확인", compact(f"{angle} 보장 확인", TITLE_MAX),
-             f"{p['name']}의 {angle} 보장 여부와 가입 조건을 확인해 보세요."),
-            ("가입 전 체크", intent_title,
-             f"{keyword} 가입 전 보장 범위와 제외 조건을 먼저 확인해 보세요."),
-            ("보험료·보장 비교", compact(f"{short_name} 보험료·보장", TITLE_MAX),
-             f"{short_name}의 보험료와 필요한 보장을 함께 확인해 보세요."),
+            ("상황·담보", compact(f"{angle} 특약으로 대비", TITLE_MAX),
+             f"갑작스러운 {angle} 걱정, {p['name']} 관련 특약으로 미리 대비하세요.",
+            f"{observed_brands} 관측 문구의 구체 담보+상황 구조 차용 · 수치·할인 제외"),
+            ("간편 전환", compact(f"{short_name} 간편 가입", TITLE_MAX),
+             f"전화 상담 없이 {short_name} 내 보험료를 계산하고 온라인으로 가입하세요.",
+             "경쟁사 행동 유도 구조를 온라인 가입 흐름으로 전환"),
+            ("담보 묶음", compact(f"{short_name} 필요한 특약", TITLE_MAX),
+             f"{angle}부터 {last_angle}까지, 필요한 특약을 한 번에 준비하세요.",
+             f"‘{keyword}’ 검색 수요와 경쟁사 핵심 소구를 상품 담보 맥락으로 재구성"),
         ]
         candidates = []
-        for strategy, title, desc in raw:
+        for strategy, title, desc, pattern_note in raw:
             desc = compact(desc, DESC_MAX)
             if not valid(title, desc) or out_of_scope(title + " " + desc, p):
                 continue
@@ -137,10 +139,11 @@ def generate(products, analysis, volume, claims):
             candidates.append({"strategy": strategy, "title": title, "description": desc,
                 "title_length": len(title), "description_length": len(desc), "claim_ids": claim_ids,
                 "evidence_status": "verified" if claim_ids else "product_evidence_required",
-                "review_status": "human_review_required", "fingerprint": fingerprint})
+                "review_status": "human_review_required", "pattern_note": pattern_note,
+                "fingerprint": fingerprint})
         output.append({"product_key": p["key"], "keyword": keyword, "common_competitor_angles": common,
             "selected_angle": angle, "serp_diff": date_diff(ads), "observed_count": len(ads), "candidates": candidates})
-    return {"_comment": "경쟁사 광고와 검색 수요를 참고해 만든 내부 검토용 SA 후보.",
+    return {"_comment": "경쟁사 광고의 구체 담보·상황·행동 유도 구조를 차용하되 브랜드·수치·할인은 복사하지 않은 심의안 후보.",
         "asof": analysis.get("asof") or date.today().isoformat(), "products": output}
 
 

@@ -24,7 +24,7 @@ Modooflow는 13개 보험상품의 SEO·키워드·뉴스·SERP·시즌·광고�
 | `serp-tool.html` | 검색결과 캡처·diff·광고 관측 | 운영 |
 | `seasonal-tool.html` | 시즌·이벤트 추천과 상태 전이 | 운영 |
 | `adcopy-tool.html` | 소재 후보, 검토 상태, 50/650행 내보내기, 공식 템플릿 매핑 | 제품화 |
-| `powercontent-tool.html` | 검색 근거 기반 제목·설명·본문 목차·FAQ 브리프와 CSV | 제품화 |
+| `powercontent-tool.html` | 검색 근거 기반 블로그 포스팅 제목과 파워콘텐츠 등록 초안 CSV | 제품화 |
 | `overview.html` | 전체 기능 안내 | 운영 |
 
 모바일 사이드바 도구는 `shared/mobile-sidebar.css`와 `shared/mobile-sidebar.js`를 사용한다. 피드백 UI는 `shared/feedback-client.js`를 사용한다.

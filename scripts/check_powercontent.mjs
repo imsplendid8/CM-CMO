@@ -23,7 +23,7 @@ vm.runInContext(insuranceAdReview, context, { filename: "shared/insurance-ad-rev
 vm.runInContext(
   `${pureSection}
   ;globalThis.__POWER_CHECK__={
-    PRODUCTS,titleCandidates,descriptionFor,briefFor,extensionBrief,validateExtensions,reviewPowerMaterial,volumeRows,inScope,clen,
+    PRODUCTS,titleCandidates,adDraftFor,reviewPowerMaterial,volumeRows,inScope,clen,
     setData:(volume,seasonal,titles)=>{DATA={volume,seasonal,titles};}
   };`,
   context,
@@ -46,10 +46,7 @@ for (const product of check.PRODUCTS) {
   if (candidates.length !== 3) throw new Error(`${product.name}: 제목 후보 ${candidates.length}개 (기대 3개)`);
   for (const candidate of candidates) {
     const titleLength = check.clen(candidate.title);
-    const description = check.descriptionFor(product, candidate);
-    const descriptionLength = check.clen(description);
     if (titleLength < 7 || titleLength > 28) throw new Error(`${product.name}: 제목 ${titleLength}자`);
-    if (descriptionLength < 80 || descriptionLength > 110) throw new Error(`${product.name}: 설명 ${descriptionLength}자`);
     if (!check.inScope(product, candidate.target_query || candidate.title)) {
       throw new Error(`${product.name}: 범위 밖 검색어 '${candidate.target_query}'`);
     }
@@ -62,16 +59,13 @@ for (const product of check.PRODUCTS) {
   }
   const representative = check.volumeRows(product)[0]?.kw || product.serpKw;
   if (forbidden.test(representative)) throw new Error(`${product.name}: 대표 검색어 범위 오류 '${representative}'`);
-  const extensions = check.extensionBrief(product, candidates[0]);
-  const extensionErrors = check.validateExtensions(extensions);
-  if (extensionErrors.length) throw new Error(`${product.name}: ${extensionErrors.join(", ")}`);
-  const brief = check.briefFor(product, candidates[0]);
-  const compliance = check.reviewPowerMaterial(product, candidates[0], brief, extensions);
-  if (compliance.generationBlocking) throw new Error(`${product.name}: 보험광고 사전검수 ${compliance.statusLabel}`);
-  for (const key of context.ModooNaverMaterialSpecs.manualOnlyFields) {
-    if (extensions.manual[key] !== "") throw new Error(`${product.name}: ${key} 자동 입력됨`);
+  const ad = check.adDraftFor(candidates[0]);
+  if (ad.description || ad.landingUrl || ad.image || ad.publishedAt) {
+    throw new Error(`${product.name}: 발행 전 등록 자산이 자동 입력됨`);
   }
-  console.log(`OK  ${product.name}: 제목 3안 · 설명 80~110자 · 확장소재 규격 통과`);
+  const compliance = check.reviewPowerMaterial(product, candidates[0]);
+  if (compliance.generationBlocking) throw new Error(`${product.name}: 보험광고 사전검수 ${compliance.statusLabel}`);
+  console.log(`OK  ${product.name}: 포스팅 소재 3안 · 광고 등록 초안 분리`);
 }
 
 console.log("OK  파워컨텐츠 13상품 품질 가드 통과");
