@@ -17,6 +17,8 @@ jobs:
           python-version: "3.12"
       - name: 상품 마스터 동기화 검사
         run: python3 scripts/check_products_sync.py
+      - name: 상품 근거 원장 검사
+        run: python3 scripts/claim_evidence.py validate
       - name: 테스트 의존성(PyYAML — 워크플로 정적 테스트용)
         run: python3 -m pip install --quiet pyyaml
       - name: 파이썬 단위 테스트

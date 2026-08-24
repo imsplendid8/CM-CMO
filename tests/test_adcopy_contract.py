@@ -28,6 +28,13 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn("SERP 차별", ADCOPY)
         self.assertIn("가격·할인·1위 표현은 자사 근거가 연결되기 전 자동 제안에서 제외", ADCOPY)
         self.assertIn("observed_ads", ADCOPY)
+        self.assertIn('strategy:"빈 소구 선점"', ADCOPY)
+        self.assertIn('strategy:"검색 의도 응답"', ADCOPY)
+        self.assertIn('strategy:"비교 행동 유도"', ADCOPY)
+        self.assertIn("바로 검토할 SA 세트", ADCOPY)
+        self.assertIn("제목과 설명을 한 세트로 만들고 네이버 글자 수를 통과한 안만 표시", ADCOPY)
+        self.assertIn('data-copy="${esc(o.title)}"', ADCOPY)
+        self.assertIn('data-copy="${esc(o.desc)}"', ADCOPY)
 
     def test_power_content_brief_has_specs_and_review_guards(self):
         self.assertIn('item("__power","📝 파워컨텐츠 제안"', ADCOPY)

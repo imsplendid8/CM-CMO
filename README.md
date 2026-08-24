@@ -30,6 +30,8 @@ python -m http.server 8765
 
 - 브라우저는 네이버 Secret을 저장하지 않습니다. 실시간 조회는 Cloudflare Worker가 서버 Secret으로 서명합니다.
 - GitHub Actions가 뉴스, 수요 신호, 검색량, 트렌드, 논문, SERP와 이벤트 추천을 갱신합니다.
+- Content Intelligence Agent가 승인 상태를 가진 상품 근거 원장을 확인한 뒤 SERP 차별 소재와 검색 기반 FAQ 기회를 주간 생성합니다. 승인 근거가 없으면 답변·상품 주장을 자동 게시하지 않습니다.
+- Search Console OAuth Secret을 설정하면 실제 유입 쿼리를 비공개 수집하며, SERP 캡처는 광고 DOM 후보를 `needs_review` 큐로 함께 남깁니다.
 - 화면과 Daily Brief는 원천 데이터 시각으로 `healthy`, `stale`, `missing`, `unknown`을 다시 계산합니다.
 - Event Recommendations, Automation Health, Fire Watch는 수동 `workflow_dispatch`를 지원합니다. Fire Watch 실제 발송은 명시적 opt-in입니다.
 

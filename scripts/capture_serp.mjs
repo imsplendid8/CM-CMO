@@ -26,6 +26,22 @@ const naverUrl = kw => "https://search.naver.com/search.naver?query=" + encodeUR
 const safe = s => String(s).replace(/[^a-zA-Z0-9_-]/g, "");
 const RETRIES = Number(process.env.CAPTURE_RETRIES || 1); // 실패(빈 화면/오류) 시 추가 재캡쳐 횟수
 
+async function extractDomCandidates(page) {
+  return page.evaluate(() => {
+    const root=document.querySelector("#main_pack")||document.querySelector("#ct")||document.body;
+    const seen=new Set(),rows=[];
+    for(const a of root.querySelectorAll("a[href]")){
+      const block=a.closest("li,section,article,div"), text=(block?.innerText||a.innerText||"").replace(/\s+/g," ").trim();
+      if(text.length<20||text.length>500||seen.has(text))continue;
+      const adSignal=/(광고|파워링크|adcr|sponsored)/i.test(`${text} ${a.href} ${block?.className||""}`);
+      if(!adSignal)continue;
+      seen.add(text);rows.push({text,href:a.href,confidence:"needs_review"});
+      if(rows.length===10)break;
+    }
+    return rows;
+  });
+}
+
 fs.mkdirSync(OUT, { recursive: true });
 
 // 렌더 성공 판정 — 검색결과 본문이 실제로 채워졌는지(스켈레톤/빈 화면 감지)
@@ -92,7 +108,8 @@ async function main() {
         { path: path.join(OUT, file), clip: { x: 0, y: 0, width: 1280, height: 1600 } },
         p.key,
       );
-      results.push({ key: p.key, name: p.name, kw, file, date: today, status: res.status });
+      const domCandidates=await extractDomCandidates(page);
+      results.push({ key: p.key, name: p.name, kw, file, date: today, status: res.status, domCandidates });
       console.log(`✓ ${p.key.padEnd(10)} "${kw}" → serp/${file}${res.attempt ? ` (재캡쳐 ${res.attempt}회)` : ""}${res.rendered ? "" : " ⚠ 렌더 미완"}`);
     } catch (e) {
       console.error(`✗ ${p.key} "${kw}" — ${e.message}`);
@@ -119,6 +136,13 @@ async function main() {
   }
   const ok = results.filter(r => r.file).length;
   fs.writeFileSync(mfPath, JSON.stringify({ source: "playwright-naver", asof: today, updated: ok, shots }, null, 2));
+  const domPath=path.join(OUT,"dom_observations.json");
+  let dom={source:"playwright-dom-review-queue",asof:today,observations:[]};
+  try{dom=JSON.parse(fs.readFileSync(domPath,"utf-8"));}catch{}
+  dom.asof=today;dom.observations=(dom.observations||[]).filter(x=>x.date!==today);
+  for(const r of results)for(const c of (r.domCandidates||[]))dom.observations.push({product:r.key,keyword:r.kw,date:r.date,capture:r.file,...c});
+  dom.observations=dom.observations.slice(-500);
+  fs.writeFileSync(domPath,JSON.stringify(dom,null,2));
   console.log(`\nmanifest: serp/manifest.json · 이번 실행 ${ok}/${results.length}건 캡쳐`);
   if (ok === 0) process.exitCode = 1;
 }
