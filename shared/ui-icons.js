@@ -9,9 +9,7 @@
     news: svg('<path d="M4.5 4.5h13v15h-11a2 2 0 0 1-2-2z"/><path d="M17.5 8.5H20v9a2 2 0 0 1-2 2"/><path d="M8 9h6M8 12.5h6M8 16h4"/>'),
     serp: svg('<rect x="3" y="4" width="18" height="13" rx="2.5"/><path d="M8 21h8M12 17v4"/><path d="m8 11 2.4 2.2L16 8"/>'),
     calendar: svg('<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/><path d="M8 13h3M13 13h3M8 16.5h3"/>'),
-    terms: svg('<path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v14H6.5A1.5 1.5 0 0 0 5 18.5z"/><path d="M5 18.5A1.5 1.5 0 0 0 6.5 20H19M9 8h6M9 11.5h4"/>'),
     adcopy: svg('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>'),
-    papers: svg('<path d="M12 4 2.5 8.7 12 13.5l9.5-4.8z"/><path d="M6 11v5c0 1.2 2.7 2.5 6 2.5s6-1.3 6-2.5v-5M21 9v5"/>'),
     overview: svg('<rect x="3.5" y="3.5" width="17" height="17" rx="2.5"/><path d="M3.5 9h17M9 9v11.5"/>'),
     search: svg('<circle cx="10.8" cy="10.8" r="6.6"/><path d="m16 16 4.5 4.5"/>'),
     menu: svg('<path d="M4 7h16M4 12h16M4 17h16"/>'),
@@ -38,9 +36,7 @@
     "news-tool.html": "news",
     "serp-tool.html": "serp",
     "seasonal-tool.html": "calendar",
-    "terms-tool.html": "terms",
     "adcopy-tool.html": "adcopy",
-    "papers-tool.html": "papers",
     "overview.html": "overview",
   };
   const page = location.pathname.split("/").pop() || "index.html";
@@ -84,12 +80,12 @@
     if (page === "overview.html") {
       const routeIcons = {
         "seo-audit.html": "seo", "keyword-tool.html": "keyword", "news-tool.html": "news", "serp-tool.html": "serp",
-        "seasonal-tool.html": "calendar", "terms-tool.html": "terms", "adcopy-tool.html": "adcopy", "papers-tool.html": "papers",
+        "seasonal-tool.html": "calendar", "adcopy-tool.html": "adcopy",
       };
       const titleIcons = [
         [/브랜드검색/, "tag"], [/클리핑/, "archive"], [/수요 신호/, "signal"], [/SERP 캡쳐/, "camera"], [/보안 설정/, "lock"],
         [/아키텍처/, "architecture"], [/로드맵/, "compass"], [/API/, "plug"], [/OSS/, "package"], [/상태/, "list"],
-        [/프로젝트 가이드/, "bot"], [/GitHub 저장소/, "code"], [/배포 대시보드/, "globe"], [/Actions/, "settings"], [/위키/, "terms"],
+        [/프로젝트 가이드/, "bot"], [/GitHub 저장소/, "code"], [/배포 대시보드/, "globe"], [/Actions/, "settings"], [/위키/, "overview"],
       ];
       document.querySelectorAll("a.card").forEach((card) => {
         const href = (card.getAttribute("href") || "").split("#")[0];

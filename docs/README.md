@@ -11,10 +11,9 @@
 - **[api-from-url.md](api-from-url.md)** — 팀 실시간 연동(Cloudflare 프록시·워커 시크릿·KV 사용량)
 - **[monthly-planning-loop.md](monthly-planning-loop.md)** — 기준월·당월/익월 플랜·FAQ·소재·신규/급상승 키워드 연결
 - **[ui-system.md](ui-system.md)** — 새 브랜드 마크·공통 아이콘·허브/도구 UI·접근성 규칙
-- **[content-briefing.md](content-briefing.md)** — 세 채널 공통 뉴스 요약·반복 억제·논문 3분 브리프
+- **[content-briefing.md](content-briefing.md)** — 세 채널 공통 뉴스 요약·반복 억제
 - **[oss-leverage.md](oss-leverage.md)** — 활용 OSS(Pretendard·Playwright·pixelmatch 등)
 - **[daily-brief.md](daily-brief.md)** — 데일리 텔레그램 비서 브리핑 설정
-- **[논문-아카이브.md](논문-아카이브.md)** — CM 마케팅 참고 논문(월 1회 GitHub Actions 자동 적립)
 - **[../serp/README.md](../serp/README.md)** — SERP 자동 캡쳐 아카이브
 
 ## 도구 (허브: `index.html` · 전체 안내: `overview.html`)
@@ -23,12 +22,10 @@
 3. **카테고리 뉴스** — `news-tool.html` (업계·경쟁사 동향·수요 트리거·**클리핑 아카이브**)
 4. **SERP 아카이브** — `serp-tool.html` (전/후 diff + **경쟁사 브랜드검색 갤러리**)
 5. **시즌 캘린더** — `seasonal-tool.html`
-6. **약관 용어 변환** — `terms-tool.html`
-7. **검색광고 소재** — `adcopy-tool.html` (파워링크 등록 양식 5블록·엑셀 + **주차별 소재 캘린더** + **경쟁사 브랜드검색** 탭)
-8. **논문 아카이브** — `papers-tool.html` (월간 자동 적립·주제 필터·검색)
+6. **검색광고 소재** — `adcopy-tool.html` (파워링크 등록 양식 5블록·엑셀 + **주차별 소재 캘린더** + **경쟁사 브랜드검색** 탭)
 
 ## 자동화 (GitHub Actions)
-- **뉴스 클리핑** 하루 2회(09·13시) · **SERP 캡쳐** 주간(경쟁사 브랜드검색 포함) · **수요 신호**(기상·검색) · **논문 월간 적립** · **데일리 브리핑**(텔레그램) · **트렌드**(데이터랩 월간) · **검색량**(검색광고 주간) · **Pages 배포**
+- **뉴스 클리핑** 하루 2회(09·13시) · **SERP 캡쳐** 주간(경쟁사 브랜드검색 포함) · **수요 신호**(기상·검색) · **데일리 브리핑**(텔레그램) · **트렌드**(데이터랩 월간) · **검색량**(검색광고 주간) · **Pages 배포**
 
 ## 별도 도구 (대시보드와 독립)
 - **BSA(브랜드검색) 운영 CLI** — 계약·단가 등 민감데이터라 **부서 전용 private 저장소 `imsplendid8/Private`** 로 분리(공개 대시보드와 독립). on/off 모니터링·계약 재계약 판단·키워드 제안·검색량 우선순위 + 매일 자동 실행(private Actions).

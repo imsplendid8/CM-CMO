@@ -92,17 +92,17 @@ class TestAutomationHealth(unittest.TestCase):
 
     def test_stale_health_json_does_not_force_all_ok(self):
         # 오래된 automation_health.json(모두 정상 주장)이 있어도 무시되고,
-        # 실제 소스(일부 stale/missing) 기준으로 계산돼 '정상 6건'이 뜨지 않는다.
+        # 실제 소스(일부 stale/missing) 기준으로 계산돼 '정상 5건'이 뜨지 않는다.
         with tempfile.TemporaryDirectory() as tmp:
             make_repo(tmp, overrides={"data/signals.json": "2026-01-01"},
                       omit=("data/trends.json",))
             with open(os.path.join(tmp, "data", "automation_health.json"), "w", encoding="utf-8") as f:
-                json.dump({"summary": {"healthy": 6, "stale": 0, "missing": 0},
+                json.dump({"summary": {"healthy": 5, "stale": 0, "missing": 0},
                            "note": "오래된 요약(모두 정상)"}, f, ensure_ascii=False)
             h = cah.compute_health(NOW, base_dir=tmp)
             text = "\n".join(cah.format_lines(h))
-            self.assertNotIn("정상 6건", text)
-            self.assertNotIn("6종 정상", text)
+            self.assertNotIn("정상 5건", text)
+            self.assertNotIn("5종 정상", text)
             self.assertLess(h["summary"]["healthy"], len(cah.AUTOMATIONS))
             self.assertGreaterEqual(h["summary"]["stale"] + h["summary"]["missing"], 1)
 
@@ -141,13 +141,6 @@ class TestAutomationHealth(unittest.TestCase):
             self.assertEqual(states["수요 신호"], "unknown")
             self.assertNotEqual(states["수요 신호"], "healthy")
 
-    def test_bad_date_string_is_unknown(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            make_repo(tmp, overrides={"data/papers.json": "어제쯤"})
-            h = cah.compute_health(NOW, base_dir=tmp)
-            states = {it["name"]: it["state"] for it in h["items"]}
-            self.assertEqual(states["논문 아카이브"], "unknown")
-
     def test_timezone_and_iso_formats_no_exception(self):
         # tz 없는 날짜 / Z(UTC) / 오프셋 / 날짜+시각이 섞여도 예외 없이 날짜로 인식.
         with tempfile.TemporaryDirectory() as tmp:
@@ -182,23 +175,6 @@ class TestAutomationHealth(unittest.TestCase):
             self.assertEqual(s["missing"], 1)
             self.assertEqual(s["stale"], 1)
             self.assertEqual(sum(s.values()), len(cah.AUTOMATIONS))
-
-    def test_papers_json_refreshed_on_noop(self):
-        # 신규 논문 0건(성공적 no-op)이어도 papers.json 의 updated 가 오늘로 갱신돼야
-        # 자동화 상태가 계속 노화(stale)되지 않는다. (Codex 리뷰 P2 대응)
-        import importlib
-        from datetime import timezone as _tz, timedelta as _td
-        fp = importlib.import_module("fetch_papers")
-        with tempfile.TemporaryDirectory() as tmp:
-            os.makedirs(os.path.join(tmp, "data"), exist_ok=True)
-            data = fp.sync_papers_json(root=tmp)     # no-op 경로가 호출하는 바로 그 함수
-            self.assertIsNotNone(data)
-            out = os.path.join(tmp, "data", "papers.json")
-            self.assertTrue(os.path.exists(out))
-            with open(out, encoding="utf-8") as f:
-                j = json.load(f)
-            today = datetime.now(_tz(_td(hours=9))).strftime("%Y-%m-%d")
-            self.assertEqual(j["updated"], today)
 
     def test_daily_brief_builds_even_if_health_fails(self):
         # 상태 계산이 예외를 던져도 브리프 메시지는 생성되고 '상태 확인 불가'가 표시된다.

@@ -9,7 +9,6 @@ TOOLS = [
     "news-tool.html",
     "seo-audit.html",
     "seasonal-tool.html",
-    "terms-tool.html",
     "serp-tool.html",
 ]
 
@@ -29,14 +28,13 @@ class TestMobileAndHealth(unittest.TestCase):
         self.assertIn('event.key === "Escape"', js)
         self.assertNotIn("localStorage", js)
 
-    def test_hub_recomputes_six_source_health_and_partial_errors(self):
+    def test_hub_recomputes_five_source_health_and_partial_errors(self):
         hub = (ROOT / "index.html").read_text(encoding="utf-8")
         for path in (
             "data/clips/index.json",
             "data/signals.json",
             "data/volume.json",
             "data/trends.json",
-            "data/papers.json",
             "serp/manifest.json",
         ):
             self.assertIn(path, hub)

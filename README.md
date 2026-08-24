@@ -8,11 +8,10 @@
 
 | 영역 | 화면 | 역할 |
 |---|---|---|
-| 오늘의 업무 | `index.html` | 업무 흐름, 6종 데이터 신선도, 도구 진입 |
+| 오늘의 업무 | `index.html` | 업무 흐름, 5종 데이터 신선도, 도구 진입 |
 | 검색 인사이트 | `seo-audit.html`, `keyword-tool.html`, `serp-tool.html` | SEO 진단, 키워드·검색량, 검색결과 관측 |
 | 시장·이슈 | `news-tool.html`, `seasonal-tool.html` | 뉴스 클리핑, 시즌·이벤트 추천과 상태 전이 |
-| 콘텐츠·심의 | `terms-tool.html`, `adcopy-tool.html` | 소비자 표현, 검색광고 소재 후보와 내부 검토 |
-| 자료 | `papers-tool.html` | 공개 논문 아카이브 |
+| 콘텐츠·심의 | `adcopy-tool.html` | 검색광고 소재 후보와 내부 검토 |
 
 광고소재 도구는 상품별 50행, 전체 650행을 생성·검증합니다. 공식 네이버 템플릿을 불러와 필수 열을 매핑하기 전까지 결과물은 업로드 파일이 아니라 내부 검토용입니다.
 
@@ -29,7 +28,7 @@ python -m http.server 8765
 ## 데이터와 자동화
 
 - 브라우저는 네이버 Secret을 저장하지 않습니다. 실시간 조회는 Cloudflare Worker가 서버 Secret으로 서명합니다.
-- GitHub Actions가 뉴스, 수요 신호, 검색량, 트렌드, 논문, SERP와 이벤트 추천을 갱신합니다.
+- GitHub Actions가 뉴스, 수요 신호, 검색량, 트렌드, SERP와 이벤트 추천을 갱신합니다.
 - Content Intelligence Agent가 승인 상태를 가진 상품 근거 원장을 확인한 뒤 SERP 차별 소재와 검색 기반 FAQ 기회를 주간 생성합니다. 승인 근거가 없으면 답변·상품 주장을 자동 게시하지 않습니다.
 - SEO Title Ops가 공개 SearchAd 수요와 비공개 GSC 범주 검증을 결합해 상품별 제목 후보 3개·약점·자기잠식 상태를 생성합니다. GSC 미연결 시 초안만 제공하고 추천은 차단합니다.
 - Search Console OAuth Secret을 설정하면 실제 유입 쿼리를 비공개 수집하며, SERP 캡처는 광고 DOM 후보를 `needs_review` 큐로 함께 남깁니다.

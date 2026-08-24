@@ -8,7 +8,6 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "scripts"))
 
 import content_brief as cb  # noqa: E402
-import papers_to_json as pj  # noqa: E402
 
 
 def item(title, gist, url):
@@ -74,21 +73,6 @@ class TestContentBrief(unittest.TestCase):
         }}
         digest = cb.build_digest(clip, {}, ["driver"])
         self.assertNotIn("https://e/auto", [story["url"] for story in digest["stories"]])
-
-
-class TestPaperBrief(unittest.TestCase):
-    def test_auto_paper_discloses_abstract_scope_and_limit(self):
-        paper = {"title": "보험 디지털 전환 연구", "desc": "디지털 편의성이 구매의도에 미치는 영향을 분석했다.",
-                 "note": "가입 UX 개선 근거.", "auto": True}
-        brief = pj.paper_brief(paper)
-        self.assertEqual(brief["evidence_scope"], "공개 서지·초록 기반")
-        self.assertIn("원문 전체", brief["limitations"])
-        self.assertTrue(brief["findings"])
-
-    def test_link_only_paper_does_not_claim_it_was_read(self):
-        brief = pj.paper_brief({"title": "제목 미확인", "desc": "", "note": "", "auto": False})
-        self.assertEqual(brief["evidence_scope"], "링크만 확인")
-        self.assertEqual(brief["confidence"], "낮음")
 
 
 if __name__ == "__main__":

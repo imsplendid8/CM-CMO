@@ -17,15 +17,13 @@ Modooflow는 13개 보험상품의 SEO·키워드·뉴스·SERP·시즌·광고�
 
 | 화면 | 역할 | 상태 |
 |---|---|---|
-| `index.html` | 오늘의 업무 흐름, 6종 데이터 상태, 도구 허브 | 구현 |
+| `index.html` | 오늘의 업무 흐름, 5종 데이터 상태, 도구 허브 | 구현 |
 | `seo-audit.html` | 테크니컬 SEO 진단 | 운영 |
 | `keyword-tool.html` | 키워드·검색량과 내부 검토용 내보내기 | 운영 |
 | `news-tool.html` | 뉴스 모니터링과 클리핑 | 운영 |
 | `serp-tool.html` | 검색결과 캡처·diff·광고 관측 | 운영 |
 | `seasonal-tool.html` | 시즌·이벤트 추천과 상태 전이 | 운영 |
-| `terms-tool.html` | 약관 표현 변환 | 운영 |
 | `adcopy-tool.html` | 소재 후보, 검토 상태, 50/650행 내보내기, 공식 템플릿 매핑 | 제품화 |
-| `papers-tool.html` | 공개 논문 아카이브 | 운영 |
 | `overview.html` | 전체 기능 안내 | 운영 |
 
 모바일 사이드바 도구는 `shared/mobile-sidebar.css`와 `shared/mobile-sidebar.js`를 사용한다. 피드백 UI는 `shared/feedback-client.js`를 사용한다.
@@ -60,7 +58,7 @@ Modooflow는 13개 보험상품의 SEO·키워드·뉴스·SERP·시즌·광고�
 |---|---|---|
 | `signals.yml` | 수요 신호 | 데이터 신선도에 포함 |
 | `news-clip.yml` | 뉴스 클리핑 | 데이터 신선도에 포함 |
-| `automation-status.yml` | 6종 상태 읽기 전용 점검 | 2026-08-19 수동 실행 성공, healthy 6/6 |
+| `automation-status.yml` | 5종 상태 읽기 전용 점검 | 2026-08-19 수동 실행 성공, healthy 5/5 |
 | `event-reco.yml` | 이벤트 추천·상태 저널 재생성 | 2026-08-19 수동 실행 성공, main 갱신 |
 | `daily-brief.yml` | Telegram 브리프 | 최근 예약 실행 성공; 수동 발송 금지 |
 | `daily-email.yml` | 이메일 브리프 | 예약 실행 |
@@ -68,7 +66,6 @@ Modooflow는 13개 보험상품의 SEO·키워드·뉴스·SERP·시즌·광고�
 | `searchad.yml` | 주간 검색량 | 데이터 신선도에 포함 |
 | `trends.yml` | 월간 트렌드 | 데이터 신선도에 포함 |
 | `serp-capture.yml` | 주간 SERP 캡처 | 데이터 신선도에 포함 |
-| `papers.yml` | 월간 논문 아카이브 | 데이터 신선도에 포함 |
 | `ci.yml` | 테스트, 전체 HTML/공유 JS, 상품·650행 계약 검사 | PR #24 성공 |
 
 과거 Daily Brief 실패 원인은 `signals.weather.active`에 문자열이 들어왔는데 객체로 가정한 것이었다. 현재 브랜치에서 문자열·객체 혼재와 잘못된 상위 데이터 형식을 방어하고 회귀 테스트를 추가했다.

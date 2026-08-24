@@ -24,7 +24,7 @@ class TestHubSecurityAndFlow(unittest.TestCase):
         workflow = HUB.split('<section class="workflow"', 1)[1].split(
             '</section>', 1
         )[0]
-        expected = {"kw", "news", "eventcal", "serp", "seo", "terms", "adcopy", "papers"}
+        expected = {"kw", "news", "eventcal", "serp", "seo", "adcopy"}
         for tool_id in expected:
             self.assertEqual(workflow.count(f'data-tool="{tool_id}"'), 1)
 

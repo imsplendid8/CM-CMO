@@ -31,7 +31,6 @@ AUTOMATIONS = [
     ("수요 신호",       "data/signals.json",     "asof",    2),   # signals: 매일
     ("실측 검색량",     "data/volume.json",      "asof",    9),   # searchad: 주간
     ("데이터랩 트렌드", "data/trends.json",      "asof",    35),  # trends: 월간
-    ("논문 아카이브",   "data/papers.json",      "updated", 35),  # papers: 월간
     ("SERP 캡쳐",       "serp/manifest.json",    "asof",    9),   # serp-capture: 주간
 ]
 

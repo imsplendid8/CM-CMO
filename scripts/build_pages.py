@@ -10,7 +10,6 @@ DEST = ROOT / "_site"
 
 PUBLIC_DATA = (
     "data/signals.json",
-    "data/papers.json",
     "data/volume.json",
     "data/volume-history.json",
     "data/seasonal.json",

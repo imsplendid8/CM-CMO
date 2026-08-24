@@ -14,9 +14,7 @@ APP_PAGES = [
     "news-tool.html",
     "serp-tool.html",
     "seasonal-tool.html",
-    "terms-tool.html",
     "adcopy-tool.html",
-    "papers-tool.html",
 ]
 TOOL_PAGES = APP_PAGES[2:]
 

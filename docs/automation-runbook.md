@@ -16,7 +16,6 @@ CM-CMO의 데이터 수집·브리프 워크플로 **실행 순서와 충돌 방
 | serp-capture.yml | SERP Capture | schedule·dispatch | `20 21 * * 0` | 월 06:20 | `serp/` | ✅ | `cm-cmo-data-writers` |
 | content-intelligence.yml | Content Intelligence Agents | schedule·dispatch | `10 22 * * 0` | 월 07:10 | `serp/ad_analysis.json`·`data/adcopy/serp-candidates.json`·`data/seo/faq-opportunities.json` | ✅ | `cm-cmo-data-writers` |
 | trends.yml | Naver Trends (DataLab) | schedule·dispatch | `10 20 1 * *` | 1일 05:10 | `data/trends.json` | ✅ | `cm-cmo-data-writers` |
-| papers.yml | Papers Archive | schedule·dispatch | `0 0 1 * *` | 1일 09:00 | `docs/논문-아카이브.md`·`data/papers.json` | ✅ | `cm-cmo-data-writers` |
 | technical-seo.yml | Technical SEO Audit | schedule·dispatch | `0 0 1 * *` | 1일 09:00 | (없음·unlighthouse) | ✖ | — |
 | ci.yml | CI | push·PR·dispatch | — | — | ✖ | — |
 | pages.yml | Deploy to GitHub Pages | push·**workflow_run**·dispatch | — | (배포) | ✖ | `pages` |
@@ -36,7 +35,7 @@ Content Intelligence의 Search Console 입력은 `GSC_SITE_URL`, `GSC_CLIENT_ID`
 
 ## 충돌 방지
 
-1. **공유 concurrency 레인** `cm-cmo-data-writers` — 커밋/푸시하는 8개 워크플로(signals·news-clip·event-reco·searchad·serp-capture·content-intelligence·trends·papers) + 이를 소비하는 읽기 전용 3종(automation-status·daily-brief·daily-email)이 같은 그룹을 사용해 GitHub가 **직렬화**(동시에 하나만 실행). `cancel-in-progress: false`로 어떤 실행도 버리지 않는다 → 브리프·상태점검은 **수집이 끝난 데이터**를 본다.
+1. **공유 concurrency 레인** `cm-cmo-data-writers` — 커밋/푸시하는 7개 워크플로(signals·news-clip·event-reco·searchad·serp-capture·content-intelligence·trends) + 이를 소비하는 읽기 전용 3종(automation-status·daily-brief·daily-email)이 같은 그룹을 사용해 GitHub가 **직렬화**(동시에 하나만 실행). `cancel-in-progress: false`로 어떤 실행도 버리지 않는다 → 브리프·상태점검은 **수집이 끝난 데이터**를 본다.
 2. **분(minute) 분리 cron** — 같은 UTC 분에 두 커밋 워크플로가 겹치지 않게 stagger:
    - signals `30 21` vs serp `20 21`(일) vs content-intelligence `10 22`(일) → 분 분리
    - searchad `0 20`(일) vs trends `10 20`(1일) → 분 분리

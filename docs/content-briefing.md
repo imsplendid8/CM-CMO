@@ -1,4 +1,4 @@
-# 공통 뉴스·논문 브리프
+# 공통 뉴스 브리프
 
 대시보드·텔레그램·이메일은 채널별로 별도 요약을 만들지 않는다. 뉴스 수집 시
 `scripts/content_brief.py`가 `data/briefing/latest.json`을 만들고 세 채널이 같은
@@ -25,21 +25,11 @@
 업무는 매일 전부 반복하지 않고 하루 한 건만 순환한다. SERP 정기 점검도 최대 한
 건만 포함한다. 메시지는 `새 신호 최대 2 + 시즌 집중 1 + SERP 1`을 넘지 않는다.
 
-## 논문 3분 브리프
-
-각 논문에 연구 질문, 공개 설명의 핵심 내용, 연구 방법 확인 여부, CM 업무 적용점,
-한계, 확인 범위와 신뢰도를 표시한다. 확인 범위는 `공개 서지·초록 기반`,
-`담당자 정리 기반`, `메타데이터만 확인`, `링크만 확인`으로 구분한다.
-
-초록·서지 기반 브리프를 원문 전체 요약으로 표현하지 않으며, 수치·표본·인과관계는
-원문에서 다시 확인해야 한다.
-
 ## 검증
 
 ```bash
 python3 scripts/content_brief.py
 python3 scripts/daily_brief.py --dry
 python3 scripts/daily_brief.py --email-preview
-python3 scripts/papers_to_json.py
 python3 -m unittest tests.test_content_brief
 ```

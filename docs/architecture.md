@@ -13,9 +13,7 @@ keyword-tool.html     2. 검색광고 키워드 추출 (블루)
 news-tool.html        3. 카테고리 뉴스 모니터링 (틸)
 serp-tool.html        4. 검색결과 주간 아카이브 (바이올렛)
 seasonal-tool.html    5. 연간 시즈널 이슈 캘린더 (로즈)
-terms-tool.html       6. 약관 용어 변환
-adcopy-tool.html      7. 검색광고 소재
-papers-tool.html      8. 논문 아카이브
+adcopy-tool.html      6. 검색광고 소재
 shared/               도구 간 월 선택 등 공통 브라우저 로직
 data/                 상품·시즌 캐노니컬과 SearchAd·뉴스 등 운영 스냅샷
 scripts/              네이버 연동 로컬서버 · 데일리 브리핑 · 드리프트 검사
