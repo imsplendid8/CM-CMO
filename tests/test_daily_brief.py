@@ -110,5 +110,76 @@ class TestHumanizedNews(unittest.TestCase):
         self.assertNotIn("작성되어진", digest["stories"][0]["what"])
 
 
+class TestChannelRendering(unittest.TestCase):
+    def setUp(self):
+        self.now = datetime(2026, 8, 24, 8, 0, tzinfo=timezone.utc)
+        self.products = {
+            "hrmf": {"name": "주택화재보험"},
+            "golf": {"name": "골프보험"},
+            "driver": {"name": "운전자보험"},
+            "overseas": {"name": "해외여행보험"},
+        }
+        self.context = (self.products, list(self.products), ["hrmf"], {}, {}, {"date": "2026-08-24"}, self.now)
+        self.digest = {
+            "categories": {
+                "hrmf": {
+                    "summary": "긴 뉴스 요약도 모바일 화면 폭에 맞춰 자연스럽게 줄바꿈되어야 합니다.",
+                    "insight": "이 문장은 알림 채널에 노출하지 않습니다.",
+                }
+            },
+            "stories": [{
+                "tag": "경쟁사·현대해상",
+                "title": "아주 긴 뉴스 제목도 한 줄 폭을 넘기지 않고 표시",
+                "what": "뉴스의 핵심 내용만 짧고 자연스러운 한 문단으로 전달합니다.",
+                "why": "왜 중요한지 설명하는 별도 판단 문구",
+                "action": "오늘 바로 실행하라는 별도 대응 문구",
+                "source": "example.com",
+                "date": "2026-08-24",
+                "url": "https://example.com/news?x=1&y=2",
+            }],
+        }
+
+    def patches(self):
+        return (
+            mock.patch.object(db, "_load_context", return_value=self.context),
+            mock.patch.object(db, "shared_digest", return_value=self.digest),
+            mock.patch.object(db.cah, "compute_health", return_value={}),
+            mock.patch.object(db.cah, "format_lines", return_value=["[데이터 상태]", "· 정상"]),
+        )
+
+    def test_telegram_news_uses_summary_only(self):
+        p1, p2, p3, p4 = self.patches()
+        with p1, p2, p3, p4:
+            message = db.build_message()
+
+        self.assertIn("뉴스의 핵심 내용만", message)
+        self.assertIn("example.com · 2026-08-24", message)
+        self.assertIn("원문</a>", message)
+        self.assertNotIn("무슨 일", message)
+        self.assertNotIn("왜 중요", message)
+        self.assertNotIn("오늘 대응", message)
+        self.assertNotIn("별도 판단 문구", message)
+
+    def test_email_is_single_column_wrapping_summary(self):
+        p1, p2, p3, p4 = self.patches()
+        with p1, p2, p3, p4:
+            _, email_html, plain = db.render_email()
+
+        self.assertIn('charset="utf-8"', email_html)
+        self.assertIn('name="viewport"', email_html)
+        self.assertIn("table-layout:fixed", email_html)
+        self.assertIn("overflow-wrap:anywhere", email_html)
+        self.assertIn("width:100%;box-sizing:border-box", email_html)
+        self.assertNotIn("white-space:nowrap", email_html)
+        self.assertNotIn("<th", email_html)
+        self.assertNotIn("왜 중요", email_html + plain)
+        self.assertNotIn("권장 대응", email_html + plain)
+        self.assertNotIn("별도 대응 문구", email_html + plain)
+        self.assertNotIn("핵심 동향", email_html + plain)
+        self.assertIn("뉴스의 핵심 내용만", email_html)
+        self.assertIn("뉴스의 핵심 내용만", plain)
+        self.assertIn("https://example.com/news?x=1&amp;y=2", email_html)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

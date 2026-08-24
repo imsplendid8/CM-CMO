@@ -11,6 +11,7 @@
   뉴스는 news-clip 워크플로가 만든 data/briefing/latest.json을 사용
 표준 라이브러리만 사용.
 """
+import html
 import os, json, sys, urllib.parse, urllib.request
 from datetime import datetime, timezone, timedelta
 
@@ -54,14 +55,10 @@ def shared_digest(clip, products, main):
     return content_brief.build_digest(clip or {}, products, main)
 
 def esc(s):
-    """텔레그램 HTML parse_mode용 이스케이프(제목·요약·URL 등 동적 텍스트)."""
-    return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    """텔레그램·이메일 HTML의 동적 텍스트와 속성값을 안전하게 이스케이프한다."""
+    return html.escape(str(s or ""), quote=True)
 
 EMAIL_NEWS_N = 8   # 이메일 '주요 뉴스' 표시 개수(전체 통틀어, 카테고리별 아님) — 5~10 권장
-
-# 업계·경쟁사(뉴스 클리핑·news-tool INDUSTRY와 동일 키) — 이메일 동향 섹션 순서
-INDUSTRY = [("ind_biz", "손보업계 전반"), ("ind_samsung", "삼성화재"), ("ind_db", "DB손해보험"),
-            ("ind_hyundai", "현대해상"), ("ind_kb", "KB손해보험"), ("ind_meritz", "메리츠화재")]
 
 
 def _load_context():
@@ -152,12 +149,15 @@ def build_message():
     digest = shared_digest(clip, products, main)
     news_lines = []
     for story in digest.get("stories", [])[:3]:
-        link = f' · <a href="{esc(story.get("url"))}">원문</a>' if story.get("url") else ""
+        source = esc(story.get("source"))
+        date = esc(story.get("date"))
+        meta = " · ".join(value for value in (source, date) if value)
+        link = f'<a href="{esc(story.get("url"))}">원문</a>' if story.get("url") else ""
+        trail = " · ".join(value for value in (meta, link) if value)
         news_lines.append(
             f"· <b>[{esc(story.get('tag'))}] {esc(story.get('title'))}</b>\n"
-            f"  무슨 일 · {esc(story.get('what'))}\n"
-            f"  왜 중요 · {esc(story.get('why'))}\n"
-            f"  오늘 대응 · {esc(story.get('action'))}{link}"
+            f"  {esc(hk.humanize(story.get('what', '')))}"
+            + (f"\n  {trail}" if trail else "")
         )
 
     part = "오전" if now.hour < 12 else "오후"
@@ -175,57 +175,37 @@ def build_message():
     parts += ["", f"🔭 전체 대시보드 → https://{HUB}"]
     return "\n".join(parts)
 
-# ── 이메일(표 도식형) 스타일 토큰 — 인라인 CSS(메일 클라이언트 호환), 이미지 없음 ──
+# ── 이메일 스타일 토큰 — 인라인 CSS(메일 클라이언트 호환), 이미지 없음 ──
 _ES = {
-    "wrap": "max-width:720px;margin:0 auto;padding:20px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Malgun Gothic','Apple SD Gothic Neo',sans-serif;color:#20242c;background:#ffffff;",
-    "h2": "font-size:19px;font-weight:800;margin:0 0 3px;letter-spacing:-.02em;",
-    "sub": "font-size:12.5px;color:#6b7280;margin:0 0 6px;",
-    "h3": "font-size:15px;font-weight:800;margin:26px 0 10px;padding-bottom:6px;border-bottom:2px solid #eceef1;",
-    "sumbox": "background:#e8f5ee;border:1px solid #cfe9db;padding:9px 12px;font-size:12.5px;line-height:1.65;",
-    "insbox": "background:#fbf3e0;border:1px solid #f0e0bd;padding:9px 12px;font-size:12.5px;line-height:1.65;border-radius:0 0 7px 7px;margin-bottom:6px;",
-    "bg": "display:inline-block;font-size:10px;font-weight:800;color:#1f7a4d;background:#d6efe0;padding:1px 7px;border-radius:99px;margin-right:6px;vertical-align:1px;",
-    "ba": "display:inline-block;font-size:10px;font-weight:800;color:#9a6b12;background:#f6e6c2;padding:1px 7px;border-radius:99px;margin-right:6px;vertical-align:1px;",
-    "tbl": "width:100%;border-collapse:collapse;margin:8px 0 4px;",
-    "td": "padding:7px 10px;border-bottom:1px solid #eef0f3;font-size:12.5px;vertical-align:top;",
-    "tdr": "padding:7px 10px;border-bottom:1px solid #eef0f3;font-size:11px;color:#6b7280;white-space:nowrap;vertical-align:top;text-align:right;",
-    "th": "padding:6px 10px;text-align:left;font-size:11px;font-weight:800;color:#6b7280;background:#f8f9fa;border-bottom:1px solid #e6e8ec;",
+    "wrap": "width:100%;max-width:680px;margin:0 auto;padding:20px 14px;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Malgun Gothic','Apple SD Gothic Neo',sans-serif;color:#20242c;background:#ffffff;overflow-wrap:anywhere;word-break:keep-all;",
+    "h2": "font-size:19px;font-weight:800;margin:0 0 3px;letter-spacing:-.02em;overflow-wrap:anywhere;word-break:keep-all;",
+    "sub": "font-size:12.5px;color:#6b7280;margin:0 0 6px;line-height:1.55;overflow-wrap:anywhere;",
+    "h3": "font-size:15px;font-weight:800;margin:26px 0 10px;padding-bottom:6px;border-bottom:2px solid #eceef1;overflow-wrap:anywhere;",
+    "card": "width:100%;box-sizing:border-box;border:1px solid #e6e8ec;border-radius:8px;padding:11px 12px;margin:0 0 9px;background:#ffffff;overflow-wrap:anywhere;word-break:keep-all;",
+    "tag": "display:inline-block;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:99px;margin:0 0 6px;vertical-align:1px;",
+    "title": "display:block;color:#1f2937;text-decoration:none;font-size:13px;font-weight:700;line-height:1.55;white-space:normal;overflow-wrap:anywhere;word-break:keep-all;",
+    "summary": "color:#5f6774;font-size:12px;line-height:1.65;margin-top:5px;overflow-wrap:anywhere;word-break:keep-all;",
+    "meta": "color:#8a919e;font-size:11px;line-height:1.55;margin-top:6px;overflow-wrap:anywhere;word-break:break-word;",
 }
 
 
 def render_email():
-    """데일리 브리핑을 표 도식형 이메일(HTML+텍스트)로 렌더. returns (subject, html, plain).
-    구성: ① 핵심 동향(메인 3종+업계 요약) ② 주요 뉴스(전체 상위 N건)."""
+    """데일리 브리핑을 반응형 이메일(HTML+텍스트)로 렌더한다.
+
+    뉴스는 제목·요약·출처만 표시하고, 좁은 메일 앱에서도 잘리지 않도록 모든 항목을
+    한 열로 쌓는다. returns (subject, html, plain).
+    """
     products, order, main, seasonal, signals, clip, now = _load_context()
     digest = shared_digest(clip, products, main)
-    newsmon = digest.get("categories", {})
     wd = "월화수목금토일"[now.weekday()]
     part = "오전" if now.hour < 12 else "오후"
     subject = f"(장기CM사업부) {now.strftime('%y.%m.%d')} 뉴스 모니터링"
-    ind_name = dict(INDUSTRY)
-    name = lambda k: products.get(k, {}).get("name") or ind_name.get(k, k)
     S = _ES
 
-    def trend_card(key, accent):
-        """카테고리 동향 요약(헤드라인·시사점 없이 압축)."""
-        nmn = newsmon.get(key, {})
-        if not nmn.get("summary"):
-            return ""
-        cat_style = f"font-size:13.5px;font-weight:800;background:#f4f6f8;border-left:4px solid {accent};padding:7px 11px;border-radius:7px 7px 0 0;margin-top:12px;"
-        return (f'<div style="{cat_style}">{esc(name(key))}</div>'
-                f'<div style="{S["sumbox"]}border-radius:0;"><span style="{S["bg"]}">무슨 일</span>{esc(hk.humanize(nmn["summary"]))}</div>'
-                f'<div style="{S["insbox"]}"><span style="{S["ba"]}">권장 대응</span>{esc(hk.humanize(nmn.get("insight", "원문 근거를 확인한 뒤 반영 여부를 판단하세요.")))}</div>')
-
-    # ① 핵심 동향 — 메인 3종(★) + 업계 전반만(전체 카테고리 아님)
-    focus = [k for k in main if k in newsmon] + (["ind_biz"] if "ind_biz" in newsmon else [])
-    if not focus:
-        focus = list(newsmon)[:4]
-    trend_body = "".join(trend_card(k, "#b45309" if k == "ind_biz" else "#1f7a4d") for k in focus)
-    trend_html = f'<h3 style="{S["h3"]}">📊 핵심 동향 <span style="font-size:12px;color:#6b7280;font-weight:600">· 메인 상품 + 업계 전반</span></h3>' + (trend_body or '<div style="font-size:12.5px;color:#6b7280">동향 데이터가 없습니다.</div>')
-
-    # ② 주요 뉴스 — 전체 통틀어 상위 N건(카테고리별 아님)
+    # 주요 뉴스 — 전체 통틀어 상위 N건을 제목·요약·출처만 한 열로 표시한다.
     news = digest.get("stories", [])[:EMAIL_NEWS_N]
     if news:
-        nrows = ""
+        cards = ""
         for it in news:
             tag = it.get("tag", "")
             t = esc(it.get("title", ""))
@@ -234,20 +214,19 @@ def render_email():
             dt = esc(it.get("date", ""))
             url = it.get("url", "")
             comp = tag.startswith("경쟁사")
-            tag_style = f'font-size:10.5px;font-weight:800;white-space:nowrap;vertical-align:top;padding:7px 10px;border-bottom:1px solid #eef0f3;color:{"#9a6b12" if comp else "#1f7a4d"}'
-            title = f'<a href="{esc(url)}" style="color:#1f2937;text-decoration:none;font-weight:600">{t}</a>' if url else f"<b>{t}</b>"
-            gh = (f'<div style="color:#6b7280;font-size:11.5px;margin-top:3px">{g}</div>'
-                  f'<div style="color:#9a6b12;font-size:11.5px;margin-top:3px"><b>왜 중요</b> · {esc(it.get("why", ""))}</div>'
-                  f'<div style="color:#1f7a4d;font-size:11.5px;margin-top:3px"><b>권장 대응</b> · {esc(it.get("action", ""))}</div>')
-            nrows += (f'<tr><td style="{tag_style}">{esc(tag)}</td>'
-                      f'<td style="{S["td"]}">{title}{gh}</td>'
-                      f'<td style="{S["tdr"]}">{src}<br>{dt}</td></tr>')
-        news_tbl = (f'<table role="presentation" style="{S["tbl"]}"><tr>'
-                    f'<th style="{S["th"]}">구분</th><th style="{S["th"]}">제목 · 요약</th>'
-                    f'<th style="{S["th"]}">출처</th></tr>{nrows}</table>')
+            tag_style = S["tag"] + f'color:{"#9a6b12" if comp else "#1f7a4d"};background:{"#fbf3e0" if comp else "#e8f5ee"};'
+            title = f'<a href="{esc(url)}" style="{S["title"]}">{t}</a>' if url else f'<div style="{S["title"]}">{t}</div>'
+            meta = " · ".join(value for value in (src, dt) if value)
+            source_link = f'<a href="{esc(url)}" style="color:#1f7a4d;text-decoration:underline">원문 보기</a>' if url else ""
+            source_line = " · ".join(value for value in (meta, source_link) if value)
+            cards += (f'<div style="{S["card"]}">'
+                      f'<span style="{tag_style}">{esc(tag)}</span>'
+                      f'{title}<div style="{S["summary"]}">{g}</div>'
+                      f'<div style="{S["meta"]}">{source_line}</div></div>')
+        news_body = cards
     else:
-        news_tbl = '<div style="font-size:12.5px;color:#6b7280">행동가치 있는 주요 뉴스가 없습니다.</div>'
-    news_html = f'<h3 style="{S["h3"]}">📰 주요 뉴스 <span style="font-size:12px;color:#6b7280;font-weight:600">· 전체 상위 {len(news)}건(경쟁사 우선)</span></h3>{news_tbl}'
+        news_body = '<div style="font-size:12.5px;color:#6b7280">주요 뉴스가 없습니다.</div>'
+    news_html = f'<h3 style="{S["h3"]}">📰 주요 뉴스 <span style="font-size:12px;color:#6b7280;font-weight:600">· 전체 상위 {len(news)}건</span></h3>{news_body}'
 
     # 데이터 상태 + 푸터
     try:
@@ -258,22 +237,21 @@ def render_email():
               f'{health}<br><br>🔭 전체 대시보드 → <a href="https://{HUB}" style="color:#1f7a4d">{HUB}</a></div>')
 
     head = (f'<div style="{S["h2"]}">📮 (장기CM사업부) 뉴스 모니터링</div>'
-            f'<div style="{S["sub"]}">{now.strftime("%Y.%m.%d")}({wd}) {part} · 핵심 동향 + 주요 뉴스 · 표로 한눈에</div>')
-    html = f'<div style="{S["wrap"]}">{head}{trend_html}{news_html}{footer}</div>'
+            f'<div style="{S["sub"]}">{now.strftime("%Y.%m.%d")}({wd}) {part} · 주요 뉴스 요약 {len(news)}건</div>')
+    html = ('<!doctype html><html><head><meta charset="utf-8">'
+            '<meta name="viewport" content="width=device-width, initial-scale=1">'
+            '</head><body style="margin:0;padding:0;background:#ffffff">'
+            '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" '
+            'style="width:100%;table-layout:fixed;border-collapse:collapse"><tr><td align="center" style="padding:0">'
+            f'<div style="{S["wrap"]}">{head}{news_html}{footer}</div>'
+            '</td></tr></table></body></html>')
 
     # ── 텍스트 대체본(HTML 미지원 클라이언트용) ──
     P = [f"(장기CM사업부) {now.strftime('%y.%m.%d')} 뉴스 모니터링 · {wd}요일 {part}", ""]
-    P += ["[핵심 동향]"]
-    for k in focus:
-        nmn = newsmon.get(k, {})
-        if nmn.get("summary"):
-            P.append(f"■ {name(k)}: {hk.humanize(nmn['summary'])}")
-    P += ["", f"[주요 뉴스 · 전체 상위 {len(news)}건]"]
+    P += [f"[주요 뉴스 요약 · 전체 상위 {len(news)}건]"]
     for it in news:
         P.append(f"· ({it.get('tag','')}) {it.get('title','')} ({it.get('source','')}·{it.get('date','')})")
-        P.append(f"  무슨 일 · {hk.humanize(it.get('what',''))}")
-        P.append(f"  왜 중요 · {hk.humanize(it.get('why',''))}")
-        P.append(f"  권장 대응 · {hk.humanize(it.get('action',''))}")
+        P.append(f"  {hk.humanize(it.get('what',''))}")
         if it.get("url"):
             P.append(f"  {it['url']}")
     P += ["", f"🔭 전체 대시보드 → https://{HUB}"]
