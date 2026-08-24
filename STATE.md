@@ -24,6 +24,7 @@ Modooflow는 13개 보험상품의 SEO·키워드·뉴스·SERP·시즌·광고�
 | `serp-tool.html` | 검색결과 캡처·diff·광고 관측 | 운영 |
 | `seasonal-tool.html` | 시즌·이벤트 추천과 상태 전이 | 운영 |
 | `adcopy-tool.html` | 소재 후보, 검토 상태, 50/650행 내보내기, 공식 템플릿 매핑 | 제품화 |
+| `powercontent-tool.html` | 검색 근거 기반 제목·설명·본문 목차·FAQ 브리프와 CSV | 제품화 |
 | `overview.html` | 전체 기능 안내 | 운영 |
 
 모바일 사이드바 도구는 `shared/mobile-sidebar.css`와 `shared/mobile-sidebar.js`를 사용한다. 피드백 UI는 `shared/feedback-client.js`를 사용한다.
@@ -32,7 +33,7 @@ Modooflow는 13개 보험상품의 SEO·키워드·뉴스·SERP·시즌·광고�
 
 - 정본: `data/products.json`
 - 총 13개 상품
-- `scripts/check_products_sync.py`가 6개 주요 화면의 키·이름 드리프트를 검사
+- `scripts/check_products_sync.py`가 7개 상품 기반 화면의 키·이름 드리프트를 검사
 - 광고소재 검증: `scripts/check_adcopy_export.mjs`가 상품별 50행, 총 650행과 길이·금지어·중복을 검사
 
 ## Secret과 프록시

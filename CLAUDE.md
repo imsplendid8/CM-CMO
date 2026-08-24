@@ -3,7 +3,7 @@
 이 파일은 Claude Code가 이 저장소에서 작업할 때 참고하는 가이드입니다. **새 세션은 먼저 `STATE.md`를 읽으세요** (지금까지의 작업과 재개 절차).
 
 ## 프로젝트
-**Modooflow** — 한화손해보험 장기CM 마케팅 콘솔. 담당 상품(홈·장기7·일반2·간편심사, 13종)의 검색·마케팅을 돕는 **정적 웹 도구 모음**. 6개 도구(SEO·키워드·뉴스·SERP·시즌·검색광고 소재) + 팀 실시간 연동 + 자동화(뉴스클리핑·SERP캡쳐·수요신호). BSA(브랜드검색) 운영 CLI는 민감데이터라 **부서 전용 private 저장소**로 분리. 디자인=Clean SaaS Light(흰 배경·Pretendard 자체호스팅).
+**Modooflow** — 한화손해보험 장기CM 마케팅 콘솔. 담당 상품(홈·장기7·일반2·간편심사, 13종)의 검색·마케팅을 돕는 **정적 웹 도구 모음**. 7개 도구(SEO·키워드·뉴스·SERP·시즌·SA 소재·파워콘텐츠) + 팀 실시간 연동 + 자동화(뉴스클리핑·SERP캡쳐·수요신호). BSA(브랜드검색) 운영 CLI는 민감데이터라 **부서 전용 private 저장소**로 분리. 디자인=Clean SaaS Light(흰 배경·Pretendard 자체호스팅).
 
 ## 저장소 지도
 | 구분 | 위치 |
@@ -11,7 +11,7 @@
 | 현재 상태·재개 | `STATE.md` (최우선) |
 | 위키(정리 문서) | `docs/` — `README.md`(색인)·`architecture.md`·`tools.md`·`검색광고-BSA-로드맵.md`·`roadmap.md`·`daily-brief.md`·`api-from-url.md`(프록시)·`oss-leverage.md` |
 | 허브 | `index.html` (상단 고정 내비 + API 사용량 위젯 · 개인 키 입력 없음) · 전체 안내 `overview.html` |
-| 도구 6종 | `seo-audit.html` · `keyword-tool.html`(+네이버 대량등록 파일) · `news-tool.html`(업계·경쟁사+수요 트리거) · `serp-tool.html`(자동 캡쳐+브랜드검색) · `seasonal-tool.html` · `adcopy-tool.html`(파워링크 등록 양식 5블록·엑셀+주차별 캘린더+경쟁사 브랜드검색 탭) |
+| 도구 7종 | `seo-audit.html` · `keyword-tool.html`(+네이버 대량등록 파일) · `news-tool.html`(업계·경쟁사+수요 트리거) · `serp-tool.html`(자동 캡쳐+브랜드검색) · `seasonal-tool.html` · `adcopy-tool.html`(SA 소재 5블록·엑셀) · `powercontent-tool.html`(검색 근거 기반 콘텐츠 브리프) |
 | 별도 도구(부서 전용) | BSA(브랜드검색) 운영 CLI는 **부서 전용 private 저장소 `imsplendid8/Private`** 로 분리(계약·단가 등 민감데이터). 공개 CM-CMO엔 포함하지 않음 |
 | 팀 실시간 프록시 | `proxy/naver-proxy-worker.js` (Cloudflare Worker · 키=워커 시크릿) |
 | 폰트 | `fonts/PretendardVariable.woff2` (자체호스팅) |
@@ -25,7 +25,7 @@
 - **디자인**: 각 도구 `<head>`의 `id="mf-saas-theme"` 블록이 통일 뉴트럴 토큰+Pretendard 주입. 툴별 액센트색 유지. 전 페이지 CSP + no-referrer.
 - **실시간 데이터**: 브라우저는 네이버 직접호출 불가(CORS·HMAC) → **프록시 경유**(`DEFAULT_PROXY`). 키는 **워커 시크릿(팀 공유)/GitHub Secrets(Action)만** — 브라우저 키 입력·localStorage 저장은 폐지(워커 인증·요청허용 정책 적용). 파일·커밋 금지.
 - 새 기능 = 도구 HTML 1개 + 허브 `TOOLS` 카드 1개 + (선택) Artifact 발행. 방법은 `docs/architecture.md`.
-- 도구 상품 집합은 5종 모두 동일(13종) — `scripts/check_products_sync.py` 드리프트 가드(CI). 업계·경쟁사(뉴스툴 INDUSTRY)는 상품 마스터와 분리.
+- 상품 기반 도구 7종은 동일한 13종을 사용 — `scripts/check_products_sync.py` 드리프트 가드(CI). 업계·경쟁사(뉴스툴 INDUSTRY)는 상품 마스터와 분리.
 
 ## ⚠️ 데이터 거버넌스 (최우선)
 - 고객·임직원 개인정보·회사 영업비밀은 **외부 AI/커밋 금지**. 반드시 **샘플·공개·비식별/가상 데이터**만.

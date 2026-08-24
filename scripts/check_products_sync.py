@@ -11,7 +11,7 @@ key별 name·cat 이 data/products.json 과 일치하는지 확인한다(자체�
 import json, re, sys, os
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FILES = ["seo-audit.html", "keyword-tool.html", "news-tool.html", "serp-tool.html", "seasonal-tool.html", "adcopy-tool.html"]
+FILES = ["seo-audit.html", "keyword-tool.html", "news-tool.html", "serp-tool.html", "seasonal-tool.html", "adcopy-tool.html", "powercontent-tool.html"]
 ALLOWED_EXTRA = {"pro", "__pro", "__all"}   # 범용 생성기 등 도구별 허용 키
 
 def canonical():

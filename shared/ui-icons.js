@@ -10,6 +10,7 @@
     serp: svg('<rect x="3" y="4" width="18" height="13" rx="2.5"/><path d="M8 21h8M12 17v4"/><path d="m8 11 2.4 2.2L16 8"/>'),
     calendar: svg('<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/><path d="M8 13h3M13 13h3M8 16.5h3"/>'),
     adcopy: svg('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>'),
+    power: svg('<path d="M5 3.5h10l4 4V20.5H5z"/><path d="M15 3.5v4h4M8.5 12h7M8.5 15.5h5"/><path d="m17.5 14.5 1 2 2 .8-2 1-1 2-1-2-2-1 2-.8z"/>'),
     overview: svg('<rect x="3.5" y="3.5" width="17" height="17" rx="2.5"/><path d="M3.5 9h17M9 9v11.5"/>'),
     search: svg('<circle cx="10.8" cy="10.8" r="6.6"/><path d="m16 16 4.5 4.5"/>'),
     menu: svg('<path d="M4 7h16M4 12h16M4 17h16"/>'),
@@ -37,6 +38,7 @@
     "serp-tool.html": "serp",
     "seasonal-tool.html": "calendar",
     "adcopy-tool.html": "adcopy",
+    "powercontent-tool.html": "power",
     "overview.html": "overview",
   };
   const page = location.pathname.split("/").pop() || "index.html";
@@ -80,7 +82,7 @@
     if (page === "overview.html") {
       const routeIcons = {
         "seo-audit.html": "seo", "keyword-tool.html": "keyword", "news-tool.html": "news", "serp-tool.html": "serp",
-        "seasonal-tool.html": "calendar", "adcopy-tool.html": "adcopy",
+        "seasonal-tool.html": "calendar", "adcopy-tool.html": "adcopy", "powercontent-tool.html": "power",
       };
       const titleIcons = [
         [/브랜드검색/, "tag"], [/클리핑/, "archive"], [/수요 신호/, "signal"], [/SERP 캡쳐/, "camera"], [/보안 설정/, "lock"],

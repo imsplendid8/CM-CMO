@@ -5,6 +5,7 @@ import unittest
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 TOOLS = [
     "adcopy-tool.html",
+    "powercontent-tool.html",
     "keyword-tool.html",
     "news-tool.html",
     "seo-audit.html",

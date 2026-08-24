@@ -11,9 +11,9 @@
 | 오늘의 업무 | `index.html` | 업무 흐름, 5종 데이터 신선도, 도구 진입 |
 | 검색 인사이트 | `seo-audit.html`, `keyword-tool.html`, `serp-tool.html` | SEO 진단, 키워드·검색량, 검색결과 관측 |
 | 시장·이슈 | `news-tool.html`, `seasonal-tool.html` | 뉴스 클리핑, 시즌·이벤트 추천과 상태 전이 |
-| 콘텐츠·심의 | `adcopy-tool.html` | 검색광고 소재 후보와 내부 검토 |
+| 콘텐츠·심의 | `adcopy-tool.html`, `powercontent-tool.html` | SA 소재와 파워콘텐츠 브리프의 분리 제작·내부 검토 |
 
-광고소재 도구는 상품별 50행, 전체 650행을 생성·검증합니다. 공식 네이버 템플릿을 불러와 필수 열을 매핑하기 전까지 결과물은 업로드 파일이 아니라 내부 검토용입니다.
+SA 소재 도구는 상품별 50행, 전체 650행을 생성·검증합니다. 파워콘텐츠 도구는 검색수요·SEO·시즌 근거를 제목·설명·본문 설계에 연결합니다. 두 결과물 모두 내부 검토용이며, 최신 상품자료·약관·준법·광고심의를 거쳐야 합니다.
 
 ## 실행
 
@@ -56,6 +56,7 @@ python -m http.server 8765
 python scripts/check_products_sync.py
 python -m unittest discover -s tests -p "test_*.py" -v
 node scripts/check_adcopy_export.mjs
+node scripts/check_powercontent.mjs
 node --check shared/mobile-sidebar.js
 node --check shared/feedback-client.js
 ```

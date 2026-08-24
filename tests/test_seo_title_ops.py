@@ -114,11 +114,13 @@ class TestSeoTitleOps(unittest.TestCase):
         workflow = (ROOT / ".github/workflows/content-intelligence.yml").read_text(encoding="utf-8")
         seo_page = (ROOT / "seo-audit.html").read_text(encoding="utf-8")
         adcopy_page = (ROOT / "adcopy-tool.html").read_text(encoding="utf-8")
+        power_page = (ROOT / "powercontent-tool.html").read_text(encoding="utf-8")
         self.assertIn("scripts/seo_title_agent.py", workflow)
         self.assertNotIn("title-opportunities.json", seo_page)
         self.assertNotIn("SEO 제목 후보", seo_page)
-        self.assertIn("data/adcopy/powercontent-title-opportunities.json", adcopy_page)
-        self.assertIn("SEO 검색 근거", adcopy_page)
+        self.assertNotIn("data/adcopy/powercontent-title-opportunities.json", adcopy_page)
+        self.assertIn("data/adcopy/powercontent-title-opportunities.json", power_page)
+        self.assertIn("SEO 검색 근거", power_page)
 
 
 if __name__ == "__main__":

@@ -1,12 +1,13 @@
 # 로드맵 · 고도화
 
-## 진행 현황 (도구 6종 + SA/BSA 솔루션)
+## 진행 현황 (도구 7종 + SA/BSA 솔루션)
 - [x] 1. 테크니컬 SEO 콘솔 (+ 상품별 월간 FAQ 4개·FAQPage JSON-LD)
 - [x] 2. 검색광고 키워드 추출 (+ 실시간 검색량 프록시 · **네이버 대량등록 파일**)
 - [x] 3. 카테고리 뉴스 모니터링 (+ 실시간 갱신 · **클리핑 아카이브**)
 - [x] 4. 검색결과 주간 아카이브 (+ 경쟁사 소구포인트 · **브랜드검색 갤러리**)
 - [x] 5. 연간 시즈널 이슈 캘린더
 - [x] 6. 검색광고 소재 (파워링크 등록 양식 5블록·엑셀 + **주차별 소재 캘린더** + **경쟁사 브랜드검색** 탭)
+- [x] 7. 파워콘텐츠 소재 (SearchAd·SEO·시즌 근거 + 제목·설명·본문 설계 + 범위·GSC 검수 가드)
 - ▶ **검색광고(SA)·BSA 솔루션** → [검색광고-BSA-로드맵.md](검색광고-BSA-로드맵.md): A1·A2·B2·B3 완료 (BSA 운영 CLI는 민감데이터라 **부서 전용 private 저장소**로 분리)
 
 ### 다음 후보 (SA/BSA 로드맵 외)
@@ -28,7 +29,7 @@
 | 시즌 | pytrends · 네이버 데이터랩 API · [Prophet](https://github.com/facebook/prophet) | 계절성 실측 자동 검증, 수요 피크 시계열 예측 |
 
 ### B. 크로스커팅(공통) 고도화
-- ✅ **단일 상품 마스터**(1순위 완료): `data/products.json`을 캐노니컬 소스로, `scripts/check_products_sync.py`가 CI(`ci.yml`)에서 상품 기반 6개 도구 인라인 PRODUCTS의 드리프트를 검사. (시즌은 `data/seasonal.json`, 데일리 브리핑이 소비)
+- ✅ **단일 상품 마스터**(1순위 완료): `data/products.json`을 캐노니컬 소스로, `scripts/check_products_sync.py`가 CI(`ci.yml`)에서 상품 기반 7개 도구 인라인 PRODUCTS의 드리프트를 검사. (시즌은 `data/seasonal.json`, 데일리 브리핑이 소비)
 - **자동 캡처 파이프라인**: SERP 주간 캡처를 self-hosted 러너/사내 PC의 Playwright로 자동화(네이버 봇차단 회피). 결과를 `serp_archive/`에 커밋 → 도구가 매니페스트로 표시.
 - **회귀 테스트**: Playwright 렌더/문법 체크를 Actions로 상시화.
 - **통합 검색·즐겨찾기**, 산출물 일괄 내보내기(PPT/Excel), 접근 로그.

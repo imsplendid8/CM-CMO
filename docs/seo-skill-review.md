@@ -49,7 +49,7 @@ CM-CMO에는 `seo-title-creator`의 한국어 검색 근거 게이트를 주축�
 - `.claude/skills/cm-seo-title-ops/`: 프로젝트 전용 스킬
 - `scripts/seo_title_agent.py`: SearchAd·FAQ·비공개 GSC를 결합한 파워컨텐츠 제목 검토 큐
 - `data/adcopy/powercontent-title-opportunities.json`: 공개 가능한 범주형 산출물
-- `adcopy-tool.html`: 파워컨텐츠 제목 후보 3개와 검색 근거·약점·검토 상태 표시
+- `powercontent-tool.html`: 파워콘텐츠 제목 후보 3개와 검색 근거·약점·검토 상태, 설명·본문 목차·FAQ 브리프 표시
 - `seo-audit.html`: 기술 SEO 진단만 유지하며 콘텐츠 제목 후보는 표시하지 않음
 - FAQ JSON-LD 복사 기능 제거: FAQ는 고객 질문 콘텐츠로 유지하되 Google 리치결과 효과로 권장하지 않음
 - 자동화와 CI: 주간 생성, 개인정보 누출 방지·제목 길이·3후보 계약 테스트

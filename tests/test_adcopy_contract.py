@@ -4,6 +4,7 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ADCOPY = (ROOT / "adcopy-tool.html").read_text(encoding="utf-8")
+POWER = (ROOT / "powercontent-tool.html").read_text(encoding="utf-8")
 KEYWORD = (ROOT / "keyword-tool.html").read_text(encoding="utf-8")
 CI = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
 
@@ -36,15 +37,24 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn('data-copy="${esc(o.title)}"', ADCOPY)
         self.assertIn('data-copy="${esc(o.desc)}"', ADCOPY)
 
-    def test_power_content_brief_has_specs_and_review_guards(self):
-        self.assertIn('item("__power","📝 파워컨텐츠 제안"', ADCOPY)
-        self.assertIn("제목 <b>7~28자</b>", ADCOPY)
-        self.assertIn("설명 <b>80~110자</b>", ADCOPY)
-        self.assertIn("data/adcopy/powercontent-title-opportunities.json", ADCOPY)
-        self.assertIn("SEO 검색 근거", ADCOPY)
-        self.assertIn("담당자·준법·광고심의 검토 필요", ADCOPY)
-        self.assertIn("키워드–소재–랜딩 본문의 주제 일치", ADCOPY)
-        self.assertNotIn("참고 기준", ADCOPY)
+    def test_power_content_is_a_separate_guarded_workspace(self):
+        self.assertNotIn('__power', ADCOPY)
+        self.assertNotIn("powercontent-title-opportunities.json", ADCOPY)
+        self.assertIn("파워콘텐츠 소재", POWER)
+        self.assertIn('const TITLE={min:7,max:28},DESC={min:80,max:110}', POWER)
+        self.assertIn("data/adcopy/powercontent-title-opportunities.json", POWER)
+        self.assertIn("SEO 검색 근거", POWER)
+        self.assertIn("GSC가 확인되지 않으면 추천을 확정하지 않고", POWER)
+        self.assertIn("최신 상품자료·약관·준법·광고심의 확인", POWER)
+        self.assertIn("키워드–소재–랜딩 본문의 주제", POWER)
+
+    def test_power_content_rejects_out_of_scope_topics_and_exports_brief(self):
+        for term in ("자동차보험", "공개관측", "공개 관측", "한화생명", "고객센터"):
+            self.assertIn(term, POWER)
+        self.assertIn("function inScope(p,text)", POWER)
+        self.assertIn("function exportCsv()", POWER)
+        self.assertIn('id="copyBrief"', POWER)
+        self.assertIn('id="exportCsv"', POWER)
 
     def test_copy_candidates_use_shared_korean_humanizer(self):
         self.assertIn('shared/humanize-ko.js', ADCOPY)

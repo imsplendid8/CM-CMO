@@ -3,17 +3,18 @@
 ## 원칙
 - **정적 HTML 중심**: 빌드 없이 GitHub Pages에서 직접 실행한다. 공통 월 선택 로직은 `shared/planning-context.js`, 운영 데이터는 `data/*.json`에서 읽는다.
 - **클라이언트 중심**: 공개·비식별 운영 데이터만 정적 JSON으로 배포한다. 개인 업로드 데이터는 `localStorage`에만 둔다.
-- **공유 상품 집합**: 상품 기반 6개 도구 모두 동일한 상품 13종을 다룬다.
+- **공유 상품 집합**: 상품 기반 7개 도구 모두 동일한 상품 13종을 다룬다.
 
 ## 저장소 구조
 ```
-index.html            허브(8개 작업공간 진입)
+index.html            허브(7개 작업공간 진입)
 seo-audit.html        1. 테크니컬 SEO 콘솔 (앰버)
 keyword-tool.html     2. 검색광고 키워드 추출 (블루)
 news-tool.html        3. 카테고리 뉴스 모니터링 (틸)
 serp-tool.html        4. 검색결과 주간 아카이브 (바이올렛)
 seasonal-tool.html    5. 연간 시즈널 이슈 캘린더 (로즈)
 adcopy-tool.html      6. 검색광고 소재
+powercontent-tool.html 7. 파워콘텐츠 소재 브리프
 shared/               도구 간 월 선택 등 공통 브라우저 로직
 data/                 상품·시즌 캐노니컬과 SearchAd·뉴스 등 운영 스냅샷
 scripts/              네이버 연동 로컬서버 · 데일리 브리핑 · 드리프트 검사
@@ -25,12 +26,12 @@ docs/ · STATE.md · CLAUDE.md         문서
 ## 상품 마스터 단일화 (data/products.json)
 - `data/products.json`이 상품 13종의 **캐노니컬 소스**(key·name·cat·tier·core·special·serpKw·newsQuery).
 - 초기 화면을 즉시 그리기 위해 각 도구의 인라인 `PRODUCTS`를 이 파일에 맞춰 유지하고, 운영 스냅샷은 런타임에 정적 JSON으로 불러온다.
-- `scripts/check_products_sync.py`가 CI에서 상품 기반 6개 도구의 key 집합(+표준 도구는 name·cat)이 캐노니컬과 일치하는지 검사 → 드리프트 방지.
+- `scripts/check_products_sync.py`가 CI에서 상품 기반 7개 도구의 key 집합(+표준 도구는 name·cat)이 캐노니컬과 일치하는지 검사 → 드리프트 방지.
 - 상품 추가/변경 시: `data/products.json` + 각 도구 인라인 PRODUCTS를 함께 수정(로컬 `python3 scripts/check_products_sync.py`로 확인).
 
 ## 디자인 시스템
 - 폰트: Pretendard·Noto Sans KR (OFL 계열). 라이트/다크 모두 지원(`prefers-color-scheme` + `data-theme` 토글).
-- 도구별 accent 색: SEO 앰버 `#e0850f` · 키워드 블루 `#2b6cb0` · 뉴스 틸 `#0e9e8e` · SERP 바이올렛 `#7c5cd6` · 시즌 로즈 `#d6456f`.
+- 도구별 accent 색: SEO 앰버 `#e0850f` · 키워드 블루 `#2b6cb0` · 뉴스 틸 `#0e9e8e` · SERP 바이올렛 `#7c5cd6` · 시즌 로즈 `#d6456f` · SA 코랄 `#e8553d` · 파워콘텐츠 인디고 `#6657d9`.
 - 레이아웃: 좌측 사이드바 + 상단바 + 콘텐츠. 반응형(820px에서 사이드바 접힘).
 
 ## 브랜치·배포

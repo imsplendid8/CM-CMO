@@ -15,6 +15,7 @@ APP_PAGES = [
     "serp-tool.html",
     "seasonal-tool.html",
     "adcopy-tool.html",
+    "powercontent-tool.html",
 ]
 TOOL_PAGES = APP_PAGES[2:]
 
