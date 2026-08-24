@@ -1,6 +1,6 @@
-# 제목 운영 산출물 스키마
+# 파워컨텐츠 제목 운영 산출물 스키마
 
-`data/seo/title-opportunities.json`은 정적 관리자 화면에 배포 가능한 공개 요약이다.
+`data/adcopy/powercontent-title-opportunities.json`은 파워컨텐츠 소재 제안 화면에 배포 가능한 공개 요약이다. SEO 감사 화면에서는 읽거나 표시하지 않는다.
 
 ## 최상위 필드
 

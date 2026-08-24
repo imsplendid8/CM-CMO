@@ -19,7 +19,7 @@ papers-tool.html      8. 논문 아카이브
 shared/               도구 간 월 선택 등 공통 브라우저 로직
 data/                 상품·시즌 캐노니컬과 SearchAd·뉴스 등 운영 스냅샷
 scripts/              네이버 연동 로컬서버 · 데일리 브리핑 · 드리프트 검사
-.claude/skills/                    분석·근거·SERP·FAQ·SEO 제목 운영 스킬
+.claude/skills/                    분석·근거·SERP·FAQ·파워컨텐츠 제목 운영 스킬
 .github/workflows/    pages.yml(배포) · ci.yml(드리프트·문법) · daily-brief.yml(텔레그램)
 docs/ · STATE.md · CLAUDE.md         문서
 ```

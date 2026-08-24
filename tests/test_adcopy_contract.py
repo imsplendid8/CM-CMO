@@ -40,6 +40,9 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn('item("__power","📝 파워컨텐츠 제안"', ADCOPY)
         self.assertIn("제목 <b>7~28자</b>", ADCOPY)
         self.assertIn("설명 <b>80~110자</b>", ADCOPY)
+        self.assertIn("data/adcopy/powercontent-title-opportunities.json", ADCOPY)
+        self.assertIn("SEO 검색 근거", ADCOPY)
+        self.assertIn("담당자·준법·광고심의 검토 필요", ADCOPY)
         self.assertIn("키워드–소재–랜딩 본문의 주제 일치", ADCOPY)
         self.assertNotIn("참고 기준", ADCOPY)
 

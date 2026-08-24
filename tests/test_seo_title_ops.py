@@ -108,13 +108,17 @@ class TestSeoTitleOps(unittest.TestCase):
         self.assertEqual(matches, [])
 
     def test_repository_output_contract(self):
-        payload = json.loads((ROOT / "data/seo/title-opportunities.json").read_text(encoding="utf-8"))
+        payload = json.loads((ROOT / "data/adcopy/powercontent-title-opportunities.json").read_text(encoding="utf-8"))
         self.assertEqual(len(payload["products"]), 13)
         self.assertEqual(self.agent.validate(payload), [])
         workflow = (ROOT / ".github/workflows/content-intelligence.yml").read_text(encoding="utf-8")
-        page = (ROOT / "seo-audit.html").read_text(encoding="utf-8")
+        seo_page = (ROOT / "seo-audit.html").read_text(encoding="utf-8")
+        adcopy_page = (ROOT / "adcopy-tool.html").read_text(encoding="utf-8")
         self.assertIn("scripts/seo_title_agent.py", workflow)
-        self.assertIn("data/seo/title-opportunities.json", page)
+        self.assertNotIn("title-opportunities.json", seo_page)
+        self.assertNotIn("SEO 제목 후보", seo_page)
+        self.assertIn("data/adcopy/powercontent-title-opportunities.json", adcopy_page)
+        self.assertIn("SEO 검색 근거", adcopy_page)
 
 
 if __name__ == "__main__":

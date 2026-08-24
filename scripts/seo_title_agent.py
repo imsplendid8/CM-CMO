@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""공개 SearchAd 수요와 비공개 GSC 범주 판정으로 SEO 제목 검토 큐를 만든다."""
+"""공개 SearchAd 수요와 비공개 GSC 범주 판정으로 파워컨텐츠 제목 검토 큐를 만든다."""
 from __future__ import annotations
 
 import argparse
@@ -14,8 +14,8 @@ DEFAULT_PRODUCTS = ROOT / "data/products.json"
 DEFAULT_VOLUME = ROOT / "data/volume.json"
 DEFAULT_FAQ = ROOT / "data/seo/faq-opportunities.json"
 DEFAULT_GSC = ROOT / "data/search-console.json"
-DEFAULT_OUTPUT = ROOT / "data/seo/title-opportunities.json"
-METHOD_VERSION = "cm-seo-title-ops/1.1"
+DEFAULT_OUTPUT = ROOT / "data/adcopy/powercontent-title-opportunities.json"
+METHOD_VERSION = "cm-seo-title-ops/1.2"
 
 COMPETITOR_TOKENS = (
     "db", "동부", "현대", "삼성", "kb", "롯데", "메리츠", "농협", "라이나",
@@ -309,7 +309,7 @@ def generate(
             "next_action": next_action,
         })
     return {
-        "_comment": "공개 배포용 제목 검토 큐. 비공개 GSC 원본 행과 상세 성과 수치는 포함하지 않는다.",
+        "_comment": "파워컨텐츠 소재 제안용 제목 검토 큐. 비공개 GSC 원본 행과 상세 성과 수치는 포함하지 않는다.",
         "asof": asof,
         "method_version": METHOD_VERSION,
         "sources": {
@@ -366,7 +366,7 @@ def main() -> int:
         if errors:
             print("\n".join(f"ERROR: {error}" for error in errors))
             return 1
-        print("[OK] SEO title opportunities valid")
+        print("[OK] Power content title opportunities valid")
         return 0
     payload = generate(
         read_json(args.products, {}),
@@ -381,7 +381,7 @@ def main() -> int:
         print(json.dumps(payload, ensure_ascii=False, indent=2))
     else:
         write_atomic(args.output, payload)
-        print(f"[OK] SEO title ops: {len(payload['products'])} products, {payload['sources']['gsc']}")
+        print(f"[OK] Power content title ops: {len(payload['products'])} products, {payload['sources']['gsc']}")
     return 0
 
 
