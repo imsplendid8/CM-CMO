@@ -25,14 +25,14 @@ class TestAdcopyContract(unittest.TestCase):
 
     def test_serp_monitoring_changes_generated_sa_without_copying_claims(self):
         self.assertIn("function serpIdeas(p)", ADCOPY)
-        self.assertIn("SERP 차별", ADCOPY)
-        self.assertIn("가격·할인·1위 표현은 자사 근거가 연결되기 전 자동 제안에서 제외", ADCOPY)
+        self.assertIn("경쟁사 광고와 SA 제안", ADCOPY)
         self.assertIn("observed_ads", ADCOPY)
-        self.assertIn('strategy:"빈 소구 선점"', ADCOPY)
-        self.assertIn('strategy:"검색 의도 응답"', ADCOPY)
-        self.assertIn('strategy:"비교 행동 유도"', ADCOPY)
-        self.assertIn("바로 검토할 SA 세트", ADCOPY)
-        self.assertIn("제목과 설명을 한 세트로 만들고 네이버 글자 수를 통과한 안만 표시", ADCOPY)
+        self.assertIn('strategy:"핵심 보장 확인"', ADCOPY)
+        self.assertIn('strategy:"가입 전 체크"', ADCOPY)
+        self.assertIn('strategy:"보험료·보장 비교"', ADCOPY)
+        self.assertIn("SA 소재 제안", ADCOPY)
+        self.assertNotIn("공개 광고 관측", ADCOPY)
+        self.assertNotIn("공개 SERP 관측", ADCOPY)
         self.assertIn('data-copy="${esc(o.title)}"', ADCOPY)
         self.assertIn('data-copy="${esc(o.desc)}"', ADCOPY)
 
@@ -41,7 +41,7 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn("제목 <b>7~28자</b>", ADCOPY)
         self.assertIn("설명 <b>80~110자</b>", ADCOPY)
         self.assertIn("키워드–소재–랜딩 본문의 주제 일치", ADCOPY)
-        self.assertIn("https://blog.carrotins.com/", ADCOPY)
+        self.assertNotIn("참고 기준", ADCOPY)
 
     def test_copy_candidates_use_shared_korean_humanizer(self):
         self.assertIn('shared/humanize-ko.js', ADCOPY)

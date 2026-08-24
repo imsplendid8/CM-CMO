@@ -255,7 +255,7 @@ function loadUsage(boxId){
       ${meter("네이버 검색","search",u.limits&&u.limits.search)}
       ${meter("데이터랩 트렌드","datalab",u.limits&&u.limits.datalab)}
       ${meter("검색광고","searchad",u.limits&&u.limits.searchad)}
-      <div class="note">한도는 네이버 공개 일한도(검색 25,000·데이터랩 1,000)이며 앱별로 다를 수 있습니다. 검색광고는 초당 제한이라 일누계만 표시.</div></div>`;
+      <div class="note">오늘 사용량입니다.</div></div>`;
   }).catch(()=>{box.innerHTML="";});
 }
 const HEALTH_SOURCES=[
@@ -385,7 +385,7 @@ function renderHome(){
       <div class="desc">${esc(t.desc)}</div>
       <div class="go">열기 →</div></div>`).join("")}</div>
     <div class="foot"><b>연결 구조</b> · 위 업무 흐름과 상단 메뉴에서 각 작업공간으로 전환합니다. 주요 분석·소재 도구는 같은 13개 상품 마스터를 공유합니다. · <a href="${WIKI}" target="_blank" rel="noopener noreferrer">📖 위키</a><br>
-    데이터·카피는 샘플·공개값 기준 · 광고 문구는 배포 전 광고심의 검수 · 검색량/입찰가는 각 광고 플랫폼에서 확정 · 뉴스 요약/시사점은 마케팅 분석(개인정보·영업비밀 미포함).</div>
+    자료 기준일은 각 화면에서 확인하세요. 광고 문구는 심의 후 사용합니다.</div>
   </div>`;
   loadDataHealth();
 }

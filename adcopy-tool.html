@@ -249,7 +249,7 @@ function lintBan(s){return BAN.filter(w=>String(s).replace(/\s/g,"").includes(w.
 
 /* 상품별 소구 토큰 — 제목용 short(짧게), 설명용 usp(문장 조각), 담보 covers */
 const PRODUCTS=[
- {key:"home",cat:"사이트",name:"다이렉트 홈(브랜드)",al:"다이렉트",brand:"한화손보 다이렉트",short:["공식","간편가입","보험료"],usp:["필요한 담보만 골라 다이렉트로 간편하게","공식 채널에서 보험료 확인하고 바로"],covers:["자동차·장기 다이렉트"]},
+ {key:"home",cat:"사이트",name:"다이렉트 홈(브랜드)",al:"다이렉트",brand:"한화손보 다이렉트",short:["공식","간편가입","보험료"],usp:["담당 상품을 한곳에서 확인하고 간편하게","공식 채널에서 보험료 확인하고 바로"],covers:["운전자·장기 다이렉트"],blocked:["자동차보험"]},
  {key:"hrmf",cat:"장기",name:"주택화재보험",al:"화재보험",short:["누수·도난","주택맞춤","화재"],usp:["화재·누수·도난·배상책임까지","아파트·빌라·오피스텔 유형별 맞춤으로"],covers:["화재","누수","도난","일상배상책임"]},
  {key:"golf",cat:"장기",name:"골프보험",short:["홀인원","정찰제","선물하기"],usp:["홀인원 축하비용·골프용품까지","팀 단위 정찰제로 부담 없이"],covers:["홀인원 축하비용","골프용품손해","배상책임"]},
  {key:"cncr",cat:"장기",name:"암보험",short:["진단비","표적항암","비갱신"],usp:["암진단비·표적항암까지 든든하게","갱신·비갱신 골라 필요한 담보만"],covers:["암진단비","표적항암약물","항암방사선"]},
@@ -390,6 +390,7 @@ const wrap=(arr,mn,mx,ss)=>uniq(arr.map(x=>dw(HUMANIZE.light(x)))).map(x=>({tx:x
 const BRANDS=["한화손보 다이렉트","한화다이렉트 대표","한화다이렉트 공식","한화손보 공식","한화 다이렉트","한화손보"];
 function genBrandTitles(p){
   const a=al(p);
+  if(p.cat==="사이트")return wrap(BRANDS,4,SPEC.titleMax);
   const pool=[...BRANDS.map(b=>`${b} ${a}`), ...BRANDS.map(b=>`${b} ${p.name}`)];
   return wrap(pool,4,SPEC.titleMax);
 }
@@ -397,6 +398,7 @@ function genBrandTitles(p){
 const T_CONV=["24시간 인터넷 간편가입","전화 없이 빠른 가입","전화 없이 24시간 가입","전화 통화 없는 간편 가입","비대면 간편 가입 가능","클릭만 해도 가입 가능","직접 비교하고 간편 가입","모바일로 3분 간편가입","상담 없이 바로 가입","보험료 확인하고 바로 가입"];
 function genSubTitles(p){
   const a=al(p), covs=p.covers||[];
+  if(p.cat==="사이트")return wrap(["공식 다이렉트보험","보험료 간편 확인","상품별 보장 확인","온라인 간편가입",...T_CONV],4,SPEC.titleMax);
   const pool=[
     ...T_CONV,
     `${a} 보험료 비교`, `${a} 다이렉트 가입`, `필요한 담보만 골라 가입`, `${p.short[0]} 중심 맞춤 설계`,
@@ -408,6 +410,7 @@ function genSubTitles(p){
 /* ③ 설명 롤링 (20~45자) — 실제 시트 4번 컬럼(롤링) */
 function genDescs(p){
   const n=p.name, a=al(p), c3=p.covers.slice(0,3).join("·");
+  if(p.cat==="사이트")return wrap(["한화손보 다이렉트 공식 사이트에서 담당 보험상품을 확인하세요.","보험료와 상품별 보장 내용을 온라인에서 간편하게 확인하세요."],SPEC.descMin,SPEC.descMax);
   const pool=[
     `${p.usp[0]} 준비하세요.`,
     `${p.usp[1]} 준비하세요.`,
@@ -423,6 +426,7 @@ function genDescs(p){
 /* ④ 홍보문구 (≤15자) — 시트 5번 · 상품 소구 반영 */
 function genPromos(p){
   const a=al(p), c0=p.covers[0];
+  if(p.cat==="사이트")return wrap(["공식 사이트에서 확인","보험료 간편 조회","상품별 보장 확인","온라인 간편가입"],2,SPEC.promoMax);
   const pool=[
     "24시간 간편 보험료 조회","지금 바로 보험료 확인","온라인 전용 다이렉트가","비교하고 바로 가입하기",
     `${a} 보험료 3분 조회`, `${p.short[0]} 담보 골라 가입`, `${c0} 포함 확인`, `${a} 다이렉트 조회`,
@@ -432,6 +436,7 @@ function genPromos(p){
 /* ⑤ 서브링크 (≤6자, 택4) — 시트 6번 · 상품 담보·소구 토큰 우선 */
 function genSubs(p){
   const short=s=>String(s).replace(/\s/g,"").slice(0,SPEC.subMax);
+  if(p.cat==="사이트")return wrap(["보험료계산","상품보기","보장내용","간편가입"],2,SPEC.subMax);
   const pool=["보험료계산","보장내용", short(al(p)), ...p.covers.map(short), ...p.short.map(short),
     "간편가입","24시간가입","할인확인","가입하기"];
   return wrap(pool,2,SPEC.subMax);
@@ -444,21 +449,25 @@ function serpIdeas(p){
   const own=(p.covers||[]).filter(x=>!overlaps(x));
   const angle=own[0]||p.short.find(x=>!overlaps(x))||"가입 전 보장 확인";
   const demand=(((typeof topVol==="function"?topVol(p.key,3):[])[0])||{}).kw||al(p);
-  const hasEvidence=Boolean((a.observed_ads||[]).length||a.n);
+  const hasEvidence=p.cat!=="사이트"&&Boolean((a.observed_ads||[]).length||a.n);
   const title=(preferred,fallback)=>clen(preferred)<=SPEC.titleMax?preferred:fallback;
-  const generated=(SERP_AGENT[p.key]||{}).candidates||[];
+  const agent=SERP_AGENT[p.key]||{},generated=agent.candidates||[];
+  const selectedAngle=agent.selected_angle||angle,selectedDemand=agent.keyword||demand;
+  const blocked=p.blocked||[];
+  const inScope=x=>!blocked.some(term=>(x.title+x.desc).replace(/\s/g,"").includes(term.replace(/\s/g,"")));
   const raw=generated.length?generated.map(x=>({strategy:x.strategy,title:x.title,desc:x.description,
-    why:`주간 Agent · ${x.evidence_status==="verified"?"승인 근거 연결":"상품 근거 확인 필요"}`})):hasEvidence?[
-    {strategy:"빈 소구 선점",title:title(`${angle} 확인`,`${al(p)} 보장 확인`),desc:`${angle} 포함 여부와 가입 조건을 온라인에서 확인해 보세요.`,why:`경쟁 광고의 반복 소구를 피하고 ‘${angle}’을 앞세운 안`},
-    {strategy:"검색 의도 응답",title:title(`${demand} 가입 전 확인`,`${al(p)} 가입조건`),desc:`${demand} 찾는다면 보장 범위와 제외 조건을 먼저 확인하세요.`,why:`실측 검색어 ‘${demand}’의 가입 전 확인 의도에 답하는 안`},
-    {strategy:"비교 행동 유도",title:`${al(p)} 보험료 확인`,desc:`${al(p)} 필요한 담보와 보험료를 직접 비교해 보세요.`,why:"경쟁사의 수치·최상급 표현 대신 실제 비교 행동으로 연결하는 안"},
+    why:x.evidence_status==="verified"?"승인 근거 연결":"상품 내용 확인 필요"})):hasEvidence?[
+    {strategy:"핵심 보장 확인",title:title(`${angle} 보장 확인`,`${al(p)} 보장 확인`),desc:`${p.name}의 ${angle} 보장 여부와 가입 조건을 확인해 보세요.`,why:`경쟁사와 겹치지 않는 ‘${angle}’ 중심`},
+    {strategy:"가입 전 체크",title:title(`${demand} 가입 전 확인`,`${al(p)} 가입조건`),desc:`${demand} 가입 전 보장 범위와 제외 조건을 먼저 확인해 보세요.`,why:`‘${demand}’ 검색 수요 반영`},
+    {strategy:"보험료·보장 비교",title:title(`${al(p)} 보험료·보장`,`${al(p)} 보험료 확인`),desc:`${al(p)}의 보험료와 필요한 보장을 함께 확인해 보세요.`,why:"보험료와 보장을 함께 확인하는 흐름"},
   ]:[];
   const candidates=raw.map(x=>({...x,title:dw(HUMANIZE.light(x.title)),desc:dw(HUMANIZE.light(x.desc))}))
     .filter(x=>clen(x.title)>=4&&clen(x.title)<=SPEC.titleMax&&clen(x.desc)>=SPEC.descMin&&clen(x.desc)<=SPEC.descMax&&!lintBan(x.title+x.desc).length)
+    .filter(inScope)
     .filter((x,i,arr)=>arr.findIndex(y=>y.title===x.title&&y.desc===x.desc)===i);
   const titles=candidates.map(x=>({tx:x.title,len:clen(x.title),ban:[],serp:true}));
   const descs=candidates.map(x=>({tx:x.desc,len:clen(x.desc),ban:[],serp:true}));
-  return {titles,descs,candidates,angle,demand,common,observed:a.observed_ads||[],latest:a.latest_date||AD_META.asof||""};
+  return {titles,descs,candidates,angle:selectedAngle,demand:selectedDemand,common,observed:a.observed_ads||[],latest:a.latest_date||AD_META.asof||""};
 }
 
 function renderSidebar(){
@@ -689,7 +698,7 @@ function renderBrand(){
   $("#pt").textContent="경쟁사 브랜드검색"; $("#pts").textContent="· 삼성·KB·현대·DB × 상품 · 광고소재 모니터링";
   const bs=BRAND.brands||{}, total=brandCount();
   if(!total){
-    $("#content").innerHTML=`<div class="banner"><b>아직 브랜드검색 캡쳐가 없습니다.</b> ${location.protocol==="file:"?`로컬 파일로 열면 데이터가 로드되지 않습니다 — 배포 주소로 여세요: <a href="https://imsplendid8.github.io/CM-CMO/adcopy-tool.html" style="color:var(--brand-600);font-weight:800">여기</a>.`:`GitHub <b>Actions → SERP Capture → Run workflow</b> 실행 시 경쟁사 브랜드검색(삼성·KB·현대·DB × 상품)을 PC·모바일로 자동 캡쳐해 <code>serp/brand/</code>에 적립합니다. 매주 월요일 자동 실행.`}</div>`;
+    $("#content").innerHTML='<div class="banner">아직 경쟁사 브랜드검색 이미지가 없습니다.</div>';
     return;
   }
   const brandsN=BRAND_ORDER.filter(([co])=>bs[co]).length, asof=BRAND.asof||"—";
@@ -711,8 +720,8 @@ function renderBrand(){
       <div class="sec-b"><div class="bgrid">${cards}</div></div></div>`;
   }).join("");
   $("#content").innerHTML=`
-    <div class="banner">경쟁사 <b>브랜드검색 광고소재</b>를 매주 캡쳐해 모니터링합니다. 여기서 경쟁 소구·구성을 참고해 <b>주차별 소재 캘린더</b>·상품별 소재에 반영하세요. 썸네일 클릭 시 원본.</div>
-    <div class="kpi-row">${kpi(brandsN+"/4","감시 경쟁사")}${kpi(total,"누적 캡쳐")}${kpi(thisWeek,"이번주 캡쳐")}${kpi(esc(asof),"최신 기준일")}</div>
+    <div class="banner">경쟁사별 PC·모바일 브랜드검색 이미지를 확인합니다.</div>
+    <div class="kpi-row">${kpi(brandsN+"/4","경쟁사")}${kpi(total,"누적 캡쳐")}${kpi(thisWeek,"이번주 캡쳐")}${kpi(esc(asof),"최신 기준일")}</div>
     ${sections}`;
 }
 
@@ -768,38 +777,38 @@ const RECO_MINCONF=0.6;
 function usableRecs(){return (RECO.recommendations||[]).filter(r=>(r.confidence||0)>=RECO_MINCONF)
   .sort((a,b)=>{const o={active:0,upcoming:1,emerging:2};return (o[a.event_state]??9)-(o[b.event_state]??9)||(b.confidence||0)-(a.confidence||0);});}
 function renderReco(){
-  $("#pt").textContent="추천 소재"; $("#pts").textContent=RECO.asof?`· 근거 기반 · 기준 ${RECO.asof}`:"· 근거 기반";
+  $("#pt").textContent="추천 소재"; $("#pts").textContent=RECO.asof?`· 기준 ${RECO.asof}`:"";
   const recs=usableRecs(),ST={upcoming:"예정",emerging:"신흥",active:"진행"};
   const cards=recs.length?recs.map(r=>`
     <div class="rc">
       <div class="rc-h"><span class="rc-st ${esc(r.event_state)}">${esc(ST[r.event_state]||r.event_state)}</span>
         <span class="rc-pr">${esc(r.product_name)}</span><span class="rc-ev">${esc(r.event_name)}</span>
-        <span class="rc-cf">conf ${esc(r.confidence)}</span></div>
+        <span class="rc-cf">추천도 ${Math.round(Number(r.confidence||0)*100)}%</span></div>
       <div class="rc-l"><span class="k">제목</span><span class="v">${esc(r.title)}</span><button class="cp" data-copy="${esc(r.title)}" data-recommendation-id="${esc(r.fingerprint)}">복사</button></div>
       <div class="rc-l"><span class="k">설명</span><span class="v">${esc(r.description)}</span><button class="cp" data-copy="${esc(r.description)}" data-recommendation-id="${esc(r.fingerprint)}">복사</button></div>
       ${r.content_subhead?`<div class="rc-l"><span class="k">소제목</span><span class="v">${esc(r.content_subhead)}</span><button class="cp" data-copy="${esc(r.content_subhead)}" data-recommendation-id="${esc(r.fingerprint)}">복사</button></div>`:""}
       <div class="rc-f">📌 ${(r.fact||[]).map(esc).join(" · ")}</div>
       <div class="rc-f"><button class="btn sm" data-feedback-action="accepted" data-recommendation-id="${esc(r.fingerprint)}" data-product="${esc(r.product)}">채택</button> <button class="btn sm" data-feedback-action="edit_requested" data-recommendation-id="${esc(r.fingerprint)}" data-product="${esc(r.product)}">수정 필요</button> <button class="btn sm" data-feedback-action="rejected" data-recommendation-id="${esc(r.fingerprint)}" data-product="${esc(r.product)}">반려</button></div>
-    </div>`).join(""):`<div class="banner">지금 기준 신뢰도 <b>conf ≥ ${RECO_MINCONF}</b> 추천이 없습니다. (엔진 산출물이 아직 없거나 로컬 파일로 열림 — 배포 주소에서 확인)</div>`;
+    </div>`).join(""):`<div class="banner">현재 표시할 추천 소재가 없습니다.</div>`;
   $("#content").innerHTML=`
-    <div class="banner"><b>근거 기반 추천 소재</b> · 시즌 캘린더·뉴스 클리핑·검색량을 결합해 <b>지금 밀 만한 상품·문구</b>를 자동 제안(신뢰도 <b>conf ≥ ${RECO_MINCONF}</b>만 노출). 모두 <b>운영 후보</b> — 심의·상품근거 검토 후 사용. 상시 세트는 <b>상품별 소재</b> 탭.</div>
+    <div class="banner">시즌·뉴스·검색 수요를 반영한 추천입니다. 상품 내용과 심의를 확인한 뒤 사용하세요.</div>
     <div class="rc-wrap">${cards}</div>`;
 }
 
 const dayAge=s=>{const d=new Date(`${s}T00:00:00`);return Number.isNaN(d.getTime())?null:Math.max(0,Math.floor((Date.now()-d.getTime())/86400000));};
 function serpMonitorPanel(p){
   const s=serpIdeas(p),age=dayAge(s.latest),stale=age===null||age>14;
-  const ads=s.observed.slice(0,4).map(o=>`<div class="serp-ad"><b>${esc(o.brand||"관측 광고")} · ${esc(o.keyword||"키워드 미기록")}</b><p>${esc(o.title||"—")}<br>${esc(o.desc||"—")}</p><small>${esc(o.date||"날짜 미기록")} · ${o.rank?`${esc(o.rank)}위 · `:""}공개 SERP 관측</small></div>`).join("");
-  const ideas=s.candidates.map((o,i)=>`<div class="serp-ad"><b>${i+1}. ${esc(o.strategy)} <span class="source-pill">운영 후보</span></b>
+  const ads=s.observed.slice(0,4).map(o=>`<div class="serp-ad"><b>${esc(o.brand||"경쟁사")} · ${esc(o.keyword||"키워드 미기록")}</b><p>${esc(o.title||"—")}<br>${esc(o.desc||"—")}</p><small>${esc(o.date||"날짜 미기록")}${o.rank?` · ${esc(o.rank)}위`:""}</small></div>`).join("");
+  const ideas=s.candidates.map((o,i)=>`<div class="serp-ad"><b>${i+1}. ${esc(o.strategy)} <span class="source-pill">검토용</span></b>
       <div class="wk-copy"><span class="k">제목</span><span class="v">${esc(o.title)}</span><span class="wx-len">${clen(o.title)}/${SPEC.titleMax}</span><button class="cp" data-copy="${esc(o.title)}">복사</button></div>
       <div class="wk-copy"><span class="k">설명</span><span class="v">${esc(o.desc)}</span><span class="wx-len">${clen(o.desc)}/${SPEC.descMax}</span><button class="cp" data-copy="${esc(o.desc)}">복사</button></div>
-      <small>${esc(o.why)} · 랜딩·상품 근거·광고심의 확인 후 사용</small></div>`).join("");
-  return `<div class="sec-lbl">🔎 경쟁사 SERP 모니터링 기반 SA 차별화</div>
+      <small>${esc(o.why)}</small></div>`).join("");
+  return `<div class="sec-lbl">🔎 경쟁사 광고와 SA 제안</div>
     <div class="serp-grid">
-      <section class="serp-card"><h3>공개 광고 관측 <span class="${stale?"stale":"fresh"}">${stale?"갱신 필요":"최근 관측"}</span></h3>
-        <p>기준 ${esc(s.latest||"—")}${age!==null?` · ${age}일 전`:""}. 경쟁 문구는 복사하지 않고 반복 소구 탐지에만 사용합니다.</p>${ads||'<p>구조화된 관측 소재가 없습니다.</p>'}</section>
-      <section class="serp-card"><h3>제안에 반영한 판단</h3><p>경쟁 공통 소구: <b>${s.common.map(esc).join(" · ")||"감지 없음"}</b><br>실측 검색 의도: <b>${esc(s.demand)}</b><br>우리 우선 각도: <b>${esc(s.angle)}</b><br>가격·할인·1위 표현은 자사 근거가 연결되기 전 자동 제안에서 제외합니다.</p></section>
-      <section class="serp-card"><h3>바로 검토할 SA 세트</h3><p>제목과 설명을 한 세트로 만들고 네이버 글자 수를 통과한 안만 표시합니다.</p>${ideas||'<p>규격을 통과한 후보가 없습니다.</p>'}</section>
+      <section class="serp-card"><h3>경쟁사 광고 <span class="${stale?"stale":"fresh"}">${stale?"업데이트 필요":"최신"}</span></h3>
+        <p>${esc(s.latest||"기준일 없음")}${age!==null?` · ${age}일 전`:""}</p>${ads||'<p>수집된 경쟁사 광고가 없습니다.</p>'}</section>
+      <section class="serp-card"><h3>제안 기준</h3><p>경쟁사 공통 소구: <b>${s.common.map(esc).join(" · ")||"없음"}</b><br>주요 검색어: <b>${esc(s.demand)}</b><br>추천 소구: <b>${esc(s.angle)}</b></p></section>
+      <section class="serp-card"><h3>SA 소재 제안</h3>${ideas||'<p>현재 제안할 소재가 없습니다.</p>'}</section>
     </div>`;
 }
 
@@ -819,7 +828,7 @@ function powerBrief(p){
 function renderPower(){
   const p=getP(POWER_KEY),b=powerBrief(p);
   $("#pt").textContent="파워컨텐츠 소재 제안";$("#pts").textContent=`· ${p.name} · ${PLANM}월→${planNext()}월`;
-  $("#content").innerHTML=`<div class="banner"><b>캐롯 블로그형 정보 구조 + 네이버 파워컨텐츠 규격</b> · 대표키워드와 직접 관련된 제목·설명·본문 브리프를 함께 제안합니다. 캐롯 블로그의 질문형 도입·3줄 요약·체크리스트·FAQ 흐름만 참고하며 문장은 복제하지 않습니다.</div>
+  $("#content").innerHTML=`
     <select class="power-pick" id="powerProduct" aria-label="파워컨텐츠 상품 선택">${PRODUCTS.map(x=>`<option value="${esc(x.key)}" ${x.key===p.key?"selected":""}>${esc(x.name)}</option>`).join("")}</select>
     <div class="specbar"><div class="spec">대표키워드 <b>${esc(b.kw)}</b></div><div class="spec">제목 <b>7~28자</b></div><div class="spec">설명 <b>80~110자</b></div><div class="spec">콘텐츠 흐름 <b>3줄 요약→체크리스트→FAQ</b></div></div>
     <div class="power-grid">
@@ -829,8 +838,7 @@ function renderPower(){
       <section class="power-card"><h3>권장 목차</h3><ol class="checklist">${b.outline.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></section>
       <section class="power-card"><h3>FAQ 4개</h3><ol class="checklist">${b.faq.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></section>
       <section class="power-card"><h3>게재 전 필수 검수</h3><ul class="checklist"><li>키워드–소재–랜딩 본문의 주제 일치</li><li>담보명·한도·면책·대기기간은 최신 약관 대조</li><li>가격·할인·비교우위는 근거와 기준일 표시</li><li>심의필 번호와 상품 기준일은 승인본에서만 입력</li></ul></section>
-    </div>
-    <div class="note"><b>참고 기준</b> · <a href="https://blog.carrotins.com/" target="_blank" rel="noopener">한화손보 캐롯 블로그 ↗</a>의 정보 구조와 <a href="https://ads.naver.com/adguide/1205" target="_blank" rel="noopener">네이버 파워컨텐츠 운영원칙 ↗</a>을 참고한 내부 초안입니다.</div>`;
+    </div>`;
   $("#powerProduct").addEventListener("change",e=>{POWER_KEY=e.target.value;renderPower();});
 }
 function render(){
@@ -844,7 +852,7 @@ function render(){
   const evPanel = ev ? `<div class="ev">
     <div class="ev-row"><span class="ev-lb news">📰 뉴스 동향</span><div class="ev-tx">${esc(ev.news)}</div></div>
     <div class="ev-row"><span class="ev-lb comp">🎯 경쟁사 소구(SERP)</span><div class="ev-tx">${ev.comps.map(c=>`<b>${esc(c.who)}</b> ${esc(c.hook)}`).join("<br>")}</div></div>
-    ${AD_ANALYSIS[p.key]?`<div class="ev-row"><span class="ev-lb comp">🧪 실측 관측 소재</span><div class="ev-tx">경쟁 <b>공통 소구(회피·차별)</b>: ${(AD_ANALYSIS[p.key].common_soju||[]).map(esc).join(", ")||"—"}<br>관측 프로모션: ${(AD_ANALYSIS[p.key].promos||[]).slice(0,4).map(x=>esc(x[0])).join(" · ")||"—"} · 가격신호: ${(AD_ANALYSIS[p.key].prices||[]).map(esc).join(" · ")||"—"} <span style="color:var(--muted)">· <code>serp/ad_observations.json</code></span></div></div>`:""}
+    ${AD_ANALYSIS[p.key]?`<div class="ev-row"><span class="ev-lb comp">경쟁사 광고 요약</span><div class="ev-tx">공통 소구: ${(AD_ANALYSIS[p.key].common_soju||[]).map(esc).join(", ")||"—"}<br>프로모션: ${(AD_ANALYSIS[p.key].promos||[]).slice(0,4).map(x=>esc(x[0])).join(" · ")||"—"} · 가격 표현: ${(AD_ANALYSIS[p.key].prices||[]).map(esc).join(" · ")||"—"}</div></div>`:""}
     <div class="ev-row"><span class="ev-lb ours">✅ 우리 대응 각도</span><div class="ev-tx">${esc(ev.ours)}</div></div>
     <div class="ev-links"><a href="news-tool.html" target="_blank" rel="noopener">뉴스 콘솔 ↗</a> · <a href="serp-tool.html" target="_blank" rel="noopener">SERP 아카이브 ↗</a></div>
   </div>` : "";
@@ -854,7 +862,7 @@ function render(){
   </div>` : "";
   const seasonChips = s.issues.length ? s.issues.map(o=>`<span class="spec">🗓 <b>${esc(shortWord(o.tag))}</b> · ${esc(proxLabel(o))}</span>`).join("") : "";
   $("#content").innerHTML=`
-    <div class="banner"><b>연간플랜 연동 · ${PLANM}월→${planNext()}월</b> · 선택월과 익월에 해당하는 시즌 이슈만 소재에 반영해 다른 달의 ‘신년’ 같은 문구가 섞이지 않습니다. 아래 문구는 <b>초안</b>이며 담보·보험료·조건은 약관과 광고심의 기준으로 검수 후 게재하세요.</div>
+    <div class="banner"><b>${PLANM}월→${planNext()}월 소재</b> · 상품 내용과 심의를 확인한 뒤 사용하세요.</div>
     <div class="xbar">
       <button class="btn xbtn" id="xExcel">⬇ 문구 검토용 Excel</button>
       <button class="btn" id="xAds">⬇ 현재 상품 내부 검토 CSV (${batch.length}/50)</button>
@@ -871,10 +879,10 @@ function render(){
       ${seasonChips}
     </div>
 
-    <div class="sec-lbl">📌 근거 · 실측 검색량 · 뉴스 동향 · 경쟁사 SERP</div>
+    <div class="sec-lbl">📌 상품·시장 참고</div>
     ${volPanel}
     ${evPanel}
-    ${serpMonitorPanel(p)}
+    ${p.cat==="사이트"?"":serpMonitorPanel(p)}
 
     ${block("① 광고 제목 (브랜드형)",s.brand,SPEC.titleMax)}
     ${block("② 추가제목 · 롤링 (소구·시즌)",s.subt,SPEC.titleMax,true)}
@@ -894,7 +902,7 @@ function render(){
         <div class="meta"><span class="len" id="edDlen">0/${SPEC.descMax}</span><span class="lint" id="edDlint"></span></div></div>
     </div>
 
-    <div class="note"><b>사용법</b> · Excel과 CSV는 모두 <b>내부 검토용 초안</b>입니다. 상품별 50행·전체 650행은 규격·금칙어·중복 조합을 자동 검사하지만, 상품 근거와 광고심의는 완료되지 않았습니다. 네이버에서 내려받은 공식 템플릿을 CSV/TSV로 저장해 불러온 경우에만 해당 열 순서로 변환할 수 있으며, 변환 뒤에도 담당자가 필수값·심의 상태를 확인해야 합니다. <span style="color:var(--bad);font-weight:800">빨강 행</span>은 시즌·뉴스 반영분입니다.</div>`;
+    <div class="note">내보낸 파일은 내부 검토용입니다. 등록 전 필수값과 심의 상태를 확인하세요.</div>`;
 
   $("#xExcel").addEventListener("click",()=>exportXls(p));
   $("#xAds").addEventListener("click",()=>exportReviewAds([p],p.name));

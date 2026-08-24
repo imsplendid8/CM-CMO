@@ -20,6 +20,7 @@ import check_automation_health as cah   # 자동화 상태를 브리프 직전 �
 import event_engine as ee               # 시즌 span 일자 판정 공유(월 전체가 아닌 정확 기간)
 import humanize_korean as hk             # im-not-ai light 호환 한국어 후처리
 import content_brief                     # 대시보드·텔레그램·이메일 공통 뉴스 분석
+from telegram_utils import split_html_message
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HUB = "imsplendid8.github.io/CM-CMO"
@@ -279,22 +280,26 @@ def send_telegram(text):
     if not (token and chats):
         print("TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_IDS(또는 TELEGRAM_CHAT_ID) 미설정", file=sys.stderr)
         sys.exit(2)
-    if len(text) > 4000:                      # 텔레그램 메시지 한도(4096) 보호
-        text = text[:3980] + "\n…(생략)"
+    chunks = split_html_message(text)
     sent, failed = 0, 0
-    for chat in chats:
-        data = urllib.parse.urlencode({"chat_id": chat, "text": text,
-                                       "parse_mode": "HTML",
-                                       "disable_web_page_preview": "true"}).encode()
-        req = urllib.request.Request(f"https://api.telegram.org/bot{token}/sendMessage", data=data)
-        try:
-            with urllib.request.urlopen(req, timeout=15) as r:
-                ok = json.load(r).get("ok")
-        except Exception as e:                # 한 명 실패가 다른 수신자 발송을 막지 않게
-            ok = False
-            print(f"  · {chat}: 예외 {e}", file=sys.stderr)
-        sent += 1 if ok else 0
-        failed += 0 if ok else 1
+    for recipient_no, chat in enumerate(chats, 1):
+        recipient_ok = True
+        for chunk in chunks:
+            data = urllib.parse.urlencode({"chat_id": chat, "text": chunk,
+                                           "parse_mode": "HTML",
+                                           "disable_web_page_preview": "true"}).encode()
+            req = urllib.request.Request(f"https://api.telegram.org/bot{token}/sendMessage", data=data)
+            try:
+                with urllib.request.urlopen(req, timeout=15) as r:
+                    ok = json.load(r).get("ok")
+            except Exception as e:            # 한 명 실패가 다른 수신자 발송을 막지 않게
+                ok = False
+                print(f"  · 수신자 {recipient_no}: {type(e).__name__}", file=sys.stderr)
+            recipient_ok = recipient_ok and bool(ok)
+            if not ok:
+                break
+        sent += 1 if recipient_ok else 0
+        failed += 0 if recipient_ok else 1
     print(f"텔레그램 발송: 성공 {sent}/{len(chats)}" + (f" · 실패 {failed}" if failed else ""))
     if failed:                                # 일부라도 미수신이면 실패(exit≠0) — 스케줄 워크플로가 부분 발송을 감지·재시도
         sys.exit(1)
@@ -348,9 +353,9 @@ def send_email():
         server.sendmail(frm, to, msg.as_string())
         server.quit()
     except Exception as e:
-        print(f"이메일 발송 실패: {e}", file=sys.stderr)
+        print(f"이메일 발송 실패 ({type(e).__name__})", file=sys.stderr)
         sys.exit(1)
-    print(f"이메일 발송: 성공 {len(to)}명 → {', '.join(to)}")
+    print(f"이메일 발송: 성공 {len(to)}명")
 
 
 if __name__ == "__main__":

@@ -635,11 +635,11 @@ const TITLE_GSC={not_connected:"GSC 미연결",no_signal:"현재 신호 없음",
 const TITLE_AUTHORITY={not_checked:"미확인",low:"낮음",growing:"성장 중",established:"확립"};
 function titleOpsSection(p){
   const row=SEO_TITLE_AGENT[p.key];
-  if(!row)return `<section class="titleops-panel"><div class="titleops-head"><div><h3>🔎 근거 기반 SEO 제목 운영</h3><p>제목 후보 데이터를 불러오지 못했습니다.</p></div></div></section>`;
+  if(!row)return `<section class="titleops-panel"><div class="titleops-head"><div><h3>🔎 SEO 제목 후보</h3><p>제목 후보를 불러오지 못했습니다.</p></div></div></section>`;
   const ready=row.status==="ready_for_review",recommended=row.recommended_candidate_id;
-  return `<section class="titleops-panel"><div class="titleops-head"><div><h3>🔎 근거 기반 SEO 제목 후보 3개</h3><p>SearchAd 수요 → 비공개 GSC 자기잠식·가시성 검증 → 후보별 약점 확인 순서입니다.</p></div><span class="titleops-state ${ready?"ready":""}">${ready?"GSC 비공개 검증 완료":"GSC 연결 전 · 초안만"}</span></div>
+  return `<section class="titleops-panel"><div class="titleops-head"><div><h3>🔎 SEO 제목 후보 3개</h3></div><span class="titleops-state ${ready?"ready":""}">${ready?"추천 가능":"데이터 확인 필요"}</span></div>
     <div class="titleops-grid">${(row.candidates||[]).map(c=>{const chosen=c.id===recommended,rejected=c.decision==="rejected_cannibalization";return `<article class="titleops-card ${chosen?"recommended":""} ${rejected?"rejected":""}"><div class="titleops-top"><span class="titleops-tag">${esc(TITLE_PATTERN[c.pattern]||c.pattern)}</span><span class="titleops-tag">${esc(c.query_tier)}</span>${chosen?`<span class="titleops-tag">추천 검토</span>`:""}${rejected?`<span class="titleops-tag">반려</span>`:""}<button class="cp" data-copy="${esc(c.title)}">제목 복사</button></div><div class="titleops-title">${esc(c.title)} <span style="font-size:10px;color:var(--muted)">${c.title_length}자</span></div><div class="titleops-meta">목표 검색어 <b>${esc(c.target_query)}</b> · SearchAd 월 ${Number(c.search_demand||0).toLocaleString()} · 경쟁 ${esc(c.competition)}<br>GSC ${esc(TITLE_GSC[c.gsc_status]||c.gsc_status)} · 본문 약속 확인 필수</div><div class="titleops-weak"><b>약점</b> · ${esc(c.weakness)}</div></article>`;}).join("")}</div>
-    <div class="titleops-note"><b>현재 권위</b> · ${esc(TITLE_AUTHORITY[row.authority_band]||row.authority_band)} · <b>다음 조치</b> · ${esc(row.next_action)}<br>원본 GSC 검색어·페이지·성과 수치는 공개 JSON에 저장하지 않습니다. 모든 후보는 상품 담당자·준법·광고심의 검토 전용입니다.</div></section>`;
+    <div class="titleops-note"><b>다음 조치</b> · ${esc(row.next_action)}</div></section>`;
 }
 function faqSection(p){
   const month=window.ModooPlanning.getMonth(),faqs=monthlyFaqs(p);
@@ -648,7 +648,7 @@ function faqSection(p){
   return `<section class="faq-panel"><div class="faq-head"><div><h3>❓ 고객 질문형 FAQ 콘텐츠 4개</h3><p>월 이름을 억지로 넣지 않고, 검색자가 실제로 궁금해할 가입·보장 질문에 바로 답합니다.</p></div><a class="btn" href="seasonal-tool.html?month=${month}" target="_blank" rel="noopener">${month}월 시즌 근거 보기 ↗</a></div>
     <div class="faq-list">${faqs.map((row,i)=>`<article class="faq-card"><div class="fq-top"><span class="fq-cycle">${esc(row.cycle)}</span><button class="cp" data-copy="${esc(row.q+"\n"+row.a)}">Q&A 복사</button></div><div class="fq-q">${i+1}. ${esc(row.q)}</div><div class="fq-a">${esc(row.a)}</div></article>`).join("")}</div>
     ${opportunities.length?`<div class="faq-guide"><b>검색 데이터가 찾은 다음 FAQ 후보</b> · ${opportunities.map(x=>`${esc(x.question)} <span class="fq-cycle">${esc(x.answer_status==="draft_allowed"?"답변 초안 가능":"상품 근거 필요")}</span>`).join(" · ")}<br>승인된 상품 근거가 없는 질문은 공개 FAQ에 자동 추가하지 않습니다.</div>`:""}
-    <div class="faq-guide"><b>캐롯 블로그 표현 참고 기준</b> · ${esc(FAQ_EDITORIAL_GUIDE.tone)}. <a href="${FAQ_REFERENCE_URL}" target="_blank" rel="noopener">blog.carrotins.com 참고 ↗</a><br><b>사실·심의 체크</b> · ${esc(FAQ_EDITORIAL_GUIDE.evidence)}. ${esc(FAQ_EDITORIAL_GUIDE.review)}. 캐롯 문구나 심의번호를 그대로 재사용하지 않습니다.</div>
+    <div class="faq-guide">답변은 최신 상품 자료와 약관을 확인한 뒤 사용하세요.</div>
     <div class="faq-actions"><button class="btn" data-copy="${esc(faqDraft)}">FAQ 검토본 복사</button><span style="font-size:11px;color:var(--muted)">Google FAQ 리치결과는 2026-05-07 종료됐습니다. Q&A 콘텐츠로만 검토하고, FAQPage를 검색 노출 혜택으로 권장하지 않습니다. <a href="https://developers.google.com/search/updates" target="_blank" rel="noopener">정책 근거 ↗</a></span></div></section>`;
 }
 
@@ -880,7 +880,7 @@ function renderScreen(){
   const done=ts.filter(t=>isDone(`cm:${p.key}:${t.id}`)).length,pct=Math.round(done/ts.length*100);
   const destLine=p.delivery==="bridge"?`<div class="dest-line">→ 실제 이동(색인·랭킹 주체): <b>${esc(p.destUrl)}</b></div>`:"";
   $("#v-product").innerHTML=`
-    <div class="scope"><span class="sc-tag">Technical SEO · CM사업부 담당 상품만</span> 제목·메타·OG·H·canonical·robots·분기(리다이렉트) 등 <b>기술 SEO 항목</b> 중심 · <b>네이버 웹마스터도구 가이드 반영</b> · 모바일(m.hanwhadirect.com) 기준 · 네이버 색인 실측(2026-07-18)</div>
+    <div class="scope"><span class="sc-tag">담당 상품 기술 SEO</span> 모바일 페이지 기준 · 네이버 색인 2026-07-18</div>
     <div class="scr-hero">
       <div class="scr-hero-top">
         <h2>${esc(p.name)}</h2>
@@ -912,7 +912,7 @@ function renderScreen(){
     ${faqSection(p)}
     ${implSection(p,COPY[p.key],{brand:p.brand})}
     ${p.delivery==="home"?webStdPanel():""}
-    <div class="foot-note"><b>참고</b> · 상단 점수(구글·네이버)는 네이버 색인 실측값(2026-07-18) 기준이며, 반영 여부는 <b>적용/미적용</b>으로만 기록합니다(추정 점수·자동측정 없음 — 실측이 필요하면 봇차단 403 해제 후 unlighthouse). 브릿지 상품은 <b>캐롯 목적지 페이지</b> 색인값 기준이며, 브릿지 자체는 색인이 거의 없습니다(분기 처리 To-Do 참고). H1·alt·OG 원본은 사이트 봇차단(403)으로 미수집 → 템플릿 예시이니 실제 DOM에 맞춰 반영. After 카피는 광고심의 검수 후 배포.<br><b>네이버 웹마스터도구 가이드</b> · 제목 15자·설명 45자 이내 권장, 제목=설명·키워드 반복·낚시성 금지, robots.txt와 로봇 메타태그 <b>둘 다 허용</b>, 리다이렉트는 <b>HTTP 301</b>, 사이트맵·RSS 제출.</div>`;
+    <div class="foot-note">점수 기준일 2026-07-18 · 실제 DOM과 심의를 확인한 뒤 반영하세요.</div>`;
   $("#pageTitle").textContent=p.name;
   renderSidebar();
 }

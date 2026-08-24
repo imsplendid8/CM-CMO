@@ -72,6 +72,41 @@ class TestSeoTitleOps(unittest.TestCase):
         self.assertEqual(result["sources"]["gsc"], "stale")
         self.assertIsNone(result["products"][0]["recommended_candidate_id"])
 
+    def test_fresh_but_empty_gsc_cannot_unlock_recommendation(self):
+        result = self.agent.generate(
+            self.products, self.volume, self.faq,
+            {"asof": "2026-08-24", "rows": []}, today=date(2026, 8, 24),
+        )
+        self.assertEqual(result["sources"]["gsc"], "empty")
+        self.assertEqual(result["products"][0]["status"], "blocked_gsc")
+        self.assertIsNone(result["products"][0]["recommended_candidate_id"])
+
+    def test_unrelated_gsc_and_missing_searchad_cannot_unlock(self):
+        unrelated = {"asof": "2026-08-24", "rows": [{
+            "query": "주택화재보험", "page": "https://example.invalid/a",
+            "impressions": 100, "position": 8,
+        }]}
+        result = self.agent.generate(self.products, self.volume, self.faq, unrelated, today=date(2026, 8, 24))
+        self.assertEqual(result["products"][0]["status"], "blocked_gsc")
+        self.assertIsNone(result["products"][0]["recommended_candidate_id"])
+
+        missing_volume = {**self.volume, "source": "none"}
+        matching = {"asof": "2026-08-24", "rows": [{
+            "query": "운전자보험비교", "page": "https://example.invalid/a",
+            "impressions": 100, "position": 8,
+        }]}
+        result = self.agent.generate(self.products, missing_volume, self.faq, matching, today=date(2026, 8, 24))
+        self.assertEqual(result["products"][0]["status"], "blocked_searchad")
+        self.assertIsNone(result["products"][0]["recommended_candidate_id"])
+
+    def test_gsc_matching_does_not_merge_overlapping_korean_queries(self):
+        signal, matches = self.agent.gsc_signal("암보험", [{
+            "query": "유방암보험", "page": "https://example.invalid/a",
+            "impressions": 100, "position": 8,
+        }])
+        self.assertEqual(signal, "no_signal")
+        self.assertEqual(matches, [])
+
     def test_repository_output_contract(self):
         payload = json.loads((ROOT / "data/seo/title-opportunities.json").read_text(encoding="utf-8"))
         self.assertEqual(len(payload["products"]), 13)

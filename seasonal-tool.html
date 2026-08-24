@@ -236,7 +236,7 @@ table.mcal thead th.rl{z-index:3;}
     <div class="sb-brand"><div class="brand-logo" aria-hidden="true"></div>
       <div><div class="bn">시즌·이벤트 캘린더</div><small>연간 시즌 매트릭스·검색량 추세</small></div></div>
     <nav class="sb-nav" id="sbNav"></nav>
-    <div class="sb-foot"><a href="index.html">← 통합 콘솔</a><br>시즌 이슈·키워드는 마케팅 캘린더 기준<br>추세 검증은 네이버 데이터랩 · 근거 기반 <b>추천 소재</b>는 SA소재 탭으로 이동</div>
+    <div class="sb-foot"><a href="index.html">← 통합 콘솔</a><br>추천 소재는 SA소재 탭에서 확인</div>
   </aside>
   <main class="main">
     <header class="topbar">
@@ -384,7 +384,7 @@ function trendSection(p){
     <div class="trend-h"><span class="t">📈 데이터랩 실측 검색추세</span><span class="src ${src[0]}">${src[1]}</span>
       <span class="match ${match?"ok":"warn"}">${match?"✓ 시즌 이슈와 일치":"⚠ 재검토(피크 불일치)"}</span></div>
     <div class="tbars">${bars}</div>
-    <div class="trend-note"><b>실측 피크</b> ${esc(peakTxt)} · 기준 ${esc(TRENDS.asof||"")} · ${TRENDS.source==="datalab"?"네이버 데이터랩 최근 24개월 월별 검색추세를 달력월로 집계":"실측 연동 전 근사값 — trends 워크플로우 실행 시 실측으로 교체"}. 시즌 이슈(카드)의 달과 실측 피크가 맞는지 확인하세요.</div>
+    <div class="trend-note"><b>검색 피크</b> ${esc(peakTxt)} · 기준 ${esc(TRENDS.asof||"")} · ${TRENDS.source==="datalab"?"데이터랩 최근 24개월":"연동 전 참고값"}</div>
   </div>`;
 }
 
@@ -495,7 +495,7 @@ function renderProduct(){
     ${trendSection(p)}
     <div class="sec-lbl">시즌별 이슈 · 키워드 · 선제 대응</div>
     <div class="wins">${cards}</div>
-    <div class="note"><b>활용</b> · 각 시즌 <b>선제 대응 시점</b>(보통 피크 3~4주 전)에 맞춰 <b>SEO 태그·검색광고 키워드·뉴스 모니터링</b>을 준비하세요. 키워드 칩은 네이버 검색, <b>데이터랩</b> 링크로 실제 검색 추세를 검증할 수 있습니다.</div>`;
+    <div class="note">피크 전에 소재·키워드·콘텐츠를 준비하세요.</div>`;
 }
 function render(){(curKey==="__all"?renderOverview():renderProduct());renderSidebar();window.scrollTo({top:0});}
 // 뷰 ↔ URL 해시 동기화(새로고침·뒤로가기). 상품은 상품키를 해시로.

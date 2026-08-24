@@ -3,7 +3,7 @@ name: Naver SearchAd Volume
 # 매주 월 05:00 KST(=일 20:00 UTC) 네이버 검색광고 키워드도구로 실검색량 갱신
 # → data/volume.json(현재) + data/volume-history.json(월별 최근 13개월).
 # 필요 Secrets(검색/데이터랩 키와 '다름'): NAVER_AD_API_KEY, NAVER_AD_SECRET, NAVER_AD_CUSTOMER
-#   발급: searchad.naver.com → 도구 → API 사용 관리. 없으면 source=none(도구에 미반영).
+#   발급: searchad.naver.com → 도구 → API 사용 관리. 없거나 일부 실패하면 기존 정상본 유지 후 워크플로 실패.
 # 수동 실행: Actions → Naver SearchAd Volume → Run workflow
 
 on:
@@ -22,8 +22,8 @@ jobs:
   volume:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
       - name: Fetch search volume

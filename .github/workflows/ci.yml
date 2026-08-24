@@ -11,8 +11,8 @@ jobs:
   checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
       - name: 상품 마스터 동기화 검사
@@ -22,10 +22,10 @@ jobs:
       - name: SEO 제목 검토 큐 검사
         run: python3 scripts/seo_title_agent.py --validate
       - name: 테스트 의존성(PyYAML — 워크플로 정적 테스트용)
-        run: python3 -m pip install --quiet pyyaml
+        run: python3 -m pip install --quiet pyyaml==6.0.2
       - name: 파이썬 단위 테스트
         run: python3 -m unittest discover -s tests -p 'test_*.py' -v
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "20"
       - name: 도구 JS 문법 검사

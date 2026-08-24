@@ -1,57 +1,7 @@
 {
-  "_comment": "공개 SERP를 복제하지 않고 공통 소구·검색량·승인 claim을 결합한 사람 검토용 SA 후보.",
+  "_comment": "경쟁사 광고와 검색 수요를 참고해 만든 내부 검토용 SA 후보.",
   "asof": "2026-08-02",
   "products": [
-    {
-      "product_key": "home",
-      "keyword": "한화다이렉트보험",
-      "common_competitor_angles": [],
-      "selected_angle": "자동차보험",
-      "serp_diff": {
-        "latest": "2026-07-26",
-        "previous": null,
-        "entered_brands": [
-          "삼성화재 다이렉트"
-        ],
-        "exited_brands": []
-      },
-      "observed_count": 1,
-      "candidates": [
-        {
-          "strategy": "빈 소구 선점",
-          "title": "자동차보험 확인",
-          "description": "자동차보험 포함 여부와 가입 조건을 온라인에서 확인해 보세요.",
-          "title_length": 8,
-          "description_length": 34,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "fingerprint": "25cebe03f45d9b15"
-        },
-        {
-          "strategy": "검색 의도 응답",
-          "title": "한화손보 다이렉트 가입조건",
-          "description": "한화다이렉트보험 찾는다면 보장 범위와 제외 조건을 먼저 확인하세요.",
-          "title_length": 14,
-          "description_length": 37,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "fingerprint": "fd06b27c1d7ef193"
-        },
-        {
-          "strategy": "비교 행동 유도",
-          "title": "한화손보 다이렉트 보험료",
-          "description": "한화손보 다이렉트에서 필요한 담보와 보험료를 직접 비교해 보세요.",
-          "title_length": 13,
-          "description_length": 36,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "fingerprint": "c277922179d2c984"
-        }
-      ]
-    },
     {
       "product_key": "hrmf",
       "keyword": "주택화재보험",
@@ -71,37 +21,37 @@
       "observed_count": 2,
       "candidates": [
         {
-          "strategy": "빈 소구 선점",
-          "title": "풍수재 확인",
-          "description": "풍수재 포함 여부와 가입 조건을 온라인에서 확인해 보세요.",
-          "title_length": 6,
+          "strategy": "핵심 보장 확인",
+          "title": "풍수재 보장 확인",
+          "description": "주택화재보험의 풍수재 보장 여부와 가입 조건을 확인해 보세요.",
+          "title_length": 9,
+          "description_length": 34,
+          "claim_ids": [],
+          "evidence_status": "product_evidence_required",
+          "review_status": "human_review_required",
+          "fingerprint": "8ceccf9ee7fc3866"
+        },
+        {
+          "strategy": "가입 전 체크",
+          "title": "주택화재보험 가입 전 확인",
+          "description": "주택화재보험 가입 전 보장 범위와 제외 조건을 먼저 확인해 보세요.",
+          "title_length": 14,
+          "description_length": 37,
+          "claim_ids": [],
+          "evidence_status": "product_evidence_required",
+          "review_status": "human_review_required",
+          "fingerprint": "f9a976e2d0c12391"
+        },
+        {
+          "strategy": "보험료·보장 비교",
+          "title": "주택화재보험 보험료·보장",
+          "description": "주택화재보험의 보험료와 필요한 보장을 함께 확인해 보세요.",
+          "title_length": 13,
           "description_length": 32,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "9cee1af124759d17"
-        },
-        {
-          "strategy": "검색 의도 응답",
-          "title": "주택화재보험 가입 전 확인",
-          "description": "주택화재보험 찾는다면 보장 범위와 제외 조건을 먼저 확인하세요.",
-          "title_length": 14,
-          "description_length": 35,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "fingerprint": "2b5e2896ccf63a49"
-        },
-        {
-          "strategy": "비교 행동 유도",
-          "title": "주택화재보험 보험료 확인",
-          "description": "주택화재보험에서 필요한 담보와 보험료를 직접 비교해 보세요.",
-          "title_length": 13,
-          "description_length": 33,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "fingerprint": "d4d969d49b05832c"
+          "fingerprint": "4002f4a9d473c648"
         }
       ]
     },
@@ -122,37 +72,37 @@
       "observed_count": 2,
       "candidates": [
         {
-          "strategy": "빈 소구 선점",
-          "title": "홀인원 확인",
-          "description": "홀인원 포함 여부와 가입 조건을 온라인에서 확인해 보세요.",
-          "title_length": 6,
+          "strategy": "핵심 보장 확인",
+          "title": "홀인원 보장 확인",
+          "description": "골프보험의 홀인원 보장 여부와 가입 조건을 확인해 보세요.",
+          "title_length": 9,
           "description_length": 32,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "db39877d8e07c45b"
+          "fingerprint": "5012f9f2359ccb00"
         },
         {
-          "strategy": "검색 의도 응답",
+          "strategy": "가입 전 체크",
           "title": "골프보험 가입 전 확인",
-          "description": "골프보험 찾는다면 보장 범위와 제외 조건을 먼저 확인하세요.",
+          "description": "골프보험 가입 전 보장 범위와 제외 조건을 먼저 확인해 보세요.",
           "title_length": 12,
-          "description_length": 33,
+          "description_length": 35,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "067df7a337cf832b"
+          "fingerprint": "0375f8fbfb00622e"
         },
         {
-          "strategy": "비교 행동 유도",
-          "title": "골프보험 보험료 확인",
-          "description": "골프보험에서 필요한 담보와 보험료를 직접 비교해 보세요.",
+          "strategy": "보험료·보장 비교",
+          "title": "골프보험 보험료·보장",
+          "description": "골프보험의 보험료와 필요한 보장을 함께 확인해 보세요.",
           "title_length": 11,
-          "description_length": 31,
+          "description_length": 30,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "1cac595afd5eaf6d"
+          "fingerprint": "097b54feda14c839"
         }
       ]
     },
@@ -173,37 +123,37 @@
       "observed_count": 2,
       "candidates": [
         {
-          "strategy": "빈 소구 선점",
-          "title": "유사암 확인",
-          "description": "유사암 포함 여부와 가입 조건을 온라인에서 확인해 보세요.",
-          "title_length": 6,
-          "description_length": 32,
+          "strategy": "핵심 보장 확인",
+          "title": "유사암 보장 확인",
+          "description": "암보험의 유사암 보장 여부와 가입 조건을 확인해 보세요.",
+          "title_length": 9,
+          "description_length": 31,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "d5e4ea8bb04bd751"
+          "fingerprint": "fbb0e3d8dd6d4ca8"
         },
         {
-          "strategy": "검색 의도 응답",
+          "strategy": "가입 전 체크",
           "title": "암보험 가입 전 확인",
-          "description": "암보험 찾는다면 보장 범위와 제외 조건을 먼저 확인하세요.",
+          "description": "암보험 가입 전 보장 범위와 제외 조건을 먼저 확인해 보세요.",
           "title_length": 11,
-          "description_length": 32,
+          "description_length": 34,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "a767b547472d4e5f"
+          "fingerprint": "892f76009bafa8b1"
         },
         {
-          "strategy": "비교 행동 유도",
-          "title": "암보험 보험료 확인",
-          "description": "암보험에서 필요한 담보와 보험료를 직접 비교해 보세요.",
+          "strategy": "보험료·보장 비교",
+          "title": "암보험 보험료·보장",
+          "description": "암보험의 보험료와 필요한 보장을 함께 확인해 보세요.",
           "title_length": 10,
-          "description_length": 30,
+          "description_length": 29,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "1417abf04d5b3d1e"
+          "fingerprint": "be3ea6db50353bd5"
         }
       ]
     },
@@ -223,37 +173,37 @@
       "observed_count": 1,
       "candidates": [
         {
-          "strategy": "빈 소구 선점",
-          "title": "임플란트 확인",
-          "description": "임플란트 포함 여부와 가입 조건을 온라인에서 확인해 보세요.",
-          "title_length": 7,
+          "strategy": "핵심 보장 확인",
+          "title": "임플란트 보장 확인",
+          "description": "치아보험의 임플란트 보장 여부와 가입 조건을 확인해 보세요.",
+          "title_length": 10,
           "description_length": 33,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "fa04b470c4cf0fb2"
+          "fingerprint": "e13792ab36167596"
         },
         {
-          "strategy": "검색 의도 응답",
+          "strategy": "가입 전 체크",
           "title": "치아보험 가입 전 확인",
-          "description": "치아보험 찾는다면 보장 범위와 제외 조건을 먼저 확인하세요.",
+          "description": "치아보험 가입 전 보장 범위와 제외 조건을 먼저 확인해 보세요.",
           "title_length": 12,
-          "description_length": 33,
+          "description_length": 35,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "5bff2feed73003be"
+          "fingerprint": "0eb2c3dffaa78be9"
         },
         {
-          "strategy": "비교 행동 유도",
-          "title": "치아보험 보험료 확인",
-          "description": "치아보험에서 필요한 담보와 보험료를 직접 비교해 보세요.",
+          "strategy": "보험료·보장 비교",
+          "title": "치아보험 보험료·보장",
+          "description": "치아보험의 보험료와 필요한 보장을 함께 확인해 보세요.",
           "title_length": 11,
-          "description_length": 31,
+          "description_length": 30,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "22f73d07a97b1f59"
+          "fingerprint": "9723d8067d8cfd40"
         }
       ]
     },
@@ -278,37 +228,37 @@
       "observed_count": 2,
       "candidates": [
         {
-          "strategy": "빈 소구 선점",
-          "title": "교통사고 확인",
-          "description": "교통사고 포함 여부와 가입 조건을 온라인에서 확인해 보세요.",
-          "title_length": 7,
-          "description_length": 33,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "fingerprint": "5389a6c368d4355a"
-        },
-        {
-          "strategy": "검색 의도 응답",
-          "title": "운전자보험 가입 전 확인",
-          "description": "운전자보험 찾는다면 보장 범위와 제외 조건을 먼저 확인하세요.",
-          "title_length": 13,
+          "strategy": "핵심 보장 확인",
+          "title": "교통사고 보장 확인",
+          "description": "운전자보험의 교통사고 보장 여부와 가입 조건을 확인해 보세요.",
+          "title_length": 10,
           "description_length": 34,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "11e7d77da3fd5c66"
+          "fingerprint": "4bebbb6705f8f5a5"
         },
         {
-          "strategy": "비교 행동 유도",
-          "title": "운전자보험 보험료 확인",
-          "description": "운전자보험에서 필요한 담보와 보험료를 직접 비교해 보세요.",
-          "title_length": 12,
-          "description_length": 32,
+          "strategy": "가입 전 체크",
+          "title": "운전자보험 가입 전 확인",
+          "description": "운전자보험 가입 전 보장 범위와 제외 조건을 먼저 확인해 보세요.",
+          "title_length": 13,
+          "description_length": 36,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "35e277ba354e3bdb"
+          "fingerprint": "d65ccdeaa18bc047"
+        },
+        {
+          "strategy": "보험료·보장 비교",
+          "title": "운전자보험 보험료·보장",
+          "description": "운전자보험의 보험료와 필요한 보장을 함께 확인해 보세요.",
+          "title_length": 12,
+          "description_length": 31,
+          "claim_ids": [],
+          "evidence_status": "product_evidence_required",
+          "review_status": "human_review_required",
+          "fingerprint": "67977ebfa9a9db7f"
         }
       ]
     },
@@ -328,37 +278,37 @@
       "observed_count": 1,
       "candidates": [
         {
-          "strategy": "빈 소구 선점",
-          "title": "임신 확인",
-          "description": "임신 포함 여부와 가입 조건을 온라인에서 확인해 보세요.",
-          "title_length": 5,
-          "description_length": 31,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "fingerprint": "ad519a0a392f4d4c"
-        },
-        {
-          "strategy": "검색 의도 응답",
-          "title": "여성건강보험 가입 전 확인",
-          "description": "여성건강보험 찾는다면 보장 범위와 제외 조건을 먼저 확인하세요.",
-          "title_length": 14,
-          "description_length": 35,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "fingerprint": "210b503e4f5fff0c"
-        },
-        {
-          "strategy": "비교 행동 유도",
-          "title": "여성건강보험 보험료 확인",
-          "description": "여성건강보험에서 필요한 담보와 보험료를 직접 비교해 보세요.",
-          "title_length": 13,
+          "strategy": "핵심 보장 확인",
+          "title": "임신 보장 확인",
+          "description": "여성건강보험의 임신 보장 여부와 가입 조건을 확인해 보세요.",
+          "title_length": 8,
           "description_length": 33,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "ce19e5f21f2ec95e"
+          "fingerprint": "cb89af774941c950"
+        },
+        {
+          "strategy": "가입 전 체크",
+          "title": "여성건강보험 가입 전 확인",
+          "description": "여성건강보험 가입 전 보장 범위와 제외 조건을 먼저 확인해 보세요.",
+          "title_length": 14,
+          "description_length": 37,
+          "claim_ids": [],
+          "evidence_status": "product_evidence_required",
+          "review_status": "human_review_required",
+          "fingerprint": "80f02c83f2be265d"
+        },
+        {
+          "strategy": "보험료·보장 비교",
+          "title": "여성건강보험 보험료·보장",
+          "description": "여성건강보험의 보험료와 필요한 보장을 함께 확인해 보세요.",
+          "title_length": 13,
+          "description_length": 32,
+          "claim_ids": [],
+          "evidence_status": "product_evidence_required",
+          "review_status": "human_review_required",
+          "fingerprint": "1673448f25ce3250"
         }
       ]
     },
@@ -378,37 +328,37 @@
       "observed_count": 1,
       "candidates": [
         {
-          "strategy": "빈 소구 선점",
-          "title": "태아 확인",
-          "description": "태아 포함 여부와 가입 조건을 온라인에서 확인해 보세요.",
-          "title_length": 5,
-          "description_length": 31,
+          "strategy": "핵심 보장 확인",
+          "title": "태아 보장 확인",
+          "description": "임신·출산(태아)보험의 태아 보장 여부와 가입 조건을 확인해 보세요.",
+          "title_length": 8,
+          "description_length": 38,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "c00801978a833acc"
+          "fingerprint": "6cb2c03c3e0f3904"
         },
         {
-          "strategy": "검색 의도 응답",
+          "strategy": "가입 전 체크",
           "title": "태아보험 가입 전 확인",
-          "description": "태아보험 찾는다면 보장 범위와 제외 조건을 먼저 확인하세요.",
+          "description": "태아보험 가입 전 보장 범위와 제외 조건을 먼저 확인해 보세요.",
           "title_length": 12,
-          "description_length": 33,
+          "description_length": 35,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "362c15d01c89d83e"
+          "fingerprint": "60aece7f1d93f7ba"
         },
         {
-          "strategy": "비교 행동 유도",
-          "title": "태아보험 보험료 확인",
-          "description": "태아보험에서 필요한 담보와 보험료를 직접 비교해 보세요.",
+          "strategy": "보험료·보장 비교",
+          "title": "태아보험 보험료·보장",
+          "description": "태아보험의 보험료와 필요한 보장을 함께 확인해 보세요.",
           "title_length": 11,
-          "description_length": 31,
+          "description_length": 30,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "a70a56e96476429c"
+          "fingerprint": "6efdf2b19967abd2"
         }
       ]
     },
@@ -432,37 +382,37 @@
       "observed_count": 2,
       "candidates": [
         {
-          "strategy": "빈 소구 선점",
-          "title": "실손 확인",
-          "description": "실손 포함 여부와 가입 조건을 온라인에서 확인해 보세요.",
-          "title_length": 5,
-          "description_length": 31,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "fingerprint": "c992b0b17d3b0895"
-        },
-        {
-          "strategy": "검색 의도 응답",
-          "title": "해외여행보험 가입 전 확인",
-          "description": "해외여행보험 찾는다면 보장 범위와 제외 조건을 먼저 확인하세요.",
-          "title_length": 14,
-          "description_length": 35,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "fingerprint": "81fc039c32a47cd7"
-        },
-        {
-          "strategy": "비교 행동 유도",
-          "title": "해외여행보험 보험료 확인",
-          "description": "해외여행보험에서 필요한 담보와 보험료를 직접 비교해 보세요.",
-          "title_length": 13,
+          "strategy": "핵심 보장 확인",
+          "title": "실손 보장 확인",
+          "description": "해외여행보험의 실손 보장 여부와 가입 조건을 확인해 보세요.",
+          "title_length": 8,
           "description_length": 33,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "a0754876c322ca4a"
+          "fingerprint": "280ab013986607eb"
+        },
+        {
+          "strategy": "가입 전 체크",
+          "title": "해외여행보험 가입 전 확인",
+          "description": "해외여행보험 가입 전 보장 범위와 제외 조건을 먼저 확인해 보세요.",
+          "title_length": 14,
+          "description_length": 37,
+          "claim_ids": [],
+          "evidence_status": "product_evidence_required",
+          "review_status": "human_review_required",
+          "fingerprint": "232b2a3cc538ae02"
+        },
+        {
+          "strategy": "보험료·보장 비교",
+          "title": "해외여행보험 보험료·보장",
+          "description": "해외여행보험의 보험료와 필요한 보장을 함께 확인해 보세요.",
+          "title_length": 13,
+          "description_length": 32,
+          "claim_ids": [],
+          "evidence_status": "product_evidence_required",
+          "review_status": "human_review_required",
+          "fingerprint": "15df2875b6bd1a28"
         }
       ]
     },
@@ -482,37 +432,37 @@
       "observed_count": 1,
       "candidates": [
         {
-          "strategy": "빈 소구 선점",
-          "title": "유학 확인",
-          "description": "유학 포함 여부와 가입 조건을 온라인에서 확인해 보세요.",
-          "title_length": 5,
+          "strategy": "핵심 보장 확인",
+          "title": "유학 보장 확인",
+          "description": "해외장기체류보험의 유학 보장 여부와 가입 조건을 확인해 보세요.",
+          "title_length": 8,
+          "description_length": 35,
+          "claim_ids": [],
+          "evidence_status": "product_evidence_required",
+          "review_status": "human_review_required",
+          "fingerprint": "b2f5a2177de25344"
+        },
+        {
+          "strategy": "가입 전 체크",
+          "title": "유학생보험 가입 전 확인",
+          "description": "유학생보험 가입 전 보장 범위와 제외 조건을 먼저 확인해 보세요.",
+          "title_length": 13,
+          "description_length": 36,
+          "claim_ids": [],
+          "evidence_status": "product_evidence_required",
+          "review_status": "human_review_required",
+          "fingerprint": "0d2159ee1b2b52b8"
+        },
+        {
+          "strategy": "보험료·보장 비교",
+          "title": "유학생보험 보험료·보장",
+          "description": "유학생보험의 보험료와 필요한 보장을 함께 확인해 보세요.",
+          "title_length": 12,
           "description_length": 31,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "032fa3c764ef7405"
-        },
-        {
-          "strategy": "검색 의도 응답",
-          "title": "유학생보험 가입 전 확인",
-          "description": "유학생보험 찾는다면 보장 범위와 제외 조건을 먼저 확인하세요.",
-          "title_length": 13,
-          "description_length": 34,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "fingerprint": "8c62748978a4cfd9"
-        },
-        {
-          "strategy": "비교 행동 유도",
-          "title": "유학생보험 보험료 확인",
-          "description": "유학생보험에서 필요한 담보와 보험료를 직접 비교해 보세요.",
-          "title_length": 12,
-          "description_length": 32,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "fingerprint": "1ca8f842a06ecf5f"
+          "fingerprint": "7388af85761d63bc"
         }
       ]
     },
@@ -532,37 +482,37 @@
       "observed_count": 1,
       "candidates": [
         {
-          "strategy": "빈 소구 선점",
-          "title": "홀인원축하비용 확인",
-          "description": "홀인원축하비용 포함 여부와 가입 조건을 온라인에서 확인해 보세요.",
-          "title_length": 10,
+          "strategy": "핵심 보장 확인",
+          "title": "홀인원축하비용 보장 확인",
+          "description": "홀인원보험의 홀인원축하비용 보장 여부와 가입 조건을 확인해 보세요.",
+          "title_length": 13,
+          "description_length": 37,
+          "claim_ids": [],
+          "evidence_status": "product_evidence_required",
+          "review_status": "human_review_required",
+          "fingerprint": "d9a8ee3b023439c8"
+        },
+        {
+          "strategy": "가입 전 체크",
+          "title": "홀인원보험 가입 전 확인",
+          "description": "홀인원보험 가입 전 보장 범위와 제외 조건을 먼저 확인해 보세요.",
+          "title_length": 13,
           "description_length": 36,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "225e9079b15cfcc6"
+          "fingerprint": "6b39b3c93c8776df"
         },
         {
-          "strategy": "검색 의도 응답",
-          "title": "홀인원보험 가입 전 확인",
-          "description": "홀인원보험 찾는다면 보장 범위와 제외 조건을 먼저 확인하세요.",
-          "title_length": 13,
-          "description_length": 34,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "fingerprint": "8a734eef65ae61b2"
-        },
-        {
-          "strategy": "비교 행동 유도",
-          "title": "홀인원보험 보험료 확인",
-          "description": "홀인원보험에서 필요한 담보와 보험료를 직접 비교해 보세요.",
+          "strategy": "보험료·보장 비교",
+          "title": "홀인원보험 보험료·보장",
+          "description": "홀인원보험의 보험료와 필요한 보장을 함께 확인해 보세요.",
           "title_length": 12,
-          "description_length": 32,
+          "description_length": 31,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "c0fd718b37702b90"
+          "fingerprint": "6de428940e04f98a"
         }
       ]
     },
@@ -582,37 +532,37 @@
       "observed_count": 1,
       "candidates": [
         {
-          "strategy": "빈 소구 선점",
-          "title": "공연행사 확인",
-          "description": "공연행사 포함 여부와 가입 조건을 온라인에서 확인해 보세요.",
-          "title_length": 7,
-          "description_length": 33,
+          "strategy": "핵심 보장 확인",
+          "title": "공연행사 보장 확인",
+          "description": "행사배상책임보험의 공연행사 보장 여부와 가입 조건을 확인해 보세요.",
+          "title_length": 10,
+          "description_length": 37,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "b5fbdd82143a9034"
+          "fingerprint": "f114448ad680cf27"
         },
         {
-          "strategy": "검색 의도 응답",
+          "strategy": "가입 전 체크",
           "title": "행사보험 가입 전 확인",
-          "description": "행사보험 찾는다면 보장 범위와 제외 조건을 먼저 확인하세요.",
+          "description": "행사보험 가입 전 보장 범위와 제외 조건을 먼저 확인해 보세요.",
           "title_length": 12,
-          "description_length": 33,
+          "description_length": 35,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "4117b6549996ad6d"
+          "fingerprint": "0ffcadea5696c9cf"
         },
         {
-          "strategy": "비교 행동 유도",
-          "title": "행사보험 보험료 확인",
-          "description": "행사보험에서 필요한 담보와 보험료를 직접 비교해 보세요.",
+          "strategy": "보험료·보장 비교",
+          "title": "행사보험 보험료·보장",
+          "description": "행사보험의 보험료와 필요한 보장을 함께 확인해 보세요.",
           "title_length": 11,
-          "description_length": 31,
+          "description_length": 30,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "0ee2ac33848bc188"
+          "fingerprint": "b0d5b154f30ee361"
         }
       ]
     },
@@ -632,37 +582,37 @@
       "observed_count": 1,
       "candidates": [
         {
-          "strategy": "빈 소구 선점",
-          "title": "간편심사 확인",
-          "description": "간편심사 포함 여부와 가입 조건을 온라인에서 확인해 보세요.",
-          "title_length": 7,
-          "description_length": 33,
+          "strategy": "핵심 보장 확인",
+          "title": "간편심사 보장 확인",
+          "description": "유병자 간편보험의 간편심사 보장 여부와 가입 조건을 확인해 보세요.",
+          "title_length": 10,
+          "description_length": 37,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "8bdb6d6c3db568fa"
+          "fingerprint": "1f1cf1d666ff9efc"
         },
         {
-          "strategy": "검색 의도 응답",
+          "strategy": "가입 전 체크",
           "title": "유병자보험 가입 전 확인",
-          "description": "유병자보험 찾는다면 보장 범위와 제외 조건을 먼저 확인하세요.",
+          "description": "유병자보험 가입 전 보장 범위와 제외 조건을 먼저 확인해 보세요.",
           "title_length": 13,
-          "description_length": 34,
+          "description_length": 36,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "43ed7391bfbb728d"
+          "fingerprint": "cfdd994a2125df75"
         },
         {
-          "strategy": "비교 행동 유도",
-          "title": "유병자보험 보험료 확인",
-          "description": "유병자보험에서 필요한 담보와 보험료를 직접 비교해 보세요.",
+          "strategy": "보험료·보장 비교",
+          "title": "유병자보험 보험료·보장",
+          "description": "유병자보험의 보험료와 필요한 보장을 함께 확인해 보세요.",
           "title_length": 12,
-          "description_length": 32,
+          "description_length": 31,
           "claim_ids": [],
           "evidence_status": "product_evidence_required",
           "review_status": "human_review_required",
-          "fingerprint": "844cdb64aacc8a05"
+          "fingerprint": "27aabeac8e945bcb"
         }
       ]
     }

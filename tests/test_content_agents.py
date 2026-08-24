@@ -86,6 +86,18 @@ class TestSerpCopyAgent(unittest.TestCase):
             self.assertEqual(row["evidence_status"], "product_evidence_required")
             self.assertEqual(row["review_status"], "human_review_required")
 
+    def test_brand_home_and_excluded_products_are_never_suggested(self):
+        agent = module("serp_copy_agent")
+        products = {"products": [{"key": "home", "cat": "사이트", "name": "다이렉트 홈",
+                    "serpKw": "한화손보 다이렉트", "core": ["한화손보 다이렉트"],
+                    "special": ["운전자보험"], "excluded": ["자동차보험"]}]}
+        analysis = {"products": {"home": {"observed_ads": [{"date": "2026-08-24", "brand": "A"}]}}}
+        volume = {"products": {"home": {"keywords": {
+            "한화다이렉트자동차보험": {"pc": 1000, "mobile": 1000},
+        }}}}
+        result = agent.generate(products, analysis, volume, {"claims": []})
+        self.assertEqual(result["products"], [])
+
 
 class TestFaqOpportunityAgent(unittest.TestCase):
     def test_expired_or_wrong_channel_claim_does_not_unlock_faq(self):
@@ -109,7 +121,21 @@ class TestFaqOpportunityAgent(unittest.TestCase):
         row = result["products"][0]["opportunities"][0]
         self.assertIn("어떤 조건에 따라 달라지나요?", row["question"])
         self.assertEqual(row["answer_status"], "evidence_required")
-        self.assertFalse(result["search_console_connected"])
+
+    def test_private_gsc_query_never_reaches_public_faq_payload(self):
+        agent = module("faq_opportunity_agent")
+        products = {"products": [{"key": "chronic", "name": "유병자 간편보험",
+                    "core": ["유병자보험"], "special": ["간편심사"]}]}
+        volume = {"asof": "2026-08-24", "products": {"chronic": {"keywords": {
+            "유병자보험 보험료": {"pc": 10, "mobile": 90},
+        }}}}
+        gsc = {"asof": "2026-08-24", "rows": [{
+            "query": "내부에서만 보이는 유병자 질문", "impressions": 9876,
+        }]}
+        serialized = json.dumps(agent.generate(products, volume, gsc, {"claims": []}), ensure_ascii=False)
+        self.assertNotIn("내부에서만 보이는", serialized)
+        self.assertNotIn("9876", serialized)
+        self.assertNotIn("search_console", serialized)
 
     def test_generated_outputs_are_loaded_by_user_tools(self):
         seo = (ROOT / "seo-audit.html").read_text(encoding="utf-8")

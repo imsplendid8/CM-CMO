@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
-"""검색량·선택적 Search Console 스냅샷에서 고객 질문형 FAQ 기회를 발굴한다."""
+"""공개 SearchAd 검색량에서 고객 질문형 FAQ 기회를 발굴한다."""
 import json
 from datetime import date
 from pathlib import Path
 
+try:
+    from scripts.io_utils import atomic_json_write
+except ModuleNotFoundError:  # python scripts/faq_opportunity_agent.py
+    from io_utils import atomic_json_write
+
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data/seo/faq-opportunities.json"
-QUESTION_HINTS = ("어떻게", "왜", "언제", "가능", "차이", "비교", "가입", "보장", "보험료", "필요")
 
 
 def read(rel, default):
@@ -55,10 +59,15 @@ def relevant_claim_ids(claims, text):
 
 
 def generate(products, volume, search_console, claims):
+    """공개 FAQ 후보는 공개 가능한 SearchAd 데이터만으로 만든다.
+
+    search_console 인자는 기존 호출 호환을 위해 유지하지만 비공개 검색어·노출 수치는
+    공개 산출물의 질문, 순서, 수요 값에 사용하지 않는다.
+    """
+    _ = search_console
     approved = {}
     for claim in claims.get("claims") or []:
         if claim_allows_faq(claim): approved.setdefault(claim.get("product_key"), []).append(claim)
-    gsc_rows = search_console.get("rows") or []
     out = []
     for p in products.get("products") or []:
         volume_rows = ((volume.get("products") or {}).get(p["key"]) or {}).get("keywords") or {}
@@ -66,17 +75,14 @@ def generate(products, volume, search_console, claims):
         tokens = [x.replace(" ", "") for x in p.get("core", []) + p.get("special", []) if len(x.replace(" ", "")) >= 3]
         for term, row in volume_rows.items():
             compact_term = term.replace(" ", "")
+            if any(excluded.replace(" ", "") in compact_term for excluded in p.get("excluded") or []):
+                continue
             if not any(token in compact_term for token in tokens):
                 continue
             if any(noise in term for noise in ("한화생명", "고객센터", "보험금청구", "메리츠", "삼성", "현대해상", "DB손해", "KB손해", "라이나")):
                 continue
             total = int(row.get("pc") or 0) + int(row.get("mobile") or 0)
             terms.append((term, total, "searchad"))
-        tokens = p.get("core", []) + p.get("special", [])
-        for row in gsc_rows:
-            query = str(row.get("query") or "")
-            if any(t in query for t in tokens) and any(h in query for h in QUESTION_HINTS):
-                terms.append((query, int(row.get("impressions") or 0), "search_console"))
         seen, candidates = set(), []
         for term, demand, source in sorted(terms, key=lambda x: (-x[1], x[0])):
             normalized = "".join(term.split())
@@ -91,16 +97,15 @@ def generate(products, volume, search_console, claims):
                 break
         if candidates:
             out.append({"product_key": p["key"], "opportunities": candidates})
-    return {"_comment": "SearchAd와 선택적 data/search-console.json에서 발굴한 FAQ 기회. evidence_required는 답변 자동 생성 금지.",
-        "asof": volume.get("asof") or date.today().isoformat(), "search_console_connected": bool(gsc_rows), "products": out}
+    return {"_comment": "SearchAd 수요에서 발굴한 공개 FAQ 후보. evidence_required는 답변 자동 생성 금지.",
+        "asof": volume.get("asof") or date.today().isoformat(), "products": out}
 
 
 def main():
     result = generate(read("data/products.json", {}), read("data/volume.json", {}),
                       read("data/search-console.json", {}), read("data/evidence/claims.json", {}))
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(f"✔ {OUT.relative_to(ROOT)} · 상품 {len(result['products'])} · 기회 {sum(len(x['opportunities']) for x in result['products'])}건 · GSC {'연결' if result['search_console_connected'] else '미연결'}")
+    atomic_json_write(OUT, result)
+    print(f"[OK] {OUT.relative_to(ROOT)} · 상품 {len(result['products'])} · 기회 {sum(len(x['opportunities']) for x in result['products'])}건")
     return result
 
 if __name__ == "__main__":

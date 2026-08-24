@@ -65,7 +65,7 @@ class TestMonthlyPlanningUiContract(unittest.TestCase):
         self.assertIn("선택월·익월 실행 플랜", seasonal)
         self.assertIn("function planningIssues", adcopy)
         self.assertIn("const issues=planningIssues(p)", adcopy)
-        self.assertIn("다른 달의 ‘신년’ 같은 문구가 섞이지 않습니다", adcopy)
+        self.assertIn("상품 내용과 심의를 확인한 뒤 사용하세요", adcopy)
 
     def test_naver_volume_and_monthly_mover_contract(self):
         seasonal = self.read("seasonal-tool.html")
@@ -91,11 +91,9 @@ class TestMonthlyPlanningUiContract(unittest.TestCase):
         self.assertIn("예전에 치료받은 병력이 있어도 가입할 수 있나요?", seo)
         self.assertIn("유병자보험은 무심사보험인가요?", seo)
         self.assertIn("건강이 좋아지면 일반심사형 보험으로 바꿀 수 있나요?", seo)
-        self.assertIn("상품 담당자·준법·광고심의 검토 전용", seo)
+        self.assertIn("답변은 최신 상품 자료와 약관을 확인한 뒤 사용하세요", seo)
         self.assertIn('FAQ_REFERENCE_URL="https://blog.carrotins.com/"', seo)
-        self.assertIn("실제 이용자의 상황을 질문으로 쓰고", seo)
-        self.assertIn("심의번호·심의 유효기간·검토자를 기록", seo)
-        self.assertIn("캐롯 문구나 심의번호를 그대로 재사용하지 않습니다", seo)
+        self.assertNotIn("캐롯 블로그 표현 참고 기준", seo)
 
 
 if __name__ == "__main__":

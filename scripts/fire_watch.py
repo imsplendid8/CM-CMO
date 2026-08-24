@@ -20,6 +20,7 @@
 """
 import os, sys, json, re, urllib.parse, urllib.request
 from datetime import datetime, timezone, timedelta
+from telegram_utils import split_html_message
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HUB = "imsplendid8.github.io/CM-CMO"
@@ -170,20 +171,24 @@ def send_telegram(text):
     if not (token and chats):
         print("TELEGRAM_BOT_TOKEN / (FIRE_)TELEGRAM_CHAT_IDS 미설정 — 발송 생략", file=sys.stderr)
         return False
-    if len(text) > 4000:
-        text = text[:3980] + "\n…(생략)"
+    chunks = split_html_message(text)
     ok_all = True
-    for chat in chats:
-        data = urllib.parse.urlencode({"chat_id": chat, "text": text, "parse_mode": "HTML",
-                                       "disable_web_page_preview": "true"}).encode()
-        req = urllib.request.Request(f"https://api.telegram.org/bot{token}/sendMessage", data=data)
-        try:
-            with urllib.request.urlopen(req, timeout=15) as r:
-                ok = json.load(r).get("ok")
-        except Exception as e:
-            ok = False
-            print(f"  · {chat}: 예외 {e}", file=sys.stderr)
-        ok_all = ok_all and bool(ok)
+    for recipient_no, chat in enumerate(chats, 1):
+        recipient_ok = True
+        for chunk in chunks:
+            data = urllib.parse.urlencode({"chat_id": chat, "text": chunk, "parse_mode": "HTML",
+                                           "disable_web_page_preview": "true"}).encode()
+            req = urllib.request.Request(f"https://api.telegram.org/bot{token}/sendMessage", data=data)
+            try:
+                with urllib.request.urlopen(req, timeout=15) as r:
+                    ok = json.load(r).get("ok")
+            except Exception as e:
+                ok = False
+                print(f"  · 수신자 {recipient_no}: {type(e).__name__}", file=sys.stderr)
+            recipient_ok = recipient_ok and bool(ok)
+            if not ok:
+                break
+        ok_all = ok_all and recipient_ok
     return ok_all
 
 

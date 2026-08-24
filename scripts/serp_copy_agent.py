@@ -5,6 +5,11 @@ import json
 from datetime import date
 from pathlib import Path
 
+try:
+    from scripts.io_utils import atomic_json_write
+except ModuleNotFoundError:  # python scripts/serp_copy_agent.py
+    from io_utils import atomic_json_write
+
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data/adcopy/serp-candidates.json"
 TITLE_MAX, DESC_MIN, DESC_MAX = 15, 20, 45
@@ -31,10 +36,17 @@ def compact(text, maximum):
     return out
 
 
+def out_of_scope(text, product):
+    normalized = str(text).replace(" ", "")
+    return any(str(term).replace(" ", "") in normalized for term in product.get("excluded") or [])
+
+
 def volume_keyword(volume, product):
     rows = ((volume.get("products") or {}).get(product["key"]) or {}).get("keywords") or {}
     tokens = [x for x in product.get("core", []) + product.get("special", []) if len(x.replace(" ", "")) >= 3]
-    ranked = [(term, row) for term, row in rows.items() if any(t.replace(" ", "") in term.replace(" ", "") for t in tokens)]
+    ranked = [(term, row) for term, row in rows.items()
+              if any(t.replace(" ", "") in term.replace(" ", "") for t in tokens)
+              and not out_of_scope(term, product)]
     ranked.sort(key=lambda x: (-(term_score(x[0], product)), -(int(x[1].get("pc") or 0) + int(x[1].get("mobile") or 0)), x[0]))
     return ranked[0][0] if ranked else product.get("serpKw") or product["name"]
 
@@ -92,26 +104,33 @@ def generate(products, analysis, volume, claims):
             approved.setdefault(c.get("product_key"), []).append(c)
     output = []
     for p in products.get("products") or []:
+        # 브랜드 홈은 개별 상품이 아니므로 상품형 SA 소재를 자동 생성하지 않는다.
+        if p.get("cat") == "사이트":
+            continue
         observed = ((analysis.get("products") or {}).get(p["key"]) or {})
         ads, common = observed.get("observed_ads") or [], observed.get("common_soju") or []
         if not ads:
             continue
         keyword = volume_keyword(volume, p)
-        gaps = [x for x in p.get("special") or [] if not any(x in c or c in x for c in common)]
+        gaps = [x for x in p.get("special") or []
+                if not out_of_scope(x, p) and not any(x in c or c in x for c in common)]
         angle = (gaps or p.get("core") or [p["name"]])[0]
         short_name = p.get("serpKw") or p["name"]
         intent_title = f"{keyword} 가입 전 확인"
         if len(intent_title) > TITLE_MAX:
             intent_title = f"{short_name} 가입조건"
         raw = [
-            ("빈 소구 선점", compact(f"{angle} 확인", TITLE_MAX), f"{angle} 포함 여부와 가입 조건을 온라인에서 확인해 보세요."),
-            ("검색 의도 응답", intent_title, f"{keyword} 찾는다면 보장 범위와 제외 조건을 먼저 확인하세요."),
-            ("비교 행동 유도", compact(f"{short_name} 보험료 확인", TITLE_MAX), f"{short_name}에서 필요한 담보와 보험료를 직접 비교해 보세요."),
+            ("핵심 보장 확인", compact(f"{angle} 보장 확인", TITLE_MAX),
+             f"{p['name']}의 {angle} 보장 여부와 가입 조건을 확인해 보세요."),
+            ("가입 전 체크", intent_title,
+             f"{keyword} 가입 전 보장 범위와 제외 조건을 먼저 확인해 보세요."),
+            ("보험료·보장 비교", compact(f"{short_name} 보험료·보장", TITLE_MAX),
+             f"{short_name}의 보험료와 필요한 보장을 함께 확인해 보세요."),
         ]
         candidates = []
         for strategy, title, desc in raw:
             desc = compact(desc, DESC_MAX)
-            if not valid(title, desc):
+            if not valid(title, desc) or out_of_scope(title + " " + desc, p):
                 continue
             fingerprint = hashlib.sha256(f"{p['key']}|{title}|{desc}".encode()).hexdigest()[:16]
             claim_ids = relevant_claim_ids(approved.get(p["key"], []), title + " " + desc)
@@ -121,16 +140,15 @@ def generate(products, analysis, volume, claims):
                 "review_status": "human_review_required", "fingerprint": fingerprint})
         output.append({"product_key": p["key"], "keyword": keyword, "common_competitor_angles": common,
             "selected_angle": angle, "serp_diff": date_diff(ads), "observed_count": len(ads), "candidates": candidates})
-    return {"_comment": "공개 SERP를 복제하지 않고 공통 소구·검색량·승인 claim을 결합한 사람 검토용 SA 후보.",
+    return {"_comment": "경쟁사 광고와 검색 수요를 참고해 만든 내부 검토용 SA 후보.",
         "asof": analysis.get("asof") or date.today().isoformat(), "products": output}
 
 
 def main(root=ROOT):
     result = generate(read("data/products.json", {}), read("serp/ad_analysis.json", {}),
                       read("data/volume.json", {}), read("data/evidence/claims.json", {}))
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(f"✔ {OUT.relative_to(ROOT)} · 상품 {len(result['products'])} · 후보 {sum(len(x['candidates']) for x in result['products'])}건")
+    atomic_json_write(OUT, result)
+    print(f"[OK] {OUT.relative_to(ROOT)} · 상품 {len(result['products'])} · 후보 {sum(len(x['candidates']) for x in result['products'])}건")
     return result
 
 if __name__ == "__main__":

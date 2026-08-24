@@ -23,6 +23,8 @@ class TestProxySecurity(unittest.TestCase):
         self.assertIn("MAX_QUERY_LENGTH", WORKER)
         self.assertIn("MAX_BODY_BYTES", WORKER)
         self.assertIn("catch (e) { return false; }", WORKER)
+        self.assertIn("ROUTE_DAILY_MAX", WORKER)
+        self.assertIn("server not configured: USAGE rate limit binding", WORKER)
 
     def test_public_pages_ship_no_client_admin_gate(self):
         public_html = HUB + OVERVIEW

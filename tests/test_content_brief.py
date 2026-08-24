@@ -66,6 +66,15 @@ class TestContentBrief(unittest.TestCase):
         self.assertNotIn("https://e/vw", urls)
         self.assertEqual(len([u for u in urls if u in ("https://e/a", "https://e/b")]), 1)
 
+    def test_auto_insurance_only_story_is_not_treated_as_driver_product_news(self):
+        clip = {"date": "2026-08-21", "categories": {
+            "driver": {"name": "운전자보험", "q": "운전자보험", "items": [
+                item("자동차보험료 할인 확대", "차량 안전장치 자동차보험 할인 특약", "https://e/auto")
+            ]},
+        }}
+        digest = cb.build_digest(clip, {}, ["driver"])
+        self.assertNotIn("https://e/auto", [story["url"] for story in digest["stories"]])
+
 
 class TestPaperBrief(unittest.TestCase):
     def test_auto_paper_discloses_abstract_scope_and_limit(self):

@@ -1,7 +1,7 @@
 {
   "_comment": "공개 배포용 제목 검토 큐. 비공개 GSC 원본 행과 상세 성과 수치는 포함하지 않는다.",
   "asof": "2026-08-23",
-  "method_version": "cm-seo-title-ops/1.0",
+  "method_version": "cm-seo-title-ops/1.1",
   "sources": {
     "searchad": "connected",
     "gsc": "not_connected"
@@ -26,7 +26,7 @@
           "weakness": "질문 의도에 바로 답하는 본문이 없으면 제목의 약속이 과해질 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "home-title-2",
@@ -41,7 +41,7 @@
           "weakness": "상품명 중심이라 비브랜드 검색의 클릭 유인이 상대적으로 약할 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "home-title-3",
@@ -56,10 +56,10 @@
           "weakness": "검색 범위를 좁혀 전체 수요보다 노출 기회가 작을 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         }
       ],
-      "next_action": "비공개 GSC 연결 후 자기잠식·현재 가시성 검증"
+      "next_action": "비공개 GSC에서 후보 검색어의 노출·페이지 확인"
     },
     {
       "product_key": "hrmf",
@@ -80,7 +80,7 @@
           "weakness": "질문 의도에 바로 답하는 본문이 없으면 제목의 약속이 과해질 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "hrmf-title-2",
@@ -95,7 +95,7 @@
           "weakness": "상품명 중심이라 비브랜드 검색의 클릭 유인이 상대적으로 약할 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "hrmf-title-3",
@@ -110,10 +110,10 @@
           "weakness": "검색 범위를 좁혀 전체 수요보다 노출 기회가 작을 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         }
       ],
-      "next_action": "비공개 GSC 연결 후 자기잠식·현재 가시성 검증"
+      "next_action": "비공개 GSC에서 후보 검색어의 노출·페이지 확인"
     },
     {
       "product_key": "golf",
@@ -134,7 +134,7 @@
           "weakness": "질문 의도에 바로 답하는 본문이 없으면 제목의 약속이 과해질 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "golf-title-2",
@@ -149,7 +149,7 @@
           "weakness": "상품명 중심이라 비브랜드 검색의 클릭 유인이 상대적으로 약할 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "golf-title-3",
@@ -164,10 +164,10 @@
           "weakness": "검색 범위를 좁혀 전체 수요보다 노출 기회가 작을 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         }
       ],
-      "next_action": "비공개 GSC 연결 후 자기잠식·현재 가시성 검증"
+      "next_action": "비공개 GSC에서 후보 검색어의 노출·페이지 확인"
     },
     {
       "product_key": "cncr",
@@ -188,7 +188,7 @@
           "weakness": "질문 의도에 바로 답하는 본문이 없으면 제목의 약속이 과해질 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "cncr-title-2",
@@ -203,7 +203,7 @@
           "weakness": "상품명 중심이라 비브랜드 검색의 클릭 유인이 상대적으로 약할 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "cncr-title-3",
@@ -218,10 +218,10 @@
           "weakness": "검색 범위를 좁혀 전체 수요보다 노출 기회가 작을 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         }
       ],
-      "next_action": "비공개 GSC 연결 후 자기잠식·현재 가시성 검증"
+      "next_action": "비공개 GSC에서 후보 검색어의 노출·페이지 확인"
     },
     {
       "product_key": "dntl",
@@ -242,7 +242,7 @@
           "weakness": "질문 의도에 바로 답하는 본문이 없으면 제목의 약속이 과해질 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "dntl-title-2",
@@ -257,7 +257,7 @@
           "weakness": "상품명 중심이라 비브랜드 검색의 클릭 유인이 상대적으로 약할 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "dntl-title-3",
@@ -272,10 +272,10 @@
           "weakness": "검색 범위를 좁혀 전체 수요보다 노출 기회가 작을 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         }
       ],
-      "next_action": "비공개 GSC 연결 후 자기잠식·현재 가시성 검증"
+      "next_action": "비공개 GSC에서 후보 검색어의 노출·페이지 확인"
     },
     {
       "product_key": "driver",
@@ -296,7 +296,7 @@
           "weakness": "질문 의도에 바로 답하는 본문이 없으면 제목의 약속이 과해질 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "driver-title-2",
@@ -311,7 +311,7 @@
           "weakness": "상품명 중심이라 비브랜드 검색의 클릭 유인이 상대적으로 약할 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "driver-title-3",
@@ -326,10 +326,10 @@
           "weakness": "검색 범위를 좁혀 전체 수요보다 노출 기회가 작을 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         }
       ],
-      "next_action": "비공개 GSC 연결 후 자기잠식·현재 가시성 검증"
+      "next_action": "비공개 GSC에서 후보 검색어의 노출·페이지 확인"
     },
     {
       "product_key": "woman",
@@ -350,7 +350,7 @@
           "weakness": "질문 의도에 바로 답하는 본문이 없으면 제목의 약속이 과해질 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "woman-title-2",
@@ -365,7 +365,7 @@
           "weakness": "상품명 중심이라 비브랜드 검색의 클릭 유인이 상대적으로 약할 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "woman-title-3",
@@ -380,10 +380,10 @@
           "weakness": "검색 범위를 좁혀 전체 수요보다 노출 기회가 작을 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         }
       ],
-      "next_action": "비공개 GSC 연결 후 자기잠식·현재 가시성 검증"
+      "next_action": "비공개 GSC에서 후보 검색어의 노출·페이지 확인"
     },
     {
       "product_key": "birth",
@@ -404,7 +404,7 @@
           "weakness": "질문 의도에 바로 답하는 본문이 없으면 제목의 약속이 과해질 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "birth-title-2",
@@ -419,7 +419,7 @@
           "weakness": "상품명 중심이라 비브랜드 검색의 클릭 유인이 상대적으로 약할 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "birth-title-3",
@@ -434,10 +434,10 @@
           "weakness": "검색 범위를 좁혀 전체 수요보다 노출 기회가 작을 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         }
       ],
-      "next_action": "비공개 GSC 연결 후 자기잠식·현재 가시성 검증"
+      "next_action": "비공개 GSC에서 후보 검색어의 노출·페이지 확인"
     },
     {
       "product_key": "overseas",
@@ -458,7 +458,7 @@
           "weakness": "질문 의도에 바로 답하는 본문이 없으면 제목의 약속이 과해질 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "overseas-title-2",
@@ -473,7 +473,7 @@
           "weakness": "상품명 중심이라 비브랜드 검색의 클릭 유인이 상대적으로 약할 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "overseas-title-3",
@@ -488,10 +488,10 @@
           "weakness": "검색 범위를 좁혀 전체 수요보다 노출 기회가 작을 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         }
       ],
-      "next_action": "비공개 GSC 연결 후 자기잠식·현재 가시성 검증"
+      "next_action": "비공개 GSC에서 후보 검색어의 노출·페이지 확인"
     },
     {
       "product_key": "overseaslong",
@@ -512,7 +512,7 @@
           "weakness": "질문 의도에 바로 답하는 본문이 없으면 제목의 약속이 과해질 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "overseaslong-title-2",
@@ -527,7 +527,7 @@
           "weakness": "상품명 중심이라 비브랜드 검색의 클릭 유인이 상대적으로 약할 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "overseaslong-title-3",
@@ -542,10 +542,10 @@
           "weakness": "검색 범위를 좁혀 전체 수요보다 노출 기회가 작을 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         }
       ],
-      "next_action": "비공개 GSC 연결 후 자기잠식·현재 가시성 검증"
+      "next_action": "비공개 GSC에서 후보 검색어의 노출·페이지 확인"
     },
     {
       "product_key": "holeinone",
@@ -566,7 +566,7 @@
           "weakness": "질문 의도에 바로 답하는 본문이 없으면 제목의 약속이 과해질 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "holeinone-title-2",
@@ -581,7 +581,7 @@
           "weakness": "상품명 중심이라 비브랜드 검색의 클릭 유인이 상대적으로 약할 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "holeinone-title-3",
@@ -596,10 +596,10 @@
           "weakness": "검색 범위를 좁혀 전체 수요보다 노출 기회가 작을 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         }
       ],
-      "next_action": "비공개 GSC 연결 후 자기잠식·현재 가시성 검증"
+      "next_action": "비공개 GSC에서 후보 검색어의 노출·페이지 확인"
     },
     {
       "product_key": "event",
@@ -620,7 +620,7 @@
           "weakness": "질문 의도에 바로 답하는 본문이 없으면 제목의 약속이 과해질 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "event-title-2",
@@ -635,7 +635,7 @@
           "weakness": "상품명 중심이라 비브랜드 검색의 클릭 유인이 상대적으로 약할 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "event-title-3",
@@ -650,10 +650,10 @@
           "weakness": "검색 범위를 좁혀 전체 수요보다 노출 기회가 작을 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         }
       ],
-      "next_action": "비공개 GSC 연결 후 자기잠식·현재 가시성 검증"
+      "next_action": "비공개 GSC에서 후보 검색어의 노출·페이지 확인"
     },
     {
       "product_key": "chronic",
@@ -674,7 +674,7 @@
           "weakness": "질문 의도에 바로 답하는 본문이 없으면 제목의 약속이 과해질 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "chronic-title-2",
@@ -689,7 +689,7 @@
           "weakness": "상품명 중심이라 비브랜드 검색의 클릭 유인이 상대적으로 약할 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         },
         {
           "id": "chronic-title-3",
@@ -704,10 +704,10 @@
           "weakness": "검색 범위를 좁혀 전체 수요보다 노출 기회가 작을 수 있음",
           "body_alignment_required": true,
           "review_status": "human_review_required",
-          "decision": "review_only"
+          "decision": "review_only_no_gsc_signal"
         }
       ],
-      "next_action": "비공개 GSC 연결 후 자기잠식·현재 가시성 검증"
+      "next_action": "비공개 GSC에서 후보 검색어의 노출·페이지 확인"
     }
   ]
 }

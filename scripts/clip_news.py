@@ -12,6 +12,11 @@
 """
 import os, sys, json, re, datetime, urllib.parse, urllib.request
 
+try:
+    from scripts.io_utils import atomic_json_write
+except ModuleNotFoundError:  # python scripts/clip_news.py
+    from io_utils import atomic_json_write
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CLIPS = os.path.join(ROOT, "data", "clips")
 ID = os.environ.get("NAVER_CLIENT_ID", "").strip()
@@ -103,7 +108,7 @@ def main():
     runs = sorted(set(prev.get("runs", []) + [PART]))
     day = {"date": TODAY, "source": src, "runs": runs, "asof": NOW.strftime("%Y-%m-%d %H:%M"),
            "summary": {"total": total, "byCat": by, "top": top}, "categories": merged}
-    json.dump(day, open(fpath, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    atomic_json_write(fpath, day, indent=1)
 
     # index.json 갱신
     ipath = os.path.join(CLIPS, "index.json")
@@ -119,7 +124,7 @@ def main():
         m = d["date"][:7]; months.setdefault(m, {"total": 0, "days": 0}); months[m]["total"] += d["total"]; months[m]["days"] += 1
     idx["months"] = months
     idx["updated"] = TODAY
-    json.dump(idx, open(ipath, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    atomic_json_write(ipath, idx, indent=1)
 
     # 대시보드·텔레그램·이메일이 함께 읽는 공통 의사결정형 뉴스 브리프.
     # 채널마다 별도 요약을 만들지 않아 최신성·표현 불일치를 막는다.
@@ -133,8 +138,7 @@ def main():
         brief_dir = os.path.join(ROOT, "data", "briefing")
         os.makedirs(brief_dir, exist_ok=True)
         for name in (f"{TODAY}.json", "latest.json"):
-            with open(os.path.join(brief_dir, name), "w", encoding="utf-8") as f:
-                json.dump(digest, f, ensure_ascii=False, indent=1)
+            atomic_json_write(os.path.join(brief_dir, name), digest, indent=1)
         keep_briefs = {(NOW.date() - datetime.timedelta(days=i)).isoformat() for i in range(14)}
         for fn in os.listdir(brief_dir):
             mm = re.match(r"^(\d{4}-\d{2}-\d{2})\.json$", fn)

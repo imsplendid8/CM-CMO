@@ -422,7 +422,7 @@ function analysisSection(p){
   const pairs=arr=>(arr&&arr.length)?arr.map(x=>`${esc(x[0])}${x[1]>1?` ×${x[1]}`:""}`).join(" · "):"—";
   const rows=obs.map(o=>`<tr><td class="who">${esc(o.brand||"")}</td><td>${esc(o.title||"")}</td><td>${esc(o.desc||"")}</td><td>${esc(o.promo||"")}</td></tr>`).join("");
   return `<div class="sec">
-    <div class="sec-h"><span class="t">🧪 실측 소재 분석</span><span class="sub">· 캡쳐에서 관측한 경쟁사 공개 광고 요소 · <code>serp/ad_observations.json</code></span></div>
+    <div class="sec-h"><span class="t">경쟁사 광고 요약</span></div>
     <div class="sec-b">
       ${a?`<div class="box"><span class="lb">경쟁 공통 소구 <small>(차별화 위해 회피·우회 대상)</small></span>${chips(a.common_soju)}</div>
       <div class="box"><span class="lb">관측 프로모션</span>${pairs(a.promos)}</div>
@@ -440,7 +440,7 @@ function renderProduct(){
     ${archiveSection(p)}
     ${intelSection(p)}
     ${analysisSection(p)}
-    <div class="note"><b>운영 방법</b> · 매주 같은 시점의 <b>네이버 PC 검색결과</b>를 <b>자동 캡처</b>해 주차별 아카이브가 쌓이고, <b>전/후 비교</b>로 상단 광고주 교체·신규 진입·문구 변화를 한눈에 봅니다. 변화·소구포인트는 <b>뉴스 콘솔</b>의 동향과 함께 해석하세요.</div>`;
+    <div class="note">주차별 검색결과와 광고 문구 변화를 확인합니다.</div>`;
   // 비교 초기화
   const shots=shotsOf(p.key);
   if(shots.length>=2){
@@ -482,7 +482,7 @@ function renderOverview(){
     return `<div class="ov-card" data-key="${p.key}"><div class="ct">${esc(p.name)}<span class="wk">${sc?sc+"주차":"캡처 0"}</span></div><div class="cs"><b style="color:var(--brand-600)">키워드</b> ${esc(p.kw)} · PC<br>${esc(s)}</div></div>`;}).join("");
   $("#content").innerHTML=`
     <div class="kpi-row">${kpi(withArc+"/"+PRODUCTS.length,"아카이브 시작 상품")}${kpi(totalShots,"누적 스크린샷")}${kpi(thisWeek,"이번주 캡처")}${kpi(gaps,"한화 상위노출 갭(메인)")}</div>
-    <div class="note" style="margin-top:0"><b>운영 개요</b> · 각 상품 <b>대표키워드(PC)</b> 네이버 검색결과를 매주 캡처·아카이빙하고, 경쟁사 <b>소구포인트</b>와 <b>변화</b>를 분석합니다. 메인 상품군(운전자·주택화재·골프) 중 <b>주택화재·골프·해외여행</b>은 한화 상품이 상위 미노출로 확인돼 우선 대응 대상입니다. 카드를 클릭해 상세로 이동하세요.</div>
+    <div class="note" style="margin-top:0">상품을 선택해 주차별 검색결과를 확인하세요.</div>
     <div class="sec-lbl">상품별 대표키워드 · 경쟁 요약</div>
     <div class="ov-grid">${cards}</div>`;
 }
@@ -490,10 +490,7 @@ function renderBrand(){
   $("#pt").textContent="경쟁사 브랜드검색"; $("#pts").textContent="· 삼성·KB·현대·DB × 상품 · PC/모바일 주간";
   const bs=BRAND.brands||{};const total=brandCount();
   if(!total){
-    $("#content").innerHTML=`<div class="note" style="margin-top:0"><b>아직 브랜드검색 캡쳐가 없습니다.</b><br>
-      GitHub <b>Actions → SERP Capture → Run workflow</b>를 실행하면 경쟁사 다이렉트 브랜드검색(삼성·KB·현대·DB × 5개 상품)을
-      <b>PC·모바일</b>로 자동 캡쳐해 <code>serp/brand/</code>에 커밋하고 여기에 표시됩니다.
-      매주 <b>월요일 06:00(KST)</b> 자동 실행도 예약돼 있습니다. · 네이버 검색결과(공개) → PII 없음.</div>`;
+    $("#content").innerHTML='<div class="note" style="margin-top:0">아직 경쟁사 브랜드검색 이미지가 없습니다.</div>';
     return;
   }
   const brandsN=BRAND_ORDER.filter(([co])=>bs[co]).length;
@@ -517,8 +514,7 @@ function renderBrand(){
   }).join("");
   $("#content").innerHTML=`
     <div class="kpi-row">${kpi(brandsN+"/4","감시 경쟁사")}${kpi(total,"누적 캡쳐")}${kpi(thisWeek,"이번주 캡쳐")}${kpi(esc(asof),"최신 기준일")}</div>
-    <div class="note" style="margin-top:0"><b>경쟁사 브랜드검색 모니터링</b> · 각 경쟁사 <b>다이렉트 브랜드 + 상품명</b> 네이버 검색결과를 <b>PC·모바일</b>로 매주 캡쳐해,
-      브랜드검색 전용 광고·파워링크 구성·소구 문구를 비교합니다. 썸네일을 클릭하면 원본 크기로 봅니다. 매주 월요일 자동 실행.</div>
+    <div class="note" style="margin-top:0">경쟁사별 PC·모바일 브랜드검색 이미지를 확인합니다.</div>
     ${sections}`;
 }
 function render(){

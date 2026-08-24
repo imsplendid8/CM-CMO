@@ -16,6 +16,11 @@
 import os, sys, time, hmac, hashlib, base64, json, urllib.parse, urllib.request
 from datetime import date
 
+try:
+    from scripts.io_utils import atomic_json_write
+except ModuleNotFoundError:  # python scripts/naver_searchad_volume.py
+    from io_utils import atomic_json_write
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE = "https://api.searchad.naver.com"
 API_KEY = os.environ.get("NAVER_AD_API_KEY")
@@ -66,8 +71,7 @@ def update_history(history, current, month_key, retention=HISTORY_MONTHS):
     return result
 
 def write_json(relative_path, payload):
-    with open(os.path.join(ROOT, relative_path), "w", encoding="utf-8") as file:
-        json.dump(payload, file, ensure_ascii=False, indent=2)
+    atomic_json_write(os.path.join(ROOT, relative_path), payload)
 
 def keywordstool(hint):
     path = "/keywordstool"
@@ -81,19 +85,19 @@ def keywordstool(hint):
 
 def main():
     products = load("data/products.json")["products"]
-    out = {"_comment": "키워드 도구 자동 반영용 검색광고 실검색량. source=searchad(실측)/none(키 없음).",
+    out = {"_comment": "키워드 도구 자동 반영용 검색광고 실검색량. 완전한 수집에 성공한 경우에만 교체한다.",
            "asof": date.today().isoformat(), "source": "searchad", "products": {}}
     if not (API_KEY and SECRET and CUSTOMER):
-        out["source"] = "none"
-        write_json("data/volume.json", out)
-        print("검색광고 키(NAVER_AD_*) 미설정 — data/volume.json(source=none) 생성", file=sys.stderr)
-        return
+        print("검색광고 키(NAVER_AD_*) 미설정 — 기존 data/volume.json 유지", file=sys.stderr)
+        return 2
+    failures = []
     for p in products:
         seed = (p.get("serpKw") or p["core"][0]).replace(" ", "")
         try:
             data = keywordstool(seed)
         except Exception as e:
             print(f"[warn] {p['key']}({seed}): {e}", file=sys.stderr)
+            failures.append(p["key"])
             continue
         rows = data.get("keywordList", [])
         rows.sort(key=lambda r: _num(r.get("monthlyPcQcCnt")) + _num(r.get("monthlyMobileQcCnt")), reverse=True)
@@ -107,7 +111,13 @@ def main():
                        "comp": row.get("compIdx", "")}
         out["products"][p["key"]] = {"keywords": kws}
         time.sleep(0.3)
-    write_json("data/volume.json", out)
+    expected = {p["key"] for p in products}
+    collected = set(out["products"])
+    empty = sorted(key for key, value in out["products"].items() if not value.get("keywords"))
+    if failures or collected != expected or empty:
+        missing = sorted(expected - collected)
+        print(f"검색량 수집 불완전 — 기존 정상본 유지 · 실패={failures} · 누락={missing} · 빈 결과={empty}", file=sys.stderr)
+        return 1
     try:
         history = load("data/volume-history.json")
     except (FileNotFoundError, json.JSONDecodeError):
@@ -115,8 +125,10 @@ def main():
     month_key = out["asof"][:7]
     history = update_history(history, out, month_key)
     write_json("data/volume-history.json", history)
+    write_json("data/volume.json", out)
     tot = sum(len(v["keywords"]) for v in out["products"].values())
     print(f"✔ data/volume.json + volume-history.json({month_key}) — {len(out['products'])}개 상품 · 연관키워드 {tot}개")
+    return 0
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

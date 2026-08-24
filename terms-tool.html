@@ -185,7 +185,7 @@ function render(){
   const head=curCat==="__all"&&!curQ?`<div class="kpi-row">${kpi(TERMS.length,"등록 용어")}${kpi(cats().length,"분류")}${kpi(hard,"‘매우 어려움’ 최우선 순화")}</div>`:"";
   const body=list.length?`<div class="sec-lbl">약관 원문 → 소비자 표현 · 복사해서 가입화면·카피에 반영</div>${list.map(termCard).join("")}`
     :`<div class="empty">검색 결과가 없습니다.</div>`;
-  const note=`<div class="note"><b>사용법</b> · 표준약관의 어려운 용어를 <b>소비자가 이해하는 표현</b>으로 바꿔 가입화면·검색광고·상세 카피에 씁니다. ‘💬 쉬운 표현’을 <b>복사</b>해 바로 반영하세요. · 표현은 <b>배포 전 광고심의 검수</b> 전제(면책·감액 등은 오인 소지 없이 정확히). 데이터는 샘플·공개 표준약관 기준.</div>`;
+  const note=`<div class="note">쉬운 표현을 복사해 사용할 수 있습니다. 면책·감액 조건과 심의를 확인하세요.</div>`;
   $("#content").innerHTML=head+body+note;
 }
 document.addEventListener("click",e=>{

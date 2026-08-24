@@ -15,7 +15,7 @@ DEFAULT_VOLUME = ROOT / "data/volume.json"
 DEFAULT_FAQ = ROOT / "data/seo/faq-opportunities.json"
 DEFAULT_GSC = ROOT / "data/search-console.json"
 DEFAULT_OUTPUT = ROOT / "data/seo/title-opportunities.json"
-METHOD_VERSION = "cm-seo-title-ops/1.0"
+METHOD_VERSION = "cm-seo-title-ops/1.1"
 
 COMPETITOR_TOKENS = (
     "db", "동부", "현대", "삼성", "kb", "롯데", "메리츠", "농협", "라이나",
@@ -35,6 +35,18 @@ def read_json(path: Path, default: Any = None) -> Any:
 
 def norm(value: Any) -> str:
     return re.sub(r"[^0-9a-z가-힣]", "", str(value or "").lower())
+
+
+def positive_impressions(row: dict[str, Any]) -> bool:
+    try:
+        return float(row.get("impressions", 0) or 0) > 0
+    except (TypeError, ValueError):
+        return False
+
+
+def out_of_scope(query: str, product: dict[str, Any]) -> bool:
+    value = norm(query)
+    return any(norm(term) in value for term in product.get("excluded") or [])
 
 
 def char_len(value: str) -> int:
@@ -87,7 +99,7 @@ def relevant_volume_rows(product: dict[str, Any], volume: dict[str, Any]) -> lis
     result = []
     for query, data in rows.items():
         qn = norm(query)
-        if is_competitor_query(query) or not any(a in qn or qn in a for a in anchors):
+        if is_competitor_query(query) or out_of_scope(query, product) or not any(a in qn or qn in a for a in anchors):
             continue
         result.append({
             "query": query,
@@ -104,7 +116,7 @@ def opportunity_rows(product: dict[str, Any], volume: dict[str, Any], faq: dict[
     candidates: list[dict[str, Any]] = []
     for row in (faq_map.get(product["key"], {}).get("opportunities") or []):
         query = str(row.get("query") or "").strip()
-        if not query or is_competitor_query(query):
+        if not query or is_competitor_query(query) or out_of_scope(query, product):
             continue
         measured = volume_map.get(norm(query), {})
         candidates.append({
@@ -122,7 +134,7 @@ def opportunity_rows(product: dict[str, Any], volume: dict[str, Any], faq: dict[
             unique.append(row)
     for query in [product.get("serpKw", ""), *product.get("core", []), *product.get("special", [])]:
         key = norm(query)
-        if query and key not in seen and not is_competitor_query(query):
+        if query and key not in seen and not is_competitor_query(query) and not out_of_scope(query, product):
             seen.add(key)
             unique.append({"query": query, "demand": 0, "competition": "미확인"})
     return unique[:3]
@@ -130,6 +142,9 @@ def opportunity_rows(product: dict[str, Any], volume: dict[str, Any], faq: dict[
 
 def gsc_is_current(gsc: dict[str, Any] | None, today: date | None = None, max_age_days: int = 40) -> bool:
     if not isinstance(gsc, dict) or not isinstance(gsc.get("rows"), list):
+        return False
+    if not any(norm(row.get("query")) and positive_impressions(row)
+               for row in gsc["rows"] if isinstance(row, dict)):
         return False
     try:
         asof = date.fromisoformat(str(gsc.get("asof") or ""))
@@ -143,7 +158,10 @@ def gsc_signal(query: str, rows: list[dict[str, Any]] | None) -> tuple[str, list
     if rows is None:
         return "not_connected", []
     target = norm(query)
-    matches = [row for row in rows if target and (target in norm(row.get("query")) or norm(row.get("query")) in target)]
+    # 부분 문자열은 암보험/유방암보험처럼 다른 의도를 한 검색어로 오인하므로 정확히 일치시킨다.
+    matches = [row for row in rows
+               if target and target == norm(row.get("query"))
+               and positive_impressions(row)]
     if not matches:
         return "no_signal", []
     pages = {
@@ -176,10 +194,11 @@ def authority_band(impressions: int, connected: bool) -> str:
 def choose_candidate(candidates: list[dict[str, Any]], authority: str, connected: bool) -> str | None:
     if not connected:
         return None
-    eligible = [row for row in candidates if row["gsc_status"] != "cannibalization_detected"]
+    eligible = [row for row in candidates
+                if row["gsc_status"] not in {"cannibalization_detected", "no_signal", "not_connected"}]
     if not eligible:
         return None
-    status_weight = {"striking_distance": 6, "top3": 3, "no_signal": 2, "low_visibility": 1}
+    status_weight = {"striking_distance": 6, "top3": 3, "low_visibility": 1}
     tier_weight = {
         "low": {"head": 0, "body": 2, "tail": 3},
         "growing": {"head": 1, "body": 3, "tail": 2},
@@ -204,9 +223,25 @@ def generate(
     today: date | None = None,
 ) -> dict[str, Any]:
     has_gsc_rows = isinstance(gsc, dict) and isinstance(gsc.get("rows"), list)
+    raw_gsc_rows = gsc.get("rows") if has_gsc_rows else []
     connected = gsc_is_current(gsc, today=today)
-    gsc_source = "verified_privately" if connected else ("stale" if has_gsc_rows else "not_connected")
+    try:
+        gsc_date = date.fromisoformat(str((gsc or {}).get("asof") or ""))
+        gsc_date_fresh = 0 <= ((today or date.today()) - gsc_date).days <= 40
+    except ValueError:
+        gsc_date_fresh = False
+    if connected:
+        gsc_source = "verified_privately"
+    elif has_gsc_rows and not raw_gsc_rows:
+        gsc_source = "empty"
+    elif has_gsc_rows and gsc_date_fresh:
+        gsc_source = "insufficient"
+    elif has_gsc_rows:
+        gsc_source = "stale"
+    else:
+        gsc_source = "not_connected"
     gsc_rows = gsc["rows"] if connected else None
+    searchad_connected = volume.get("source") == "searchad"
     dates = [str(x.get("asof") or "") for x in (volume, faq, gsc or {}) if isinstance(x, dict)]
     asof = max(
         (value for value in dates if re.fullmatch(r"\d{4}-\d{2}-\d{2}", value)),
@@ -243,33 +278,42 @@ def generate(
                 "body_alignment_required": True,
                 "review_status": "human_review_required",
             })
-        authority = authority_band(int(sum(private_rows.values())), connected)
-        recommended = choose_candidate(candidates, authority, connected)
+        product_gsc_verified = bool(private_rows)
+        authority = authority_band(int(sum(private_rows.values())), product_gsc_verified)
+        recommendation_allowed = searchad_connected and product_gsc_verified
+        recommended = choose_candidate(candidates, authority, recommendation_allowed)
         for candidate in candidates:
             if candidate["gsc_status"] == "cannibalization_detected":
                 candidate["decision"] = "rejected_cannibalization"
+            elif candidate["gsc_status"] in {"no_signal", "not_connected"}:
+                candidate["decision"] = "review_only_no_gsc_signal"
             elif candidate["id"] == recommended:
                 candidate["decision"] = "recommended"
             else:
                 candidate["decision"] = "review_only"
+        if not searchad_connected:
+            status = "blocked_searchad"
+            next_action = "SearchAd 검색량 갱신"
+        elif not product_gsc_verified or recommended is None:
+            status = "blocked_gsc"
+            next_action = "비공개 GSC에서 후보 검색어의 노출·페이지 확인"
+        else:
+            status = "ready_for_review"
+            next_action = "본문 일치·상품 근거·준법·광고심의 검토"
         output_products.append({
             "product_key": product["key"],
-            "status": "ready_for_review" if connected else "blocked_gsc",
+            "status": status,
             "authority_band": authority,
             "recommended_candidate_id": recommended,
             "candidates": candidates,
-            "next_action": (
-                "본문 일치·상품 근거·준법·광고심의 검토"
-                if connected
-                else ("비공개 GSC 데이터 기준일 갱신" if has_gsc_rows else "비공개 GSC 연결 후 자기잠식·현재 가시성 검증")
-            ),
+            "next_action": next_action,
         })
     return {
         "_comment": "공개 배포용 제목 검토 큐. 비공개 GSC 원본 행과 상세 성과 수치는 포함하지 않는다.",
         "asof": asof,
         "method_version": METHOD_VERSION,
         "sources": {
-            "searchad": "connected" if volume.get("source") == "searchad" else "missing",
+            "searchad": "connected" if searchad_connected else "missing",
             "gsc": gsc_source,
         },
         "products": output_products,
@@ -285,8 +329,8 @@ def validate(payload: dict[str, Any]) -> list[str]:
         candidates = product.get("candidates") or []
         if len(candidates) != 3:
             errors.append(f"{product.get('product_key')}: exactly 3 candidates required")
-        if product.get("status") == "blocked_gsc" and product.get("recommended_candidate_id") is not None:
-            errors.append(f"{product.get('product_key')}: blocked GSC result cannot recommend")
+        if str(product.get("status", "")).startswith("blocked_") and product.get("recommended_candidate_id") is not None:
+            errors.append(f"{product.get('product_key')}: blocked result cannot recommend")
         for candidate in candidates:
             length = candidate.get("title_length", 0)
             if not 15 <= length <= 34:

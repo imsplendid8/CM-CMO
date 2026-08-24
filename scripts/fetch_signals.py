@@ -18,6 +18,11 @@
 """
 import os, sys, json, datetime, urllib.parse, urllib.request
 
+try:
+    from scripts.io_utils import atomic_json_write
+except ModuleNotFoundError:  # python scripts/fetch_signals.py
+    from io_utils import atomic_json_write
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "data", "signals.json")
 KEY = os.environ.get("DATA_GO_KR_KEY", "").strip()
@@ -113,8 +118,7 @@ def main():
         data = {"asof": TODAY, "source": "data.go.kr", "weather": weather, "travel": travel,
                 "triggers": build_triggers(weather, travel)}
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
-    with open(OUT, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    atomic_json_write(OUT, data)
     print(f"✔ data/signals.json ({data['source']}) · 트리거 {len(data['triggers'])}개 · 특보 {data['weather'].get('active')}")
 
 if __name__ == "__main__":
