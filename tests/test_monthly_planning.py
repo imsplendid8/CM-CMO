@@ -78,11 +78,12 @@ class TestMonthlyPlanningUiContract(unittest.TestCase):
         self.assertIn("RISING_MIN_RATE=.5", keyword)
         self.assertIn("data/volume-history.json", workflow)
 
-    def test_seo_proposes_four_review_gated_faqs(self):
+    def test_seo_proposes_four_review_gated_faqs_without_retired_rich_result(self):
         seo = self.read("seo-audit.html")
         self.assertIn("function monthlyFaqs", seo)
         self.assertIn("고객 질문형 FAQ 콘텐츠 4개", seo)
-        self.assertIn('"@type":"FAQPage"', seo)
+        self.assertNotIn('"@type":"FAQPage"', seo)
+        self.assertIn("Google FAQ 리치결과는 2026-05-07 종료", seo)
         self.assertIn("월 이름을 억지로 넣지 않고", seo)
         self.assertNotIn("`${month}월 ${current.tag} 시기에", seo)
         self.assertNotIn("`${next}월을 앞두고", seo)
@@ -90,7 +91,7 @@ class TestMonthlyPlanningUiContract(unittest.TestCase):
         self.assertIn("예전에 치료받은 병력이 있어도 가입할 수 있나요?", seo)
         self.assertIn("유병자보험은 무심사보험인가요?", seo)
         self.assertIn("건강이 좋아지면 일반심사형 보험으로 바꿀 수 있나요?", seo)
-        self.assertIn("상품 담당자·준법·광고심의 검토 후 사용", seo)
+        self.assertIn("상품 담당자·준법·광고심의 검토 전용", seo)
         self.assertIn('FAQ_REFERENCE_URL="https://blog.carrotins.com/"', seo)
         self.assertIn("실제 이용자의 상황을 질문으로 쓰고", seo)
         self.assertIn("심의번호·심의 유효기간·검토자를 기록", seo)

@@ -115,7 +115,8 @@ class TestFaqOpportunityAgent(unittest.TestCase):
         seo = (ROOT / "seo-audit.html").read_text(encoding="utf-8")
         adcopy = (ROOT / "adcopy-tool.html").read_text(encoding="utf-8")
         self.assertIn("data/seo/faq-opportunities.json", seo)
-        self.assertIn("승인된 상품 근거가 없는 질문은 공개 FAQ·JSON-LD에 자동 추가하지 않습니다", seo)
+        self.assertIn("승인된 상품 근거가 없는 질문은 공개 FAQ에 자동 추가하지 않습니다", seo)
+        self.assertIn("FAQPage를 검색 노출 혜택으로 권장하지 않습니다", seo)
         self.assertIn("data/adcopy/serp-candidates.json", adcopy)
         self.assertIn("SERP_AGENT", adcopy)
 
