@@ -208,6 +208,7 @@ table.sheet .cp:hover{border-color:var(--brand);color:var(--brand-600);}
 <script src="shared/feedback-client.js"></script>
 <script src="shared/planning-context.js"></script>
 <script src="shared/humanize-ko.js"></script>
+<script src="shared/naver-material-specs.js"></script>
 <script src="shared/ui-icons.js" defer></script>
 </head>
 <body>
@@ -216,7 +217,7 @@ table.sheet .cp:hover{border-color:var(--brand);color:var(--brand-600);}
     <div class="sb-brand"><div class="brand-logo" aria-hidden="true"></div>
       <div><div class="bn">검색광고 소재</div><small>파워링크 문구 제작</small></div></div>
     <nav class="sb-nav" id="sbNav"></nav>
-    <div class="sb-foot"><a href="index.html">← 통합 콘솔(main)로</a><br>규격: 제목 15자 · 설명 20~45자<br><b>광고심의 검수 전 초안</b> · 문구는 손해보험협회 심의 대상</div>
+    <div class="sb-foot"><a href="index.html">← 통합 콘솔(main)로</a><br>규격: 제목 15자 · 설명 20~45자 · 홍보 14자<br><b>광고심의 검수 전 초안</b> · 문구는 손해보험협회 심의 대상</div>
   </aside>
   <main class="main">
     <header class="topbar">
@@ -236,13 +237,28 @@ const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"
 const clen=s=>[...String(s).trim()].length;               // 글자수(공백 포함, 코드포인트)
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1600);}
 
-/* 네이버 파워링크 규격 (제목/추가제목 15자 · 설명 20~45자 · 홍보문구 15자 · 서브링크 6자×4) */
-const SPEC={ titleMax:15, descMin:20, descMax:45, promoMax:15, subMax:6, subCount:4 };
+/* SA·파워콘텐츠가 함께 쓰는 네이버 소재 검수 규격. */
+const MATERIAL_SPEC=globalThis.ModooNaverMaterialSpecs;
+const SPEC={
+  titleMax:MATERIAL_SPEC.base.titleMax,
+  descMin:MATERIAL_SPEC.base.descriptionMin,
+  descMax:MATERIAL_SPEC.base.descriptionMax,
+  additionalTitleMax:MATERIAL_SPEC.extension.additionalTitle.maxLength,
+  additionalTitleGroupMax:MATERIAL_SPEC.extension.additionalTitle.maxPerGroup,
+  additionalDescMax:MATERIAL_SPEC.extension.additionalDescription.maxLength,
+  additionalDescGroupMax:MATERIAL_SPEC.extension.additionalDescription.maxPerGroup,
+  promoMax:MATERIAL_SPEC.extension.promotion.maxLength,
+  promoGroupMax:MATERIAL_SPEC.extension.promotion.maxPerGroup,
+  subMax:MATERIAL_SPEC.extension.sublink.nameMaxLength,
+  subMinCount:MATERIAL_SPEC.extension.sublink.minPerAd,
+  subMaxCount:MATERIAL_SPEC.extension.sublink.maxPerAd,
+  subSiteMax:MATERIAL_SPEC.extension.sublink.maxPerSite,
+};
 /* 광고심의 자제 표현 — 손해보험협회 광고심의기준(2023.4.18) 기반.
    ① 최상급/배타적(Ⅳ.1): 객관 통계·출처 증빙 없으면 금지 → 근거 없는 초안에선 배제.
    ② 단정/보장 오인(Ⅲ·Ⅳ): 무조건·100%·확정·평생보장·원금보장 등.
    자세한 맥락 검수(근거·출처·지급제한 병기·다이렉트 매칭)는 insurance-ad-review 스킬로. */
-const BAN=["최고","최상","최저가","최저","제일","1위","일등","넘버원","넘버1","유일","단독","최초","업계최초","국내최초","제1위","가장","무조건","100%","완벽","절대","확정","무심사","누구나","전원","공짜","완전무료","보장 확정","원금보장","평생보장"];
+const BAN=["최고","최상","최저가","최저","제일","1위","일등","넘버원","넘버1","유일","단독","최초","업계최초","국내최초","제1위","가장","무조건","100%","완벽","절대","확정","무심사","누구나","전원","공짜","완전무료","보장 확정","원금보장","평생보장","저렴"];
 function lintBan(s){return BAN.filter(w=>String(s).replace(/\s/g,"").includes(w.replace(/\s/g,"")));}
 
 /* 상품별 소구 토큰 — 제목용 short(짧게), 설명용 usp(문장 조각), 담보 covers */
@@ -319,11 +335,10 @@ function genSeasonTitles(p,iss){
 function genSeasonDescs(p,iss){
   const sw=shortWord(iss.tag), n=p.name, a=al(p), k2=iss.kws.slice(0,2).join("·");
   const pool=[
-    `${iss.tag} 대비, ${a} 미리 준비하세요.`,
-    `${sw} 시즌 ${a}, 다이렉트로 간편하게 준비하세요.`,
-    `${k2} 걱정될 때, ${josa(a,"으로","로")} 든든하게 대비하세요.`,
-    `${josa(sw,"으로","로")} 늘어나는 위험, ${josa(a,"으로","로")} 미리 챙기세요.`,
-    `${sw} 뉴스가 늘어나는 요즘, ${a} 다이렉트로 대비하세요.`,
+    `${iss.tag} 시기에는 ${a} 보장 여부와 가입 조건을 확인하세요.`,
+    `${sw} 전에 ${a} 보장 범위와 제외 조건을 확인해 보세요.`,
+    `${k2} 관련 담보는 상품설명서와 약관에서 확인하세요.`,
+    `${sw} 관련 ${n} 보험료와 보장 내용을 함께 살펴보세요.`,
   ];
   return wrap(pool,SPEC.descMin,SPEC.descMax,true);
 }
@@ -392,15 +407,12 @@ function genBrandTitles(p){
   return wrap(pool,4,SPEC.titleMax);
 }
 /* ② 추가제목 롤링 (소구형, ≤15자) — 실제 시트 3번 컬럼(롤링) */
-const T_CONV=["24시간 인터넷 간편가입","전화 없이 빠른 가입","전화 없이 24시간 가입","전화 통화 없는 간편 가입","비대면 간편 가입 가능","클릭만 해도 가입 가능","직접 비교하고 간편 가입","모바일로 3분 간편가입","상담 없이 바로 가입","보험료 확인하고 바로 가입"];
 function genSubTitles(p){
   const a=al(p), covs=p.covers||[];
-  if(p.cat==="사이트")return wrap(["공식 다이렉트보험","보험료 간편 확인","상품별 보장 확인","온라인 간편가입",...T_CONV],4,SPEC.titleMax);
+  if(p.cat==="사이트")return wrap(["공식 다이렉트보험","보험료 확인","상품별 보장 확인","가입 조건 확인"],4,SPEC.titleMax);
   const pool=[
-    ...T_CONV,
-    `${a} 보험료 비교`, `${a} 다이렉트 가입`, `필요한 담보만 골라 가입`, `${p.short[0]} 중심 맞춤 설계`,
-    ...covs.map(c=>`${c}까지 (특약)`), ...covs.map(c=>`${c} 걱정 완벽 대비`), ...covs.map(c=>`${c} 미리 확인`),
-    ...p.short.map(s=>`${s} ${a}`),
+    `${a} 보험료 확인`, `${a} 가입 조건`, `${a} 보장 범위`, "가입 전 보장 확인",
+    ...covs.map(c=>`${c} 특약 확인`), ...covs.map(c=>`${c} 보장 확인`),
   ];
   return wrap(pool,4,SPEC.titleMax);
 }
@@ -409,33 +421,49 @@ function genDescs(p){
   const n=p.name, a=al(p), c3=p.covers.slice(0,3).join("·");
   if(p.cat==="사이트")return wrap(["한화손보 다이렉트 공식 사이트에서 담당 보험상품을 확인하세요.","보험료와 상품별 보장 내용을 온라인에서 간편하게 확인하세요."],SPEC.descMin,SPEC.descMax);
   const pool=[
-    `${p.usp[0]} 준비하세요.`,
-    `${p.usp[1]} 준비하세요.`,
-    `${c3} 보장, 다이렉트로 간편하게 준비하세요.`,
-    `${n}, 온라인으로 보험료 확인하고 바로 가입하세요.`,
-    `${p.short[0]} 중심으로 필요한 담보만 골라 준비하세요.`,
-    `전화 통화 없이 24시간 언제든 ${a} 간편하게 가입하세요.`,
-    `${p.covers[0]}부터 ${p.covers[p.covers.length-1]}까지, ${josa(a,"으로","로")} 든든하게 대비하세요.`,
-    `복잡한 상담 없이 비교하고, ${a} 다이렉트로 합리적으로 준비하세요.`,
+    `${c3} 보장 여부와 가입 조건을 확인해 보세요.`,
+    `${n} 보험료와 보장 범위를 온라인에서 확인해 보세요.`,
+    `${p.covers[0]} 관련 담보의 보장 범위와 제외 조건을 살펴보세요.`,
+    `${p.covers[0]}부터 ${p.covers[p.covers.length-1]}까지 가입 전 보장 내용을 확인하세요.`,
+    `${a} 보험료는 가입 조건에 따라 달라질 수 있으니 확인해 보세요.`,
+    `${n} 가입 전 상품설명서와 약관에서 보장 내용을 확인하세요.`,
   ];
   return wrap(pool,SPEC.descMin,SPEC.descMax);
 }
-/* ④ 홍보문구 (≤15자) — 시트 5번 · 상품 소구 반영 */
+/* ④ 추가설명 (≤45자, 광고그룹당 최대 4개) */
+function genAdditionalDescs(p){
+  const a=al(p), c0=p.covers[0], c1=p.covers[p.covers.length-1];
+  if(p.cat==="사이트")return wrap([
+    "상품별 보험료와 보장 내용을 공식 사이트에서 확인하세요.",
+    "가입 전 보장 범위와 제외 조건을 상품별로 확인하세요.",
+    "필요한 보험상품과 가입 조건을 온라인에서 살펴보세요.",
+    "실제 보장 내용은 상품설명서와 약관에서 확인하세요.",
+  ],2,SPEC.additionalDescMax);
+  return wrap([
+    `가입 전 ${c0} 보장 여부와 제외 조건을 확인해 보세요.`,
+    `${a} 보험료와 필요한 보장을 함께 살펴보세요.`,
+    `${c0}부터 ${c1}까지 보장 범위를 확인해 보세요.`,
+    "보장 내용과 가입 조건을 확인해 보세요.",
+    "보험료와 보장 범위를 확인한 뒤 가입을 검토하세요.",
+    `${p.name}의 실제 보장 내용은 상품설명서와 약관에서 확인하세요.`,
+  ],2,SPEC.additionalDescMax);
+}
+/* ⑤ 홍보문구 (≤14자, 광고그룹당 최대 2개) — 확인되지 않은 할인·속도 주장은 생성하지 않는다. */
 function genPromos(p){
   const a=al(p), c0=p.covers[0];
-  if(p.cat==="사이트")return wrap(["공식 사이트에서 확인","보험료 간편 조회","상품별 보장 확인","온라인 간편가입"],2,SPEC.promoMax);
+  if(p.cat==="사이트")return wrap(["공식 사이트 확인","보험료 확인","상품별 보장 확인","가입 조건 확인"],2,SPEC.promoMax);
   const pool=[
-    "24시간 간편 보험료 조회","지금 바로 보험료 확인","온라인 전용 다이렉트가","비교하고 바로 가입하기",
-    `${a} 보험료 3분 조회`, `${p.short[0]} 담보 골라 가입`, `${c0} 포함 확인`, `${a} 다이렉트 조회`,
+    "보험료 확인","가입 전 보장 확인","가입 조건 확인",
+    `${a} 보험료 확인`, `${c0} 담보 확인`, `${c0} 포함 확인`, `${a} 보장 확인`,
   ];
   return wrap(pool,2,SPEC.promoMax);
 }
-/* ⑤ 서브링크 (≤6자, 택4) — 시트 6번 · 상품 담보·소구 토큰 우선 */
+/* ⑥ 서브링크 (≤6자, 소재당 3~4개·사이트당 최대 4개) */
 function genSubs(p){
   const short=s=>String(s).replace(/\s/g,"").slice(0,SPEC.subMax);
   if(p.cat==="사이트")return wrap(["보험료계산","상품보기","보장내용","간편가입"],2,SPEC.subMax);
-  const pool=["보험료계산","보장내용", short(al(p)), ...p.covers.map(short), ...p.short.map(short),
-    "간편가입","24시간가입","할인확인","가입하기"];
+  const pool=["보험료계산","보장내용", short(al(p)), ...p.covers.map(short),
+    "가입조건","가입안내","상품안내"];
   return wrap(pool,2,SPEC.subMax);
 }
 
@@ -485,10 +513,11 @@ function buildSheet(p){
   const serp=serpIdeas(p);
   return { issues,serp,
     brand: genBrandTitles(p),
-    subt:  dd([...serp.titles, ...genSubTitles(p), ...sT]), // 실측 SERP 차별 + 소구 + 시즌·뉴스
+    subt:  dd([...serp.titles, ...genSubTitles(p), ...sT]).slice(0,SPEC.additionalTitleGroupMax), // 실측 SERP 차별 + 소구 + 시즌·뉴스
     desc:  dd([...serp.descs, ...genDescs(p), ...sD]),
-    promo: genPromos(p),
-    sub:   genSubs(p).slice(0,12) };
+    additionalDesc: genAdditionalDescs(p).slice(0,SPEC.additionalDescGroupMax),
+    promo: genPromos(p).slice(0,SPEC.promoGroupMax),
+    sub:   genSubs(p).slice(0,SPEC.subSiteMax) };
 }
 /* 시트형 표 (문구 | 글자수 | 복사) — 시즌·뉴스 반영분은 ss 하이라이트 */
 function tbl(rows,max){
@@ -500,9 +529,9 @@ function block(lbl,rows,max,ss){
   return `<div class="sec-lbl">${lbl} <b>(${rows.length})</b>${ss?` · <span class="sscount">시즌·뉴스 ${rows.filter(o=>o.ss).length}</span>`:""}</div>${tbl(rows,max)}`;
 }
 const todayStr=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
-/* 등록 양식 5블록을 병렬 컬럼으로 배치 — 실제 시트 레이아웃 그대로 */
+/* 등록 양식 6블록을 병렬 컬럼으로 배치. */
 function sheetCols(p){const s=buildSheet(p);return [
-  [`광고 제목(≤${SPEC.titleMax})`,s.brand],[`추가제목·롤링(≤${SPEC.titleMax})`,s.subt],[`설명·롤링(${SPEC.descMin}~${SPEC.descMax})`,s.desc],[`홍보문구(≤${SPEC.promoMax})`,s.promo],[`서브링크(≤${SPEC.subMax})`,s.sub]];}
+  [`광고 제목(≤${SPEC.titleMax})`,s.brand],[`추가제목·롤링(≤${SPEC.additionalTitleMax})`,s.subt],[`설명·롤링(${SPEC.descMin}~${SPEC.descMax})`,s.desc],[`추가설명(≤${SPEC.additionalDescMax})`,s.additionalDesc],[`홍보문구(≤${SPEC.promoMax})`,s.promo],[`서브링크(≤${SPEC.subMax})`,s.sub]];}
 function exportXls(p){
   const cols=sheetCols(p), N=Math.max(...cols.map(c=>c[1].length),1);
   const eX=v=>String(v).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]));
@@ -531,16 +560,21 @@ function validateNaverRow(r){
   const errors=[];
   if(!r.title||clen(r.title)>SPEC.titleMax)errors.push("제목 규격");
   if(!r.description||clen(r.description)<SPEC.descMin||clen(r.description)>SPEC.descMax)errors.push("설명 규격");
-  if(r.extraTitle&&clen(r.extraTitle)>SPEC.titleMax)errors.push("추가제목 규격");
+  if(r.extraTitle&&clen(r.extraTitle)>SPEC.additionalTitleMax)errors.push("추가제목 규격");
+  if(r.additionalDescription&&clen(r.additionalDescription)>SPEC.additionalDescMax)errors.push("추가설명 규격");
   if(r.promo&&clen(r.promo)>SPEC.promoMax)errors.push("홍보문구 규격");
-  [r.sublink1,r.sublink2,r.sublink3,r.sublink4].forEach((v,i)=>{if(v&&clen(v)>SPEC.subMax)errors.push(`서브링크${i+1} 규격`);});
-  const banned=lintBan([r.title,r.description,r.extraTitle,r.promo].join(" "));
+  const sublinks=[r.sublink1,r.sublink2,r.sublink3,r.sublink4].filter(Boolean);
+  if(sublinks.length<SPEC.subMinCount||sublinks.length>SPEC.subMaxCount)errors.push("서브링크 개수");
+  if(new Set(sublinks).size!==sublinks.length)errors.push("서브링크 중복");
+  sublinks.forEach((v,i)=>{if(clen(v)>SPEC.subMax)errors.push(`서브링크${i+1} 규격`);});
+  const banned=lintBan([r.title,r.description,r.extraTitle,r.additionalDescription,r.promo].join(" "));
   if(banned.length)errors.push(`금칙어:${banned.join("/")}`);
+  MATERIAL_SPEC.manualOnlyFields.forEach(key=>{if(r[key])errors.push(`${key} 자동 입력 금지`);});
   return errors;
 }
 function buildNaverRows(p,target=50){
-  const s=buildSheet(p),titles=s.brand||[],descs=s.desc||[],subt=s.subt||[],promos=s.promo||[],subs=(s.sub||[]).map(o=>o.tx);
-  if(!titles.length||!descs.length||!subt.length||!promos.length||subs.length<SPEC.subCount)return [];
+  const s=buildSheet(p),titles=s.brand||[],descs=s.desc||[],subt=s.subt||[],additionalDescs=s.additionalDesc||[],promos=s.promo||[],subs=(s.sub||[]).map(o=>o.tx);
+  if(!titles.length||!descs.length||!subt.length||!additionalDescs.length||!promos.length||subs.length<SPEC.subMinCount)return [];
   const rows=[],seen=new Set();
   const perStrategy=Math.floor(target/STRATEGIES.length),extra=target%STRATEGIES.length;
   STRATEGIES.forEach((strategy,si)=>{
@@ -549,17 +583,21 @@ function buildNaverRows(p,target=50){
       const ti=combo%titles.length;
       const di=Math.floor(combo/titles.length)%descs.length;
       const ai=Math.floor(combo/(titles.length*descs.length))%subt.length;
+      const adi=(combo+si)%additionalDescs.length;
       const pi=(combo+si)%promos.length;
       const linkStart=(combo+si*2)%subs.length;
-      const links=Array.from({length:SPEC.subCount},(_,j)=>subs[(linkStart+j)%subs.length]);
+      const links=Array.from({length:SPEC.subMaxCount},(_,j)=>subs[(linkStart+j)%subs.length]);
       const row={
         strategy:strategy.label,reviewStatus:REVIEW_STATUS,campaignId:"",
         campaignName:`CM_파워링크_${p.name}`,adGroupName:`${p.name} · ${strategy.label}`,
         title:titles[ti].tx,description:descs[di].tx,displayUrl:"",pcUrl:"",mobileUrl:"",
-        extraTitle:subt[ai].tx,promo:promos[pi].tx,
+        extraTitle:subt[ai].tx,additionalDescription:additionalDescs[adi].tx,promo:promos[pi].tx,
         sublink1:links[0],sublink2:links[1],sublink3:links[2],sublink4:links[3],
+        calculationUrl:"",powerLinkImageId:"",
+        sublinkUrl1:"",sublinkUrl2:"",sublinkUrl3:"",sublinkUrl4:"",
+        sublinkImageId1:"",sublinkImageId2:"",sublinkImageId3:"",sublinkImageId4:"",
       };
-      const sig=[row.campaignName,row.adGroupName,row.title,row.description,row.extraTitle,row.promo,...links].join("|");
+      const sig=[row.campaignName,row.adGroupName,row.title,row.description,row.extraTitle,row.additionalDescription,row.promo,...links].join("|");
       if(seen.has(sig)||validateNaverRow(row).length)continue;
       seen.add(sig);rows.push(row);made++;
     }
@@ -570,7 +608,12 @@ const REVIEW_COLUMNS=[
   ["검토 상태","reviewStatus"],["전략 그룹","strategy"],["캠페인 ID(직접 입력)","campaignId"],
   ["캠페인 이름","campaignName"],["광고그룹 이름","adGroupName"],["소재 제목","title"],["소재 설명","description"],
   ["표시 URL","displayUrl"],["연결 URL(PC)","pcUrl"],["연결 URL(모바일)","mobileUrl"],
-  ["추가제목","extraTitle"],["홍보문구","promo"],["서브링크1","sublink1"],["서브링크2","sublink2"],["서브링크3","sublink3"],["서브링크4","sublink4"],
+  ["추가제목","extraTitle"],["추가설명","additionalDescription"],["홍보문구","promo"],
+  ["계산 연결 URL(직접 입력)","calculationUrl"],["파워링크 이미지 ID(직접 입력)","powerLinkImageId"],
+  ["서브링크1","sublink1"],["서브링크 URL1(직접 입력)","sublinkUrl1"],["서브링크 이미지 ID1(직접 입력)","sublinkImageId1"],
+  ["서브링크2","sublink2"],["서브링크 URL2(직접 입력)","sublinkUrl2"],["서브링크 이미지 ID2(직접 입력)","sublinkImageId2"],
+  ["서브링크3","sublink3"],["서브링크 URL3(직접 입력)","sublinkUrl3"],["서브링크 이미지 ID3(직접 입력)","sublinkImageId3"],
+  ["서브링크4","sublink4"],["서브링크 URL4(직접 입력)","sublinkUrl4"],["서브링크 이미지 ID4(직접 입력)","sublinkImageId4"],
 ];
 const eC=v=>`"${String(v==null?"":v).replace(/"/g,'""')}"`;
 function downloadCsv(rows,name){
@@ -593,7 +636,11 @@ const TEMPLATE_ALIASES={
   "캠페인id":"campaignId","캠페인아이디":"campaignId","캠페인이름":"campaignName","광고그룹이름":"adGroupName",
   "소재제목":"title","광고제목":"title","제목":"title","소재설명":"description","광고설명":"description","설명":"description",
   "표시url":"displayUrl","연결urlpc":"pcUrl","pc연결url":"pcUrl","연결url모바일":"mobileUrl","모바일연결url":"mobileUrl",
-  "추가제목":"extraTitle","홍보문구":"promo","서브링크1":"sublink1","서브링크2":"sublink2","서브링크3":"sublink3","서브링크4":"sublink4",
+  "추가제목":"extraTitle","추가설명":"additionalDescription","추가설명문구":"additionalDescription","홍보문구":"promo",
+  "계산연결url":"calculationUrl","계산url":"calculationUrl","파워링크이미지id":"powerLinkImageId","이미지id":"powerLinkImageId",
+  "서브링크1":"sublink1","서브링크2":"sublink2","서브링크3":"sublink3","서브링크4":"sublink4",
+  "서브링크url1":"sublinkUrl1","서브링크url2":"sublinkUrl2","서브링크url3":"sublinkUrl3","서브링크url4":"sublinkUrl4",
+  "서브링크이미지id1":"sublinkImageId1","서브링크이미지id2":"sublinkImageId2","서브링크이미지id3":"sublinkImageId3","서브링크이미지id4":"sublinkImageId4",
 };
 const normHeader=s=>String(s).toLowerCase().replace(/^﻿/,"").replace(/[\s()[\]{}·._\-/]/g,"");
 function parseDelimitedLine(line,delim){
@@ -667,11 +714,12 @@ function weatherSection(p){
 
 /* ── 실측 월검색량(data/volume.json · 검색광고 API 주간 갱신) ── */
 let VOL={asof:null,products:{}};
+const OUT_OF_SCOPE_VOLUME=["자동차보험","자동차 보험","한화생명"];
 function loadVolume(){return fetch("data/volume.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(m=>{if(m&&m.products)VOL=m;}).catch(()=>{});}
 function loadSeasonal(){return fetch("data/seasonal.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(m=>{if(m&&m.seasonal)SEASONAL=m.seasonal;}).catch(()=>{});}
 function volList(pkey){const kw=(VOL.products&&VOL.products[pkey]&&VOL.products[pkey].keywords)||{};
   return Object.keys(kw).map(k=>{const o=kw[k]||{},pc=+o.pc||0,mo=+o.mobile||0;return {kw:k,total:pc+mo,comp:o.comp||""};})
-    .filter(v=>v.total>0).sort((a,b)=>b.total-a.total);}
+    .filter(v=>v.total>0&&!OUT_OF_SCOPE_VOLUME.some(term=>v.kw.replace(/\s/g,"").includes(term.replace(/\s/g,"")))).sort((a,b)=>b.total-a.total);}
 // 상품 관련 토큰(별칭·이름·담보·소구)으로 노이즈 키워드(무관 경쟁사 브랜드 등) 제거
 function volTokens(p){return uniq([al(p),p.name,...(p.short||[]),...(p.covers||[])]
   .flatMap(t=>String(t).split(/[·\s/]/)).filter(w=>w.length>=2));}
@@ -834,16 +882,18 @@ function render(){
       <button class="btn" id="xAds">⬇ 현재 상품 내부 검토 CSV (${batch.length}/50)</button>
       <button class="btn" id="xAllAds">⬇ 전체 13상품 내부 검토 CSV (650행)</button>
       <button class="btn" id="xTsv">⧉ 표 복사 (엑셀 붙여넣기)</button>
-      <span class="xnote">광고제목·추가제목·설명·홍보문구·서브링크 5블록 · <span style="color:var(--bad);font-weight:800">빨강=시즌·뉴스 반영</span></span>
+      <span class="xnote">광고제목·추가제목·설명·추가설명·홍보문구·서브링크 6블록 · <span style="color:var(--bad);font-weight:800">빨강=시즌·뉴스 반영</span></span>
       <div class="tpl"><b>공식 템플릿 열 매핑</b><input id="naverTpl" type="file" accept=".csv,.tsv,.txt"><button class="btn sm" id="xOfficial" ${NAVER_TEMPLATE?"":"disabled"}>현재 상품 50행 변환</button><span class="${NAVER_TEMPLATE?"ok":NAVER_TEMPLATE_MESSAGE.startsWith("오류")?"no":""}">${esc(NAVER_TEMPLATE?`${NAVER_TEMPLATE.name} · 필수 열 매핑 완료`:NAVER_TEMPLATE_MESSAGE)}</span></div>
     </div>
     <div class="specbar">
       <div class="spec">제목·추가제목 <b>≤${SPEC.titleMax}</b></div>
       <div class="spec">설명 <b>${SPEC.descMin}~${SPEC.descMax}</b></div>
+      <div class="spec">추가설명 <b>≤${SPEC.additionalDescMax}</b>·최대 ${SPEC.additionalDescGroupMax}</div>
       <div class="spec">홍보문구 <b>≤${SPEC.promoMax}</b></div>
-      <div class="spec">서브링크 <b>≤${SPEC.subMax}</b>·택${SPEC.subCount}</div>
+      <div class="spec">서브링크 <b>≤${SPEC.subMax}</b>·${SPEC.subMinCount}~${SPEC.subMaxCount}개</div>
       ${seasonChips}
     </div>
+    <div class="banner"><b>소재 가이드 검수 ${esc(MATERIAL_SPEC.verifiedAt)}</b> · 홍보문구는 실제 할인·이벤트 근거가 있을 때만 교체해 사용하세요. 계산 URL·서브링크 URL·이미지 ID는 실제 랜딩과 등록 자산을 확인해 직접 입력합니다. <a href="${esc(MATERIAL_SPEC.guideUrl)}" target="_blank" rel="noopener">네이버 등록 가이드 ↗</a></div>
 
     <div class="sec-lbl">📌 상품·시장 참고</div>
     ${volPanel}
@@ -851,10 +901,11 @@ function render(){
     ${p.cat==="사이트"?"":serpMonitorPanel(p)}
 
     ${block("① 광고 제목 (브랜드형)",s.brand,SPEC.titleMax)}
-    ${block("② 추가제목 · 롤링 (소구·시즌)",s.subt,SPEC.titleMax,true)}
+    ${block("② 추가제목 · 롤링 (소구·시즌)",s.subt,SPEC.additionalTitleMax,true)}
     ${block("③ 설명 · 롤링 (소구·시즌)",s.desc,SPEC.descMax,true)}
-    ${block("④ 홍보문구",s.promo,SPEC.promoMax)}
-    ${block("⑤ 서브링크 (택4)",s.sub,SPEC.subMax)}
+    ${block("④ 추가설명",s.additionalDesc,SPEC.additionalDescMax)}
+    ${block("⑤ 홍보문구 (근거 확인 후 사용)",s.promo,SPEC.promoMax)}
+    ${block("⑥ 서브링크 (4개·URL 직접 입력)",s.sub,SPEC.subMax)}
 
     ${weatherSection(p)}
 
@@ -868,7 +919,7 @@ function render(){
         <div class="meta"><span class="len" id="edDlen">0/${SPEC.descMax}</span><span class="lint" id="edDlint"></span></div></div>
     </div>
 
-    <div class="note">내보낸 파일은 내부 검토용입니다. 등록 전 필수값과 심의 상태를 확인하세요.</div>`;
+    <div class="note">내보낸 파일은 내부 검토용입니다. 등록 전 서브링크명과 실제 URL의 일치 여부, 필수값, 상품 근거와 심의 상태를 확인하세요.</div>`;
 
   $("#xExcel").addEventListener("click",()=>exportXls(p));
   $("#xAds").addEventListener("click",()=>exportReviewAds([p],p.name));

@@ -3,6 +3,7 @@ import vm from "node:vm";
 
 const root = new URL("../", import.meta.url);
 const html = fs.readFileSync(new URL("powercontent-tool.html", root), "utf8");
+const materialSpecs = fs.readFileSync(new URL("shared/naver-material-specs.js", root), "utf8");
 const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((match) => match[1]);
 const appScript = scripts.find((source) => source.includes("function titleCandidates"));
 if (!appScript) throw new Error("powercontent-tool.html에서 후보 생성 로직을 찾지 못했습니다.");
@@ -16,10 +17,11 @@ const context = {
   },
 };
 vm.createContext(context);
+vm.runInContext(materialSpecs, context, { filename: "shared/naver-material-specs.js" });
 vm.runInContext(
   `${pureSection}
   ;globalThis.__POWER_CHECK__={
-    PRODUCTS,titleCandidates,descriptionFor,volumeRows,inScope,clen,
+    PRODUCTS,titleCandidates,descriptionFor,extensionBrief,validateExtensions,volumeRows,inScope,clen,
     setData:(volume,seasonal,titles)=>{DATA={volume,seasonal,titles};}
   };`,
   context,
@@ -58,7 +60,13 @@ for (const product of check.PRODUCTS) {
   }
   const representative = check.volumeRows(product)[0]?.kw || product.serpKw;
   if (forbidden.test(representative)) throw new Error(`${product.name}: 대표 검색어 범위 오류 '${representative}'`);
-  console.log(`OK  ${product.name}: 제목 3안 · 설명 80~110자 · 범위 통과`);
+  const extensions = check.extensionBrief(product, candidates[0]);
+  const extensionErrors = check.validateExtensions(extensions);
+  if (extensionErrors.length) throw new Error(`${product.name}: ${extensionErrors.join(", ")}`);
+  for (const key of context.ModooNaverMaterialSpecs.manualOnlyFields) {
+    if (extensions.manual[key] !== "") throw new Error(`${product.name}: ${key} 자동 입력됨`);
+  }
+  console.log(`OK  ${product.name}: 제목 3안 · 설명 80~110자 · 확장소재 규격 통과`);
 }
 
 console.log("OK  파워컨텐츠 13상품 품질 가드 통과");

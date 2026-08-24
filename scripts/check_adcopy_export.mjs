@@ -2,6 +2,7 @@ import fs from "node:fs";
 import vm from "node:vm";
 
 const html = fs.readFileSync(new URL("../adcopy-tool.html", import.meta.url), "utf8");
+const materialSpecs = fs.readFileSync(new URL("../shared/naver-material-specs.js", import.meta.url), "utf8");
 const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
 const appScript = scripts.find((source) => source.includes("function buildNaverRows"));
 
@@ -12,6 +13,7 @@ if (!appScript) {
 const pureSection = appScript.split("/* ── 날씨 대응")[0];
 const context = { console };
 vm.createContext(context);
+vm.runInContext(materialSpecs, context, { filename: "shared/naver-material-specs.js" });
 vm.runInContext(
   `${pureSection}\n;globalThis.__AD_CHECK__={PRODUCTS,buildSheet,buildNaverRows,validateNaverRow,setPlanMonth:(month)=>{PLANM=month;}};`,
   context,
@@ -26,6 +28,9 @@ if (PRODUCTS.length !== 13) {
 setPlanMonth(8);
 for (const product of PRODUCTS) {
   const sheet = buildSheet(product);
+  if (sheet.subt.length > 15 || sheet.additionalDesc.length !== 4 || sheet.promo.length !== 2 || sheet.sub.length !== 4) {
+    throw new Error(`${product.name}: 확장소재 후보 개수 불일치 (추가제목 ${sheet.subt.length}, 추가설명 ${sheet.additionalDesc.length}, 홍보 ${sheet.promo.length}, 서브링크 ${sheet.sub.length})`);
+  }
   if (sheet.issues.some((issue) => !issue.m.includes(8) && !issue.m.includes(9))) {
     throw new Error(`${product.name}: 선택월(8월)·익월(9월) 밖 시즌 소재가 포함됨`);
   }
@@ -45,18 +50,26 @@ for (const product of PRODUCTS) {
   for (const row of rows) {
     const errors = validateNaverRow(row);
     if (errors.length) throw new Error(`${product.name}: ${errors.join(", ")}`);
+    const generatedCopy = [row.title, row.description, row.extraTitle, row.additionalDescription, row.promo].join(" ");
+    if (/24시간|3분|바로 가입|최저|저렴|무료|무조건/.test(generatedCopy)) {
+      throw new Error(`${product.name}: 근거 확인 전 사용할 수 없는 표현 '${generatedCopy}'`);
+    }
     const signature = [
       row.campaignName,
       row.adGroupName,
       row.title,
       row.description,
       row.extraTitle,
+      row.additionalDescription,
       row.promo,
       row.sublink1,
       row.sublink2,
       row.sublink3,
       row.sublink4,
     ].join("|");
+    for (const key of context.ModooNaverMaterialSpecs.manualOnlyFields) {
+      if (row[key] !== "") throw new Error(`${product.name}: ${key} 자동 입력됨`);
+    }
     if (signatures.has(signature)) throw new Error(`${product.name}: 중복 소재 조합 발견`);
     signatures.add(signature);
   }

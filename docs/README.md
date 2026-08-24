@@ -10,6 +10,7 @@
 - **[roadmap.md](roadmap.md)** — 진행 현황·고도화 아이디어(OSS 활용 포함)
 - **[api-from-url.md](api-from-url.md)** — 팀 실시간 연동(Cloudflare 프록시·워커 시크릿·KV 사용량)
 - **[monthly-planning-loop.md](monthly-planning-loop.md)** — 기준월·당월/익월 플랜·FAQ·소재·신규/급상승 키워드 연결
+- **[naver-ad-material-guide.md](naver-ad-material-guide.md)** — SA·파워컨텐츠 공통 소재 규격·수동 입력 원칙
 - **[ui-system.md](ui-system.md)** — 새 브랜드 마크·공통 아이콘·허브/도구 UI·접근성 규칙
 - **[content-briefing.md](content-briefing.md)** — 세 채널 공통 뉴스 요약·반복 억제
 - **[oss-leverage.md](oss-leverage.md)** — 활용 OSS(Pretendard·Playwright·pixelmatch 등)
@@ -22,8 +23,8 @@
 3. **카테고리 뉴스** — `news-tool.html` (업계·경쟁사 동향·수요 트리거·**클리핑 아카이브**)
 4. **SERP 아카이브** — `serp-tool.html` (전/후 diff + **경쟁사 브랜드검색 갤러리**)
 5. **시즌 캘린더** — `seasonal-tool.html`
-6. **검색광고 소재** — `adcopy-tool.html` (파워링크 등록 양식 5블록·엑셀 + **주차별 소재 캘린더** + **경쟁사 브랜드검색** 탭)
-7. **파워콘텐츠 소재** — `powercontent-tool.html` (검색수요·SEO·시즌 근거 + 제목·설명·본문 목차·FAQ 브리프)
+6. **검색광고 소재** — `adcopy-tool.html` (파워링크 소재 6블록·확장소재 검수·엑셀 + **주차별 소재 캘린더** + **경쟁사 브랜드검색** 탭)
+7. **파워콘텐츠 소재** — `powercontent-tool.html` (검색수요·SEO·시즌 근거 + 콘텐츠 설계·추가제목·추가설명·홍보문구·서브링크)
 
 ## 자동화 (GitHub Actions)
 - **뉴스 클리핑** 하루 2회(09·13시) · **SERP 캡쳐** 주간(경쟁사 브랜드검색 포함) · **수요 신호**(기상·검색) · **데일리 브리핑**(텔레그램) · **트렌드**(데이터랩 월간) · **검색량**(검색광고 주간) · **Pages 배포**

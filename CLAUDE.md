@@ -11,7 +11,7 @@
 | 현재 상태·재개 | `STATE.md` (최우선) |
 | 위키(정리 문서) | `docs/` — `README.md`(색인)·`architecture.md`·`tools.md`·`검색광고-BSA-로드맵.md`·`roadmap.md`·`daily-brief.md`·`api-from-url.md`(프록시)·`oss-leverage.md` |
 | 허브 | `index.html` (상단 고정 내비 + API 사용량 위젯 · 개인 키 입력 없음) · 전체 안내 `overview.html` |
-| 도구 7종 | `seo-audit.html` · `keyword-tool.html`(+네이버 대량등록 파일) · `news-tool.html`(업계·경쟁사+수요 트리거) · `serp-tool.html`(자동 캡쳐+브랜드검색) · `seasonal-tool.html` · `adcopy-tool.html`(SA 소재 5블록·엑셀) · `powercontent-tool.html`(검색 근거 기반 콘텐츠 브리프) |
+| 도구 7종 | `seo-audit.html` · `keyword-tool.html`(+네이버 대량등록 파일) · `news-tool.html`(업계·경쟁사+수요 트리거) · `serp-tool.html`(자동 캡쳐+브랜드검색) · `seasonal-tool.html` · `adcopy-tool.html`(SA 소재 6블록·확장소재 검수·엑셀) · `powercontent-tool.html`(검색 근거 기반 콘텐츠·추가소재 브리프) |
 | 별도 도구(부서 전용) | BSA(브랜드검색) 운영 CLI는 **부서 전용 private 저장소 `imsplendid8/Private`** 로 분리(계약·단가 등 민감데이터). 공개 CM-CMO엔 포함하지 않음 |
 | 팀 실시간 프록시 | `proxy/naver-proxy-worker.js` (Cloudflare Worker · 키=워커 시크릿) |
 | 폰트 | `fonts/PretendardVariable.woff2` (자체호스팅) |

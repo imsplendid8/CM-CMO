@@ -47,6 +47,7 @@ jobs:
           node --check shared/mobile-sidebar.js
           node --check shared/feedback-client.js
           node --check shared/humanize-ko.js
+          node --check shared/naver-material-specs.js
           node --check shared/planning-context.js
           node --check shared/ui-icons.js
       - name: 검색광고 소재 13상품 × 50행 검증
