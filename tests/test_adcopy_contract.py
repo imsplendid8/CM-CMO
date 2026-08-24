@@ -51,9 +51,13 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn("내부 편집 기준", POWER)
         self.assertIn("data/adcopy/powercontent-title-opportunities.json", POWER)
         self.assertIn("SEO 검색 근거", POWER)
-        self.assertIn("GSC가 확인되지 않으면 추천을 확정하지 않고", POWER)
+        self.assertNotIn("GSC", POWER)
+        self.assertNotIn("gscLabel", POWER)
+        self.assertNotIn("candidate-weak", POWER)
+        self.assertIn("SearchAd 검색수요와 시즌 이슈", POWER)
+        self.assertIn("자동 점검 ${pass}/${checks.length} 통과", POWER)
         self.assertIn("담보·지급사유·면책·감액·한도", POWER)
-        self.assertIn("키워드–소재–랜딩 본문의 주제", POWER)
+        self.assertIn("소재 제목 3안", POWER)
 
     def test_sa_and_power_content_share_material_review_rules(self):
         self.assertIn('shared/naver-material-specs.js', ADCOPY)
