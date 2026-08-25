@@ -46,11 +46,14 @@ class TestAdcopyContract(unittest.TestCase):
     def test_sa_uses_attached_review_draft_structure_without_manual_editor(self):
         self.assertIn("const REVIEW_REFERENCE", ADCOPY)
         self.assertIn("20260730 한화CM 검색광고 운전자보험 심의안", ADCOPY)
-        self.assertIn("실제 포맷 심의안 초안", ADCOPY)
+        self.assertIn("심의안 + 추가소재 초안", ADCOPY)
         for label in ("1. 썸네일 이미지", "2. 광고 제목", "3. 추가제목 (롤링)",
                       "4. 설명 (롤링)", "5. 홍보문구 (택 1)", "6. 서브링크 (택 4)",
                       "7. 이미지형 서브링크"):
             self.assertIn(label, ADCOPY)
+        self.assertIn("추가 제안 · 추가설명 (광고그룹당 최대 4개)", ADCOPY)
+        self.assertIn("[`확장소재 제안 · 추가설명`,s.additionalDesc]", ADCOPY)
+        self.assertIn("추가설명: ${eX(previewAdditionalDesc)}", ADCOPY)
         self.assertNotIn('id="edT"', ADCOPY)
         self.assertNotIn('id="edD"', ADCOPY)
 

@@ -541,20 +541,21 @@ function block(lbl,rows,max,ss){
   return `<div class="sec-lbl">${lbl} <b>(${rows.length})</b>${ss?` · <span class="sscount">시즌·뉴스 ${rows.filter(o=>o.ss).length}</span>`:""}</div>${tbl(rows,max)}`;
 }
 const todayStr=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
-/* 첨부된 실제 심의안의 2~7번 소재 블록을 그대로 따른다. */
+/* 첨부 심의안의 2~7번 블록에 네이버 확장소재 추가설명 제안을 보완한다. */
 function sheetCols(p){const s=buildSheet(p);return [
-  [`2. 광고 제목`,s.brand],[`3. 추가제목 (롤링)`,s.subt],[`4. 설명 (롤링)`,s.desc],[`5. 홍보문구 (택 1)`,s.promo],[`6. 서브링크 (택 4)`,s.sub]];}
+  [`2. 광고 제목`,s.brand],[`3. 추가제목 (롤링)`,s.subt],[`4. 설명 (롤링)`,s.desc],
+  [`확장소재 제안 · 추가설명`,s.additionalDesc],[`5. 홍보문구 (택 1)`,s.promo],[`6. 서브링크 (택 4)`,s.sub]];}
 function exportXls(p){
   const s=buildSheet(p),cols=sheetCols(p),N=Math.max(...cols.map(c=>c[1].length),1),orange="#ed7d31";
   const eX=v=>String(v).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]));
-  const span=cols.length*2,previewTitle=s.brand[0]?.tx||p.name,previewExtra=s.subt[0]?.tx||"",previewDesc=s.desc[0]?.tx||"",previewPromo=s.promo[0]?.tx||"",previewSubs=s.sub.slice(0,4).map(x=>x.tx).join("　");
+  const span=cols.length*2,previewTitle=s.brand[0]?.tx||p.name,previewExtra=s.subt[0]?.tx||"",previewDesc=s.desc[0]?.tx||"",previewAdditionalDesc=s.additionalDesc[0]?.tx||"",previewPromo=s.promo[0]?.tx||"",previewSubs=s.sub.slice(0,4).map(x=>x.tx).join("　");
   let body="";for(let i=0;i<N;i++){body+="<tr>"+cols.map(c=>{const o=c[1][i];if(!o)return "<td></td><td></td>";const style=o.ss?' style="color:#e02020;font-weight:700"':o.ban?.length?' style="background:#fff2cc"':"";const note=o.ban?.length?" ※근거 재확인":"";return `<td${style}>${eX(o.tx+note)}</td><td align="center"${style}>${o.len}</td>`}).join("")+"</tr>"}
-  const head="<tr>"+cols.map((c,i)=>`<th style="background:${orange};color:#fff">${eX(c[0])}</th><th style="background:${orange};color:#fff">글자수(${i===2?SPEC.descMax:i===3?SPEC.promoMax:i===4?SPEC.subMax:SPEC.titleMax}자)</th>`).join("")+"</tr>";
+  const head="<tr>"+cols.map((c,i)=>`<th style="background:${orange};color:#fff">${eX(c[0])}</th><th style="background:${orange};color:#fff">글자수(${i===2||i===3?SPEC.descMax:i===4?SPEC.promoMax:i===5?SPEC.subMax:SPEC.titleMax}자)</th>`).join("")+"</tr>";
   const slotCount=Math.max(s.sub.slice(0,4).length,1),slotBase=Math.floor(span/slotCount),slotExtra=span%slotCount;
   const imageSlots=s.sub.slice(0,4).map((x,i)=>`<td colspan="${slotBase+(i<slotExtra?1:0)}" style="height:90px;text-align:center;background:#fff7ed">이미지 ${i+1} 삽입<br><b>${eX(x.tx)}</b> (${x.len}자)</td>`).join("");
   const html=`<html><head><meta charset="utf-8"><style>body{font-family:'맑은 고딕',sans-serif;font-size:9pt}table{border-collapse:collapse;width:100%}th,td{border:1px solid #555;padding:5px}th{font-weight:700}.label{background:#fce4d6;text-align:center}.section{background:${orange};color:#fff;font-weight:700}.preview{height:110px;vertical-align:top;font-size:11pt;line-height:1.7}.placeholder{height:150px;text-align:center;color:#777}</style></head><body><table>`
     +`<tr><th class="label">보종</th><td colspan="${span-1}">한화손보 다이렉트 ${eX(p.name)}</td></tr><tr><th class="label">운영 매체</th><td colspan="${span-1}">네이버SA</td></tr><tr><th class="label">심의 번호</th><td colspan="${span-1}"></td></tr>`
-    +`<tr><th colspan="${span}" style="text-align:left">[노출 예시]</th></tr><tr><td colspan="${span}" class="preview"><b>${eX(previewTitle)} · ${eX(previewExtra)}</b><br>${eX(previewDesc)}<br>${eX(previewPromo)}<br><span style="color:#2463eb">${eX(previewSubs)}</span></td></tr>`
+    +`<tr><th colspan="${span}" style="text-align:left">[노출 예시]</th></tr><tr><td colspan="${span}" class="preview"><b>${eX(previewTitle)} · ${eX(previewExtra)}</b><br>${eX(previewDesc)}<br><span style="color:#555">추가설명: ${eX(previewAdditionalDesc)}</span><br>${eX(previewPromo)}<br><span style="color:#2463eb">${eX(previewSubs)}</span></td></tr>`
     +`<tr><th colspan="${span}" class="section" style="text-align:left">1. 썸네일 이미지</th></tr><tr><td colspan="${span}" class="placeholder">심의용 썸네일 이미지 삽입 영역</td></tr>`
     +`<tr><th colspan="${span}" style="text-align:left">[운영 소재 문구] <span style="color:#e02020">빨간 글씨 = 신규 T&amp;D</span></th></tr>${head}${body}`
     +`<tr><th colspan="${span}" class="section" style="text-align:left">7. 이미지형 서브링크 (아래 중 3개씩 노출)</th></tr><tr>${imageSlots}</tr>`
@@ -562,7 +563,7 @@ function exportXls(p){
   const blob=new Blob(["﻿"+html],{type:"application/vnd.ms-excel;charset=utf-8"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`${p.name}_SA_심의안초안_${todayStr()}.xls`;a.click();
   setTimeout(()=>URL.revokeObjectURL(a.href),1500);
-  toast("실제 심의안 구조의 Excel 초안을 내보냈습니다");
+  toast("심의안과 추가설명 제안을 Excel 초안으로 내보냈습니다");
 }
 /* 내부 검토용 소재 배치. 공식 네이버 템플릿을 확인하기 전에는 업로드 가능 파일로 부르지 않는다. */
 const REVIEW_STATUS="자동 위험표현 없음 · 상품 근거·사람 심의 필요";
@@ -852,14 +853,15 @@ function render(){
   $("#content").innerHTML=`
     <div class="banner"><b>${PLANM}월→${planNext()}월 소재</b> · 상품 내용과 심의를 확인한 뒤 사용하세요.</div>
     <div class="xbar">
-      <button class="btn xbtn" id="xExcel">⬇ 실제 포맷 심의안 초안</button>
+      <button class="btn xbtn" id="xExcel">⬇ 심의안 + 추가소재 초안</button>
       <button class="btn" id="xAds">⬇ 현재 상품 내부 검토 CSV (${batch.length}/50)</button>
       <button class="btn" id="xAllAds">⬇ 전체 13상품 내부 검토 CSV (650행)</button>
-      <span class="xnote">첨부 심의안 기준 광고제목·추가제목·설명·홍보문구·서브링크·이미지형 서브링크 · <span style="color:var(--bad);font-weight:800">빨강=신규 T&amp;D</span></span>
+      <span class="xnote">첨부 심의안 블록 + 네이버 확장소재 추가설명 제안 · <span style="color:var(--bad);font-weight:800">빨강=신규 T&amp;D</span></span>
     </div>
     <div class="specbar">
       <div class="spec">제목·추가제목 <b>≤${SPEC.titleMax}</b></div>
       <div class="spec">설명 <b>${SPEC.descMin}~${SPEC.descMax}</b></div>
+      <div class="spec">추가설명 <b>≤${SPEC.additionalDescMax}</b>·광고그룹당 최대 ${SPEC.additionalDescGroupMax}개</div>
       <div class="spec">홍보문구 <b>≤${SPEC.promoMax}</b></div>
       <div class="spec">서브링크 <b>≤${SPEC.subMax}</b>·${SPEC.subMinCount}~${SPEC.subMaxCount}개</div>
       ${seasonChips}
@@ -874,6 +876,7 @@ function render(){
     ${block("2. 광고 제목",s.brand,SPEC.titleMax)}
     ${block("3. 추가제목 (롤링)",s.subt,SPEC.additionalTitleMax,true)}
     ${block("4. 설명 (롤링)",s.desc,SPEC.descMax,true)}
+    ${block("추가 제안 · 추가설명 (광고그룹당 최대 4개)",s.additionalDesc,SPEC.additionalDescMax)}
     ${block("5. 홍보문구 (택 1)",s.promo,SPEC.promoMax)}
     ${block("6. 서브링크 (택 4)",s.sub,SPEC.subMax)}
 
