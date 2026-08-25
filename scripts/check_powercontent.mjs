@@ -24,7 +24,7 @@ vm.runInContext(
   `${pureSection}
   ;globalThis.__POWER_CHECK__={
     PRODUCTS,titleCandidates,reviewPowerMaterial,volumeRows,inScope,clen,keywordPlan,introFor,
-    contentBriefFor,approvedClaimsFor,
+    contentBriefFor,approvedClaimsFor,contentKeywordSet,
     setData:(volume,seasonal,titles,claims)=>{DATA={volume,seasonal,titles,claims};}
   };`,
   context,
@@ -83,5 +83,25 @@ for (const product of check.PRODUCTS) {
 if (check.PRODUCTS.some((product) => check.approvedClaimsFor(product).length)) {
   throw new Error("현재 원장에는 승인된 power_content claim이 없어야 합니다.");
 }
+
+const driver = check.PRODUCTS.find((product) => product.key === "driver");
+const driverSet = check.contentKeywordSet(driver);
+const driverMeasured = check.volumeRows(driver);
+const driverKeys = new Set(driverSet.map((row) => row.keyword.replace(/\s/g, "").toLowerCase()));
+if (driverSet.length < 50) throw new Error(`운전자보험 전체 키워드셋이 너무 적음: ${driverSet.length}개`);
+if (driverKeys.size !== driverSet.length) throw new Error("운전자보험 전체 키워드셋에 중복 키워드가 있음");
+if (driverMeasured.some((row) => !driverKeys.has(row.kw.replace(/\s/g, "").toLowerCase()))) {
+  throw new Error("운전자보험 SearchAd 실측 활용 가능 키워드가 전체 키워드셋에서 누락됨");
+}
+if (driverSet.some((row) => forbiddenKeyword.test(row.keyword) || /자동차\s*보험|원데이|일일운전자|1일운전자|단기운전자|하루운전자|렌트카보험|한문철/.test(row.keyword))) {
+  throw new Error("운전자보험 전체 키워드셋에 제외 키워드가 포함됨");
+}
+if (driverSet.some((row) => !row.priority || !row.category || !row.intent || !row.source || !row.use || !row.status)) {
+  throw new Error("운전자보험 전체 키워드셋 Excel 필수 분류값 누락");
+}
+for (const category of ["대표", "실측 연관", "담보·상황", "의사결정", "질문형"]) {
+  if (!driverSet.some((row) => row.category.includes(category))) throw new Error(`운전자보험 전체 키워드셋 ${category} 누락`);
+}
+console.log(`OK  운전자보험 전체 키워드셋 ${driverSet.length}개 · 중복/범위/Excel 필드 검증`);
 
 console.log("OK  파워콘텐츠 13상품 콘텐츠 제안 품질 가드 통과");
