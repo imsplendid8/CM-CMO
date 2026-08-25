@@ -16,10 +16,13 @@ const requiredCode=[
   "manifest.json",
   "crypto.subtle.digest",
   "canvas[data-thumb-index]",
+  "텍스트 없는 원본",
+  'visual_style:"3d_animation"',
+  "text_overlay:false",
 ];
 const errors=[];
 for(const token of requiredCode)if(!html.includes(token))errors.push(`이미지 연결 코드 누락: ${token}`);
-for(const forbidden of ["generated=agent.candidates", "new FileReader()", "PNG 4장 받기"]){
+for(const forbidden of ["generated=agent.candidates", "new FileReader()", "PNG 4장 받기", "ctx.fillText(", "-serp-v2.png"]){
   if(html.includes(forbidden))errors.push(`구형 이미지/SERP 코드 잔존: ${forbidden}`);
 }
 
@@ -50,4 +53,4 @@ else{
 }
 
 if(errors.length){console.error(errors.join("\n"));process.exit(1);}
-console.log(`[OK] SERP 기반 보험종목 이미지 ${unique.length}종 · PNG 규격·ZIP·메타데이터·업로드 경합 방지 연결 확인`);
+console.log(`[OK] SERP 기반 3D 애니메이션 보험종목 이미지 ${unique.length}종 · 무문자 PNG·ZIP·메타데이터·업로드 경합 방지 연결 확인`);

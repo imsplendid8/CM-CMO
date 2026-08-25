@@ -565,24 +565,24 @@ const todayStr=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMo
 const thumbDayAge=s=>{const d=new Date(`${s}T00:00:00`);return Number.isNaN(d.getTime())?null:Math.max(0,Math.floor((Date.now()-d.getTime())/86400000));};
 const THUMB_STATE={style:"serp",customByProduct:{},renderToken:0,packUrl:""};
 const THUMB_STYLES={
-  serp:{top:"rgba(17,27,39,.04)",bottom:"rgba(23,24,31,.90)",fg:"#ffffff",muted:"#f3e7e2",accent:"#ff7452",iconBg:"rgba(255,255,255,.18)"},
-  light:{top:"rgba(255,255,255,.02)",bottom:"rgba(255,246,241,.94)",fg:"#35241f",muted:"#72594f",accent:"#e8553d",iconBg:"rgba(232,85,61,.16)"},
-  night:{top:"rgba(10,18,34,.20)",bottom:"rgba(8,15,30,.96)",fg:"#ffffff",muted:"#dce3ee",accent:"#f17450",iconBg:"rgba(255,255,255,.13)"},
+  serp:{zoom:1.00,tint:""},
+  focus:{zoom:1.13,tint:""},
+  warm:{zoom:1.04,tint:"rgba(255,171,64,.07)"},
 };
 const INSURANCE_VISUALS={
-  home:{asset:"assets/insurance/driver-traffic-3d.png",scene:"온라인 다이렉트 탐색"},
-  hrmf:{asset:"assets/insurance/home-weather-3d.png",scene:"풍수재 전 주택 점검"},
-  golf:{asset:"assets/insurance/golf-holeinone-3d.png",scene:"홀인원 순간과 골프 라운드"},
-  cncr:{asset:"assets/insurance/health-review-3d.png",scene:"건강검진 결과 확인"},
-  dntl:{asset:"assets/insurance/dental-consult-3d.png",scene:"치아 치료 상담"},
-  driver:{asset:"assets/insurance/driver-traffic-3d.png",scene:"교통사고 전 운전 상황"},
-  woman:{asset:"assets/insurance/family-pregnancy-3d.png",scene:"임신·여성건강 준비"},
-  birth:{asset:"assets/insurance/family-pregnancy-3d.png",scene:"태아·출산 준비"},
-  chronic:{asset:"assets/insurance/health-review-3d.png",scene:"간편심사 전 건강정보 확인"},
-  overseas:{asset:"assets/insurance/travel-airport-3d.png",scene:"출국 전 여행 준비"},
-  overseaslong:{asset:"assets/insurance/student-overseas-3d.png",scene:"유학·장기체류 출국"},
-  holeinone:{asset:"assets/insurance/golf-holeinone-3d.png",scene:"홀인원 순간과 골프 라운드"},
-  event:{asset:"assets/insurance/event-safety-3d.png",scene:"공연행사 사전 안전점검"},
+  home:{assets:["assets/insurance/calculator-animation-v3.png","assets/insurance/driver-safe-animation-v3.png","assets/insurance/health-check-animation-v3.png","assets/insurance/travel-airport-animation-v3.png"],scene:"보험료 계산·온라인 가입 탐색"},
+  hrmf:{assets:["assets/insurance/home-fire-animation-v3.png","assets/insurance/home-leak-animation-v3.png"],scene:"주택 화재·천장 누수"},
+  golf:{assets:["assets/insurance/golf-hole-animation-v3.png"],scene:"홀인원 순간과 골프 라운드"},
+  cncr:{assets:["assets/insurance/health-check-animation-v3.png"],scene:"일상 건강검진"},
+  dntl:{assets:["assets/insurance/dental-consult-animation-v3.png"],scene:"치아 치료 상담"},
+  driver:{assets:["assets/insurance/driver-safe-animation-v3.png"],scene:"교통사고 대비 안전운전"},
+  woman:{assets:["assets/insurance/family-baby-animation-v3.png"],scene:"임신·여성건강 준비"},
+  birth:{assets:["assets/insurance/family-baby-animation-v3.png"],scene:"태아·출산 준비"},
+  chronic:{assets:["assets/insurance/health-check-animation-v3.png"],scene:"간편심사 전 건강 확인"},
+  overseas:{assets:["assets/insurance/travel-airport-animation-v3.png"],scene:"출국 전 여행 준비"},
+  overseaslong:{assets:["assets/insurance/student-campus-animation-v3.png"],scene:"유학·장기체류 출국"},
+  holeinone:{assets:["assets/insurance/golf-hole-animation-v3.png"],scene:"홀인원 순간과 골프 라운드"},
+  event:{assets:["assets/insurance/event-safety-animation-v3.png"],scene:"공연행사 사전 안전점검"},
 };
 const safeFileName=value=>String(value).replace(/[\\/:*?"<>|]/g,"").replace(/\s+/g,"_");
 function thumbnailVisual(p){
@@ -590,22 +590,23 @@ function thumbnailVisual(p){
   return {...visual,keyword:serp.demand,angle:serp.angle,common:serp.common,latest,age,freshness:age===null||age>14?"업데이트 필요":"최신"};
 }
 function thumbnailConcepts(p){
-  const base=safeFileName(p.name),visual=thumbnailVisual(p),source=THUMB_STATE.customByProduct[p.key]?"upload":"serp3d";
+  const base=safeFileName(p.name),visual=thumbnailVisual(p),source=THUMB_STATE.customByProduct[p.key]?"upload":"serp_animation_v3";
   const version=`${todayStr()}_${THUMB_STATE.style}_${source}`;
   const subDefs=[
-    {title:"보험료 계산",subtitle:visual.keyword,signal:visual.keyword,icon:"calculator",cropX:-.07},
-    {title:"보장내용",subtitle:visual.angle,signal:visual.angle,icon:"document",cropX:0},
-    {title:"가입안내",subtitle:"가입 전 확인",signal:visual.angle,icon:"cursor",cropX:.07},
+    {title:"보험료 계산",cropX:-.04,zoom:.03},
+    {title:"보장내용",cropX:.04,zoom:.08},
+    {title:"가입안내",cropX:0,zoom:.12},
   ].slice(0,SPEC.image.imageSublinkMax);
-  return [
-    {kind:"power",role:"파워링크 이미지",title:p.name,subtitle:`${visual.angle} · ${visual.scene}`,signal:visual.angle,icon:"shield",cropX:0,file:`${base}_${version}_파워링크_01.png`},
-    ...subDefs.map((x,i)=>({...x,kind:"sublink",role:`이미지형 서브링크 ${i+1}`,file:`${base}_${version}_이미지서브링크_${safeFileName(x.title)}.png`})),
+  const concepts=[
+    {kind:"power",role:"파워링크 이미지",title:p.name,cropX:0,zoom:0,file:`${base}_${version}_무문자_파워링크_01.png`},
+    ...subDefs.map((x,i)=>({...x,kind:"sublink",role:`이미지형 서브링크 ${i+1}`,file:`${base}_${version}_무문자_이미지서브링크_${safeFileName(x.title)}.png`})),
   ];
+  return concepts.map((concept,i)=>({...concept,asset:visual.assets[i%visual.assets.length]}));
 }
 function renderThumbnailMaker(p){
-  const concepts=thumbnailConcepts(p),visual=thumbnailVisual(p),styleButtons=[["serp","SERP 추천"],["light","밝은 정보형"],["night","딥 오버레이"]];
+  const concepts=thumbnailConcepts(p),visual=thumbnailVisual(p),styleButtons=[["serp","원본 구도"],["focus","근접 크롭"],["warm","따뜻한 톤"]];
   return `<section class="thumb-maker" id="thumbMaker">
-    <div class="thumb-maker-h"><div><h2>1. SERP 기반 보험종목 이미지 소재</h2><p>파워링크 ${SPEC.image.powerLinkMax}장 + 이미지형 서브링크 ${SPEC.image.imageSublinkMax}장 · 네이버 고정 규격 ${SPEC.image.width}×${SPEC.image.height}px</p>
+    <div class="thumb-maker-h"><div><h2>1. SERP 기반 보험종목 이미지 소재</h2><p>텍스트 없는 원본 · 파워링크 ${SPEC.image.powerLinkMax}장 + 이미지형 서브링크 ${SPEC.image.imageSublinkMax}장 · 네이버 고정 규격 ${SPEC.image.width}×${SPEC.image.height}px</p>
       <div class="thumb-serp-brief"><span class="source-pill ${visual.freshness==="최신"?"fresh":"stale"}">SERP ${esc(visual.latest||"기준일 없음")} · ${esc(visual.freshness)}</span><span>검색어 <b>${esc(visual.keyword)}</b></span><span>추천 소구 <b>${esc(visual.angle)}</b></span><span>장면 <b>${esc(visual.scene)}</b></span></div></div>
       <div class="thumb-actions">
         ${styleButtons.map(([key,label])=>`<button class="thumb-style${THUMB_STATE.style===key?" on":""}" type="button" data-thumb-style="${key}">${label}</button>`).join("")}
@@ -619,55 +620,31 @@ function renderThumbnailMaker(p){
       <div class="thumb-file" id="thumbFile${i}" title="${esc(c.file)}">${esc(c.file)}</div><div class="thumb-meta" id="thumbMeta${i}">${SPEC.image.width}×${SPEC.image.height} · PNG 확인 중</div>
       <button class="btn sm" type="button" data-thumb-download="${i}">PNG 다운로드</button>
     </article>`).join("")}</div>
-    <div class="thumb-foot"><span class="thumb-local">● SERP 소구와 보험종목 3D 장면을 함께 반영</span><span>경쟁사 이미지 복제 없음 · 수치·할인 문구 제외 · 업로드 후 이미지 ID는 광고주센터에서 직접 입력</span></div>
+    <div class="thumb-foot"><span class="thumb-local">● 3D 애니메이션 장면 · 이미지 내부 텍스트 없음</span><span>SERP 검색 의도는 장면 선택에만 반영 · 경쟁사 이미지 복제 없음 · 이미지 ID는 광고주센터에서 직접 입력</span></div>
   </section>`;
-}
-function roundedPath(ctx,x,y,w,h,r){
-  const rr=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+rr,y);ctx.arcTo(x+w,y,x+w,y+h,rr);ctx.arcTo(x+w,y+h,x,y+h,rr);ctx.arcTo(x,y+h,x,y,rr);ctx.arcTo(x,y,x+w,y,rr);ctx.closePath();
 }
 function drawCover(ctx,img,w,h,cropX=0,zoom=1.08){
   const scale=Math.max(w/img.width,h/img.height)*zoom,dw=img.width*scale,dh=img.height*scale;
   ctx.drawImage(img,(w-dw)/2+cropX*w,(h-dh)/2,dw,dh);
 }
-function drawThumbIcon(ctx,type,x,y,size,fg,bg){
-  ctx.save();ctx.translate(x,y);ctx.fillStyle=bg;ctx.beginPath();ctx.arc(0,0,size/2,0,Math.PI*2);ctx.fill();ctx.strokeStyle=fg;ctx.fillStyle=fg;ctx.lineWidth=2.8;ctx.lineCap="round";ctx.lineJoin="round";
-  if(type==="shield"){
-    ctx.beginPath();ctx.moveTo(0,-17);ctx.lineTo(14,-11);ctx.lineTo(12,4);ctx.quadraticCurveTo(9,15,0,20);ctx.quadraticCurveTo(-9,15,-12,4);ctx.lineTo(-14,-11);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.moveTo(-6,1);ctx.lineTo(-1,7);ctx.lineTo(8,-5);ctx.stroke();
-  }else if(type==="calculator"){
-    roundedPath(ctx,-13,-17,26,34,5);ctx.stroke();roundedPath(ctx,-8,-11,16,7,2);ctx.stroke();[-7,0,7].forEach(px=>[-0,8].forEach(py=>{ctx.beginPath();ctx.arc(px,py,1.7,0,Math.PI*2);ctx.fill();}));
-  }else if(type==="document"){
-    roundedPath(ctx,-13,-17,26,34,4);ctx.stroke();[-8,-1,6].forEach(py=>{ctx.beginPath();ctx.moveTo(-7,py);ctx.lineTo(7,py);ctx.stroke();});
-  }else{
-    ctx.beginPath();ctx.moveTo(-10,-16);ctx.lineTo(13,0);ctx.lineTo(4,3);ctx.lineTo(9,15);ctx.lineTo(2,18);ctx.lineTo(-3,6);ctx.lineTo(-10,13);ctx.closePath();ctx.stroke();
-  }
-  ctx.restore();
-}
-function fitCanvasFont(ctx,text,maxWidth,start,min=14){
-  let size=start;while(size>min){ctx.font=`800 ${size}px Pretendard, "Noto Sans KR", sans-serif`;if(ctx.measureText(text).width<=maxWidth)break;size--;}return size;
-}
 function drawThumbnail(canvas,concept,customImage){
-  const ctx=canvas.getContext("2d"),w=SPEC.image.width,h=SPEC.image.height,theme=THUMB_STYLES[THUMB_STATE.style]||THUMB_STYLES.serp;
+  const ctx=canvas.getContext("2d"),w=SPEC.image.width,h=SPEC.image.height,style=THUMB_STYLES[THUMB_STATE.style]||THUMB_STYLES.serp;
   ctx.clearRect(0,0,w,h);
-  if(customImage)drawCover(ctx,customImage,w,h,concept.cropX||0,concept.kind==="power"?1.06:1.16);
+  if(customImage)drawCover(ctx,customImage,w,h,concept.cropX||0,style.zoom+(concept.zoom||0));
   else{ctx.fillStyle="#26354b";ctx.fillRect(0,0,w,h);}
-  const gradient=ctx.createLinearGradient(0,0,0,h);gradient.addColorStop(0,theme.top);gradient.addColorStop(.48,"rgba(20,25,32,.08)");gradient.addColorStop(1,theme.bottom);ctx.fillStyle=gradient;ctx.fillRect(0,0,w,h);
-  ctx.fillStyle="rgba(16,22,31,.74)";roundedPath(ctx,10,9,101,21,10);ctx.fill();ctx.fillStyle="#fff";ctx.font="800 8px Pretendard, 'Noto Sans KR', sans-serif";ctx.textAlign="left";ctx.fillText("한화손보 다이렉트",18,23);
-  const signal=shortWord(concept.signal||"").slice(0,9);ctx.textAlign="right";ctx.fillStyle="#fff";ctx.font="800 8px Pretendard, 'Noto Sans KR', sans-serif";ctx.fillText(`SERP · ${signal}`,w-12,23);
-  if(concept.kind==="sublink")drawThumbIcon(ctx,concept.icon,30,124,34,theme.fg,theme.iconBg);
-  ctx.textAlign="left";ctx.fillStyle=theme.fg;const titleX=concept.kind==="sublink"?16:14,titleY=concept.kind==="sublink"?164:157;const titleSize=fitCanvasFont(ctx,concept.title,w-30,concept.kind==="power"?22:24);ctx.font=`800 ${titleSize}px Pretendard, "Noto Sans KR", sans-serif`;ctx.fillText(concept.title,titleX,titleY);
-  ctx.fillStyle=theme.muted;ctx.font="700 10px Pretendard, 'Noto Sans KR', sans-serif";ctx.fillText(String(concept.subtitle||"").slice(0,21),titleX,titleY+20);
-  ctx.fillStyle=theme.accent;roundedPath(ctx,titleX,titleY+29,48,4,2);ctx.fill();
+  if(style.tint){ctx.fillStyle=style.tint;ctx.fillRect(0,0,w,h);}
 }
 function refreshThumbnailMeta(canvas,index){
   canvas.toBlob(blob=>{const meta=$("#thumbMeta"+index);if(!meta||!blob)return;const kb=Math.max(1,Math.ceil(blob.size/1024)),valid=blob.size<=SPEC.image.maxBytes;meta.textContent=`${SPEC.image.width}×${SPEC.image.height} · PNG · ${kb}KB ${valid?"✓":"용량 초과"}`;meta.style.color=valid?"var(--good)":"var(--bad)";},"image/png");
 }
 function redrawThumbnails(p){
-  const token=++THUMB_STATE.renderToken,concepts=thumbnailConcepts(p),visual=thumbnailVisual(p),canvases=[...document.querySelectorAll("canvas[data-thumb-index]")],custom=THUMB_STATE.customByProduct[p.key];
+  const token=++THUMB_STATE.renderToken,concepts=thumbnailConcepts(p),canvases=[...document.querySelectorAll("canvas[data-thumb-index]")],custom=THUMB_STATE.customByProduct[p.key];
   if(THUMB_STATE.packUrl){URL.revokeObjectURL(THUMB_STATE.packUrl);THUMB_STATE.packUrl="";}const pack=$("#thumbAll");if(pack){pack.href="#";pack.dataset.ready="0";pack.setAttribute("aria-disabled","true");pack.textContent="ZIP 준비 중";}
   concepts.forEach((concept,i)=>{const file=$("#thumbFile"+i);if(file){file.textContent=concept.file;file.title=concept.file;}});
-  const drawAll=image=>{if(token!==THUMB_STATE.renderToken||curKey!==p.key)return;canvases.forEach(canvas=>{const i=Number(canvas.dataset.thumbIndex);drawThumbnail(canvas,concepts[i],image);refreshThumbnailMeta(canvas,i);});prepareThumbnailPack(p,token);};
-  const load=()=>{const img=new Image();img.onload=()=>drawAll(img);img.onerror=()=>{if(token!==THUMB_STATE.renderToken)return;drawAll(null);toast(custom?"승인 이미지를 읽지 못했습니다":"SERP 종목 이미지를 읽지 못했습니다");};img.src=custom?.url||visual.asset;};
-  if(document.fonts?.ready)document.fonts.ready.then(load);else load();
+  const drawAll=images=>{if(token!==THUMB_STATE.renderToken||curKey!==p.key)return;canvases.forEach(canvas=>{const i=Number(canvas.dataset.thumbIndex);drawThumbnail(canvas,concepts[i],images[i]);refreshThumbnailMeta(canvas,i);});prepareThumbnailPack(p,token);};
+  const loadImage=src=>new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src=src;});
+  const sources=concepts.map(concept=>custom?.url||concept.asset);
+  Promise.all(sources.map(loadImage)).then(images=>{drawAll(images);if(images.some(x=>!x))toast(custom?"승인 이미지를 읽지 못했습니다":"일부 애니메이션 이미지를 읽지 못했습니다");});
 }
 function saveCanvasPng(canvas,file){
   return new Promise(resolve=>canvas.toBlob(blob=>{if(!blob){resolve(false);return;}const a=document.createElement("a");a.hidden=true;a.href=URL.createObjectURL(blob);a.download=file;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1200);resolve(true);},"image/png"));
@@ -676,9 +653,9 @@ const canvasBlob=canvas=>new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?
 async function sha256Short(bytes){if(!crypto.subtle)return "unavailable";const hash=await crypto.subtle.digest("SHA-256",bytes);return [...new Uint8Array(hash)].map(x=>x.toString(16).padStart(2,"0")).join("").slice(0,16);}
 async function downloadThumbnailPack(p){
   const concepts=thumbnailConcepts(p),visual=thumbnailVisual(p),files=[],items=[];
-  for(let i=0;i<concepts.length;i++){const blob=await canvasBlob($(`canvas[data-thumb-index="${i}"]`)),bytes=new Uint8Array(await blob.arrayBuffer());files.push({name:concepts[i].file,data:bytes});items.push({role:concepts[i].role,file:concepts[i].file,bytes:bytes.length,sha256:await sha256Short(bytes)});}
-  const source=THUMB_STATE.customByProduct[p.key]?.name||visual.asset,manifest={schema_version:1,generated_at:new Date().toISOString(),product_key:p.key,product_name:p.name,style:THUMB_STATE.style,image_source:source,serp:{asof:visual.latest,freshness:visual.freshness,keyword:visual.keyword,common_competitor_angles:visual.common,recommended_angle:visual.angle,scene:visual.scene},files:items};
-  files.push({name:"manifest.json",data:new TextEncoder().encode(JSON.stringify(manifest,null,2))});return {blob:ZIP_STORE.zipStore(files),fileName:`${safeFileName(p.name)}_${todayStr()}_${THUMB_STATE.style}_SERP이미지팩.zip`};
+  for(let i=0;i<concepts.length;i++){const blob=await canvasBlob($(`canvas[data-thumb-index="${i}"]`)),bytes=new Uint8Array(await blob.arrayBuffer());files.push({name:concepts[i].file,data:bytes});items.push({role:concepts[i].role,file:concepts[i].file,source_asset:concepts[i].asset,bytes:bytes.length,sha256:await sha256Short(bytes)});}
+  const custom=THUMB_STATE.customByProduct[p.key],sources=custom?[custom.name]:[...new Set(concepts.map(x=>x.asset))],manifest={schema_version:2,generated_at:new Date().toISOString(),product_key:p.key,product_name:p.name,style:THUMB_STATE.style,visual_style:"3d_animation",text_overlay:false,image_sources:sources,serp:{asof:visual.latest,freshness:visual.freshness,keyword:visual.keyword,common_competitor_angles:visual.common,recommended_angle:visual.angle,scene:visual.scene},files:items};
+  files.push({name:"manifest.json",data:new TextEncoder().encode(JSON.stringify(manifest,null,2))});return {blob:ZIP_STORE.zipStore(files),fileName:`${safeFileName(p.name)}_${todayStr()}_${THUMB_STATE.style}_무문자_애니메이션_SERP이미지팩.zip`};
 }
 async function prepareThumbnailPack(p,token){
   const button=$("#thumbAll");if(!button)return;
@@ -743,7 +720,7 @@ function validateNaverRow(r){
   return errors;
 }
 function buildNaverRows(p,target=50){
-  const s=buildSheet(p),imageConcepts=thumbnailConcepts(p),visual=thumbnailVisual(p),imageSource=THUMB_STATE.customByProduct[p.key]?.name||visual.asset,safe=rows=>(rows||[]).filter(o=>!o.ban?.length),titles=safe(s.brand),descs=safe(s.desc),subt=safe(s.subt),additionalDescs=safe(s.additionalDesc),promos=safe(s.promo);
+  const s=buildSheet(p),imageConcepts=thumbnailConcepts(p),visual=thumbnailVisual(p),imageSource=THUMB_STATE.customByProduct[p.key]?.name||[...new Set(imageConcepts.map(x=>x.asset))].join(" · "),safe=rows=>(rows||[]).filter(o=>!o.ban?.length),titles=safe(s.brand),descs=safe(s.desc),subt=safe(s.subt),additionalDescs=safe(s.additionalDesc),promos=safe(s.promo);
   const imageLinks=["보험료계산","보장내용","가입안내"],extraSubs=uniq([...safe(s.sub).map(o=>o.tx),"상품안내","가입조건"]).filter(x=>!imageLinks.includes(x));
   if(!titles.length||!descs.length||!subt.length||!additionalDescs.length||!promos.length||!extraSubs.length)return [];
   const rows=[],seen=new Set();
@@ -760,7 +737,7 @@ function buildNaverRows(p,target=50){
       const row={
         strategy:strategy.label,reviewStatus:REVIEW_STATUS,campaignId:"",
         serpAsOf:visual.latest,serpFreshness:visual.freshness,serpKeyword:visual.keyword,serpCommon:visual.common.join(" · "),serpAngle:visual.angle,imageScene:visual.scene,imageStyle:THUMB_STATE.style,imageSource,
-        imagePackFile:`${safeFileName(p.name)}_${todayStr()}_${THUMB_STATE.style}_SERP이미지팩.zip`,
+        imagePackFile:`${safeFileName(p.name)}_${todayStr()}_${THUMB_STATE.style}_무문자_애니메이션_SERP이미지팩.zip`,
         campaignName:`CM_파워링크_${p.name}`,adGroupName:`${p.name} · ${strategy.label}`,
         title:titles[ti].tx,description:descs[di].tx,displayUrl:"",pcUrl:"",mobileUrl:"",
         extraTitle:subt[ai].tx,additionalDescription:additionalDescs[adi].tx,promo:promos[pi].tx,
@@ -983,7 +960,7 @@ function serpMonitorPanel(p){
         <p>${esc(s.latest||"기준일 없음")}${age!==null?` · ${age}일 전`:""}</p>${ads||'<p>수집된 경쟁사 광고가 없습니다.</p>'}</section>
       <section class="serp-card"><h3>제안 기준</h3><p>경쟁사 공통 소구: <b>${s.common.map(esc).join(" · ")||"없음"}</b><br>주요 검색어: <b>${esc(s.demand)}</b><br>추천 소구: <b>${esc(s.angle)}</b></p></section>
       <section class="serp-card"><h3>실제 반영된 SA 소재</h3>${ideas||'<p>현재 제안할 소재가 없습니다.</p>'}</section>
-      <section class="serp-card"><h3>실제 반영된 이미지 방향</h3><p>보험종목 장면: <b>${esc(visual.scene)}</b><br>오버레이 키워드: <b>${esc(visual.keyword)}</b><br>오버레이 소구: <b>${esc(visual.angle)}</b><br>경쟁사 이미지는 복제하지 않고 3D 시각 문법만 참고합니다.</p></section>
+      <section class="serp-card"><h3>실제 반영된 이미지 방향</h3><p>보험종목 장면: <b>${esc(visual.scene)}</b><br>장면 선택 검색어: <b>${esc(visual.keyword)}</b><br>장면 선택 소구: <b>${esc(visual.angle)}</b><br>경쟁사 이미지는 복제하지 않고 3D 애니메이션 톤과 상황 구도만 참고합니다. 이미지 안에는 텍스트를 넣지 않습니다.</p></section>
     </div>`;
 }
 

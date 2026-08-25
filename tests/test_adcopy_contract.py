@@ -67,17 +67,20 @@ class TestAdcopyContract(unittest.TestCase):
             'accept="image/png,image/jpeg"',
             'id="thumbAll"',
             "SERP 기반 보험종목 이미지 소재",
-            "SERP 소구와 보험종목 3D 장면을 함께 반영",
+            "3D 애니메이션 장면 · 이미지 내부 텍스트 없음",
             "downloadThumbnailPack",
             "ZIP_STORE.zipStore(files)",
             "manifest.json",
-            "assets/insurance/driver-traffic-3d.png",
+            "assets/insurance/driver-safe-animation-v3.png",
             "powerLinkImageFile",
             "sublinkImageFile3",
         ):
             self.assertIn(marker, ADCOPY)
         self.assertIn("canvas.toBlob", ADCOPY)
         self.assertIn("SPEC.image.imageSublinkMax", ADCOPY)
+        self.assertIn('visual_style:"3d_animation"', ADCOPY)
+        self.assertIn("text_overlay:false", ADCOPY)
+        self.assertNotIn("ctx.fillText(", ADCOPY)
         self.assertNotIn("new FileReader()", ADCOPY)
         self.assertIn("curKey!==key", ADCOPY)
         self.assertIn("width: 214", MATERIAL_SPECS)
