@@ -647,44 +647,7 @@ function exportReviewAds(products,label){
   const rows=[REVIEW_COLUMNS.map(x=>x[0])];
   batches.forEach(x=>x.rows.forEach(r=>rows.push(REVIEW_COLUMNS.map(([,key])=>r[key]))));
   downloadCsv(rows,`${label}_내부검토용_소재_${todayStr()}.csv`);
-  toast(`내부 검토용 CSV · ${rows.length-1}행 · 공식 템플릿 확인 전 업로드 금지`);
-}
-
-let NAVER_TEMPLATE=null,NAVER_TEMPLATE_MESSAGE="공식 템플릿 CSV/TSV를 불러오면 열 매핑을 검증합니다.";
-const TEMPLATE_ALIASES={
-  "캠페인id":"campaignId","캠페인아이디":"campaignId","캠페인이름":"campaignName","광고그룹이름":"adGroupName",
-  "소재제목":"title","광고제목":"title","제목":"title","소재설명":"description","광고설명":"description","설명":"description",
-  "표시url":"displayUrl","연결urlpc":"pcUrl","pc연결url":"pcUrl","연결url모바일":"mobileUrl","모바일연결url":"mobileUrl",
-  "추가제목":"extraTitle","추가설명":"additionalDescription","추가설명문구":"additionalDescription","홍보문구":"promo",
-  "계산연결url":"calculationUrl","계산url":"calculationUrl","파워링크이미지id":"powerLinkImageId","이미지id":"powerLinkImageId",
-  "서브링크1":"sublink1","서브링크2":"sublink2","서브링크3":"sublink3","서브링크4":"sublink4",
-  "서브링크url1":"sublinkUrl1","서브링크url2":"sublinkUrl2","서브링크url3":"sublinkUrl3","서브링크url4":"sublinkUrl4",
-  "서브링크이미지id1":"sublinkImageId1","서브링크이미지id2":"sublinkImageId2","서브링크이미지id3":"sublinkImageId3","서브링크이미지id4":"sublinkImageId4",
-};
-const normHeader=s=>String(s).toLowerCase().replace(/^﻿/,"").replace(/[\s()[\]{}·._\-/]/g,"");
-function parseDelimitedLine(line,delim){
-  const out=[];let cur="",quoted=false;
-  for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='"'){if(quoted&&line[i+1]==='"'){cur+='"';i++;}else quoted=!quoted;}else if(ch===delim&&!quoted){out.push(cur.trim());cur="";}else cur+=ch;}
-  out.push(cur.trim());return out;
-}
-async function readNaverTemplate(file){
-  const ext=(file.name.split(".").pop()||"").toLowerCase();
-  if(!["csv","tsv","txt"].includes(ext))throw new Error("공식 파일을 CSV 또는 TSV로 저장한 뒤 불러오세요");
-  const text=await file.text(),first=(text.split(/\r?\n/).find(x=>x.trim())||"").replace(/^﻿/,"");
-  const delim=first.includes("\t")?"\t":",";const headers=parseDelimitedLine(first,delim);
-  const mapping=headers.map(h=>TEMPLATE_ALIASES[normHeader(h)]||null);
-  const required=["campaignName","adGroupName","title","description"];
-  const missing=required.filter(k=>!mapping.includes(k));
-  if(missing.length)throw new Error(`필수 열 매핑 실패: ${missing.join(", ")}`);
-  return {name:file.name,headers,mapping,delimiter:delim};
-}
-function exportOfficialTemplate(p){
-  if(!NAVER_TEMPLATE){toast("먼저 공식 템플릿 CSV/TSV를 불러오세요");return;}
-  const batch=buildNaverRows(p,50);if(batch.length!==50){toast(`50행 검증 실패 · ${batch.length}행`);return;}
-  const rows=[NAVER_TEMPLATE.headers];
-  batch.forEach(r=>rows.push(NAVER_TEMPLATE.mapping.map(key=>key?r[key]:"")));
-  downloadCsv(rows,`${p.name}_공식템플릿_매핑_${todayStr()}.csv`);
-  toast(`공식 템플릿 열 순서로 변환 · 50행 · 업로드 전 사람 검토 필요`);
+  toast(`내부 검토용 CSV · ${rows.length-1}행 · 광고주센터 업로드 파일 아님`);
 }
 /* ── 날씨 대응(기상특보 data/signals.json 연동) ── */
 let SIG={weather:{active:[]},triggers:{}};
@@ -893,7 +856,6 @@ function render(){
       <button class="btn" id="xAds">⬇ 현재 상품 내부 검토 CSV (${batch.length}/50)</button>
       <button class="btn" id="xAllAds">⬇ 전체 13상품 내부 검토 CSV (650행)</button>
       <span class="xnote">첨부 심의안 기준 광고제목·추가제목·설명·홍보문구·서브링크·이미지형 서브링크 · <span style="color:var(--bad);font-weight:800">빨강=신규 T&amp;D</span></span>
-      <div class="tpl"><b>공식 템플릿 열 매핑</b><input id="naverTpl" type="file" accept=".csv,.tsv,.txt"><button class="btn sm" id="xOfficial" ${NAVER_TEMPLATE?"":"disabled"}>현재 상품 50행 변환</button><span class="${NAVER_TEMPLATE?"ok":NAVER_TEMPLATE_MESSAGE.startsWith("오류")?"no":""}">${esc(NAVER_TEMPLATE?`${NAVER_TEMPLATE.name} · 필수 열 매핑 완료`:NAVER_TEMPLATE_MESSAGE)}</span></div>
     </div>
     <div class="specbar">
       <div class="spec">제목·추가제목 <b>≤${SPEC.titleMax}</b></div>
@@ -922,13 +884,6 @@ function render(){
   $("#xExcel").addEventListener("click",()=>exportXls(p));
   $("#xAds").addEventListener("click",()=>exportReviewAds([p],p.name));
   $("#xAllAds").addEventListener("click",()=>exportReviewAds(PRODUCTS,"전체13상품"));
-  $("#xOfficial").addEventListener("click",()=>exportOfficialTemplate(p));
-  $("#naverTpl").addEventListener("change",async e=>{
-    const file=e.target.files&&e.target.files[0];if(!file)return;
-    try{NAVER_TEMPLATE=await readNaverTemplate(file);NAVER_TEMPLATE_MESSAGE="";toast("공식 템플릿 필수 열 매핑 완료");}
-    catch(err){NAVER_TEMPLATE=null;NAVER_TEMPLATE_MESSAGE=`오류 · ${err.message||err}`;toast(NAVER_TEMPLATE_MESSAGE);}
-    render();
-  });
   renderSidebar();
 }
 document.addEventListener("click",e=>{

@@ -120,7 +120,7 @@ class TestSeoTitleOps(unittest.TestCase):
         self.assertNotIn("SEO 제목 후보", seo_page)
         self.assertNotIn("data/adcopy/powercontent-title-opportunities.json", adcopy_page)
         self.assertIn("data/adcopy/powercontent-title-opportunities.json", power_page)
-        self.assertIn("포스팅 제목 근거", power_page)
+        self.assertIn("콘텐츠 제목 근거", power_page)
         self.assertNotIn("SEO 검색 근거", power_page)
 
 

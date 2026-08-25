@@ -15,16 +15,15 @@ REGULATORY_BASIS = (ROOT / ".claude" / "skills" / "insurance-ad-review" / "refer
 
 
 class TestAdcopyContract(unittest.TestCase):
-    def test_upload_claims_are_not_shipped_before_template_validation(self):
+    def test_upload_claims_are_not_shipped_with_internal_review_files(self):
         for claim in ("연결URL만 채우면 등록", "연결URL만 채우면 바로 업로드", "네이버 바로등록"):
             self.assertNotIn(claim, ADCOPY + KEYWORD)
-        self.assertIn("공식 템플릿 확인 전 업로드 금지", ADCOPY)
+        self.assertIn("광고주센터 업로드 파일 아님", ADCOPY)
         self.assertIn("공식 템플릿 확인 전 업로드 금지", KEYWORD)
 
-    def test_official_export_requires_loaded_template(self):
-        self.assertIn('id="xOfficial" ${NAVER_TEMPLATE?"":"disabled"}', ADCOPY)
-        self.assertIn("if(!NAVER_TEMPLATE)", ADCOPY)
-        self.assertIn("필수 열 매핑 실패", ADCOPY)
+    def test_sa_does_not_expose_unused_official_template_mapping(self):
+        for removed in ("공식 템플릿 열 매핑", "NAVER_TEMPLATE", 'id="xOfficial"', 'id="naverTpl"', "필수 열 매핑 실패"):
+            self.assertNotIn(removed, ADCOPY)
 
     def test_ci_runs_650_row_validation(self):
         self.assertIn("node scripts/check_adcopy_export.mjs", CI)
@@ -61,28 +60,27 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn("파워콘텐츠 소재", POWER)
         self.assertIn("const POWER_SPEC=MATERIAL_SPEC.powerContent", POWER)
         self.assertIn("data/adcopy/powercontent-title-opportunities.json", POWER)
-        self.assertNotIn("GSC", POWER)
-        self.assertNotIn("gscLabel", POWER)
-        self.assertNotIn("candidate-weak", POWER)
-        self.assertIn("0. 발행 포스트 원문 입력", POWER)
-        self.assertIn("1. 광고 제목 후보", POWER)
-        self.assertIn("2. 설명 원문 후보", POWER)
-        self.assertIn("3. 광고 소재 등록 초안", POWER)
-        self.assertIn("descriptionCandidatesFrom", POWER)
-        self.assertIn("seoAlignment", POWER)
-        self.assertIn("설명 원문 연속 발췌", POWER)
-        for removed in ("추가제목", "홍보문구", "서브링크", "FAQ 후보", "선택 포스팅 소재", "검색 의도", "상품 소구"):
+        self.assertIn("data/evidence/claims.json", POWER)
+        self.assertIn("1. 키워드 전략", POWER)
+        self.assertIn("2. 콘텐츠 소재 3안", POWER)
+        self.assertIn("3. 선택 소재 설계", POWER)
+        self.assertIn("4. 본문 초안", POWER)
+        self.assertIn("5. FAQ·마무리 소재", POWER)
+        self.assertIn("function keywordPlan", POWER)
+        self.assertIn("function contentBriefFor", POWER)
+        self.assertIn("대표 키워드", POWER)
+        self.assertIn("연관 키워드", POWER)
+        self.assertIn("본문 보조", POWER)
+        for removed in ("발행 포스트 원문 입력", "설명 후보 대기", "descriptionCandidatesFrom", "seoAlignment"):
             self.assertNotIn(removed, POWER)
-        self.assertNotIn("data-copy", POWER)
 
-    def test_power_content_uses_competitor_structure_without_copying_material(self):
-        self.assertIn("const REFERENCE_PATTERNS", POWER)
-        self.assertIn("https://blog.naver.com/sfdirect/224352257939", POWER)
-        self.assertIn("https://blog.naver.com/magiccar_di/224318477942", POWER)
-        self.assertIn("표현·수치·보장은 가져오지 않고 정보 배열만 참고", POWER)
-        self.assertIn("문구 복사 금지", POWER)
-        self.assertNotIn("혼자서 다이렉트로 쉽게", POWER)
-        self.assertNotIn("비 오는 날 창문 열고 나간 것보다", POWER)
+    def test_power_content_proposes_copy_without_unapproved_product_claims(self):
+        self.assertIn('allowed_channels||[]).includes("power_content")', POWER)
+        self.assertIn('evidenceStatus=claims.length?"verified":"evidence_required"', POWER)
+        self.assertIn("일반 정보 초안", POWER)
+        self.assertIn("상품 세부 근거 확인 필요", POWER)
+        self.assertIn("도입부·광고 설명", POWER)
+        self.assertIn("대표 이미지 브리프", POWER)
 
     def test_sa_and_power_content_share_material_review_rules(self):
         self.assertIn('shared/naver-material-specs.js', ADCOPY)
@@ -132,7 +130,8 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn("function inScope(p,text)", POWER)
         self.assertIn("function exportCsv()", POWER)
         self.assertIn('id="exportCsv"', POWER)
-        self.assertIn("등록 초안 CSV", POWER)
+        self.assertIn("콘텐츠 브리프 CSV", POWER)
+        self.assertIn('id="copyBrief"', POWER)
 
     def test_copy_candidates_use_shared_korean_humanizer(self):
         self.assertIn('shared/humanize-ko.js', ADCOPY)
