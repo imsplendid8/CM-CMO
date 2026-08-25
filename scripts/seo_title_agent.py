@@ -299,7 +299,7 @@ def generate(
             next_action = "비공개 GSC에서 후보 검색어의 노출·페이지 확인"
         else:
             status = "ready_for_review"
-            next_action = "본문 일치·상품 근거·준법·광고심의 검토"
+            next_action = "본문 일치·상품자료·약관·준법·광고심의 검토"
         output_products.append({
             "product_key": product["key"],
             "status": status,

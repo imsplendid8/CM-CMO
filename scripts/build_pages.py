@@ -49,6 +49,7 @@ def build(root: Path = ROOT, destination: Path = DEST) -> list[Path]:
     copy_file(root, destination, "site.webmanifest")
     for folder in ("shared", "icons"):
         shutil.copytree(root / folder, destination / folder)
+    shutil.copytree(root / "assets/insurance", destination / "assets/insurance")
     for relative in (*PUBLIC_DATA, *PUBLIC_SERP_JSON):
         copy_file(root, destination, relative)
     for source in (root / "data/clips").glob("*.json"):

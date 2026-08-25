@@ -20,6 +20,13 @@ def read(rel, default):
         return default
 
 
+def topic_particle(term):
+    last = term[-1]
+    code = ord(last)
+    has_batchim = 0xAC00 <= code <= 0xD7A3 and (code - 0xAC00) % 28 != 0
+    return term + ("은" if has_batchim else "는")
+
+
 def question_for(term):
     if "보험료" in term:
         return f"{term}는 어떤 조건에 따라 달라지나요?"
@@ -32,50 +39,18 @@ def question_for(term):
     return f"{term} 관련 보장은 가입 전에 무엇을 확인해야 하나요?"
 
 
-def topic_particle(term):
-    last = term[-1]
-    code = ord(last)
-    has_batchim = 0xAC00 <= code <= 0xD7A3 and (code - 0xAC00) % 28 != 0
-    return term + ("은" if has_batchim else "는")
-
-
-def claim_allows_faq(claim, today=None):
-    today = today or date.today()
-    if claim.get("review_status") != "approved" or "faq" not in (claim.get("allowed_channels") or []):
-        return False
-    start, end = claim.get("effective_from"), claim.get("valid_until")
-    return not (start and date.fromisoformat(start) > today) and not (end and date.fromisoformat(end) < today)
-
-
-def relevant_claim_ids(claims, text):
-    normalized = text.replace(" ", "")
-    out = []
-    for claim in claims:
-        fields = f"{claim.get('claim','')} {claim.get('consumer_text','')}"
-        terms = [x for x in fields.replace("·", " ").replace("/", " ").split() if len(x.replace(" ", "")) >= 2]
-        if any(t.replace(" ", "") in normalized or normalized in t.replace(" ", "") for t in terms):
-            out.append(claim["claim_id"])
-    return out
-
-
-def generate(products, volume, search_console, claims):
-    """공개 FAQ 후보는 공개 가능한 SearchAd 데이터만으로 만든다.
-
-    search_console 인자는 기존 호출 호환을 위해 유지하지만 비공개 검색어·노출 수치는
-    공개 산출물의 질문, 순서, 수요 값에 사용하지 않는다.
-    """
+def generate(products, volume, search_console=None):
+    """공개 FAQ 후보에는 SearchAd 데이터만 사용하고 답변은 자동 생성하지 않는다."""
     _ = search_console
-    approved = {}
-    for claim in claims.get("claims") or []:
-        if claim_allows_faq(claim): approved.setdefault(claim.get("product_key"), []).append(claim)
     out = []
-    for p in products.get("products") or []:
-        volume_rows = ((volume.get("products") or {}).get(p["key"]) or {}).get("keywords") or {}
+    for product in products.get("products") or []:
+        volume_rows = ((volume.get("products") or {}).get(product["key"]) or {}).get("keywords") or {}
         terms = []
-        tokens = [x.replace(" ", "") for x in p.get("core", []) + p.get("special", []) if len(x.replace(" ", "")) >= 3]
+        tokens = [x.replace(" ", "") for x in product.get("core", []) + product.get("special", [])
+                  if len(x.replace(" ", "")) >= 3]
         for term, row in volume_rows.items():
             compact_term = term.replace(" ", "")
-            if any(excluded.replace(" ", "") in compact_term for excluded in p.get("excluded") or []):
+            if any(excluded.replace(" ", "") in compact_term for excluded in product.get("excluded") or []):
                 continue
             if not any(token in compact_term for token in tokens):
                 continue
@@ -89,24 +64,32 @@ def generate(products, volume, search_console, claims):
             if not term or normalized in seen:
                 continue
             seen.add(normalized)
-            question = question_for(term); claim_ids = relevant_claim_ids(approved.get(p["key"], []), term + " " + question)
-            candidates.append({"query": term, "question": question, "demand": demand, "source": source,
-                "claim_ids": claim_ids, "answer_status": "draft_allowed" if claim_ids else "evidence_required",
-                "next_action": "승인 claim으로 답변 작성" if claim_ids else "이 질문과 관련된 상품 근거 승인 후 답변 작성"})
+            candidates.append({
+                "query": term,
+                "question": question_for(term),
+                "demand": demand,
+                "source": source,
+                "review_status": "content_review_required",
+                "next_action": "상품자료·약관을 확인해 답변 작성",
+            })
             if len(candidates) == 4:
                 break
         if candidates:
-            out.append({"product_key": p["key"], "opportunities": candidates})
-    return {"_comment": "SearchAd 수요에서 발굴한 공개 FAQ 후보. evidence_required는 답변 자동 생성 금지.",
-        "asof": volume.get("asof") or date.today().isoformat(), "products": out}
+            out.append({"product_key": product["key"], "opportunities": candidates})
+    return {
+        "_comment": "SearchAd 수요에서 발굴한 공개 FAQ 질문 후보. 답변은 자동 생성하지 않는다.",
+        "asof": volume.get("asof") or date.today().isoformat(),
+        "products": out,
+    }
 
 
 def main():
     result = generate(read("data/products.json", {}), read("data/volume.json", {}),
-                      read("data/search-console.json", {}), read("data/evidence/claims.json", {}))
+                      read("data/search-console.json", {}))
     atomic_json_write(OUT, result)
     print(f"[OK] {OUT.relative_to(ROOT)} · 상품 {len(result['products'])} · 기회 {sum(len(x['opportunities']) for x in result['products'])}건")
     return result
+
 
 if __name__ == "__main__":
     main()

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""SERP 관측·검색량·상품 근거를 결합한 검색광고 검토 후보 생성기."""
-import hashlib
+"""SERP 관측·검색량·상품 마스터를 결합한 소재 입력 신호 생성기."""
 import json
 from datetime import date
 from pathlib import Path
@@ -12,8 +11,6 @@ except ModuleNotFoundError:  # python scripts/serp_copy_agent.py
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data/adcopy/serp-candidates.json"
-TITLE_MAX, DESC_MIN, DESC_MAX = 15, 20, 45
-BANNED = ("최고", "최저", "1위", "유일", "무조건", "100%", "완벽", "무심사", "누구나")
 
 
 def read(rel, default):
@@ -23,32 +20,9 @@ def read(rel, default):
         return default
 
 
-def compact(text, maximum):
-    text = " ".join(str(text).split())
-    if len(text) <= maximum:
-        return text
-    words, out = text.split(), ""
-    for word in words:
-        candidate = f"{out} {word}".strip()
-        if len(candidate) > maximum:
-            break
-        out = candidate
-    return out
-
-
 def out_of_scope(text, product):
     normalized = str(text).replace(" ", "")
     return any(str(term).replace(" ", "") in normalized for term in product.get("excluded") or [])
-
-
-def volume_keyword(volume, product):
-    rows = ((volume.get("products") or {}).get(product["key"]) or {}).get("keywords") or {}
-    tokens = [x for x in product.get("core", []) + product.get("special", []) if len(x.replace(" ", "")) >= 3]
-    ranked = [(term, row) for term, row in rows.items()
-              if any(t.replace(" ", "") in term.replace(" ", "") for t in tokens)
-              and not out_of_scope(term, product)]
-    ranked.sort(key=lambda x: (-(term_score(x[0], product)), -(int(x[1].get("pc") or 0) + int(x[1].get("mobile") or 0)), x[0]))
-    return ranked[0][0] if ranked else product.get("serpKw") or product["name"]
 
 
 def term_score(term, product):
@@ -62,6 +36,17 @@ def term_score(term, product):
     return score
 
 
+def volume_keyword(volume, product):
+    rows = ((volume.get("products") or {}).get(product["key"]) or {}).get("keywords") or {}
+    tokens = [x for x in product.get("core", []) + product.get("special", []) if len(x.replace(" ", "")) >= 3]
+    ranked = [(term, row) for term, row in rows.items()
+              if any(t.replace(" ", "") in term.replace(" ", "") for t in tokens)
+              and not out_of_scope(term, product)]
+    ranked.sort(key=lambda x: (-(term_score(x[0], product)),
+                               -(int(x[1].get("pc") or 0) + int(x[1].get("mobile") or 0)), x[0]))
+    return ranked[0][0] if ranked else product.get("serpKw") or product["name"]
+
+
 def date_diff(ads):
     dates = sorted({a.get("date") for a in ads if a.get("date")}, reverse=True)
     if not dates:
@@ -69,90 +54,51 @@ def date_diff(ads):
     latest, previous = dates[0], dates[1] if len(dates) > 1 else None
     brands = lambda d: {a.get("brand") for a in ads if a.get("date") == d and a.get("brand")}
     now, before = brands(latest), brands(previous) if previous else set()
-    return {"latest": latest, "previous": previous, "entered_brands": sorted(now-before), "exited_brands": sorted(before-now)}
+    return {"latest": latest, "previous": previous,
+            "entered_brands": sorted(now-before), "exited_brands": sorted(before-now)}
 
 
-def valid(title, desc):
-    joined = title + desc
-    return 4 <= len(title) <= TITLE_MAX and DESC_MIN <= len(desc) <= DESC_MAX and not any(x in joined for x in BANNED)
-
-
-def claim_allows_sa(claim, today=None):
-    today = today or date.today()
-    channels = set(claim.get("allowed_channels") or [])
-    if claim.get("review_status") != "approved" or not {"sa_title", "sa_description"} <= channels:
-        return False
-    start, end = claim.get("effective_from"), claim.get("valid_until")
-    return not (start and date.fromisoformat(start) > today) and not (end and date.fromisoformat(end) < today)
-
-
-def relevant_claim_ids(claims, text):
-    normalized = text.replace(" ", "")
-    matched = []
-    for claim in claims:
-        fields = f"{claim.get('claim','')} {claim.get('consumer_text','')}"
-        terms = [x for x in fields.replace("·", " ").replace("/", " ").split() if len(x.replace(" ", "")) >= 2]
-        if any(term.replace(" ", "") in normalized or normalized in term.replace(" ", "") for term in terms):
-            matched.append(claim["claim_id"])
-    return matched
-
-
-def generate(products, analysis, volume, claims):
-    approved = {}
-    for c in claims.get("claims") or []:
-        if claim_allows_sa(c):
-            approved.setdefault(c.get("product_key"), []).append(c)
+def generate(products, analysis, volume):
     output = []
-    for p in products.get("products") or []:
-        # 브랜드 홈은 개별 상품이 아니므로 상품형 SA 소재를 자동 생성하지 않는다.
-        if p.get("cat") == "사이트":
+    for product in products.get("products") or []:
+        if product.get("cat") == "사이트":
             continue
-        observed = ((analysis.get("products") or {}).get(p["key"]) or {})
+        observed = ((analysis.get("products") or {}).get(product["key"]) or {})
         ads, common = observed.get("observed_ads") or [], observed.get("common_soju") or []
         if not ads:
             continue
-        keyword = volume_keyword(volume, p)
-        gaps = [x for x in p.get("special") or []
-                if not out_of_scope(x, p) and not any(x in c or c in x for c in common)]
-        angle = (gaps or p.get("core") or [p["name"]])[0]
-        short_name = p.get("serpKw") or p["name"]
-        observed_brands = "·".join(dict.fromkeys(a.get("brand") for a in ads if a.get("brand"))) or "경쟁사"
-        last_angle = (p.get("special") or p.get("core") or [angle])[-1]
-        raw = [
-            ("상황·담보", compact(f"{angle} 특약으로 대비", TITLE_MAX),
-             f"갑작스러운 {angle} 걱정, {p['name']} 관련 특약으로 미리 대비하세요.",
-            f"{observed_brands} 관측 문구의 구체 담보+상황 구조 차용 · 수치·할인 제외"),
-            ("간편 전환", compact(f"{short_name} 간편 가입", TITLE_MAX),
-             f"전화 상담 없이 {short_name} 내 보험료를 계산하고 온라인으로 가입하세요.",
-             "경쟁사 행동 유도 구조를 온라인 가입 흐름으로 전환"),
-            ("담보 묶음", compact(f"{short_name} 필요한 특약", TITLE_MAX),
-             f"{angle}부터 {last_angle}까지, 필요한 특약을 한 번에 준비하세요.",
-             f"‘{keyword}’ 검색 수요와 경쟁사 핵심 소구를 상품 담보 맥락으로 재구성"),
-        ]
-        candidates = []
-        for strategy, title, desc, pattern_note in raw:
-            desc = compact(desc, DESC_MAX)
-            if not valid(title, desc) or out_of_scope(title + " " + desc, p):
-                continue
-            fingerprint = hashlib.sha256(f"{p['key']}|{title}|{desc}".encode()).hexdigest()[:16]
-            claim_ids = relevant_claim_ids(approved.get(p["key"], []), title + " " + desc)
-            candidates.append({"strategy": strategy, "title": title, "description": desc,
-                "title_length": len(title), "description_length": len(desc), "claim_ids": claim_ids,
-                "evidence_status": "verified" if claim_ids else "product_evidence_required",
-                "review_status": "human_review_required", "pattern_note": pattern_note,
-                "fingerprint": fingerprint})
-        output.append({"product_key": p["key"], "keyword": keyword, "common_competitor_angles": common,
-            "selected_angle": angle, "serp_diff": date_diff(ads), "observed_count": len(ads), "candidates": candidates})
-    return {"_comment": "경쟁사 광고의 구체 담보·상황·행동 유도 구조를 차용하되 브랜드·수치·할인은 복사하지 않은 심의안 후보.",
-        "asof": analysis.get("asof") or date.today().isoformat(), "products": output}
+        keyword = volume_keyword(volume, product)
+        gaps = [x for x in product.get("special") or []
+                if not out_of_scope(x, product) and not any(x in c or c in x for c in common)]
+        angle = (gaps or product.get("core") or [product["name"]])[0]
+        diff = date_diff(ads)
+        output.append({
+            "product_key": product["key"],
+            "keyword": keyword,
+            "common_competitor_angles": common,
+            "selected_angle": angle,
+            "latest_date": diff["latest"] or observed.get("latest_date"),
+            "serp_diff": diff,
+            "observed_count": len(ads),
+            "copy_direction": f"{keyword} 검색 의도와 {angle} 상품 각도를 함께 사용",
+            "visual_direction": f"보험종목 장면에서 {angle}을 바로 읽을 수 있게 하고 큰 탐색형 문구를 사용",
+            "analysis_status": "ready",
+        })
+    return {
+        "_comment": "경쟁사 원문·수치·브랜드를 복사하지 않고 검색어, 공통 소구, 차별 각도만 소재 입력 신호로 제공한다.",
+        "asof": analysis.get("asof") or date.today().isoformat(),
+        "products": output,
+    }
 
 
 def main(root=ROOT):
+    _ = root
     result = generate(read("data/products.json", {}), read("serp/ad_analysis.json", {}),
-                      read("data/volume.json", {}), read("data/evidence/claims.json", {}))
+                      read("data/volume.json", {}))
     atomic_json_write(OUT, result)
-    print(f"[OK] {OUT.relative_to(ROOT)} · 상품 {len(result['products'])} · 후보 {sum(len(x['candidates']) for x in result['products'])}건")
+    print(f"[OK] {OUT.relative_to(ROOT)} · 상품 {len(result['products'])} · SERP 소재 입력 신호")
     return result
+
 
 if __name__ == "__main__":
     main()

@@ -17,8 +17,6 @@ jobs:
           python-version: "3.12"
       - name: 상품 마스터 동기화 검사
         run: python3 scripts/check_products_sync.py
-      - name: 상품 근거 원장 검사
-        run: python3 scripts/claim_evidence.py validate
       - name: SEO 제목 검토 큐 검사
         run: python3 scripts/seo_title_agent.py --validate
       - name: 테스트 의존성(PyYAML — 워크플로 정적 테스트용)
@@ -51,8 +49,11 @@ jobs:
           node --check shared/naver-material-specs.js
           node --check shared/planning-context.js
           node --check shared/ui-icons.js
+          node --check shared/zip-store.js
       - name: 검색광고 소재 13상품 × 50행 검증
         run: node scripts/check_adcopy_export.mjs
+      - name: SERP 이미지 소재 연결 검증
+        run: node scripts/check_adcopy_images.mjs
       - name: 보험광고 법령 기반 사전검수 검증
         run: node scripts/check_insurance_ad_review.mjs
       - name: 파워컨텐츠 13상품 소재 품질 검증

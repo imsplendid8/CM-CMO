@@ -30,16 +30,17 @@ class TestAdcopyContract(unittest.TestCase):
 
     def test_serp_monitoring_changes_generated_sa_without_copying_claims(self):
         self.assertIn("function serpIdeas(p)", ADCOPY)
-        self.assertIn("경쟁사 광고와 SA 제안", ADCOPY)
+        self.assertIn("SERP 모니터링 → 소재·이미지 반영", ADCOPY)
         self.assertIn("observed_ads", ADCOPY)
-        self.assertIn('strategy:"상황·담보"', ADCOPY)
-        self.assertIn('strategy:"간편 전환"', ADCOPY)
-        self.assertIn('strategy:"담보 묶음"', ADCOPY)
-        self.assertIn("SA 소재 제안", ADCOPY)
+        self.assertIn('strategy:"SERP 차별 소구"', ADCOPY)
+        self.assertIn('strategy:"검색 의도 연결"', ADCOPY)
+        self.assertIn('strategy:"담보 탐색"', ADCOPY)
+        self.assertIn("실제 반영된 SA 소재", ADCOPY)
         self.assertIn('const OUT_OF_SCOPE_VOLUME=["자동차보험","자동차 보험","한화생명"]', ADCOPY)
         self.assertNotIn("공개 광고 관측", ADCOPY)
         self.assertNotIn("공개 SERP 관측", ADCOPY)
-        self.assertIn("경쟁사 구조 활용", ADCOPY)
+        self.assertIn("SERP 분석 반영", ADCOPY)
+        self.assertNotIn("generated=agent.candidates", ADCOPY)
         self.assertNotIn("data-copy", ADCOPY)
         self.assertNotIn("navigator.clipboard", ADCOPY)
 
@@ -65,13 +66,20 @@ class TestAdcopyContract(unittest.TestCase):
             'id="thumbUpload"',
             'accept="image/png,image/jpeg"',
             'id="thumbAll"',
-            "파워링크 1장 + 이미지형 서브링크 3장",
-            "이미지 처리는 이 브라우저 안에서만 수행",
+            "SERP 기반 보험종목 이미지 소재",
+            "SERP 소구와 보험종목 3D 장면을 함께 반영",
+            "downloadThumbnailPack",
+            "ZIP_STORE.zipStore(files)",
+            "manifest.json",
+            "assets/insurance/driver-traffic-3d.png",
             "powerLinkImageFile",
             "sublinkImageFile3",
         ):
             self.assertIn(marker, ADCOPY)
         self.assertIn("canvas.toBlob", ADCOPY)
+        self.assertIn("SPEC.image.imageSublinkMax", ADCOPY)
+        self.assertNotIn("new FileReader()", ADCOPY)
+        self.assertIn("curKey!==key", ADCOPY)
         self.assertIn("width: 214", MATERIAL_SPECS)
         self.assertIn("height: 214", MATERIAL_SPECS)
         self.assertIn("maxBytes: 5242880", MATERIAL_SPECS)

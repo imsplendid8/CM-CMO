@@ -1,5 +1,5 @@
 {
-  "_comment": "경쟁사 광고의 구체 담보·상황·행동 유도 구조를 차용하되 브랜드·수치·할인은 복사하지 않은 심의안 후보.",
+  "_comment": "경쟁사 원문·수치·브랜드를 복사하지 않고 검색어, 공통 소구, 차별 각도만 소재 입력 신호로 제공한다.",
   "asof": "2026-08-02",
   "products": [
     {
@@ -9,6 +9,7 @@
         "누수"
       ],
       "selected_angle": "풍수재",
+      "latest_date": "2026-07-26",
       "serp_diff": {
         "latest": "2026-07-26",
         "previous": null,
@@ -19,50 +20,16 @@
         "exited_brands": []
       },
       "observed_count": 2,
-      "candidates": [
-        {
-          "strategy": "상황·담보",
-          "title": "풍수재 특약으로 대비",
-          "description": "갑작스러운 풍수재 걱정, 주택화재보험 관련 특약으로 미리 대비하세요.",
-          "title_length": 11,
-          "description_length": 38,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "신한EZ손보·메리츠화재 관측 문구의 구체 담보+상황 구조 차용 · 수치·할인 제외",
-          "fingerprint": "a418d073b33a1cc8"
-        },
-        {
-          "strategy": "간편 전환",
-          "title": "주택화재보험 간편 가입",
-          "description": "전화 상담 없이 주택화재보험 내 보험료를 계산하고 온라인으로 가입하세요.",
-          "title_length": 12,
-          "description_length": 40,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "경쟁사 행동 유도 구조를 온라인 가입 흐름으로 전환",
-          "fingerprint": "f697069499b44e48"
-        },
-        {
-          "strategy": "담보 묶음",
-          "title": "주택화재보험 필요한 특약",
-          "description": "풍수재부터 도난까지, 필요한 특약을 한 번에 준비하세요.",
-          "title_length": 13,
-          "description_length": 31,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "‘주택화재보험’ 검색 수요와 경쟁사 핵심 소구를 상품 담보 맥락으로 재구성",
-          "fingerprint": "1142ff7e76a9ea74"
-        }
-      ]
+      "copy_direction": "주택화재보험 검색 의도와 풍수재 상품 각도를 함께 사용",
+      "visual_direction": "보험종목 장면에서 풍수재을 바로 읽을 수 있게 하고 큰 탐색형 문구를 사용",
+      "analysis_status": "ready"
     },
     {
       "product_key": "golf",
       "keyword": "골프보험",
       "common_competitor_angles": [],
       "selected_angle": "홀인원",
+      "latest_date": "2026-07-26",
       "serp_diff": {
         "latest": "2026-07-26",
         "previous": null,
@@ -73,50 +40,16 @@
         "exited_brands": []
       },
       "observed_count": 2,
-      "candidates": [
-        {
-          "strategy": "상황·담보",
-          "title": "홀인원 특약으로 대비",
-          "description": "갑작스러운 홀인원 걱정, 골프보험 관련 특약으로 미리 대비하세요.",
-          "title_length": 11,
-          "description_length": 36,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "카카오페이손해보험·롯데손해보험 앨리스 관측 문구의 구체 담보+상황 구조 차용 · 수치·할인 제외",
-          "fingerprint": "b7b38decdee79a74"
-        },
-        {
-          "strategy": "간편 전환",
-          "title": "골프보험 간편 가입",
-          "description": "전화 상담 없이 골프보험 내 보험료를 계산하고 온라인으로 가입하세요.",
-          "title_length": 10,
-          "description_length": 38,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "경쟁사 행동 유도 구조를 온라인 가입 흐름으로 전환",
-          "fingerprint": "8ba736fb19997707"
-        },
-        {
-          "strategy": "담보 묶음",
-          "title": "골프보험 필요한 특약",
-          "description": "홀인원부터 용품손해까지, 필요한 특약을 한 번에 준비하세요.",
-          "title_length": 11,
-          "description_length": 33,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "‘골프보험’ 검색 수요와 경쟁사 핵심 소구를 상품 담보 맥락으로 재구성",
-          "fingerprint": "938d4fd69069c982"
-        }
-      ]
+      "copy_direction": "골프보험 검색 의도와 홀인원 상품 각도를 함께 사용",
+      "visual_direction": "보험종목 장면에서 홀인원을 바로 읽을 수 있게 하고 큰 탐색형 문구를 사용",
+      "analysis_status": "ready"
     },
     {
       "product_key": "cncr",
       "keyword": "암보험",
       "common_competitor_angles": [],
       "selected_angle": "유사암",
+      "latest_date": "2026-07-26",
       "serp_diff": {
         "latest": "2026-07-26",
         "previous": null,
@@ -127,50 +60,16 @@
         "exited_brands": []
       },
       "observed_count": 2,
-      "candidates": [
-        {
-          "strategy": "상황·담보",
-          "title": "유사암 특약으로 대비",
-          "description": "갑작스러운 유사암 걱정, 암보험 관련 특약으로 미리 대비하세요.",
-          "title_length": 11,
-          "description_length": 35,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "라이나생명·DB손해보험 관측 문구의 구체 담보+상황 구조 차용 · 수치·할인 제외",
-          "fingerprint": "86422f6e9a93f08f"
-        },
-        {
-          "strategy": "간편 전환",
-          "title": "암보험 간편 가입",
-          "description": "전화 상담 없이 암보험 내 보험료를 계산하고 온라인으로 가입하세요.",
-          "title_length": 9,
-          "description_length": 37,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "경쟁사 행동 유도 구조를 온라인 가입 흐름으로 전환",
-          "fingerprint": "12d272e2616712d0"
-        },
-        {
-          "strategy": "담보 묶음",
-          "title": "암보험 필요한 특약",
-          "description": "유사암부터 재발암까지, 필요한 특약을 한 번에 준비하세요.",
-          "title_length": 10,
-          "description_length": 32,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "‘암보험’ 검색 수요와 경쟁사 핵심 소구를 상품 담보 맥락으로 재구성",
-          "fingerprint": "3e267ac89ed77644"
-        }
-      ]
+      "copy_direction": "암보험 검색 의도와 유사암 상품 각도를 함께 사용",
+      "visual_direction": "보험종목 장면에서 유사암을 바로 읽을 수 있게 하고 큰 탐색형 문구를 사용",
+      "analysis_status": "ready"
     },
     {
       "product_key": "dntl",
       "keyword": "치아보험",
       "common_competitor_angles": [],
       "selected_angle": "임플란트",
+      "latest_date": "2026-07-26",
       "serp_diff": {
         "latest": "2026-07-26",
         "previous": null,
@@ -180,44 +79,9 @@
         "exited_brands": []
       },
       "observed_count": 1,
-      "candidates": [
-        {
-          "strategy": "상황·담보",
-          "title": "임플란트 특약으로 대비",
-          "description": "갑작스러운 임플란트 걱정, 치아보험 관련 특약으로 미리 대비하세요.",
-          "title_length": 12,
-          "description_length": 37,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "삼성생명 다이렉트 관측 문구의 구체 담보+상황 구조 차용 · 수치·할인 제외",
-          "fingerprint": "7259293e04166ff0"
-        },
-        {
-          "strategy": "간편 전환",
-          "title": "치아보험 간편 가입",
-          "description": "전화 상담 없이 치아보험 내 보험료를 계산하고 온라인으로 가입하세요.",
-          "title_length": 10,
-          "description_length": 38,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "경쟁사 행동 유도 구조를 온라인 가입 흐름으로 전환",
-          "fingerprint": "744cb543fa367c92"
-        },
-        {
-          "strategy": "담보 묶음",
-          "title": "치아보험 필요한 특약",
-          "description": "임플란트부터 충치까지, 필요한 특약을 한 번에 준비하세요.",
-          "title_length": 11,
-          "description_length": 32,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "‘치아보험’ 검색 수요와 경쟁사 핵심 소구를 상품 담보 맥락으로 재구성",
-          "fingerprint": "8b1f0f88a5c96408"
-        }
-      ]
+      "copy_direction": "치아보험 검색 의도와 임플란트 상품 각도를 함께 사용",
+      "visual_direction": "보험종목 장면에서 임플란트을 바로 읽을 수 있게 하고 큰 탐색형 문구를 사용",
+      "analysis_status": "ready"
     },
     {
       "product_key": "driver",
@@ -228,6 +92,7 @@
         "형사합의금"
       ],
       "selected_angle": "교통사고",
+      "latest_date": "2026-07-26",
       "serp_diff": {
         "latest": "2026-07-26",
         "previous": null,
@@ -238,50 +103,16 @@
         "exited_brands": []
       },
       "observed_count": 2,
-      "candidates": [
-        {
-          "strategy": "상황·담보",
-          "title": "교통사고 특약으로 대비",
-          "description": "갑작스러운 교통사고 걱정, 운전자보험 관련 특약으로 미리 대비하세요.",
-          "title_length": 12,
-          "description_length": 38,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "현대해상 다이렉트·DB손해보험 관측 문구의 구체 담보+상황 구조 차용 · 수치·할인 제외",
-          "fingerprint": "8c66f8290dec7e22"
-        },
-        {
-          "strategy": "간편 전환",
-          "title": "운전자보험 간편 가입",
-          "description": "전화 상담 없이 운전자보험 내 보험료를 계산하고 온라인으로 가입하세요.",
-          "title_length": 11,
-          "description_length": 39,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "경쟁사 행동 유도 구조를 온라인 가입 흐름으로 전환",
-          "fingerprint": "8fb7e957bd72312d"
-        },
-        {
-          "strategy": "담보 묶음",
-          "title": "운전자보험 필요한 특약",
-          "description": "교통사고부터 12대중과실까지, 필요한 특약을 한 번에 준비하세요.",
-          "title_length": 12,
-          "description_length": 36,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "‘운전자보험’ 검색 수요와 경쟁사 핵심 소구를 상품 담보 맥락으로 재구성",
-          "fingerprint": "a2e3b06340e0bb4d"
-        }
-      ]
+      "copy_direction": "운전자보험 검색 의도와 교통사고 상품 각도를 함께 사용",
+      "visual_direction": "보험종목 장면에서 교통사고을 바로 읽을 수 있게 하고 큰 탐색형 문구를 사용",
+      "analysis_status": "ready"
     },
     {
       "product_key": "woman",
       "keyword": "여성건강보험",
       "common_competitor_angles": [],
       "selected_angle": "임신",
+      "latest_date": "2026-07-26",
       "serp_diff": {
         "latest": "2026-07-26",
         "previous": null,
@@ -291,50 +122,16 @@
         "exited_brands": []
       },
       "observed_count": 1,
-      "candidates": [
-        {
-          "strategy": "상황·담보",
-          "title": "임신 특약으로 대비",
-          "description": "갑작스러운 임신 걱정, 여성건강보험 관련 특약으로 미리 대비하세요.",
-          "title_length": 10,
-          "description_length": 37,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "각 손보사 관측 문구의 구체 담보+상황 구조 차용 · 수치·할인 제외",
-          "fingerprint": "95c1e1c3c51a33c1"
-        },
-        {
-          "strategy": "간편 전환",
-          "title": "여성건강보험 간편 가입",
-          "description": "전화 상담 없이 여성건강보험 내 보험료를 계산하고 온라인으로 가입하세요.",
-          "title_length": 12,
-          "description_length": 40,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "경쟁사 행동 유도 구조를 온라인 가입 흐름으로 전환",
-          "fingerprint": "89b220eb98480f66"
-        },
-        {
-          "strategy": "담보 묶음",
-          "title": "여성건강보험 필요한 특약",
-          "description": "임신부터 자궁까지, 필요한 특약을 한 번에 준비하세요.",
-          "title_length": 13,
-          "description_length": 30,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "‘여성건강보험’ 검색 수요와 경쟁사 핵심 소구를 상품 담보 맥락으로 재구성",
-          "fingerprint": "3e2070c046e4b5a0"
-        }
-      ]
+      "copy_direction": "여성건강보험 검색 의도와 임신 상품 각도를 함께 사용",
+      "visual_direction": "보험종목 장면에서 임신을 바로 읽을 수 있게 하고 큰 탐색형 문구를 사용",
+      "analysis_status": "ready"
     },
     {
       "product_key": "birth",
       "keyword": "태아보험",
       "common_competitor_angles": [],
       "selected_angle": "태아",
+      "latest_date": "2026-07-26",
       "serp_diff": {
         "latest": "2026-07-26",
         "previous": null,
@@ -344,44 +141,9 @@
         "exited_brands": []
       },
       "observed_count": 1,
-      "candidates": [
-        {
-          "strategy": "상황·담보",
-          "title": "태아 특약으로 대비",
-          "description": "갑작스러운 태아 걱정, 임신·출산(태아)보험 관련 특약으로 미리 대비하세요.",
-          "title_length": 10,
-          "description_length": 42,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "각 손보사 관측 문구의 구체 담보+상황 구조 차용 · 수치·할인 제외",
-          "fingerprint": "c3d2bb4195752ab3"
-        },
-        {
-          "strategy": "간편 전환",
-          "title": "태아보험 간편 가입",
-          "description": "전화 상담 없이 태아보험 내 보험료를 계산하고 온라인으로 가입하세요.",
-          "title_length": 10,
-          "description_length": 38,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "경쟁사 행동 유도 구조를 온라인 가입 흐름으로 전환",
-          "fingerprint": "10afde15ecc18d3c"
-        },
-        {
-          "strategy": "담보 묶음",
-          "title": "태아보험 필요한 특약",
-          "description": "태아부터 제왕절개까지, 필요한 특약을 한 번에 준비하세요.",
-          "title_length": 11,
-          "description_length": 32,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "‘태아보험’ 검색 수요와 경쟁사 핵심 소구를 상품 담보 맥락으로 재구성",
-          "fingerprint": "3d050b932e3b21c5"
-        }
-      ]
+      "copy_direction": "태아보험 검색 의도와 태아 상품 각도를 함께 사용",
+      "visual_direction": "보험종목 장면에서 태아을 바로 읽을 수 있게 하고 큰 탐색형 문구를 사용",
+      "analysis_status": "ready"
     },
     {
       "product_key": "overseas",
@@ -391,6 +153,7 @@
         "질병"
       ],
       "selected_angle": "실손",
+      "latest_date": "2026-07-26",
       "serp_diff": {
         "latest": "2026-07-26",
         "previous": null,
@@ -401,50 +164,16 @@
         "exited_brands": []
       },
       "observed_count": 2,
-      "candidates": [
-        {
-          "strategy": "상황·담보",
-          "title": "실손 특약으로 대비",
-          "description": "갑작스러운 실손 걱정, 해외여행보험 관련 특약으로 미리 대비하세요.",
-          "title_length": 10,
-          "description_length": 37,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "현대해상 다이렉트·NH농협손해보험 관측 문구의 구체 담보+상황 구조 차용 · 수치·할인 제외",
-          "fingerprint": "07665afdc1198f38"
-        },
-        {
-          "strategy": "간편 전환",
-          "title": "해외여행보험 간편 가입",
-          "description": "전화 상담 없이 해외여행보험 내 보험료를 계산하고 온라인으로 가입하세요.",
-          "title_length": 12,
-          "description_length": 40,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "경쟁사 행동 유도 구조를 온라인 가입 흐름으로 전환",
-          "fingerprint": "1471500fd2401d43"
-        },
-        {
-          "strategy": "담보 묶음",
-          "title": "해외여행보험 필요한 특약",
-          "description": "실손부터 여권분실까지, 필요한 특약을 한 번에 준비하세요.",
-          "title_length": 13,
-          "description_length": 32,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "‘해외여행보험’ 검색 수요와 경쟁사 핵심 소구를 상품 담보 맥락으로 재구성",
-          "fingerprint": "cb2d4e0621846017"
-        }
-      ]
+      "copy_direction": "해외여행보험 검색 의도와 실손 상품 각도를 함께 사용",
+      "visual_direction": "보험종목 장면에서 실손을 바로 읽을 수 있게 하고 큰 탐색형 문구를 사용",
+      "analysis_status": "ready"
     },
     {
       "product_key": "overseaslong",
       "keyword": "유학생보험",
       "common_competitor_angles": [],
       "selected_angle": "유학",
+      "latest_date": "2026-07-26",
       "serp_diff": {
         "latest": "2026-07-26",
         "previous": null,
@@ -454,50 +183,16 @@
         "exited_brands": []
       },
       "observed_count": 1,
-      "candidates": [
-        {
-          "strategy": "상황·담보",
-          "title": "유학 특약으로 대비",
-          "description": "갑작스러운 유학 걱정, 해외장기체류보험 관련 특약으로 미리 대비하세요.",
-          "title_length": 10,
-          "description_length": 39,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "각 손보사 관측 문구의 구체 담보+상황 구조 차용 · 수치·할인 제외",
-          "fingerprint": "009b13aaa8853579"
-        },
-        {
-          "strategy": "간편 전환",
-          "title": "유학생보험 간편 가입",
-          "description": "전화 상담 없이 유학생보험 내 보험료를 계산하고 온라인으로 가입하세요.",
-          "title_length": 11,
-          "description_length": 39,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "경쟁사 행동 유도 구조를 온라인 가입 흐름으로 전환",
-          "fingerprint": "116c33cc5f16385d"
-        },
-        {
-          "strategy": "담보 묶음",
-          "title": "유학생보험 필요한 특약",
-          "description": "유학부터 주재원까지, 필요한 특약을 한 번에 준비하세요.",
-          "title_length": 12,
-          "description_length": 31,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "‘유학생보험’ 검색 수요와 경쟁사 핵심 소구를 상품 담보 맥락으로 재구성",
-          "fingerprint": "826abdc1030ada62"
-        }
-      ]
+      "copy_direction": "유학생보험 검색 의도와 유학 상품 각도를 함께 사용",
+      "visual_direction": "보험종목 장면에서 유학을 바로 읽을 수 있게 하고 큰 탐색형 문구를 사용",
+      "analysis_status": "ready"
     },
     {
       "product_key": "holeinone",
       "keyword": "홀인원보험",
       "common_competitor_angles": [],
       "selected_angle": "홀인원축하비용",
+      "latest_date": "2026-07-26",
       "serp_diff": {
         "latest": "2026-07-26",
         "previous": null,
@@ -507,50 +202,16 @@
         "exited_brands": []
       },
       "observed_count": 1,
-      "candidates": [
-        {
-          "strategy": "상황·담보",
-          "title": "홀인원축하비용 특약으로 대비",
-          "description": "갑작스러운 홀인원축하비용 걱정, 홀인원보험 관련 특약으로 미리 대비하세요.",
-          "title_length": 15,
-          "description_length": 41,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "삼성화재 착 관측 문구의 구체 담보+상황 구조 차용 · 수치·할인 제외",
-          "fingerprint": "bad4348262eed9b3"
-        },
-        {
-          "strategy": "간편 전환",
-          "title": "홀인원보험 간편 가입",
-          "description": "전화 상담 없이 홀인원보험 내 보험료를 계산하고 온라인으로 가입하세요.",
-          "title_length": 11,
-          "description_length": 39,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "경쟁사 행동 유도 구조를 온라인 가입 흐름으로 전환",
-          "fingerprint": "90d96fc40fbd783c"
-        },
-        {
-          "strategy": "담보 묶음",
-          "title": "홀인원보험 필요한 특약",
-          "description": "홀인원축하비용부터 동반플레이어까지, 필요한 특약을 한 번에 준비하세요.",
-          "title_length": 12,
-          "description_length": 39,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "‘홀인원보험’ 검색 수요와 경쟁사 핵심 소구를 상품 담보 맥락으로 재구성",
-          "fingerprint": "85d8cf4285596f64"
-        }
-      ]
+      "copy_direction": "홀인원보험 검색 의도와 홀인원축하비용 상품 각도를 함께 사용",
+      "visual_direction": "보험종목 장면에서 홀인원축하비용을 바로 읽을 수 있게 하고 큰 탐색형 문구를 사용",
+      "analysis_status": "ready"
     },
     {
       "product_key": "event",
       "keyword": "행사보험",
       "common_competitor_angles": [],
       "selected_angle": "공연행사",
+      "latest_date": "2026-07-26",
       "serp_diff": {
         "latest": "2026-07-26",
         "previous": null,
@@ -560,50 +221,16 @@
         "exited_brands": []
       },
       "observed_count": 1,
-      "candidates": [
-        {
-          "strategy": "상황·담보",
-          "title": "공연행사 특약으로 대비",
-          "description": "갑작스러운 공연행사 걱정, 행사배상책임보험 관련 특약으로 미리 대비하세요.",
-          "title_length": 12,
-          "description_length": 41,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "제휴/각 손보사 관측 문구의 구체 담보+상황 구조 차용 · 수치·할인 제외",
-          "fingerprint": "e8417e79eb24743d"
-        },
-        {
-          "strategy": "간편 전환",
-          "title": "행사보험 간편 가입",
-          "description": "전화 상담 없이 행사보험 내 보험료를 계산하고 온라인으로 가입하세요.",
-          "title_length": 10,
-          "description_length": 38,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "경쟁사 행동 유도 구조를 온라인 가입 흐름으로 전환",
-          "fingerprint": "0d896233a138f812"
-        },
-        {
-          "strategy": "담보 묶음",
-          "title": "행사보험 필요한 특약",
-          "description": "공연행사부터 배상책임까지, 필요한 특약을 한 번에 준비하세요.",
-          "title_length": 11,
-          "description_length": 34,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "‘행사보험’ 검색 수요와 경쟁사 핵심 소구를 상품 담보 맥락으로 재구성",
-          "fingerprint": "d32f0a636c57753c"
-        }
-      ]
+      "copy_direction": "행사보험 검색 의도와 공연행사 상품 각도를 함께 사용",
+      "visual_direction": "보험종목 장면에서 공연행사을 바로 읽을 수 있게 하고 큰 탐색형 문구를 사용",
+      "analysis_status": "ready"
     },
     {
       "product_key": "chronic",
       "keyword": "유병자보험",
       "common_competitor_angles": [],
       "selected_angle": "간편심사",
+      "latest_date": "2026-07-26",
       "serp_diff": {
         "latest": "2026-07-26",
         "previous": null,
@@ -613,44 +240,9 @@
         "exited_brands": []
       },
       "observed_count": 1,
-      "candidates": [
-        {
-          "strategy": "상황·담보",
-          "title": "간편심사 특약으로 대비",
-          "description": "갑작스러운 간편심사 걱정, 유병자 간편보험 관련 특약으로 미리 대비하세요.",
-          "title_length": 12,
-          "description_length": 41,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "각 손보사 관측 문구의 구체 담보+상황 구조 차용 · 수치·할인 제외",
-          "fingerprint": "a7d293f1cf002977"
-        },
-        {
-          "strategy": "간편 전환",
-          "title": "유병자보험 간편 가입",
-          "description": "전화 상담 없이 유병자보험 내 보험료를 계산하고 온라인으로 가입하세요.",
-          "title_length": 11,
-          "description_length": 39,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "경쟁사 행동 유도 구조를 온라인 가입 흐름으로 전환",
-          "fingerprint": "a629a32ddf245a32"
-        },
-        {
-          "strategy": "담보 묶음",
-          "title": "유병자보험 필요한 특약",
-          "description": "간편심사부터 5.10.5까지, 필요한 특약을 한 번에 준비하세요.",
-          "title_length": 12,
-          "description_length": 36,
-          "claim_ids": [],
-          "evidence_status": "product_evidence_required",
-          "review_status": "human_review_required",
-          "pattern_note": "‘유병자보험’ 검색 수요와 경쟁사 핵심 소구를 상품 담보 맥락으로 재구성",
-          "fingerprint": "d67f5b873249717b"
-        }
-      ]
+      "copy_direction": "유병자보험 검색 의도와 간편심사 상품 각도를 함께 사용",
+      "visual_direction": "보험종목 장면에서 간편심사을 바로 읽을 수 있게 하고 큰 탐색형 문구를 사용",
+      "analysis_status": "ready"
     }
   ]
 }

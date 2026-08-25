@@ -2,7 +2,6 @@ import importlib.util
 import json
 import pathlib
 import unittest
-from datetime import date
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
@@ -15,115 +14,56 @@ def module(name):
     return value
 
 
-class TestClaimEvidence(unittest.TestCase):
-    def test_registry_is_valid_and_unapproved_by_default(self):
-        claims = json.loads((ROOT / "data/evidence/claims.json").read_text(encoding="utf-8"))
-        products = json.loads((ROOT / "data/products.json").read_text(encoding="utf-8"))
-        errors = module("claim_evidence").validate(claims, {p["key"] for p in products["products"]})
-        self.assertEqual(errors, [])
-        self.assertEqual(len(claims["claims"]), 13)
-        self.assertFalse(any(c["review_status"] == "approved" for c in claims["claims"]))
-
-    def test_only_current_channel_approved_claims_resolve(self):
-        ce = module("claim_evidence")
-        base = {"claim_id": "x", "product_key": "driver", "review_status": "approved",
-                "allowed_channels": ["faq"], "effective_from": "2026-01-01", "valid_until": "2026-12-31"}
-        self.assertEqual(len(ce.active_claims({"claims": [base]}, "driver", "faq", date(2026, 8, 24))), 1)
-        self.assertEqual(ce.active_claims({"claims": [base]}, "driver", "sa_title", date(2026, 8, 24)), [])
-
-    def test_review_cli_requires_real_reviewer_and_source(self):
-        source = (ROOT / "scripts/claim_evidence.py").read_text(encoding="utf-8")
-        self.assertIn("실제 검토자 --reviewer가 필요합니다", source)
-        self.assertIn("--source-path, --effective-from, --channels", source)
-
-    def test_review_is_immutable_and_keeps_history(self):
-        ce = module("claim_evidence")
-        original = {"updated": "2026-01-01", "claims": [{"claim_id": "x", "product_key": "driver",
-            "claim": "변호사선임비용", "review_status": "needs_product_review", "source": {}, "allowed_channels": []}]}
-        reviewed = ce.review_claim(original, "x", "approve", "상품 담당", source_path="설명서.pdf#p=12",
-            effective_from="2026-08-01", valid_until="2027-07-31", channels=["faq"], disclosure="지급조건 확인")
-        self.assertEqual(original["claims"][0]["review_status"], "needs_product_review")
-        claim = reviewed["claims"][0]
-        self.assertEqual(claim["review_status"], "approved")
-        self.assertEqual(claim["review_history"][0]["from_status"], "needs_product_review")
-        self.assertEqual(claim["source"]["path"], "설명서.pdf#p=12")
-
-    def test_registry_rejects_invalid_date_range(self):
-        ce = module("claim_evidence")
-        claim = {"claim_id": "x", "product_key": "driver", "review_status": "approved", "reviewer": "담당",
-            "source": {"path": "x"}, "effective_from": "2027-01-01", "valid_until": "2026-01-01", "allowed_channels": ["faq"]}
-        self.assertTrue(any("valid_until" in e for e in ce.validate({"claims": [claim]}, {"driver"})))
-
-
 class TestSerpCopyAgent(unittest.TestCase):
-    def test_faq_only_or_expired_claim_does_not_verify_sa(self):
-        agent = module("serp_copy_agent")
-        base = {"review_status": "approved", "effective_from": "2026-01-01", "valid_until": "2026-12-31"}
-        self.assertFalse(agent.claim_allows_sa({**base, "allowed_channels": ["faq"]}, date(2026, 8, 24)))
-        self.assertFalse(agent.claim_allows_sa({**base, "allowed_channels": ["sa_title", "sa_description"], "valid_until": "2026-01-31"}, date(2026, 8, 24)))
-        self.assertTrue(agent.claim_allows_sa({**base, "allowed_channels": ["sa_title", "sa_description"]}, date(2026, 8, 24)))
-
-    def test_unrelated_approved_claim_does_not_verify_candidate(self):
-        agent = module("serp_copy_agent")
-        claims = [{"claim_id": "dental", "claim": "임플란트 보장", "consumer_text": "임플란트"}]
-        self.assertEqual(agent.relevant_claim_ids(claims, "변호사선임비용 가입 조건 확인"), [])
-        self.assertEqual(agent.relevant_claim_ids(claims, "임플란트 보장 여부 확인"), ["dental"])
-
-    def test_generates_review_only_safe_pairs_and_diff(self):
+    def test_generates_copy_and_visual_inputs_with_diff(self):
         agent = module("serp_copy_agent")
         products = {"products": [{"key": "driver", "name": "운전자보험", "serpKw": "운전자보험",
                     "core": ["운전자보험"], "special": ["벌금", "변호사선임"]}]}
         analysis = {"asof": "2026-08-24", "products": {"driver": {"common_soju": ["벌금"], "observed_ads": [
             {"date": "2026-08-24", "brand": "A"}, {"date": "2026-08-17", "brand": "B"}]}}}
-        result = agent.generate(products, analysis, {}, {"claims": []})["products"][0]
+        result = agent.generate(products, analysis, {})["products"][0]
         self.assertEqual(result["selected_angle"], "변호사선임")
         self.assertEqual(result["serp_diff"]["entered_brands"], ["A"])
-        self.assertTrue(result["candidates"])
-        self.assertEqual({row["strategy"] for row in result["candidates"]}, {"상황·담보", "간편 전환", "담보 묶음"})
-        for row in result["candidates"]:
-            self.assertLessEqual(row["title_length"], 15)
-            self.assertGreaterEqual(row["description_length"], 20)
-            self.assertLessEqual(row["description_length"], 45)
-            self.assertEqual(row["evidence_status"], "product_evidence_required")
-            self.assertEqual(row["review_status"], "human_review_required")
-            self.assertTrue(row["pattern_note"])
-            self.assertNotIn("보장 여부와 가입 조건을 확인", row["description"])
+        self.assertEqual(result["analysis_status"], "ready")
+        self.assertIn("변호사선임", result["copy_direction"])
+        self.assertIn("보험종목 장면", result["visual_direction"])
+        serialized = json.dumps(result, ensure_ascii=False)
+        for removed in ("claim_ids", "evidence_status", "review_status"):
+            self.assertNotIn(removed, serialized)
 
-    def test_brand_home_and_excluded_products_are_never_suggested(self):
+    def test_volume_keyword_avoids_excluded_queries(self):
+        agent = module("serp_copy_agent")
+        product = {"key": "driver", "name": "운전자보험", "serpKw": "운전자보험",
+                   "core": ["운전자보험"], "special": ["교통사고"], "excluded": ["고객센터"]}
+        volume = {"products": {"driver": {"keywords": {
+            "운전자보험 고객센터": {"pc": 9999, "mobile": 9999},
+            "운전자보험": {"pc": 100, "mobile": 200},
+        }}}}
+        self.assertEqual(agent.volume_keyword(volume, product), "운전자보험")
+
+    def test_brand_home_is_not_emitted_as_product_insight(self):
         agent = module("serp_copy_agent")
         products = {"products": [{"key": "home", "cat": "사이트", "name": "다이렉트 홈",
-                    "serpKw": "한화손보 다이렉트", "core": ["한화손보 다이렉트"],
-                    "special": ["운전자보험"], "excluded": ["자동차보험"]}]}
+                    "serpKw": "한화손보 다이렉트", "core": ["한화손보 다이렉트"], "special": ["운전자보험"]}]}
         analysis = {"products": {"home": {"observed_ads": [{"date": "2026-08-24", "brand": "A"}]}}}
-        volume = {"products": {"home": {"keywords": {
-            "한화다이렉트자동차보험": {"pc": 1000, "mobile": 1000},
-        }}}}
-        result = agent.generate(products, analysis, volume, {"claims": []})
-        self.assertEqual(result["products"], [])
+        self.assertEqual(agent.generate(products, analysis, {})["products"], [])
 
 
 class TestFaqOpportunityAgent(unittest.TestCase):
-    def test_expired_or_wrong_channel_claim_does_not_unlock_faq(self):
+    def test_search_demand_creates_question_review_queue(self):
         agent = module("faq_opportunity_agent")
-        base = {"review_status": "approved", "effective_from": "2026-01-01", "valid_until": "2026-12-31"}
-        self.assertFalse(agent.claim_allows_faq({**base, "allowed_channels": ["sa_title"]}, date(2026, 8, 24)))
-        self.assertFalse(agent.claim_allows_faq({**base, "allowed_channels": ["faq"], "valid_until": "2026-01-31"}, date(2026, 8, 24)))
-        self.assertTrue(agent.claim_allows_faq({**base, "allowed_channels": ["faq"]}, date(2026, 8, 24)))
-
-    def test_unrelated_product_claim_does_not_unlock_question(self):
-        agent = module("faq_opportunity_agent")
-        claims = [{"claim_id": "price", "claim": "보험료 산출 조건", "consumer_text": "보험료"}]
-        self.assertEqual(agent.relevant_claim_ids(claims, "유병자보험 가입 가능 여부"), [])
-        self.assertEqual(agent.relevant_claim_ids(claims, "유병자보험 보험료는 어떻게 달라지나요"), ["price"])
-
-    def test_search_demand_creates_questions_but_not_answers_without_claim(self):
-        agent = module("faq_opportunity_agent")
-        products = {"products": [{"key": "chronic", "name": "유병자 간편보험", "core": ["유병자보험"], "special": ["간편심사"]}]}
-        volume = {"asof": "2026-08-24", "products": {"chronic": {"keywords": {"유병자보험 보험료": {"pc": 10, "mobile": 90}}}}}
-        result = agent.generate(products, volume, {}, {"claims": []})
-        row = result["products"][0]["opportunities"][0]
+        products = {"products": [{"key": "chronic", "name": "유병자 간편보험",
+                    "core": ["유병자보험"], "special": ["간편심사"]}]}
+        volume = {"asof": "2026-08-24", "products": {"chronic": {"keywords": {
+            "유병자보험 보험료": {"pc": 10, "mobile": 90},
+        }}}}
+        row = agent.generate(products, volume)["products"][0]["opportunities"][0]
         self.assertIn("어떤 조건에 따라 달라지나요?", row["question"])
-        self.assertEqual(row["answer_status"], "evidence_required")
+        self.assertEqual(row["review_status"], "content_review_required")
+        self.assertEqual(row["next_action"], "상품자료·약관을 확인해 답변 작성")
+        serialized = json.dumps(row, ensure_ascii=False)
+        self.assertNotIn("claim", serialized)
+        self.assertNotIn("evidence", serialized)
 
     def test_private_gsc_query_never_reaches_public_faq_payload(self):
         agent = module("faq_opportunity_agent")
@@ -132,10 +72,8 @@ class TestFaqOpportunityAgent(unittest.TestCase):
         volume = {"asof": "2026-08-24", "products": {"chronic": {"keywords": {
             "유병자보험 보험료": {"pc": 10, "mobile": 90},
         }}}}
-        gsc = {"asof": "2026-08-24", "rows": [{
-            "query": "내부에서만 보이는 유병자 질문", "impressions": 9876,
-        }]}
-        serialized = json.dumps(agent.generate(products, volume, gsc, {"claims": []}), ensure_ascii=False)
+        gsc = {"rows": [{"query": "내부에서만 보이는 유병자 질문", "impressions": 9876}]}
+        serialized = json.dumps(agent.generate(products, volume, gsc), ensure_ascii=False)
         self.assertNotIn("내부에서만 보이는", serialized)
         self.assertNotIn("9876", serialized)
         self.assertNotIn("search_console", serialized)
@@ -144,8 +82,6 @@ class TestFaqOpportunityAgent(unittest.TestCase):
         seo = (ROOT / "seo-audit.html").read_text(encoding="utf-8")
         adcopy = (ROOT / "adcopy-tool.html").read_text(encoding="utf-8")
         self.assertNotIn("data/seo/faq-opportunities.json", seo)
-        self.assertNotIn("검색 데이터가 찾은 다음 FAQ 후보", seo)
-        self.assertNotIn("Google FAQ 리치결과", seo)
         self.assertIn("data/adcopy/serp-candidates.json", adcopy)
         self.assertIn("SERP_AGENT", adcopy)
 
