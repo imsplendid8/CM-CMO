@@ -64,12 +64,25 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertNotIn("GSC", POWER)
         self.assertNotIn("gscLabel", POWER)
         self.assertNotIn("candidate-weak", POWER)
-        self.assertIn("1. 블로그 포스팅 소재", POWER)
-        self.assertIn("2. 광고 소재 등록 초안", POWER)
-        self.assertIn("설명은 랜딩 원문 연속 문장만 사용", POWER)
+        self.assertIn("0. 발행 포스트 원문 입력", POWER)
+        self.assertIn("1. 광고 제목 후보", POWER)
+        self.assertIn("2. 설명 원문 후보", POWER)
+        self.assertIn("3. 광고 소재 등록 초안", POWER)
+        self.assertIn("descriptionCandidatesFrom", POWER)
+        self.assertIn("seoAlignment", POWER)
+        self.assertIn("설명 원문 연속 발췌", POWER)
         for removed in ("추가제목", "홍보문구", "서브링크", "FAQ 후보", "선택 포스팅 소재", "검색 의도", "상품 소구"):
             self.assertNotIn(removed, POWER)
         self.assertNotIn("data-copy", POWER)
+
+    def test_power_content_uses_competitor_structure_without_copying_material(self):
+        self.assertIn("const REFERENCE_PATTERNS", POWER)
+        self.assertIn("https://blog.naver.com/sfdirect/224352257939", POWER)
+        self.assertIn("https://blog.naver.com/magiccar_di/224318477942", POWER)
+        self.assertIn("표현·수치·보장은 가져오지 않고 정보 배열만 참고", POWER)
+        self.assertIn("문구 복사 금지", POWER)
+        self.assertNotIn("혼자서 다이렉트로 쉽게", POWER)
+        self.assertNotIn("비 오는 날 창문 열고 나간 것보다", POWER)
 
     def test_sa_and_power_content_share_material_review_rules(self):
         self.assertIn('shared/naver-material-specs.js', ADCOPY)

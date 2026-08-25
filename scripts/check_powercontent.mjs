@@ -23,7 +23,8 @@ vm.runInContext(insuranceAdReview, context, { filename: "shared/insurance-ad-rev
 vm.runInContext(
   `${pureSection}
   ;globalThis.__POWER_CHECK__={
-    PRODUCTS,titleCandidates,adDraftFor,reviewPowerMaterial,volumeRows,inScope,clen,
+    PRODUCTS,REFERENCE_PATTERNS,titleCandidates,adDraftFor,reviewPowerMaterial,volumeRows,inScope,clen,
+    referencePatternFor,normalizePostText,descriptionCandidatesFrom,seoAlignment,
     setData:(volume,seasonal,titles)=>{DATA={volume,seasonal,titles};}
   };`,
   context,
@@ -66,6 +67,44 @@ for (const product of check.PRODUCTS) {
   const compliance = check.reviewPowerMaterial(product, candidates[0]);
   if (compliance.generationBlocking) throw new Error(`${product.name}: 보험광고 사전검수 ${compliance.statusLabel}`);
   console.log(`OK  ${product.name}: 포스팅 소재 3안 · 광고 등록 초안 분리`);
+}
+
+const groundedCases = [
+  {
+    key: "driver",
+    post: {
+      url: "https://blog.naver.com/hanwha-direct/example-driver",
+      publishedAt: "2026-08-25",
+      title: "운전자보험 가입 방법과 확인 순서",
+      body: "운전자보험 가입 방법을 확인할 때는 가입 대상과 운전 용도를 먼저 정하고, 필요한 보장 항목과 제외 조건을 상품설명서에서 살펴본 뒤 본인 정보와 계약 내용을 순서대로 확인해야 합니다. 가입 전에는 약관을 읽고 보장하지 않는 사항도 함께 확인하세요.",
+    },
+  },
+  {
+    key: "hrmf",
+    post: {
+      url: "https://blog.naver.com/hanwha-direct/example-fire",
+      publishedAt: "2026-08-25",
+      title: "주택화재보험 누수 대비 체크포인트",
+      body: "주택화재보험을 살펴볼 때는 우리 집 누수 피해와 아랫집 등 타인의 재산에 생긴 피해를 구분하고, 각 상황에 적용되는 특약의 보장 조건과 제외 사항을 상품설명서에서 확인해야 합니다. 실제 가입 전에는 약관과 상품설명서를 읽어 주세요.",
+    },
+  },
+];
+
+for (const { key, post } of groundedCases) {
+  const product = check.PRODUCTS.find((row) => row.key === key);
+  const candidate = check.titleCandidates(product)[0];
+  const excerpts = check.descriptionCandidatesFrom(post.body, product, candidate);
+  if (!check.referencePatternFor(product)) throw new Error(`${product.name}: 경쟁사 구조 참고 누락`);
+  if (!excerpts.length) throw new Error(`${product.name}: 원문 연속 발췌 후보 없음`);
+  const excerpt = excerpts[0];
+  if (excerpt.length < 80 || excerpt.length > 110) throw new Error(`${product.name}: 설명 ${excerpt.length}자`);
+  if (!check.normalizePostText(post.body).includes(excerpt.text)) throw new Error(`${product.name}: 원문에 없는 설명 생성`);
+  if (check.seoAlignment(product, candidate, post).score < 80) throw new Error(`${product.name}: SEO 정합성 점수 미달`);
+  const ad = check.adDraftFor(candidate, post, excerpt.text);
+  if (ad.description !== excerpt.text || ad.landingUrl !== post.url || ad.publishedAt !== post.publishedAt) {
+    throw new Error(`${product.name}: 원문 기반 등록 초안 연결 실패`);
+  }
+  console.log(`OK  ${product.name}: 네이버 규격 · SEO 정합성 · 타사 구조 참고 가드 통과`);
 }
 
 console.log("OK  파워컨텐츠 13상품 품질 가드 통과");
