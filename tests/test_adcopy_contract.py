@@ -57,6 +57,28 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertNotIn('id="edT"', ADCOPY)
         self.assertNotIn('id="edD"', ADCOPY)
 
+    def test_sa_generates_downloadable_naver_image_materials_locally(self):
+        for marker in (
+            "function thumbnailConcepts(p)",
+            "function renderThumbnailMaker(p)",
+            "function drawThumbnail(canvas,concept,customImage)",
+            'id="thumbUpload"',
+            'accept="image/png,image/jpeg"',
+            'id="thumbAll"',
+            "파워링크 1장 + 이미지형 서브링크 3장",
+            "이미지 처리는 이 브라우저 안에서만 수행",
+            "powerLinkImageFile",
+            "sublinkImageFile3",
+        ):
+            self.assertIn(marker, ADCOPY)
+        self.assertIn("canvas.toBlob", ADCOPY)
+        self.assertIn("width: 214", MATERIAL_SPECS)
+        self.assertIn("height: 214", MATERIAL_SPECS)
+        self.assertIn("maxBytes: 5242880", MATERIAL_SPECS)
+        self.assertIn("imageSublinkMax: 3", MATERIAL_SPECS)
+        self.assertNotIn("/ncc/ad-extensions/create", ADCOPY)
+        self.assertNotIn("sublinkImageId4", ADCOPY + MATERIAL_SPECS)
+
     def test_power_content_is_a_separate_guarded_workspace(self):
         self.assertNotIn('__power', ADCOPY)
         self.assertNotIn("powercontent-title-opportunities.json", ADCOPY)

@@ -18,6 +18,15 @@
       additionalDescription: freeze({ maxLength: 45, maxPerGroup: 4 }),
       promotion: freeze({ maxLength: 14, maxPerGroup: 2 }),
       sublink: freeze({ nameMaxLength: 6, minPerAd: 3, maxPerAd: 4, maxPerSite: 4 }),
+      image: freeze({
+        width: 214,
+        height: 214,
+        maxBytes: 5242880,
+        fileTypes: freeze(["image/jpeg", "image/png"]),
+        powerLinkMax: 1,
+        imageSublinkMax: 3,
+        sourceUrl: "https://naver.github.io/searchad-apidoc/release/2025/06/25/release-note/",
+      }),
     }),
     powerContent: freeze({
       title: freeze({ minLength: 7, maxLength: 28 }),
@@ -36,7 +45,6 @@
       "sublinkImageId1",
       "sublinkImageId2",
       "sublinkImageId3",
-      "sublinkImageId4",
     ]),
   });
 

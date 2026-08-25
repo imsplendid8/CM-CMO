@@ -110,6 +110,23 @@ table.sheet .cp:hover{border-color:var(--brand);color:var(--brand-600);}
 .cand .cp:hover{border-color:var(--brand);color:var(--brand-600);}
 .cand.flag{border-color:color-mix(in srgb,var(--bad) 40%,var(--line));}
 .flagmsg{font-size:10.5px;color:var(--bad);font-weight:700;margin-top:4px;}
+.thumb-maker{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;margin-bottom:16px;}
+.thumb-maker-h{display:flex;align-items:flex-start;gap:14px;justify-content:space-between;flex-wrap:wrap;padding:14px 15px;border-bottom:1px solid var(--line-2);background:var(--surface-2);}
+.thumb-maker-h h2{font-size:14px;letter-spacing:-.02em;margin-bottom:3px;}.thumb-maker-h p{font-size:11px;color:var(--muted);line-height:1.55;}
+.thumb-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.thumb-style{padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink-2);font:700 11px var(--sans);cursor:pointer;}
+.thumb-style.on{border-color:var(--brand);background:var(--brand-50);color:var(--brand-600);}
+.thumb-upload{position:relative;overflow:hidden;}.thumb-upload input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;}
+.thumb-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:15px;}
+@media(max-width:900px){.thumb-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:520px){.thumb-grid{grid-template-columns:1fr;}}
+.thumb-card{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--surface-2);min-width:0;}
+.thumb-role{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;font-size:10.5px;color:var(--muted);font-weight:700;}
+.thumb-role b{font-size:11.5px;color:var(--ink);}.thumb-canvas{display:block;width:100%;max-width:214px;aspect-ratio:1;margin:0 auto;border-radius:10px;background:#f4ebe7;box-shadow:0 5px 14px rgba(36,26,23,.13);}
+.thumb-file{margin-top:8px;font:700 9.5px var(--mono);color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.thumb-meta{font-size:9.5px;color:var(--good);font-weight:700;margin:3px 0 8px;}.thumb-card .btn{width:100%;}
+.thumb-foot{display:flex;align-items:center;gap:8px;justify-content:space-between;flex-wrap:wrap;padding:0 15px 15px;font-size:10.5px;color:var(--muted);}
+.thumb-local{display:inline-flex;align-items:center;gap:5px;color:var(--good);font-weight:800;}
 .editor{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--sh);margin-top:8px;}
 .editor .row{margin-bottom:14px;}
 .editor label{display:block;font-size:12px;font-weight:800;margin-bottom:6px;color:var(--ink);}
@@ -254,6 +271,7 @@ const SPEC={
   subMinCount:MATERIAL_SPEC.extension.sublink.minPerAd,
   subMaxCount:MATERIAL_SPEC.extension.sublink.maxPerAd,
   subSiteMax:MATERIAL_SPEC.extension.sublink.maxPerSite,
+  image:MATERIAL_SPEC.extension.image,
 };
 /* 공개 법령 기반 1차 휴리스틱. 협회·준법 심의 결과를 대신하지 않는다. */
 const AD_REVIEW=globalThis.ModooInsuranceAdReview;
@@ -541,6 +559,94 @@ function block(lbl,rows,max,ss){
   return `<div class="sec-lbl">${lbl} <b>(${rows.length})</b>${ss?` · <span class="sscount">시즌·뉴스 ${rows.filter(o=>o.ss).length}</span>`:""}</div>${tbl(rows,max)}`;
 }
 const todayStr=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
+const THUMB_STATE={style:"brand",customByProduct:{}};
+const THUMB_STYLES={
+  brand:{from:"#f17450",to:"#d9442f",fg:"#ffffff",muted:"#ffe8df",accent:"#ffb39d",iconBg:"rgba(255,255,255,.16)"},
+  soft:{from:"#fff8f4",to:"#f2d8ce",fg:"#3a251f",muted:"#795e54",accent:"#e8553d",iconBg:"rgba(232,85,61,.11)"},
+  night:{from:"#35435c",to:"#141d2f",fg:"#ffffff",muted:"#dce3ee",accent:"#f17450",iconBg:"rgba(255,255,255,.10)"},
+};
+const safeFileName=value=>String(value).replace(/[\\/:*?"<>|]/g,"").replace(/\s+/g,"_");
+function thumbnailConcepts(p){
+  const base=safeFileName(p.name);
+  return [
+    {kind:"power",role:"파워링크 이미지",title:p.name,subtitle:"한화손보 다이렉트",icon:"shield",file:`${base}_파워링크_01.png`},
+    {kind:"sublink",role:"이미지형 서브링크 1",title:"보험료 계산",subtitle:al(p),icon:"calculator",file:`${base}_이미지서브링크_보험료계산.png`},
+    {kind:"sublink",role:"이미지형 서브링크 2",title:"보장내용",subtitle:al(p),icon:"document",file:`${base}_이미지서브링크_보장내용.png`},
+    {kind:"sublink",role:"이미지형 서브링크 3",title:"가입안내",subtitle:al(p),icon:"cursor",file:`${base}_이미지서브링크_가입안내.png`},
+  ];
+}
+function renderThumbnailMaker(p){
+  const concepts=thumbnailConcepts(p),styleButtons=[["brand","브랜드"],["soft","정보형"],["night","딥톤"]];
+  return `<section class="thumb-maker" id="thumbMaker">
+    <div class="thumb-maker-h"><div><h2>1. 검색광고 이미지 소재</h2><p>파워링크 1장 + 이미지형 서브링크 3장 · 네이버 고정 규격 ${SPEC.image.width}×${SPEC.image.height}px</p></div>
+      <div class="thumb-actions">
+        ${styleButtons.map(([key,label])=>`<button class="thumb-style${THUMB_STATE.style===key?" on":""}" type="button" data-thumb-style="${key}">${label}</button>`).join("")}
+        <label class="btn sm thumb-upload">승인 이미지 적용<input id="thumbUpload" type="file" accept="image/png,image/jpeg" aria-label="승인 이미지 적용"></label>
+        <button class="btn sm" id="thumbReset" type="button">기본 이미지</button>
+        <button class="btn sm xbtn" id="thumbAll" type="button">PNG 4장 받기</button>
+      </div></div>
+    <div class="thumb-grid">${concepts.map((c,i)=>`<article class="thumb-card">
+      <div class="thumb-role"><b>${esc(c.role)}</b><span>${c.kind==="power"?"1장":"3장 묶음"}</span></div>
+      <canvas class="thumb-canvas" data-thumb-index="${i}" width="${SPEC.image.width}" height="${SPEC.image.height}" role="img" aria-label="${esc(c.role)} 미리보기"></canvas>
+      <div class="thumb-file" title="${esc(c.file)}">${esc(c.file)}</div><div class="thumb-meta" id="thumbMeta${i}">${SPEC.image.width}×${SPEC.image.height} · PNG 확인 중</div>
+      <button class="btn sm" type="button" data-thumb-download="${i}">PNG 다운로드</button>
+    </article>`).join("")}</div>
+    <div class="thumb-foot"><span class="thumb-local">● 이미지 처리는 이 브라우저 안에서만 수행</span><span>보장금액·할인 문구 없이 탐색형 표현만 사용 · 업로드 후 이미지 ID는 광고주센터에서 직접 입력</span></div>
+  </section>`;
+}
+function roundedPath(ctx,x,y,w,h,r){
+  const rr=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+rr,y);ctx.arcTo(x+w,y,x+w,y+h,rr);ctx.arcTo(x+w,y+h,x,y+h,rr);ctx.arcTo(x,y+h,x,y,rr);ctx.arcTo(x,y,x+w,y,rr);ctx.closePath();
+}
+function drawCover(ctx,img,w,h){
+  const scale=Math.max(w/img.width,h/img.height),dw=img.width*scale,dh=img.height*scale;ctx.drawImage(img,(w-dw)/2,(h-dh)/2,dw,dh);
+}
+function drawThumbIcon(ctx,type,x,y,size,fg,bg){
+  ctx.save();ctx.translate(x,y);ctx.fillStyle=bg;ctx.beginPath();ctx.arc(0,0,size/2,0,Math.PI*2);ctx.fill();ctx.strokeStyle=fg;ctx.fillStyle=fg;ctx.lineWidth=2.8;ctx.lineCap="round";ctx.lineJoin="round";
+  if(type==="shield"){
+    ctx.beginPath();ctx.moveTo(0,-17);ctx.lineTo(14,-11);ctx.lineTo(12,4);ctx.quadraticCurveTo(9,15,0,20);ctx.quadraticCurveTo(-9,15,-12,4);ctx.lineTo(-14,-11);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.moveTo(-6,1);ctx.lineTo(-1,7);ctx.lineTo(8,-5);ctx.stroke();
+  }else if(type==="calculator"){
+    roundedPath(ctx,-13,-17,26,34,5);ctx.stroke();roundedPath(ctx,-8,-11,16,7,2);ctx.stroke();[-7,0,7].forEach(px=>[-0,8].forEach(py=>{ctx.beginPath();ctx.arc(px,py,1.7,0,Math.PI*2);ctx.fill();}));
+  }else if(type==="document"){
+    roundedPath(ctx,-13,-17,26,34,4);ctx.stroke();[-8,-1,6].forEach(py=>{ctx.beginPath();ctx.moveTo(-7,py);ctx.lineTo(7,py);ctx.stroke();});
+  }else{
+    ctx.beginPath();ctx.moveTo(-10,-16);ctx.lineTo(13,0);ctx.lineTo(4,3);ctx.lineTo(9,15);ctx.lineTo(2,18);ctx.lineTo(-3,6);ctx.lineTo(-10,13);ctx.closePath();ctx.stroke();
+  }
+  ctx.restore();
+}
+function fitCanvasFont(ctx,text,maxWidth,start,min=14){
+  let size=start;while(size>min){ctx.font=`800 ${size}px Pretendard, "Noto Sans KR", sans-serif`;if(ctx.measureText(text).width<=maxWidth)break;size--;}return size;
+}
+function drawThumbnail(canvas,concept,customImage){
+  const ctx=canvas.getContext("2d"),w=SPEC.image.width,h=SPEC.image.height,theme=THUMB_STYLES[THUMB_STATE.style]||THUMB_STYLES.brand;
+  ctx.clearRect(0,0,w,h);if(customImage)drawCover(ctx,customImage,w,h);
+  const gradient=ctx.createLinearGradient(12,0,w,h);gradient.addColorStop(0,theme.from);gradient.addColorStop(1,theme.to);ctx.globalAlpha=customImage?0.8:1;ctx.fillStyle=gradient;ctx.fillRect(0,0,w,h);ctx.globalAlpha=1;
+  ctx.fillStyle=theme.accent;ctx.globalAlpha=.18;ctx.beginPath();ctx.arc(w+8,18,62,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(-6,h+5,42,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+  ctx.fillStyle=theme.fg;ctx.font="800 10px Pretendard, 'Noto Sans KR', sans-serif";ctx.textAlign="left";ctx.fillText("한화손보 다이렉트",16,22);
+  ctx.textAlign="right";ctx.fillStyle=theme.muted;ctx.font="800 8px Pretendard, 'Noto Sans KR', sans-serif";ctx.fillText(concept.kind==="power"?"POWERLINK":"SUBLINK",w-16,22);
+  drawThumbIcon(ctx,concept.icon,w/2,77,58,theme.fg,theme.iconBg);
+  ctx.textAlign="center";ctx.fillStyle=theme.fg;const titleSize=fitCanvasFont(ctx,concept.title,w-30,21);ctx.font=`800 ${titleSize}px Pretendard, "Noto Sans KR", sans-serif`;ctx.fillText(concept.title,w/2,137);
+  ctx.fillStyle=theme.muted;ctx.font="700 11px Pretendard, 'Noto Sans KR', sans-serif";ctx.fillText(concept.subtitle,w/2,158);
+  ctx.fillStyle=theme.accent;roundedPath(ctx,w/2-24,180,48,4,2);ctx.fill();
+}
+function refreshThumbnailMeta(canvas,index){
+  canvas.toBlob(blob=>{const meta=$("#thumbMeta"+index);if(!meta||!blob)return;const kb=Math.max(1,Math.ceil(blob.size/1024)),valid=blob.size<=SPEC.image.maxBytes;meta.textContent=`${SPEC.image.width}×${SPEC.image.height} · PNG · ${kb}KB ${valid?"✓":"용량 초과"}`;meta.style.color=valid?"var(--good)":"var(--bad)";},"image/png");
+}
+function redrawThumbnails(p){
+  const concepts=thumbnailConcepts(p),canvases=[...document.querySelectorAll("[data-thumb-index]")],dataUrl=THUMB_STATE.customByProduct[p.key];
+  const drawAll=image=>canvases.forEach(canvas=>{const i=Number(canvas.dataset.thumbIndex);drawThumbnail(canvas,concepts[i],image);refreshThumbnailMeta(canvas,i);});
+  if(!dataUrl){drawAll(null);return;}const img=new Image();img.onload=()=>drawAll(img);img.onerror=()=>{delete THUMB_STATE.customByProduct[p.key];drawAll(null);toast("이미지를 읽지 못해 기본 시안으로 표시했습니다");};img.src=dataUrl;
+}
+function saveCanvasPng(canvas,file){
+  return new Promise(resolve=>canvas.toBlob(blob=>{if(!blob){resolve(false);return;}const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=file;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1200);resolve(true);},"image/png"));
+}
+function bindThumbnailMaker(p){
+  redrawThumbnails(p);
+  document.querySelectorAll("[data-thumb-style]").forEach(btn=>btn.addEventListener("click",()=>{THUMB_STATE.style=btn.dataset.thumbStyle;document.querySelectorAll("[data-thumb-style]").forEach(x=>x.classList.toggle("on",x===btn));redrawThumbnails(p);}));
+  $("#thumbUpload").addEventListener("change",event=>{const file=event.target.files?.[0];if(!file)return;if(!SPEC.image.fileTypes.includes(file.type)){toast("PNG 또는 JPEG 이미지만 사용할 수 있습니다");event.target.value="";return;}if(file.size>SPEC.image.maxBytes){toast("승인 이미지는 5MB 이하여야 합니다");event.target.value="";return;}const reader=new FileReader();reader.onload=()=>{THUMB_STATE.customByProduct[p.key]=reader.result;redrawThumbnails(p);toast("승인 이미지를 214×214 중앙 크롭으로 적용했습니다");};reader.readAsDataURL(file);});
+  $("#thumbReset").addEventListener("click",()=>{delete THUMB_STATE.customByProduct[p.key];$("#thumbUpload").value="";redrawThumbnails(p);toast("기본 브랜드 시안으로 되돌렸습니다");});
+  document.querySelectorAll("[data-thumb-download]").forEach(btn=>btn.addEventListener("click",async()=>{const i=Number(btn.dataset.thumbDownload),canvas=$(`[data-thumb-index="${i}"]`),concept=thumbnailConcepts(p)[i];await saveCanvasPng(canvas,concept.file);toast(`${concept.role} PNG를 내려받았습니다`);}));
+  $("#thumbAll").addEventListener("click",async()=>{const concepts=thumbnailConcepts(p);for(let i=0;i<concepts.length;i++){await saveCanvasPng($(`[data-thumb-index="${i}"]`),concepts[i].file);await new Promise(resolve=>setTimeout(resolve,120));}toast("파워링크 1장과 이미지형 서브링크 3장을 내려받았습니다");});
+}
 /* 첨부 심의안의 2~7번 블록에 네이버 확장소재 추가설명 제안을 보완한다. */
 function sheetCols(p){const s=buildSheet(p);return [
   [`2. 광고 제목`,s.brand],[`3. 추가제목 (롤링)`,s.subt],[`4. 설명 (롤링)`,s.desc],
@@ -551,12 +657,12 @@ function exportXls(p){
   const span=cols.length*2,previewTitle=s.brand[0]?.tx||p.name,previewExtra=s.subt[0]?.tx||"",previewDesc=s.desc[0]?.tx||"",previewAdditionalDesc=s.additionalDesc[0]?.tx||"",previewPromo=s.promo[0]?.tx||"",previewSubs=s.sub.slice(0,4).map(x=>x.tx).join("　");
   let body="";for(let i=0;i<N;i++){body+="<tr>"+cols.map(c=>{const o=c[1][i];if(!o)return "<td></td><td></td>";const style=o.ss?' style="color:#e02020;font-weight:700"':o.ban?.length?' style="background:#fff2cc"':"";const note=o.ban?.length?" ※근거 재확인":"";return `<td${style}>${eX(o.tx+note)}</td><td align="center"${style}>${o.len}</td>`}).join("")+"</tr>"}
   const head="<tr>"+cols.map((c,i)=>`<th style="background:${orange};color:#fff">${eX(c[0])}</th><th style="background:${orange};color:#fff">글자수(${i===2||i===3?SPEC.descMax:i===4?SPEC.promoMax:i===5?SPEC.subMax:SPEC.titleMax}자)</th>`).join("")+"</tr>";
-  const slotCount=Math.max(s.sub.slice(0,4).length,1),slotBase=Math.floor(span/slotCount),slotExtra=span%slotCount;
-  const imageSlots=s.sub.slice(0,4).map((x,i)=>`<td colspan="${slotBase+(i<slotExtra?1:0)}" style="height:90px;text-align:center;background:#fff7ed">이미지 ${i+1} 삽입<br><b>${eX(x.tx)}</b> (${x.len}자)</td>`).join("");
+  const imageConcepts=thumbnailConcepts(p),subImages=imageConcepts.slice(1),slotCount=subImages.length,slotBase=Math.floor(span/slotCount),slotExtra=span%slotCount;
+  const imageSlots=subImages.map((x,i)=>`<td colspan="${slotBase+(i<slotExtra?1:0)}" style="height:90px;text-align:center;background:#fff7ed">${eX(x.title)}<br><b>${eX(x.file)}</b></td>`).join("");
   const html=`<html><head><meta charset="utf-8"><style>body{font-family:'맑은 고딕',sans-serif;font-size:9pt}table{border-collapse:collapse;width:100%}th,td{border:1px solid #555;padding:5px}th{font-weight:700}.label{background:#fce4d6;text-align:center}.section{background:${orange};color:#fff;font-weight:700}.preview{height:110px;vertical-align:top;font-size:11pt;line-height:1.7}.placeholder{height:150px;text-align:center;color:#777}</style></head><body><table>`
     +`<tr><th class="label">보종</th><td colspan="${span-1}">한화손보 다이렉트 ${eX(p.name)}</td></tr><tr><th class="label">운영 매체</th><td colspan="${span-1}">네이버SA</td></tr><tr><th class="label">심의 번호</th><td colspan="${span-1}"></td></tr>`
     +`<tr><th colspan="${span}" style="text-align:left">[노출 예시]</th></tr><tr><td colspan="${span}" class="preview"><b>${eX(previewTitle)} · ${eX(previewExtra)}</b><br>${eX(previewDesc)}<br><span style="color:#555">추가설명: ${eX(previewAdditionalDesc)}</span><br>${eX(previewPromo)}<br><span style="color:#2463eb">${eX(previewSubs)}</span></td></tr>`
-    +`<tr><th colspan="${span}" class="section" style="text-align:left">1. 썸네일 이미지</th></tr><tr><td colspan="${span}" class="placeholder">심의용 썸네일 이미지 삽입 영역</td></tr>`
+    +`<tr><th colspan="${span}" class="section" style="text-align:left">1. 썸네일 이미지</th></tr><tr><td colspan="${span}" class="placeholder">검색광고 소재 화면에서 생성한 PNG 삽입<br><b>${eX(imageConcepts[0].file)}</b> · ${SPEC.image.width}×${SPEC.image.height}px</td></tr>`
     +`<tr><th colspan="${span}" style="text-align:left">[운영 소재 문구] <span style="color:#e02020">빨간 글씨 = 신규 T&amp;D</span></th></tr>${head}${body}`
     +`<tr><th colspan="${span}" class="section" style="text-align:left">7. 이미지형 서브링크 (아래 중 3개씩 노출)</th></tr><tr>${imageSlots}</tr>`
     +`<tr><td colspan="${span}">초안 기준: ${eX(REVIEW_REFERENCE[p.key]?.source||"경쟁사 관측 문구 구조 + 상품별 소재 근거")} · 생성일 ${todayStr()} · 상품자료·약관·준법·손해보험협회 심의 전</td></tr></table></body></html>`;
@@ -592,9 +698,9 @@ function validateNaverRow(r){
   return errors;
 }
 function buildNaverRows(p,target=50){
-  const s=buildSheet(p),safe=rows=>(rows||[]).filter(o=>!o.ban?.length),titles=safe(s.brand),descs=safe(s.desc),subt=safe(s.subt),additionalDescs=safe(s.additionalDesc),promos=safe(s.promo);
-  const subs=uniq([...safe(s.sub).map(o=>o.tx),"보험료계산","보장내용","간편가입","가입조건"]).slice(0,SPEC.subMaxCount);
-  if(!titles.length||!descs.length||!subt.length||!additionalDescs.length||!promos.length||subs.length<SPEC.subMinCount)return [];
+  const s=buildSheet(p),imageConcepts=thumbnailConcepts(p),safe=rows=>(rows||[]).filter(o=>!o.ban?.length),titles=safe(s.brand),descs=safe(s.desc),subt=safe(s.subt),additionalDescs=safe(s.additionalDesc),promos=safe(s.promo);
+  const imageLinks=["보험료계산","보장내용","가입안내"],extraSubs=uniq([...safe(s.sub).map(o=>o.tx),"상품안내","가입조건"]).filter(x=>!imageLinks.includes(x));
+  if(!titles.length||!descs.length||!subt.length||!additionalDescs.length||!promos.length||!extraSubs.length)return [];
   const rows=[],seen=new Set();
   const perStrategy=Math.floor(target/STRATEGIES.length),extra=target%STRATEGIES.length;
   STRATEGIES.forEach((strategy,si)=>{
@@ -605,17 +711,17 @@ function buildNaverRows(p,target=50){
       const ai=Math.floor(combo/(titles.length*descs.length))%subt.length;
       const adi=(combo+si)%additionalDescs.length;
       const pi=(combo+si)%promos.length;
-      const linkStart=(combo+si*2)%subs.length;
-      const links=Array.from({length:SPEC.subMaxCount},(_,j)=>subs[(linkStart+j)%subs.length]);
+      const links=[...imageLinks,extraSubs[(combo+si*2)%extraSubs.length]];
       const row={
         strategy:strategy.label,reviewStatus:REVIEW_STATUS,campaignId:"",
         campaignName:`CM_파워링크_${p.name}`,adGroupName:`${p.name} · ${strategy.label}`,
         title:titles[ti].tx,description:descs[di].tx,displayUrl:"",pcUrl:"",mobileUrl:"",
         extraTitle:subt[ai].tx,additionalDescription:additionalDescs[adi].tx,promo:promos[pi].tx,
         sublink1:links[0],sublink2:links[1],sublink3:links[2],sublink4:links[3],
-        calculationUrl:"",powerLinkImageId:"",
+        calculationUrl:"",powerLinkImageFile:imageConcepts[0].file,powerLinkImageId:"",
         sublinkUrl1:"",sublinkUrl2:"",sublinkUrl3:"",sublinkUrl4:"",
-        sublinkImageId1:"",sublinkImageId2:"",sublinkImageId3:"",sublinkImageId4:"",
+        sublinkImageFile1:imageConcepts[1].file,sublinkImageFile2:imageConcepts[2].file,sublinkImageFile3:imageConcepts[3].file,
+        sublinkImageId1:"",sublinkImageId2:"",sublinkImageId3:"",
       };
       const sig=[row.campaignName,row.adGroupName,row.title,row.description,row.extraTitle,row.additionalDescription,row.promo,...links].join("|");
       if(seen.has(sig)||validateNaverRow(row).length)continue;
@@ -629,11 +735,11 @@ const REVIEW_COLUMNS=[
   ["캠페인 이름","campaignName"],["광고그룹 이름","adGroupName"],["소재 제목","title"],["소재 설명","description"],
   ["표시 URL","displayUrl"],["연결 URL(PC)","pcUrl"],["연결 URL(모바일)","mobileUrl"],
   ["추가제목","extraTitle"],["추가설명","additionalDescription"],["홍보문구","promo"],
-  ["계산 연결 URL(직접 입력)","calculationUrl"],["파워링크 이미지 ID(직접 입력)","powerLinkImageId"],
-  ["서브링크1","sublink1"],["서브링크 URL1(직접 입력)","sublinkUrl1"],["서브링크 이미지 ID1(직접 입력)","sublinkImageId1"],
-  ["서브링크2","sublink2"],["서브링크 URL2(직접 입력)","sublinkUrl2"],["서브링크 이미지 ID2(직접 입력)","sublinkImageId2"],
-  ["서브링크3","sublink3"],["서브링크 URL3(직접 입력)","sublinkUrl3"],["서브링크 이미지 ID3(직접 입력)","sublinkImageId3"],
-  ["서브링크4","sublink4"],["서브링크 URL4(직접 입력)","sublinkUrl4"],["서브링크 이미지 ID4(직접 입력)","sublinkImageId4"],
+  ["계산 연결 URL(직접 입력)","calculationUrl"],["파워링크 이미지 파일명(제안)","powerLinkImageFile"],["파워링크 이미지 ID(직접 입력)","powerLinkImageId"],
+  ["서브링크1","sublink1"],["서브링크 URL1(직접 입력)","sublinkUrl1"],["서브링크 이미지 파일명1(제안)","sublinkImageFile1"],["서브링크 이미지 ID1(직접 입력)","sublinkImageId1"],
+  ["서브링크2","sublink2"],["서브링크 URL2(직접 입력)","sublinkUrl2"],["서브링크 이미지 파일명2(제안)","sublinkImageFile2"],["서브링크 이미지 ID2(직접 입력)","sublinkImageId2"],
+  ["서브링크3","sublink3"],["서브링크 URL3(직접 입력)","sublinkUrl3"],["서브링크 이미지 파일명3(제안)","sublinkImageFile3"],["서브링크 이미지 ID3(직접 입력)","sublinkImageId3"],
+  ["서브링크4","sublink4"],["서브링크 URL4(직접 입력)","sublinkUrl4"],
 ];
 const eC=v=>`"${String(v==null?"":v).replace(/"/g,'""')}"`;
 function downloadCsv(rows,name){
@@ -864,6 +970,7 @@ function render(){
       <div class="spec">추가설명 <b>≤${SPEC.additionalDescMax}</b>·광고그룹당 최대 ${SPEC.additionalDescGroupMax}개</div>
       <div class="spec">홍보문구 <b>≤${SPEC.promoMax}</b></div>
       <div class="spec">서브링크 <b>≤${SPEC.subMax}</b>·${SPEC.subMinCount}~${SPEC.subMaxCount}개</div>
+      <div class="spec">이미지 <b>${SPEC.image.width}×${SPEC.image.height}</b>·PNG/JPG·5MB 이하</div>
       ${seasonChips}
     </div>
     <div class="banner"><b>소재 가이드 ${esc(MATERIAL_SPEC.verifiedAt)} · 보험광고 사전검수 ${esc(AD_REVIEW.verifiedAt)}</b> · 자동 차단·근거 필요·필수 고지 필요 표현은 소재 생성에서 제외합니다. 결과는 협회·준법 승인이 아니며 상품자료·약관·랜딩을 사람이 확인해야 합니다. <a href="${esc(AD_REVIEW.sources.knia.url)}" target="_blank" rel="noopener">손해보험협회 심의시스템 ↗</a> · <a href="${esc(MATERIAL_SPEC.guideUrl)}" target="_blank" rel="noopener">네이버 등록 가이드 ↗</a></div>
@@ -873,6 +980,7 @@ function render(){
     ${evPanel}
     ${p.cat==="사이트"?"":serpMonitorPanel(p)}
 
+    ${renderThumbnailMaker(p)}
     ${block("2. 광고 제목",s.brand,SPEC.titleMax)}
     ${block("3. 추가제목 (롤링)",s.subt,SPEC.additionalTitleMax,true)}
     ${block("4. 설명 (롤링)",s.desc,SPEC.descMax,true)}
@@ -887,6 +995,7 @@ function render(){
   $("#xExcel").addEventListener("click",()=>exportXls(p));
   $("#xAds").addEventListener("click",()=>exportReviewAds([p],p.name));
   $("#xAllAds").addEventListener("click",()=>exportReviewAds(PRODUCTS,"전체13상품"));
+  bindThumbnailMaker(p);
   renderSidebar();
 }
 document.addEventListener("click",e=>{
