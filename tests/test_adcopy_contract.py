@@ -63,7 +63,7 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn("파워콘텐츠 소재", POWER)
         self.assertIn("const POWER_SPEC=MATERIAL_SPEC.powerContent", POWER)
         self.assertIn("data/adcopy/powercontent-title-opportunities.json", POWER)
-        self.assertIn("data/evidence/claims.json", POWER)
+        self.assertNotIn("data/evidence/claims.json", POWER)
         self.assertIn("1. 키워드 전략", POWER)
         self.assertIn("2. 콘텐츠 소재 3안", POWER)
         self.assertIn("3. 선택 소재 설계", POWER)
@@ -82,11 +82,10 @@ class TestAdcopyContract(unittest.TestCase):
         for removed in ("발행 포스트 원문 입력", "설명 후보 대기", "descriptionCandidatesFrom", "seoAlignment"):
             self.assertNotIn(removed, POWER)
 
-    def test_power_content_proposes_copy_without_unapproved_product_claims(self):
-        self.assertIn('allowed_channels||[]).includes("power_content")', POWER)
-        self.assertIn('evidenceStatus=claims.length?"verified":"evidence_required"', POWER)
-        self.assertIn("일반 정보 초안", POWER)
-        self.assertIn("상품 세부 근거 확인 필요", POWER)
+    def test_power_content_has_no_internal_claim_workflow_ui(self):
+        for removed in ("approvedClaimsFor", "evidenceStatus", "claimIds", "승인 claim", "상품 근거 상태", "승인 상품 근거"):
+            self.assertNotIn(removed, POWER)
+        self.assertIn("최신 상품자료·약관·준법·광고심의 확인", POWER)
         self.assertIn("도입부·광고 설명", POWER)
         self.assertIn("대표 이미지 브리프", POWER)
 

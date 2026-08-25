@@ -24,8 +24,8 @@ vm.runInContext(
   `${pureSection}
   ;globalThis.__POWER_CHECK__={
     PRODUCTS,titleCandidates,reviewPowerMaterial,volumeRows,inScope,clen,keywordPlan,introFor,
-    contentBriefFor,approvedClaimsFor,contentKeywordSet,
-    setData:(volume,seasonal,titles,claims)=>{DATA={volume,seasonal,titles,claims};}
+    contentBriefFor,contentKeywordSet,
+    setData:(volume,seasonal,titles)=>{DATA={volume,seasonal,titles};}
   };`,
   context,
   { filename: "powercontent-tool.html" },
@@ -37,7 +37,6 @@ check.setData(
   readJson("data/volume.json"),
   readJson("data/seasonal.json"),
   readJson("data/adcopy/powercontent-title-opportunities.json"),
-  readJson("data/evidence/claims.json"),
 );
 
 if (check.PRODUCTS.length !== 13) throw new Error(`상품 수 불일치: ${check.PRODUCTS.length}개`);
@@ -78,10 +77,6 @@ for (const product of check.PRODUCTS) {
     if (review.generationBlocking) throw new Error(`${product.name}: 보험광고 사전검수 ${review.statusLabel}`);
   }
   console.log(`OK  ${product.name}: 키워드 전략 · 콘텐츠 3안 · 본문 5섹션 · FAQ 4개`);
-}
-
-if (check.PRODUCTS.some((product) => check.approvedClaimsFor(product).length)) {
-  throw new Error("현재 원장에는 승인된 power_content claim이 없어야 합니다.");
 }
 
 const driver = check.PRODUCTS.find((product) => product.key === "driver");
