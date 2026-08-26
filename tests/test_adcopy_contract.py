@@ -105,6 +105,7 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn("3. 선택 소재 설계", POWER)
         self.assertIn("4. 본문 초안", POWER)
         self.assertIn("5. FAQ·마무리 소재", POWER)
+        self.assertIn("6. 발행형 원고 미리보기", POWER)
         self.assertIn("function keywordPlan", POWER)
         self.assertIn("function contentKeywordSet", POWER)
         self.assertIn("function exportKeywordExcel", POWER)
@@ -124,6 +125,26 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn("최신 상품자료·약관·준법·광고심의 확인", POWER)
         self.assertIn("도입부·광고 설명", POWER)
         self.assertIn("대표 이미지 브리프", POWER)
+
+    def test_power_content_generates_publish_ready_article_and_visual_package(self):
+        for marker in (
+            "발행형 본문 1,500자 이상",
+            "중간 이미지 소재 · 대표 1 + 본문 3",
+            "하단 CTA 배너 예시",
+            "사례 카드 예시",
+            "심의필 번호 직접 입력",
+            "같은 원본 연속 노출 방지",
+            "이미지 내부 텍스트 없음",
+            "driver-schoolzone-animation-v4.png",
+            "driver-accident-animation-v4.png",
+            "driver-rain-animation-v4.png",
+            "driver-safe-animation-v3.png",
+        ):
+            self.assertIn(marker, POWER)
+        self.assertIn("function visualPlanFor", POWER)
+        self.assertIn("bodyCharCount", POWER)
+        self.assertIn("발행 패키지 CSV", POWER)
+        self.assertIn("발행 원고 복사", POWER)
 
     def test_sa_and_power_content_share_material_review_rules(self):
         self.assertIn('shared/naver-material-specs.js', ADCOPY)
@@ -173,7 +194,7 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn("function inScope(p,text)", POWER)
         self.assertIn("function exportCsv()", POWER)
         self.assertIn('id="exportCsv"', POWER)
-        self.assertIn("콘텐츠 브리프 CSV", POWER)
+        self.assertIn("발행 패키지 CSV", POWER)
         self.assertIn('id="copyBrief"', POWER)
 
     def test_copy_candidates_use_shared_korean_humanizer(self):

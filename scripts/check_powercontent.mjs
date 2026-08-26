@@ -24,8 +24,8 @@ vm.runInContext(
   `${pureSection}
   ;globalThis.__POWER_CHECK__={
     PRODUCTS,titleCandidates,reviewPowerMaterial,volumeRows,inScope,clen,keywordPlan,introFor,
-    contentBriefFor,contentKeywordSet,
-    setData:(volume,seasonal,titles)=>{DATA={volume,seasonal,titles};}
+    contentBriefFor,contentKeywordSet,visualPlanFor,
+    setData:(volume,seasonal,titles,serp)=>{DATA={volume,seasonal,titles,serp};}
   };`,
   context,
   { filename: "powercontent-tool.html" },
@@ -37,6 +37,7 @@ check.setData(
   readJson("data/volume.json"),
   readJson("data/seasonal.json"),
   readJson("data/adcopy/powercontent-title-opportunities.json"),
+  readJson("data/adcopy/serp-candidates.json"),
 );
 
 if (check.PRODUCTS.length !== 13) throw new Error(`상품 수 불일치: ${check.PRODUCTS.length}개`);
@@ -60,6 +61,26 @@ for (const product of check.PRODUCTS) {
     if (introLength < 80 || introLength > 110) throw new Error(`${product.name}: 도입부·광고 설명 ${introLength}자`);
     if (brief.draft.length !== 5) throw new Error(`${product.name}: 본문 초안 ${brief.draft.length}개 섹션`);
     if (brief.faq.length !== 4) throw new Error(`${product.name}: FAQ ${brief.faq.length}개`);
+    if (brief.article.bodyCharCount < 1500) throw new Error(`${product.name}: 발행형 본문 ${brief.article.bodyCharCount}자`);
+    if (brief.article.tags.length < 2) throw new Error(`${product.name}: 발행 태그 부족`);
+    if (brief.visuals.mid.length !== 3) throw new Error(`${product.name}: 중간 이미지 ${brief.visuals.mid.length}장`);
+    const visualAssets = [brief.visuals.hero, ...brief.visuals.mid].map((row) => row.asset);
+    if (new Set(visualAssets).size !== 4) throw new Error(`${product.name}: 대표·중간 이미지 원본 중복`);
+    if (visualAssets.some((asset) => !fs.existsSync(new URL(asset, root)))) {
+      throw new Error(`${product.name}: 이미지 파일 누락`);
+    }
+    if (!brief.visuals.rule.includes("이미지 내부 텍스트 없음") || brief.visuals.hero.textOverlay !== false) {
+      throw new Error(`${product.name}: 텍스트 없는 이미지 제작 규칙 누락`);
+    }
+    if (!brief.article.caseExample.fields.every((value) => value.includes("입력"))) {
+      throw new Error(`${product.name}: 승인 사례 자리표시자 누락`);
+    }
+    if (!brief.article.banner.headline || !brief.article.banner.button || !brief.article.banner.url.includes("직접 입력")) {
+      throw new Error(`${product.name}: 하단 CTA 배너 구성 누락`);
+    }
+    if (!brief.article.reviewFooter.includes("심의필 번호 직접 입력")) {
+      throw new Error(`${product.name}: 심의정보 입력란 누락`);
+    }
     if (!brief.keywords.primary.kw || !brief.keywords.related.length || !brief.keywords.support.length) {
       throw new Error(`${product.name}: 키워드 전략 누락`);
     }
@@ -76,7 +97,7 @@ for (const product of check.PRODUCTS) {
     const review = check.reviewPowerMaterial(product, candidate, brief.intro);
     if (review.generationBlocking) throw new Error(`${product.name}: 보험광고 사전검수 ${review.statusLabel}`);
   }
-  console.log(`OK  ${product.name}: 키워드 전략 · 콘텐츠 3안 · 본문 5섹션 · FAQ 4개`);
+  console.log(`OK  ${product.name}: 키워드 전략 · 콘텐츠 3안 · 발행본문 1,500자+ · 대표 1/중간 3 · CTA 배너`);
 }
 
 const driver = check.PRODUCTS.find((product) => product.key === "driver");
