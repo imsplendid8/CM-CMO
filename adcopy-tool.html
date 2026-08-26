@@ -498,7 +498,7 @@ function genSubs(p){
   return wrap(pool,2,SPEC.subMax);
 }
 
-/* SERP 원문을 복사하지 않고 검색어·공통 소구·차별 각도만 상품 마스터 문구에 적용한다. */
+/* 월간 SERP 공통 기획안을 제목·설명·추가설명·홍보문구·이미지에 함께 적용한다. */
 function serpIdeas(p){
   const a=AD_ANALYSIS[p.key]||{}, common=a.common_soju||[];
   const overlaps=x=>common.some(c=>x.includes(c)||c.includes(x));
@@ -513,19 +513,23 @@ function serpIdeas(p){
   const inScope=x=>!blocked.some(term=>(x.title+x.desc).replace(/\s/g,"").includes(term.replace(/\s/g,"")));
   const observedBrands=(a.observed_ads||[]).map(x=>x.brand).filter(Boolean).slice(0,2).join("·")||"경쟁사";
   const lastCover=(p.covers||[])[(p.covers||[]).length-1]||selectedAngle;
-  const basis=`${agent.latest_date||a.latest_date||AD_META.asof||"기준일 없음"} · ${observedBrands} 관측`;
-  const raw=hasEvidence?[
+  const monitoring=agent.monitoring||{},market=agent.market_patterns||{},basis=`${agent.latest_date||a.latest_date||AD_META.asof||"기준일 없음"} · ${observedBrands} 관측`;
+  const fallback=hasEvidence?[
     {strategy:"SERP 차별 소구",title:title(`${selectedAngle} 특약 확인`,`${al(p)} 특약 확인`),desc:`${selectedAngle} 관련 특약과 가입 전 확인사항을 ${p.name}에서 살펴보세요.`,why:`${basis} · 공통 소구 ${common.join("·")||"없음"}을 반복하지 않은 상품 각도`},
     {strategy:"검색 의도 연결",title:title(`${al(p)} 가입 전 확인`,`${al(p)} 가입 안내`),desc:`${selectedDemand} 검색 전 ${selectedAngle} 관련 보장내용과 가입조건을 확인하세요.`,why:`실측 검색어 ‘${selectedDemand}’와 SERP 추천 소구 ‘${selectedAngle}’를 함께 반영`},
     {strategy:"담보 탐색",title:title(`${al(p)} 보장 확인`,`${al(p)} 상품 안내`),desc:`${selectedAngle}부터 ${lastCover}까지, 필요한 특약과 가입조건을 확인하세요.`,why:`SERP 추천 소구를 상품 마스터의 담보 범위 안에서만 확장`},
   ]:[];
+  const raw=(agent.sa_recommendations?.length?agent.sa_recommendations.map(x=>({...x,desc:x.description||x.desc})):fallback);
   const candidates=raw.map(x=>({...x,title:dw(HUMANIZE.light(x.title)),desc:dw(HUMANIZE.light(x.desc))}))
     .filter(x=>clen(x.title)>=4&&clen(x.title)<=SPEC.titleMax&&clen(x.desc)>=SPEC.descMin&&clen(x.desc)<=SPEC.descMax&&!lintBan(x.title+x.desc).length)
     .filter(inScope)
     .filter((x,i,arr)=>arr.findIndex(y=>y.title===x.title&&y.desc===x.desc)===i);
   const titles=candidates.map(x=>({tx:x.title,len:clen(x.title),ban:[],serp:true}));
   const descs=candidates.map(x=>({tx:x.desc,len:clen(x.desc),ban:[],serp:true}));
-  return {titles,descs,candidates,angle:selectedAngle,demand:selectedDemand,common,observed:a.observed_ads||[],latest:agent.latest_date||a.latest_date||AD_META.asof||""};
+  const additionalDescs=candidates.filter(x=>x.additional_description&&clen(x.additional_description)<=SPEC.additionalDescMax).map(x=>({tx:x.additional_description,len:clen(x.additional_description),ban:lintBan(x.additional_description),serp:true}));
+  const promos=candidates.filter(x=>x.promo&&clen(x.promo)<=SPEC.promoMax).map(x=>({tx:x.promo,len:clen(x.promo),ban:lintBan(x.promo),serp:true}));
+  const subs=candidates.flatMap(x=>x.sublinks||[]).filter(x=>clen(x)<=SPEC.subMax).map(x=>({tx:x,len:clen(x),ban:[],serp:true}));
+  return {titles,descs,additionalDescs,promos,subs,candidates,angle:selectedAngle,demand:selectedDemand,common,observed:a.observed_ads||[],latest:monitoring.capture_latest||agent.latest_date||a.latest_date||AD_META.asof||"",monitoring,market,imageDirections:agent.image_directions||[],powerTopics:agent.power_content_topics||[],gap:agent.operating_gap||{}};
 }
 
 function renderSidebar(){
@@ -548,9 +552,9 @@ function buildSheet(p){
     brand: genBrandTitles(p),
     subt:  dd([...serp.titles, ...genSubTitles(p), ...sT]).slice(0,SPEC.additionalTitleGroupMax), // SERP 검색 의도 + 상품 마스터 + 시즌·뉴스
     desc:  dd([...serp.descs, ...genDescs(p), ...sD]),
-    additionalDesc: genAdditionalDescs(p).slice(0,SPEC.additionalDescGroupMax),
-    promo: genPromos(p).slice(0,SPEC.promoGroupMax),
-    sub:   genSubs(p).slice(0,SPEC.subSiteMax) };
+    additionalDesc: dd([...serp.additionalDescs,...genAdditionalDescs(p)]).slice(0,SPEC.additionalDescGroupMax),
+    promo: dd([...serp.promos,...genPromos(p)]).slice(0,SPEC.promoGroupMax),
+    sub:   dd([...serp.subs,...genSubs(p)]).slice(0,SPEC.subSiteMax) };
 }
 /* 시트형 표 (문구 | 글자수) — 심의안 초안으로 내보내며 개별 복사는 제공하지 않는다. */
 function tbl(rows,max){
@@ -587,7 +591,8 @@ const INSURANCE_VISUALS={
 const safeFileName=value=>String(value).replace(/[\\/:*?"<>|]/g,"").replace(/\s+/g,"_");
 function thumbnailVisual(p){
   const serp=serpIdeas(p),visual=INSURANCE_VISUALS[p.key]||INSURANCE_VISUALS.home,latest=serp.latest||AD_META.asof||"",age=thumbDayAge(latest);
-  return {...visual,keyword:serp.demand,angle:serp.angle,common:serp.common,latest,age,freshness:age===null||age>14?"업데이트 필요":"최신"};
+  const directions=serp.imageDirections||[],scene=directions[0]?.scene||visual.scene;
+  return {...visual,scene,directions,keyword:serp.demand,angle:serp.angle,common:serp.common,latest,age,freshness:age===null||age>14?"업데이트 필요":"최신"};
 }
 function thumbnailConcepts(p){
   const base=safeFileName(p.name),visual=thumbnailVisual(p),source=THUMB_STATE.customByProduct[p.key]?"upload":"serp_animation_v3";
@@ -607,7 +612,8 @@ function renderThumbnailMaker(p){
   const concepts=thumbnailConcepts(p),visual=thumbnailVisual(p),styleButtons=[["serp","원본 구도"],["focus","근접 크롭"],["warm","따뜻한 톤"]];
   return `<section class="thumb-maker" id="thumbMaker">
     <div class="thumb-maker-h"><div><h2>1. SERP 기반 보험종목 이미지 소재</h2><p>텍스트 없는 원본 · 파워링크 ${SPEC.image.powerLinkMax}장 + 이미지형 서브링크 ${SPEC.image.imageSublinkMax}장 · 네이버 고정 규격 ${SPEC.image.width}×${SPEC.image.height}px</p>
-      <div class="thumb-serp-brief"><span class="source-pill ${visual.freshness==="최신"?"fresh":"stale"}">SERP ${esc(visual.latest||"기준일 없음")} · ${esc(visual.freshness)}</span><span>검색어 <b>${esc(visual.keyword)}</b></span><span>추천 소구 <b>${esc(visual.angle)}</b></span><span>장면 <b>${esc(visual.scene)}</b></span></div></div>
+      <div class="thumb-serp-brief"><span class="source-pill ${visual.freshness==="최신"?"fresh":"stale"}">SERP ${esc(visual.latest||"기준일 없음")} · ${esc(visual.freshness)}</span><span>검색어 <b>${esc(visual.keyword)}</b></span><span>추천 소구 <b>${esc(visual.angle)}</b></span><span>장면 <b>${esc(visual.scene)}</b></span></div>
+      ${visual.directions.length?`<div class="thumb-serp-brief">${visual.directions.map(x=>`<span><b>${esc(x.role)}</b> ${esc(x.scene)}</span>`).join("")}</div>`:""}</div>
       <div class="thumb-actions">
         ${styleButtons.map(([key,label])=>`<button class="thumb-style${THUMB_STATE.style===key?" on":""}" type="button" data-thumb-style="${key}">${label}</button>`).join("")}
         <label class="btn sm thumb-upload">승인 이미지 적용<input id="thumbUpload" type="file" accept="image/png,image/jpeg" aria-label="승인 이미지 적용"></label>
@@ -949,18 +955,25 @@ function renderReco(){
 const dayAge=s=>{const d=new Date(`${s}T00:00:00`);return Number.isNaN(d.getTime())?null:Math.max(0,Math.floor((Date.now()-d.getTime())/86400000));};
 function serpMonitorPanel(p){
   const s=serpIdeas(p),visual=thumbnailVisual(p),age=dayAge(s.latest),stale=age===null||age>14;
+  const monitor=s.monitoring||{},patterns=(s.market.message_patterns||[]).map(x=>`${x[0]} ${x[1]}건`).join(" · "),tableStakes=s.market.table_stakes||[];
   const ads=s.observed.slice(0,4).map(o=>`<div class="serp-ad"><b>${esc(o.brand||"경쟁사")} · ${esc(o.keyword||"키워드 미기록")}</b><p>${esc(o.title||"—")}<br>${esc(o.desc||"—")}</p><small>${esc(o.date||"날짜 미기록")}${o.rank?` · ${esc(o.rank)}위`:""}</small></div>`).join("");
   const ideas=s.candidates.map((o,i)=>`<div class="serp-ad"><b>${i+1}. ${esc(o.strategy)} <span class="source-pill">SERP 반영 초안</span></b>
       <div class="wk-copy"><span class="k">제목</span><span class="v">${esc(o.title)}</span><span class="wx-len">${clen(o.title)}/${SPEC.titleMax}</span></div>
       <div class="wk-copy"><span class="k">설명</span><span class="v">${esc(o.desc)}</span><span class="wx-len">${clen(o.desc)}/${SPEC.descMax}</span></div>
+      ${o.additional_description?`<div class="wk-copy"><span class="k">추가설명</span><span class="v">${esc(o.additional_description)}</span><span class="wx-len">${clen(o.additional_description)}/${SPEC.additionalDescMax}</span></div>`:""}
+      ${o.promo?`<div class="wk-copy"><span class="k">홍보</span><span class="v">${esc(o.promo)}</span><span class="wx-len">${clen(o.promo)}/${SPEC.promoMax}</span></div>`:""}
+      ${o.sublinks?.length?`<div class="wk-copy"><span class="k">링크</span><span class="v">${o.sublinks.map(esc).join(" · ")}</span></div>`:""}
       <small>${esc(o.why)}</small></div>`).join("");
-  return `<div class="sec-lbl">🔎 SERP 모니터링 → 소재·이미지 반영</div>
+  const imageIdeas=s.imageDirections.map((o,i)=>`<div class="serp-ad"><b>${i+1}. ${esc(o.role)}</b><p>${esc(o.scene)}<br>${esc(o.style)}</p><small>${o.text_overlay===false?"텍스트·숫자·로고 없음":"텍스트 사용 여부 확인"}</small></div>`).join("");
+  const powerIdeas=s.powerTopics.map((o,i)=>`<div class="serp-ad"><b>${i+1}. ${esc(o.title)}</b><p>${esc(o.intent)} · ${esc(o.angle)}</p><small>대표 검색어 ${esc(o.target_query)}</small></div>`).join("");
+  return `<div class="sec-lbl">🔎 SERP 모니터링 → 소재·이미지 반영 · 월간 SA·파워콘텐츠 공통 적용</div>
     <div class="serp-grid">
-      <section class="serp-card"><h3>경쟁사 광고 <span class="${stale?"stale":"fresh"}">${stale?"업데이트 필요":"최신"}</span></h3>
-        <p>${esc(s.latest||"기준일 없음")}${age!==null?` · ${age}일 전`:""}</p>${ads||'<p>수집된 경쟁사 광고가 없습니다.</p>'}</section>
-      <section class="serp-card"><h3>제안 기준</h3><p>경쟁사 공통 소구: <b>${s.common.map(esc).join(" · ")||"없음"}</b><br>주요 검색어: <b>${esc(s.demand)}</b><br>추천 소구: <b>${esc(s.angle)}</b></p></section>
-      <section class="serp-card"><h3>실제 반영된 SA 소재</h3>${ideas||'<p>현재 제안할 소재가 없습니다.</p>'}</section>
-      <section class="serp-card"><h3>실제 반영된 이미지 방향</h3><p>보험종목 장면: <b>${esc(visual.scene)}</b><br>장면 선택 검색어: <b>${esc(visual.keyword)}</b><br>장면 선택 소구: <b>${esc(visual.angle)}</b><br>경쟁사 이미지는 복제하지 않고 3D 애니메이션 톤과 상황 구도만 참고합니다. 이미지 안에는 텍스트를 넣지 않습니다.</p></section>
+      <section class="serp-card"><h3>${esc(monitor.planning_month||"이번 달")} 운영 SERP <span class="${stale?"stale":"fresh"}">${stale?"업데이트 필요":"최신 캡처"}</span></h3>
+        <p>${esc(s.latest||"기준일 없음")}${age!==null?` · ${age}일 전`:""}<br>최근 35일 캡처 <b>${Number(monitor.capture_count_35d||0)}회</b> · ${esc(monitor.status_label||"분석 대기")}</p>${ads||'<p>검토 완료된 경쟁사 광고가 없습니다.</p>'}</section>
+      <section class="serp-card"><h3>운영소재 패턴·갭</h3><p>반복 패턴: <b>${esc(patterns||"패턴 집계 대기")}</b><br>기본 소구: <b>${tableStakes.map(esc).join(" · ")||"없음"}</b><br>이번 달 차별 소구: <b>${esc(s.angle)}</b><br>${esc(s.gap.direction||"")}</p></section>
+      <section class="serp-card"><h3>실제 반영된 SA 소재 · 세트 제안</h3>${ideas||'<p>현재 제안할 소재가 없습니다.</p>'}</section>
+      <section class="serp-card"><h3>실제 반영된 이미지 방향 · 텍스트 없는 3D 장면</h3>${imageIdeas||`<p>대표 장면: <b>${esc(visual.scene)}</b></p>`}</section>
+      <section class="serp-card"><h3>파워콘텐츠 주제 제안</h3>${powerIdeas||'<p>현재 제안할 주제가 없습니다.</p>'}<p><a class="serplink" href="powercontent-tool.html">전체 콘텐츠 초안에서 보기 →</a></p></section>
     </div>`;
 }
 

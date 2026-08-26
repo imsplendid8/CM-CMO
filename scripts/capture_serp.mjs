@@ -31,11 +31,21 @@ async function extractDomCandidates(page) {
     const root=document.querySelector("#main_pack")||document.querySelector("#ct")||document.body;
     const seen=new Set(),rows=[];
     for(const a of root.querySelectorAll("a[href]")){
-      const block=a.closest("li,section,article,div"), text=(block?.innerText||a.innerText||"").replace(/\s+/g," ").trim();
+      let block=a;
+      for(let depth=0;depth<6&&block?.parentElement;depth++){
+        const parent=block.parentElement,text=(parent.innerText||"").replace(/\s+/g," ").trim();
+        if(text.length>700)break;
+        block=parent;
+        if(text.length>=40&&/(광고|파워링크|adcr|sponsored)/i.test(`${text} ${a.href} ${block.className||""}`))break;
+      }
+      const text=(block?.innerText||a.innerText||"").replace(/\s+/g," ").trim();
       if(text.length<20||text.length>500||seen.has(text))continue;
       const adSignal=/(광고|파워링크|adcr|sponsored)/i.test(`${text} ${a.href} ${block?.className||""}`);
       if(!adSignal)continue;
-      seen.add(text);rows.push({text,href:a.href,confidence:"needs_review"});
+      const linkTexts=[...block.querySelectorAll("a")].map(x=>(x.innerText||"").replace(/\s+/g," ").trim()).filter(x=>x.length>=2&&x.length<=60).slice(0,12);
+      const features=[];
+      [["insurance_quote",/보험료|견적|계산/],["easy_join",/간편|바로|즉시|24\s*시간|온라인|다이렉트/],["coverage",/보장|특약|담보|진단비|치료비|합의금|벌금/],["promotion",/이벤트|증정|할인|페이|상품권|쿠폰/],["trust",/공식|전문가|상담|선택|1위/]].forEach(([name,pattern])=>{if(pattern.test(text))features.push(name)});
+      seen.add(text);rows.push({text,linkTexts,features,hasImage:Boolean(block.querySelector("img")),confidence:"needs_review"});
       if(rows.length===10)break;
     }
     return rows;

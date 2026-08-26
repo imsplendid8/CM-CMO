@@ -27,9 +27,31 @@ class TestSerpCopyAgent(unittest.TestCase):
         self.assertEqual(result["analysis_status"], "ready")
         self.assertIn("변호사선임", result["copy_direction"])
         self.assertIn("보험종목 장면", result["visual_direction"])
+        self.assertEqual(len(result["sa_recommendations"]), 3)
+        self.assertTrue(all(row.get("additional_description") for row in result["sa_recommendations"]))
+        self.assertEqual(len(result["image_directions"]), 3)
+        self.assertTrue(all(row["text_overlay"] is False for row in result["image_directions"]))
+        self.assertEqual(len(result["power_content_topics"]), 3)
         serialized = json.dumps(result, ensure_ascii=False)
         for removed in ("claim_ids", "evidence_status", "review_status"):
             self.assertNotIn(removed, serialized)
+
+    def test_monthly_capture_and_dom_patterns_are_shared_across_materials(self):
+        agent = module("serp_copy_agent")
+        products = {"products": [{"key": "driver", "name": "운전자보험", "serpKw": "운전자보험",
+                    "core": ["운전자보험"], "special": ["벌금", "교통사고"]}]}
+        analysis = {"products": {"driver": {"soju": [["벌금", 2]], "observed_ads": [
+            {"date": "2026-08-02", "brand": "A", "title": "A 운전자보험", "desc": "보장 확인"}]}}}
+        manifest = {"asof": "2026-08-23", "shots": {"driver": {"captures": [
+            {"date": "2026-08-02"}, {"date": "2026-08-09"}, {"date": "2026-08-16"}, {"date": "2026-08-23"}]}}}
+        dom = {"asof": "2026-08-23", "observations": [{"product": "driver", "date": "2026-08-23",
+               "text": "운전자보험 보험료 계산 간편 가입 이벤트"}]}
+        result = agent.generate(products, analysis, {}, manifest, dom)["products"][0]
+        self.assertEqual(result["month"], "2026-08")
+        self.assertEqual(result["monitoring"]["capture_count_35d"], 4)
+        self.assertEqual(result["monitoring"]["status"], "current_patterns_ready")
+        self.assertIn(["보험료·견적 확인", 1], result["market_patterns"]["message_patterns"])
+        self.assertEqual(result["latest_date"], "2026-08-23")
 
     def test_volume_keyword_avoids_excluded_queries(self):
         agent = module("serp_copy_agent")
