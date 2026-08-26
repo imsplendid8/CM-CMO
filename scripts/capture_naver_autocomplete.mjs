@@ -3,7 +3,6 @@
  * 네이버 통합검색 입력창에 실제로 노출되는 자동완성어를 월 1회 수집한다.
  * 비공개 API·로그인·사내망을 사용하지 않고 공개 화면의 표시 텍스트만 읽는다.
  */
-import { chromium } from "playwright";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -50,6 +49,18 @@ async function main() {
   const products = master.products || master;
   let previous = {};
   try { previous = JSON.parse(fs.readFileSync(OUTPUT, "utf-8")); } catch {}
+  const asof = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(new Date());
+  if (process.argv.includes("--reclassify")) {
+    const captured = Object.fromEntries(products.map(product => [
+      product.key,
+      ((previous.products || {})[product.key]?.suggestions || []).map(({ keyword, seed, rank }) => ({ keyword, seed, rank })),
+    ]));
+    const data = buildDataset({ previous, products, captured, asof: previous.asof || asof });
+    fs.writeFileSync(OUTPUT, JSON.stringify(data, null, 2) + "\n");
+    console.log(`재분류 완료: ${products.length}개 상품 · ${data.asof}`);
+    return;
+  }
+  const { chromium } = await import("playwright");
   const browser = await chromium.launch({ headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
   const context = await browser.newContext({
     viewport: { width: 1280, height: 1000 }, locale: "ko-KR",
@@ -79,7 +90,6 @@ async function main() {
   }
   const total = Object.values(captured).reduce((sum, rows) => sum + rows.length, 0);
   if (!total) throw new Error("네이버 자동완성 표시어를 한 건도 수집하지 못해 기존 정상본을 유지합니다.");
-  const asof = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(new Date());
   const data = buildDataset({ previous, products, captured, asof });
   fs.writeFileSync(OUTPUT, JSON.stringify(data, null, 2) + "\n");
   console.log(`완료: ${products.length}개 상품 · 중복 전 ${total}건 · ${data.month} 스냅샷`);

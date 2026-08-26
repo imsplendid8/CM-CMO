@@ -1,11 +1,19 @@
 const RETENTION_MONTHS = 13;
 const SERVICE_RE = /해지|해약|청구|보상|환급|약관|고객\s*센터|콜센터|전화|로그인|접수|보험금/iu;
-const PRODUCT_REVIEW_RE = /1일|하루|원데이|단기|추가|자부상|자동차부상치료비/iu;
+const PRODUCT_REVIEW_RE = /1일|일일|하루|원데이|단기|추가|자부상|자동차부상치료비/iu;
 const COMPETITOR_RE = /캐롯|삼성(?:화재)?|현대해상|DB손해|디비손해|KB손해|케이비손해|메리츠|롯데손해|흥국화재|교보|농협손해|AXA|악사/iu;
 
 export const normalizeKeyword = value => String(value || "").replace(/\s+/g, "").toLowerCase();
 
-export function classifySuggestion(keyword) {
+export function classifySuggestion(keyword, product = {}) {
+  const normal = normalizeKeyword(keyword);
+  const excluded = (product.excluded || []).some(term => {
+    const exact = normalizeKeyword(term), stem = exact.replace(/보험$/u, "");
+    return normal.includes(exact) || (stem.length >= 3 && normal.includes(stem));
+  });
+  if (excluded) {
+    return { intent: "상품제외", registration: "exclude", reason: "상품 마스터 제외어와 일치" };
+  }
   if (SERVICE_RE.test(keyword)) {
     return { intent: "기존고객", registration: "exclude", reason: "해지·청구 등 기존고객 업무 의도" };
   }
@@ -44,7 +52,7 @@ export function buildDataset({ previous = {}, products, captured, asof }) {
         ? ((((previousSnapshot.products || {})[product.key]) || []).some(item => normalizeKeyword(item) === normal))
         : false;
       suggestions.push({
-        keyword, seed: raw.seed, rank: raw.rank, ...classifySuggestion(keyword), firstSeenMonth,
+        keyword, seed: raw.seed, rank: raw.rank, ...classifySuggestion(keyword, product), firstSeenMonth,
         isNew: Boolean(previousSnapshot && !wasPresent),
       });
     }
