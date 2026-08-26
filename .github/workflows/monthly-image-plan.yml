@@ -1,0 +1,44 @@
+name: Monthly Image Thumbnail Plan
+
+on:
+  schedule:
+    - cron: "30 0 1 * *"   # 매월 1일 09:30 KST — 직전 35일 SERP를 새 월간 이미지 세트로 전환
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cm-cmo-data-writers
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+      - name: 월간 SERP 이미지 썸네일 4종 제안 생성
+        run: |
+          PLAN_MONTH="$(date -u +%Y-%m)"
+          python scripts/serp_copy_agent.py --planning-month "$PLAN_MONTH" --archive-images
+      - name: 중복 이미지와 소재 연결 회귀 테스트
+        run: |
+          python -m unittest tests.test_content_agents -v
+          node scripts/check_adcopy_images.mjs
+      - name: 월간 이미지 제안과 이력 커밋
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/adcopy/serp-candidates.json data/adcopy/image-plans/
+          git diff --cached --quiet && exit 0
+          git commit -m "chore(images): 월간 SERP 썸네일 제안 $(date -u +%Y-%m)"
+          for attempt in 1 2 3; do
+            git pull --rebase --autostash origin main && git push origin HEAD:main && exit 0
+            sleep $((attempt * 5))
+          done
+          exit 1

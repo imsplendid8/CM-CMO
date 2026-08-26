@@ -10,19 +10,21 @@ const requiredCode=[
   "SERP 기반 보험종목 이미지 소재",
   "SERP 분석 반영",
   "INSURANCE_VISUALS",
+  "monthlyAssetSet",
   "SPEC.image.imageSublinkMax",
   "downloadThumbnailPack",
   "ZIP_STORE.zipStore(files)",
   "manifest.json",
   "crypto.subtle.digest",
   "canvas[data-thumb-index]",
-  "텍스트 없는 원본",
-  'visual_style:"3d_animation"',
+  "텍스트 없음",
+  'visual_style:"3d_animation_monthly"',
   "text_overlay:false",
+  "같은 원본 연속 노출 방지",
 ];
 const errors=[];
 for(const token of requiredCode)if(!html.includes(token))errors.push(`이미지 연결 코드 누락: ${token}`);
-for(const forbidden of ["generated=agent.candidates", "new FileReader()", "PNG 4장 받기", "ctx.fillText(", "-serp-v2.png"]){
+for(const forbidden of ["generated=agent.candidates", "new FileReader()", "PNG 4장 받기", "ctx.fillText(", "-serp-v2.png", "custom?.url||concept.asset"]){
   if(html.includes(forbidden))errors.push(`구형 이미지/SERP 코드 잔존: ${forbidden}`);
 }
 
@@ -39,6 +41,17 @@ for(const name of unique){
   if(data.length>5*1024*1024)errors.push(`5MB 초과: ${name}`);
 }
 
+const plan=JSON.parse(fs.readFileSync(path.join(ROOT,"data","adcopy","serp-candidates.json"),"utf8"));
+if(plan.image_refresh_cadence!=="monthly")errors.push("월간 이미지 갱신 주기 누락");
+for(const product of plan.products||[]){
+  const rows=product.image_directions||[],sources=rows.map(row=>row.asset),distinct=[...new Set(sources)];
+  if(rows.length!==4)errors.push(`${product.product_key}: 이미지 제안 ${rows.length}/4`);
+  if(distinct.length!==4)errors.push(`${product.product_key}: 같은 원본 반복 ${distinct.length}/4`);
+  if(product.image_plan?.unique_asset_count!==4)errors.push(`${product.product_key}: image_plan 고유 원본 수 오류`);
+  if(product.product_key==="driver"&&distinct.some(source=>!path.basename(source).startsWith("driver-")))errors.push("driver: 운전자보험과 무관한 이미지 원본 포함");
+  for(const source of distinct)if(!fs.existsSync(path.join(ROOT,source)))errors.push(`${product.product_key}: 제안 원본 누락 ${source}`);
+}
+
 const zipSource=fs.readFileSync(path.join(ROOT,"shared","zip-store.js"),"utf8");
 const zipContext={Blob,TextEncoder,Uint8Array,Uint32Array,DataView,Object};
 vm.runInNewContext(zipSource,zipContext);
@@ -53,4 +66,4 @@ else{
 }
 
 if(errors.length){console.error(errors.join("\n"));process.exit(1);}
-console.log(`[OK] SERP 기반 3D 애니메이션 보험종목 이미지 ${unique.length}종 · 무문자 PNG·ZIP·메타데이터·업로드 경합 방지 연결 확인`);
+console.log(`[OK] 월간 SERP 기반 3D 애니메이션 보험종목 이미지 ${unique.length}종 · 슬롯 중복 방지·무문자 PNG·ZIP·메타데이터 연결 확인`);

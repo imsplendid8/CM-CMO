@@ -1,6 +1,6 @@
 # SERP 기반 보험종목 이미지
 
-## 현재 사용 자산: 3D 애니메이션 v3
+## 현재 사용 자산: 3D 애니메이션 v3·v4
 
 - 생성 모드: 신규 생성(ImageGen), 2026-08-26
 - 스타일 참조: 사용자가 제공한 SERP 썸네일의 3D 애니메이션 느낌과 정사각형 구도만 참조
@@ -15,6 +15,9 @@
 | `home-leak-animation-v3.png` | 천장 누수와 걱정하는 거주자 |
 | `calculator-animation-v3.png` | 숫자와 기호가 없는 3D 보험료 계산기 |
 | `driver-safe-animation-v3.png` | 안전벨트를 맨 운전자와 앞차 |
+| `driver-schoolzone-animation-v4.png` | 스쿨존 앞에서 감속하는 운전자 |
+| `driver-accident-animation-v4.png` | 가벼운 접촉사고 현장을 확인하는 운전자 |
+| `driver-rain-animation-v4.png` | 비 오는 저녁 도로에서 방어운전하는 운전자 |
 | `golf-hole-animation-v3.png` | 홀 바로 앞 골프공과 기뻐하는 골퍼 |
 | `dental-consult-animation-v3.png` | 치아 모형을 보는 치과 상담 |
 | `health-check-animation-v3.png` | 일상 혈압 측정 |
@@ -24,3 +27,10 @@
 | `event-safety-animation-v3.png` | 공연장 케이블 커버 안전점검 |
 
 앱은 원본을 214×214 canvas에 중앙 크롭하고 선택적 확대·색감만 적용한다. 상품명, SERP 소구, 브랜드명은 이미지 바깥의 설명과 메타데이터에만 기록한다.
+
+## 월간 제안 자동화
+
+- 매월 1일 09:30 KST에 직전 35일 SERP 패턴을 기준으로 상품별 이미지 4장 세트를 갱신한다.
+- 각 상품의 후보 원본 5장 중 서로 다른 4장을 순환 선정하므로 한 세트 안에서 같은 원본을 반복하지 않는다.
+- 월별 결과는 `data/adcopy/image-plans/YYYY-MM.json`에 보존한다.
+- 이 자동화는 승인된 이미지 라이브러리에서 새 세트를 제안하는 방식이다. 외부 이미지 API 호출이나 유료 이미지 생성은 자동 실행하지 않는다.

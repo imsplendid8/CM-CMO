@@ -6,6 +6,7 @@
 """
 from __future__ import annotations
 
+import argparse
 import json
 import re
 from collections import Counter
@@ -35,6 +36,50 @@ SCENES = {
     "holeinone": ["홀인원 직후 동반자들과 기뻐하는 골퍼", "깃대와 공이 함께 보이는 그린 클로즈업", "라운드 전 스코어카드와 장비를 챙기는 장면"],
     "event": ["공연 시작 전 무대와 관객 동선을 점검하는 스태프", "체육행사 현장에서 안전 펜스를 확인하는 운영자", "야외행사 전 시설을 살피는 안전관리 장면"],
     "chronic": ["복용약과 건강기록을 정리하는 성인", "건강상담 전 체크리스트를 확인하는 장면", "일상 속 혈압·건강 상태를 편안하게 확인하는 장면"],
+}
+
+# 월간 썸네일은 한 장을 네 번 크롭하지 않는다. 저장소에 있는 무문자 3D 애니메이션
+# 원본을 상품별 후보군으로 묶고, 기준월마다 서로 다른 4장을 순환 선정한다.
+ASSET_SCENES = {
+    "calculator-animation-v3.png": "보험료와 가입 항목을 확인하는 계산기 오브젝트",
+    "dental-consult-3d.png": "치과 상담실에서 치료 계획을 확인하는 장면",
+    "dental-consult-animation-v3.png": "치아 모형을 보며 상담하는 장면",
+    "driver-safe-animation-v3.png": "도심 도로에서 안전운전하는 운전자",
+    "driver-traffic-3d.png": "교차로 신호와 앞차를 확인하는 운전자",
+    "driver-schoolzone-animation-v4.png": "스쿨존 횡단보도 앞에서 감속하는 운전자",
+    "driver-accident-animation-v4.png": "가벼운 접촉사고 뒤 현장을 확인하는 운전자",
+    "driver-rain-animation-v4.png": "비 오는 저녁 도로에서 방어운전하는 운전자",
+    "event-safety-3d.png": "행사 현장의 시설과 동선을 확인하는 운영자",
+    "event-safety-animation-v3.png": "공연 시작 전 안전을 점검하는 스태프",
+    "family-baby-animation-v3.png": "아기와 가족이 함께 건강을 준비하는 장면",
+    "family-pregnancy-3d.png": "예비 부모가 출산 준비물을 확인하는 장면",
+    "golf-hole-animation-v3.png": "그린 위 홀인원 순간을 기뻐하는 골퍼",
+    "golf-holeinone-3d.png": "깃대와 공이 보이는 홀인원 장면",
+    "health-check-animation-v3.png": "일상에서 건강 상태를 확인하는 성인",
+    "health-review-3d.png": "건강검진 결과와 체크리스트를 보는 장면",
+    "home-fire-animation-v3.png": "주택 외부 설비의 화재를 발견한 가족",
+    "home-leak-animation-v3.png": "천장 누수 흔적을 확인하는 가족",
+    "home-weather-3d.png": "비 오는 날 집 안 누수 위험을 점검하는 장면",
+    "student-campus-animation-v3.png": "해외 캠퍼스에 도착한 유학생",
+    "student-overseas-3d.png": "장기 체류용 짐과 서류를 준비하는 학생",
+    "travel-airport-3d.png": "공항에서 출국 준비물을 확인하는 여행자",
+    "travel-airport-animation-v3.png": "여권과 여행 가방을 챙기는 출국 장면",
+}
+
+IMAGE_POOLS = {
+    "home": ["calculator-animation-v3.png", "driver-safe-animation-v3.png", "home-fire-animation-v3.png", "health-check-animation-v3.png", "travel-airport-animation-v3.png"],
+    "hrmf": ["home-fire-animation-v3.png", "home-leak-animation-v3.png", "home-weather-3d.png", "event-safety-animation-v3.png", "calculator-animation-v3.png"],
+    "golf": ["golf-hole-animation-v3.png", "golf-holeinone-3d.png", "calculator-animation-v3.png", "event-safety-animation-v3.png", "driver-safe-animation-v3.png"],
+    "cncr": ["health-check-animation-v3.png", "health-review-3d.png", "family-baby-animation-v3.png", "family-pregnancy-3d.png", "calculator-animation-v3.png"],
+    "dntl": ["dental-consult-animation-v3.png", "dental-consult-3d.png", "health-check-animation-v3.png", "health-review-3d.png", "calculator-animation-v3.png"],
+    "driver": ["driver-safe-animation-v3.png", "driver-traffic-3d.png", "driver-schoolzone-animation-v4.png", "driver-accident-animation-v4.png", "driver-rain-animation-v4.png"],
+    "woman": ["health-check-animation-v3.png", "health-review-3d.png", "family-baby-animation-v3.png", "family-pregnancy-3d.png", "calculator-animation-v3.png"],
+    "birth": ["family-baby-animation-v3.png", "family-pregnancy-3d.png", "health-check-animation-v3.png", "health-review-3d.png", "calculator-animation-v3.png"],
+    "overseas": ["travel-airport-animation-v3.png", "travel-airport-3d.png", "student-campus-animation-v3.png", "student-overseas-3d.png", "calculator-animation-v3.png"],
+    "overseaslong": ["student-campus-animation-v3.png", "student-overseas-3d.png", "travel-airport-animation-v3.png", "travel-airport-3d.png", "calculator-animation-v3.png"],
+    "holeinone": ["golf-hole-animation-v3.png", "golf-holeinone-3d.png", "calculator-animation-v3.png", "event-safety-3d.png", "driver-safe-animation-v3.png"],
+    "event": ["event-safety-animation-v3.png", "event-safety-3d.png", "home-fire-animation-v3.png", "calculator-animation-v3.png", "home-weather-3d.png"],
+    "chronic": ["health-check-animation-v3.png", "health-review-3d.png", "calculator-animation-v3.png", "family-baby-animation-v3.png", "dental-consult-animation-v3.png"],
 }
 
 
@@ -209,17 +254,36 @@ def sa_recommendations(product, keyword, angle, table_stakes, basis):
     return rows
 
 
-def image_directions(product, angle, patterns, basis):
-    scenes = SCENES.get(product["key"], SCENES["home"])
-    roles = ("주 상황", "검색 의도 보조", "전환 보조")
+def monthly_image_assets(product_key, planning_month):
+    """기준월마다 상품 후보군에서 중복 없는 4개 원본을 순환 선정한다."""
+    pool = list(dict.fromkeys(IMAGE_POOLS.get(product_key) or IMAGE_POOLS["home"]))
+    if len(pool) < 4:
+        raise ValueError(f"{product_key}: 월간 썸네일 후보 원본이 4개 미만")
+    try:
+        year, month = (int(value) for value in str(planning_month).split("-")[:2])
+    except (TypeError, ValueError):
+        year, month = date.today().year, date.today().month
+    offset = (year * 12 + month + sum(ord(char) for char in product_key)) % len(pool)
+    rotated = pool[offset:] + pool[:offset]
+    return rotated[:4]
+
+
+def image_directions(product, angle, patterns, basis, planning_month):
+    assets = monthly_image_assets(product["key"], planning_month)
+    roles = ("파워링크 대표", "보험료 탐색", "보장내용 탐색", "가입안내 탐색")
     return [{
+        "proposal_id": f"{product['key']}-{planning_month}-{index + 1:02d}",
         "role": roles[index],
-        "scene": scene,
+        "scene": ASSET_SCENES[asset],
+        "asset": f"assets/insurance/{asset}",
         "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
         "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
         "text_overlay": False,
-        "why": f"{basis} · {angle} 탐색 의도와 {patterns[0][0] if patterns else '상품 상황'} 패턴 연결",
-    } for index, scene in enumerate(scenes[:3])]
+        "refresh_cadence": "monthly",
+        "planning_month": planning_month,
+        "generation_brief": f"{product['name']} 검색 맥락을 {ASSET_SCENES[asset]}으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+        "why": f"{basis} · 상품종목을 우선 고정하고 SERP의 {patterns[0][0] if patterns else '검색 행동'} 패턴은 역할 선정에만 연결",
+    } for index, asset in enumerate(assets)]
 
 
 def power_topics(product, keyword, angle, table_stakes, basis):
@@ -249,7 +313,7 @@ def power_topics(product, keyword, angle, table_stakes, basis):
     return rows
 
 
-def generate(products, analysis, volume, manifest=None, dom=None):
+def generate(products, analysis, volume, manifest=None, dom=None, planning_month=None):
     manifest, dom = manifest or {}, dom or {}
     output = []
     for product in products.get("products") or []:
@@ -270,14 +334,15 @@ def generate(products, analysis, volume, manifest=None, dom=None):
         raw_texts += [row.get("text", "") for row in dom_rows]
         patterns = _text_patterns(raw_texts)
         pattern_date = monitoring["auto_pattern_latest"] or monitoring["reviewed_observation_latest"] or "기준일 없음"
-        basis = f"{monitoring['planning_month']} 월간 SERP · 캡처 {monitoring['capture_latest'] or '없음'} · 패턴 {pattern_date} · 최근 35일 {monitoring['capture_count_35d']}회"
+        plan_month = planning_month or monitoring["planning_month"]
+        basis = f"{plan_month} 월간 SERP · 캡처 {monitoring['capture_latest'] or '없음'} · 패턴 {pattern_date} · 최근 35일 {monitoring['capture_count_35d']}회"
         table_stakes = list(dict.fromkeys([*common, *observed_angles]))[:3]
         sa = sa_recommendations(product, keyword, angle, table_stakes, basis)
-        images = image_directions(product, angle, patterns, basis)
+        images = image_directions(product, angle, patterns, basis, plan_month)
         topics = power_topics(product, keyword, angle, table_stakes, basis)
         output.append({
             "product_key": product["key"],
-            "month": monitoring["planning_month"],
+            "month": plan_month,
             "keyword": keyword,
             "monitoring": monitoring,
             "market_patterns": {
@@ -303,6 +368,14 @@ def generate(products, analysis, volume, manifest=None, dom=None):
             },
             "sa_recommendations": sa,
             "image_directions": images,
+            "image_plan": {
+                "set_id": f"{product['key']}-{plan_month}",
+                "planning_month": plan_month,
+                "refresh_cadence": "monthly",
+                "slot_count": len(images),
+                "unique_asset_count": len({row["asset"] for row in images}),
+                "selection": "monthly_rotating_product_pool",
+            },
             "power_content_topics": topics,
             "analysis_status": "ready",
         })
@@ -312,25 +385,52 @@ def generate(products, analysis, volume, manifest=None, dom=None):
         "_comment": "월간 SERP 캡처·자동 DOM 패턴·검토 관측·검색량을 결합한 공통 소재 기획안. 경쟁사 원문은 자동 제안에 복사하지 않는다.",
         "schema_version": 2,
         "asof": asof,
-        "planning_month": asof[:7],
+        "planning_month": planning_month or asof[:7],
         "cadence": "weekly_capture_monthly_material_plan",
+        "image_refresh_cadence": "monthly",
         "products": output,
     }
 
 
-def main(root=ROOT):
+def image_plan_archive(result):
+    return {
+        "schema_version": 1,
+        "planning_month": result["planning_month"],
+        "asof": result["asof"],
+        "refresh_cadence": "monthly",
+        "products": [{
+            "product_key": row["product_key"],
+            "keyword": row["keyword"],
+            "selected_angle": row["selected_angle"],
+            "image_plan": row["image_plan"],
+            "image_directions": row["image_directions"],
+        } for row in result["products"]],
+    }
+
+
+def main(root=ROOT, planning_month=None, archive_images=False):
+    planning_month = planning_month or date.today().strftime("%Y-%m")
     result = generate(
         read("data/products.json", {}, root),
         read("serp/ad_analysis.json", {}, root),
         read("data/volume.json", {}, root),
         read("serp/manifest.json", {}, root),
         read("serp/dom_observations.json", {}, root),
+        planning_month,
     )
     output = root / "data/adcopy/serp-candidates.json"
     atomic_json_write(output, result)
+    if archive_images:
+        archive = root / "data/adcopy/image-plans" / f"{planning_month}.json"
+        atomic_json_write(archive, image_plan_archive(result))
+        print(f"[OK] {archive.relative_to(root)} · 월간 이미지 썸네일 제안 이력")
     print(f"[OK] {output.relative_to(root)} · 상품 {len(result['products'])} · 월간 SERP 통합 소재 기획")
     return result
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="월간 SERP 기반 소재·이미지 제안 생성")
+    parser.add_argument("--planning-month", help="기획 기준월(YYYY-MM), 기본값은 실행월")
+    parser.add_argument("--archive-images", action="store_true", help="월별 이미지 제안 이력도 저장")
+    args = parser.parse_args()
+    main(planning_month=args.planning_month, archive_images=args.archive_images)

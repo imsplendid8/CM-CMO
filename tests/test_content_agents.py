@@ -29,8 +29,11 @@ class TestSerpCopyAgent(unittest.TestCase):
         self.assertIn("보험종목 장면", result["visual_direction"])
         self.assertEqual(len(result["sa_recommendations"]), 3)
         self.assertTrue(all(row.get("additional_description") for row in result["sa_recommendations"]))
-        self.assertEqual(len(result["image_directions"]), 3)
+        self.assertEqual(len(result["image_directions"]), 4)
+        self.assertEqual(len({row["asset"] for row in result["image_directions"]}), 4)
         self.assertTrue(all(row["text_overlay"] is False for row in result["image_directions"]))
+        self.assertEqual(result["image_plan"]["refresh_cadence"], "monthly")
+        self.assertEqual(result["image_plan"]["unique_asset_count"], 4)
         self.assertEqual(len(result["power_content_topics"]), 3)
         serialized = json.dumps(result, ensure_ascii=False)
         for removed in ("claim_ids", "evidence_status", "review_status"):
@@ -62,6 +65,34 @@ class TestSerpCopyAgent(unittest.TestCase):
             "운전자보험": {"pc": 100, "mobile": 200},
         }}}}
         self.assertEqual(agent.volume_keyword(volume, product), "운전자보험")
+
+    def test_monthly_image_plan_rotates_without_duplicate_sources(self):
+        agent = module("serp_copy_agent")
+        product = {"key": "driver", "name": "운전자보험", "serpKw": "운전자보험",
+                   "core": ["운전자보험"], "special": ["교통사고"]}
+        products = {"products": [product]}
+        analysis = {"products": {"driver": {"observed_ads": [
+            {"date": "2026-08-24", "brand": "A", "title": "운전자보험 보장 확인"}]}}}
+        august = agent.generate(products, analysis, {}, planning_month="2026-08")["products"][0]
+        september = agent.generate(products, analysis, {}, planning_month="2026-09")["products"][0]
+        august_assets = [row["asset"] for row in august["image_directions"]]
+        september_assets = [row["asset"] for row in september["image_directions"]]
+        self.assertEqual(len(august_assets), 4)
+        self.assertEqual(len(set(august_assets)), 4)
+        self.assertEqual(len(set(september_assets)), 4)
+        self.assertNotEqual(set(august_assets), set(september_assets))
+        self.assertTrue(all(pathlib.Path(asset).name.startswith("driver-") for asset in august_assets))
+        self.assertTrue(all(pathlib.Path(asset).name.startswith("driver-") for asset in september_assets))
+        for asset in set(august_assets + september_assets):
+            self.assertTrue((ROOT / asset).is_file(), asset)
+
+    def test_monthly_thumbnail_workflow_archives_and_redeploys(self):
+        workflow = (ROOT / ".github/workflows/monthly-image-plan.yml").read_text(encoding="utf-8")
+        pages = (ROOT / ".github/workflows/pages.yml").read_text(encoding="utf-8")
+        self.assertIn('cron: "30 0 1 * *"', workflow)
+        self.assertIn("--archive-images", workflow)
+        self.assertIn("data/adcopy/image-plans/", workflow)
+        self.assertIn('"Monthly Image Thumbnail Plan"', pages)
 
     def test_brand_home_is_not_emitted_as_product_insight(self):
         agent = module("serp_copy_agent")

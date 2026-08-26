@@ -4,6 +4,7 @@
   "asof": "2026-08-23",
   "planning_month": "2026-08",
   "cadence": "weekly_capture_monthly_material_plan",
+  "image_refresh_cadence": "monthly",
   "products": [
     {
       "product_key": "hrmf",
@@ -89,7 +90,7 @@
       },
       "observed_count": 2,
       "copy_direction": "주택화재보험 상품명·행동어를 기본으로 두고 스크린홀인원 상황을 차별 각도로 사용",
-      "visual_direction": "보험종목 장면: 아파트 주방 천장 누수를 발견한 가족",
+      "visual_direction": "보험종목 장면: 보험료와 가입 항목을 확인하는 계산기 오브젝트",
       "operating_gap": {
         "current_gap": "실제 SERP의 상품명·행동어·확장소재 구조보다 기존 제안이 추상적",
         "direction": "주택화재보험 검색자의 다음 행동과 스크린홀인원 상황을 제목·설명·추가설명에 일관되게 연결",
@@ -145,30 +146,66 @@
       ],
       "image_directions": [
         {
-          "role": "주 상황",
-          "scene": "아파트 주방 천장 누수를 발견한 가족",
+          "proposal_id": "hrmf-2026-08-01",
+          "role": "파워링크 대표",
+          "scene": "보험료와 가입 항목을 확인하는 계산기 오브젝트",
+          "asset": "assets/insurance/calculator-animation-v3.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 스크린홀인원 탐색 의도와 이벤트·혜택 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "주택화재보험 검색 맥락을 보험료와 가입 항목을 확인하는 계산기 오브젝트으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 이벤트·혜택 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "검색 의도 보조",
-          "scene": "거실에서 작은 화재 위험을 점검하는 가족",
+          "proposal_id": "hrmf-2026-08-02",
+          "role": "보험료 탐색",
+          "scene": "주택 외부 설비의 화재를 발견한 가족",
+          "asset": "assets/insurance/home-fire-animation-v3.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 스크린홀인원 탐색 의도와 이벤트·혜택 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "주택화재보험 검색 맥락을 주택 외부 설비의 화재를 발견한 가족으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 이벤트·혜택 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "전환 보조",
-          "scene": "태풍 전 창문과 집 안을 살피는 생활 장면",
+          "proposal_id": "hrmf-2026-08-03",
+          "role": "보장내용 탐색",
+          "scene": "천장 누수 흔적을 확인하는 가족",
+          "asset": "assets/insurance/home-leak-animation-v3.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 스크린홀인원 탐색 의도와 이벤트·혜택 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "주택화재보험 검색 맥락을 천장 누수 흔적을 확인하는 가족으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 이벤트·혜택 패턴은 역할 선정에만 연결"
+        },
+        {
+          "proposal_id": "hrmf-2026-08-04",
+          "role": "가입안내 탐색",
+          "scene": "비 오는 날 집 안 누수 위험을 점검하는 장면",
+          "asset": "assets/insurance/home-weather-3d.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "주택화재보험 검색 맥락을 비 오는 날 집 안 누수 위험을 점검하는 장면으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 이벤트·혜택 패턴은 역할 선정에만 연결"
         }
       ],
+      "image_plan": {
+        "set_id": "hrmf-2026-08",
+        "planning_month": "2026-08",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "selection": "monthly_rotating_product_pool"
+      },
       "power_content_topics": [
         {
           "id": "hrmf-serp-topic-1",
@@ -324,7 +361,7 @@
       },
       "observed_count": 2,
       "copy_direction": "골프보험 상품명·행동어를 기본으로 두고 배상책임 상황을 차별 각도로 사용",
-      "visual_direction": "보험종목 장면: 그린 위 홀인원 순간을 기뻐하는 골퍼",
+      "visual_direction": "보험종목 장면: 도심 도로에서 안전운전하는 운전자",
       "operating_gap": {
         "current_gap": "실제 SERP의 상품명·행동어·확장소재 구조보다 기존 제안이 추상적",
         "direction": "골프보험 검색자의 다음 행동과 배상책임 상황을 제목·설명·추가설명에 일관되게 연결",
@@ -380,30 +417,66 @@
       ],
       "image_directions": [
         {
-          "role": "주 상황",
+          "proposal_id": "golf-2026-08-01",
+          "role": "파워링크 대표",
+          "scene": "도심 도로에서 안전운전하는 운전자",
+          "asset": "assets/insurance/driver-safe-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "골프보험 검색 맥락을 도심 도로에서 안전운전하는 운전자으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
+        },
+        {
+          "proposal_id": "golf-2026-08-02",
+          "role": "보험료 탐색",
           "scene": "그린 위 홀인원 순간을 기뻐하는 골퍼",
+          "asset": "assets/insurance/golf-hole-animation-v3.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 배상책임 탐색 의도와 가입 편의 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "골프보험 검색 맥락을 그린 위 홀인원 순간을 기뻐하는 골퍼으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "검색 의도 보조",
-          "scene": "라운드 전 골프백과 장비를 확인하는 골퍼",
+          "proposal_id": "golf-2026-08-03",
+          "role": "보장내용 탐색",
+          "scene": "깃대와 공이 보이는 홀인원 장면",
+          "asset": "assets/insurance/golf-holeinone-3d.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 배상책임 탐색 의도와 가입 편의 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "골프보험 검색 맥락을 깃대와 공이 보이는 홀인원 장면으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "전환 보조",
-          "scene": "동반자들과 티오프를 준비하는 장면",
+          "proposal_id": "golf-2026-08-04",
+          "role": "가입안내 탐색",
+          "scene": "보험료와 가입 항목을 확인하는 계산기 오브젝트",
+          "asset": "assets/insurance/calculator-animation-v3.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 배상책임 탐색 의도와 가입 편의 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "골프보험 검색 맥락을 보험료와 가입 항목을 확인하는 계산기 오브젝트으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
         }
       ],
+      "image_plan": {
+        "set_id": "golf-2026-08",
+        "planning_month": "2026-08",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "selection": "monthly_rotating_product_pool"
+      },
       "power_content_topics": [
         {
           "id": "golf-serp-topic-1",
@@ -559,7 +632,7 @@
       },
       "observed_count": 2,
       "copy_direction": "암보험 상품명·행동어를 기본으로 두고 유사암 상황을 차별 각도로 사용",
-      "visual_direction": "보험종목 장면: 건강검진 결과를 차분히 확인하는 성인",
+      "visual_direction": "보험종목 장면: 아기와 가족이 함께 건강을 준비하는 장면",
       "operating_gap": {
         "current_gap": "실제 SERP의 상품명·행동어·확장소재 구조보다 기존 제안이 추상적",
         "direction": "암보험 검색자의 다음 행동과 유사암 상황을 제목·설명·추가설명에 일관되게 연결",
@@ -615,30 +688,66 @@
       ],
       "image_directions": [
         {
-          "role": "주 상황",
-          "scene": "건강검진 결과를 차분히 확인하는 성인",
+          "proposal_id": "cncr-2026-08-01",
+          "role": "파워링크 대표",
+          "scene": "아기와 가족이 함께 건강을 준비하는 장면",
+          "asset": "assets/insurance/family-baby-animation-v3.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 유사암 탐색 의도와 보험료·견적 확인 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "암보험 검색 맥락을 아기와 가족이 함께 건강을 준비하는 장면으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 보험료·견적 확인 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "검색 의도 보조",
-          "scene": "병원 상담실에서 치료 계획을 듣는 장면",
+          "proposal_id": "cncr-2026-08-02",
+          "role": "보험료 탐색",
+          "scene": "예비 부모가 출산 준비물을 확인하는 장면",
+          "asset": "assets/insurance/family-pregnancy-3d.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 유사암 탐색 의도와 보험료·견적 확인 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "암보험 검색 맥락을 예비 부모가 출산 준비물을 확인하는 장면으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 보험료·견적 확인 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "전환 보조",
-          "scene": "가족과 일상을 이어가는 회복 중심 장면",
+          "proposal_id": "cncr-2026-08-03",
+          "role": "보장내용 탐색",
+          "scene": "보험료와 가입 항목을 확인하는 계산기 오브젝트",
+          "asset": "assets/insurance/calculator-animation-v3.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 유사암 탐색 의도와 보험료·견적 확인 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "암보험 검색 맥락을 보험료와 가입 항목을 확인하는 계산기 오브젝트으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 보험료·견적 확인 패턴은 역할 선정에만 연결"
+        },
+        {
+          "proposal_id": "cncr-2026-08-04",
+          "role": "가입안내 탐색",
+          "scene": "일상에서 건강 상태를 확인하는 성인",
+          "asset": "assets/insurance/health-check-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "암보험 검색 맥락을 일상에서 건강 상태를 확인하는 성인으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 보험료·견적 확인 패턴은 역할 선정에만 연결"
         }
       ],
+      "image_plan": {
+        "set_id": "cncr-2026-08",
+        "planning_month": "2026-08",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "selection": "monthly_rotating_product_pool"
+      },
       "power_content_topics": [
         {
           "id": "cncr-serp-topic-1",
@@ -776,7 +885,7 @@
       },
       "observed_count": 1,
       "copy_direction": "치아보험 상품명·행동어를 기본으로 두고 스케일링 상황을 차별 각도로 사용",
-      "visual_direction": "보험종목 장면: 치과 상담실에서 치아 모형을 보는 환자",
+      "visual_direction": "보험종목 장면: 보험료와 가입 항목을 확인하는 계산기 오브젝트",
       "operating_gap": {
         "current_gap": "실제 SERP의 상품명·행동어·확장소재 구조보다 기존 제안이 추상적",
         "direction": "치아보험 검색자의 다음 행동과 스케일링 상황을 제목·설명·추가설명에 일관되게 연결",
@@ -832,30 +941,66 @@
       ],
       "image_directions": [
         {
-          "role": "주 상황",
-          "scene": "치과 상담실에서 치아 모형을 보는 환자",
+          "proposal_id": "dntl-2026-08-01",
+          "role": "파워링크 대표",
+          "scene": "보험료와 가입 항목을 확인하는 계산기 오브젝트",
+          "asset": "assets/insurance/calculator-animation-v3.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 스케일링 탐색 의도와 가입 편의 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "치아보험 검색 맥락을 보험료와 가입 항목을 확인하는 계산기 오브젝트으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "검색 의도 보조",
-          "scene": "정기검진을 받는 편안한 치과 장면",
+          "proposal_id": "dntl-2026-08-02",
+          "role": "보험료 탐색",
+          "scene": "치아 모형을 보며 상담하는 장면",
+          "asset": "assets/insurance/dental-consult-animation-v3.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 스케일링 탐색 의도와 가입 편의 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "치아보험 검색 맥락을 치아 모형을 보며 상담하는 장면으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "전환 보조",
-          "scene": "식사 중 치아 불편을 느끼고 확인하는 생활 장면",
+          "proposal_id": "dntl-2026-08-03",
+          "role": "보장내용 탐색",
+          "scene": "치과 상담실에서 치료 계획을 확인하는 장면",
+          "asset": "assets/insurance/dental-consult-3d.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 스케일링 탐색 의도와 가입 편의 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "치아보험 검색 맥락을 치과 상담실에서 치료 계획을 확인하는 장면으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
+        },
+        {
+          "proposal_id": "dntl-2026-08-04",
+          "role": "가입안내 탐색",
+          "scene": "일상에서 건강 상태를 확인하는 성인",
+          "asset": "assets/insurance/health-check-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "치아보험 검색 맥락을 일상에서 건강 상태를 확인하는 성인으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
         }
       ],
+      "image_plan": {
+        "set_id": "dntl-2026-08",
+        "planning_month": "2026-08",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "selection": "monthly_rotating_product_pool"
+      },
       "power_content_topics": [
         {
           "id": "dntl-serp-topic-1",
@@ -1022,7 +1167,7 @@
       },
       "observed_count": 2,
       "copy_direction": "운전자보험 상품명·행동어를 기본으로 두고 교통사고 상황을 차별 각도로 사용",
-      "visual_direction": "보험종목 장면: 야간 교차로에서 방어운전하는 운전자",
+      "visual_direction": "보험종목 장면: 스쿨존 횡단보도 앞에서 감속하는 운전자",
       "operating_gap": {
         "current_gap": "실제 SERP의 상품명·행동어·확장소재 구조보다 기존 제안이 추상적",
         "direction": "운전자보험 검색자의 다음 행동과 교통사고 상황을 제목·설명·추가설명에 일관되게 연결",
@@ -1078,30 +1223,66 @@
       ],
       "image_directions": [
         {
-          "role": "주 상황",
-          "scene": "야간 교차로에서 방어운전하는 운전자",
+          "proposal_id": "driver-2026-08-01",
+          "role": "파워링크 대표",
+          "scene": "스쿨존 횡단보도 앞에서 감속하는 운전자",
+          "asset": "assets/insurance/driver-schoolzone-animation-v4.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 교통사고 탐색 의도와 보장·특약 제시 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "운전자보험 검색 맥락을 스쿨존 횡단보도 앞에서 감속하는 운전자으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 보장·특약 제시 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "검색 의도 보조",
-          "scene": "스쿨존 앞에서 속도를 줄이는 차량",
+          "proposal_id": "driver-2026-08-02",
+          "role": "보험료 탐색",
+          "scene": "가벼운 접촉사고 뒤 현장을 확인하는 운전자",
+          "asset": "assets/insurance/driver-accident-animation-v4.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 교통사고 탐색 의도와 보장·특약 제시 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "운전자보험 검색 맥락을 가벼운 접촉사고 뒤 현장을 확인하는 운전자으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 보장·특약 제시 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "전환 보조",
-          "scene": "접촉사고 뒤 안전하게 현장을 확인하는 운전자",
+          "proposal_id": "driver-2026-08-03",
+          "role": "보장내용 탐색",
+          "scene": "비 오는 저녁 도로에서 방어운전하는 운전자",
+          "asset": "assets/insurance/driver-rain-animation-v4.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 교통사고 탐색 의도와 보장·특약 제시 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "운전자보험 검색 맥락을 비 오는 저녁 도로에서 방어운전하는 운전자으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 보장·특약 제시 패턴은 역할 선정에만 연결"
+        },
+        {
+          "proposal_id": "driver-2026-08-04",
+          "role": "가입안내 탐색",
+          "scene": "도심 도로에서 안전운전하는 운전자",
+          "asset": "assets/insurance/driver-safe-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "운전자보험 검색 맥락을 도심 도로에서 안전운전하는 운전자으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 보장·특약 제시 패턴은 역할 선정에만 연결"
         }
       ],
+      "image_plan": {
+        "set_id": "driver-2026-08",
+        "planning_month": "2026-08",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "selection": "monthly_rotating_product_pool"
+      },
       "power_content_topics": [
         {
           "id": "driver-serp-topic-1",
@@ -1234,7 +1415,7 @@
       },
       "observed_count": 1,
       "copy_direction": "여성건강보험 상품명·행동어를 기본으로 두고 임신 상황을 차별 각도로 사용",
-      "visual_direction": "보험종목 장면: 건강검진 일정을 확인하는 여성",
+      "visual_direction": "보험종목 장면: 건강검진 결과와 체크리스트를 보는 장면",
       "operating_gap": {
         "current_gap": "실제 SERP의 상품명·행동어·확장소재 구조보다 기존 제안이 추상적",
         "direction": "여성건강보험 검색자의 다음 행동과 임신 상황을 제목·설명·추가설명에 일관되게 연결",
@@ -1290,30 +1471,66 @@
       ],
       "image_directions": [
         {
-          "role": "주 상황",
-          "scene": "건강검진 일정을 확인하는 여성",
+          "proposal_id": "woman-2026-08-01",
+          "role": "파워링크 대표",
+          "scene": "건강검진 결과와 체크리스트를 보는 장면",
+          "asset": "assets/insurance/health-review-3d.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 임신 탐색 의도와 가입 편의 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "여성건강보험 검색 맥락을 건강검진 결과와 체크리스트를 보는 장면으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "검색 의도 보조",
-          "scene": "일상에서 건강을 챙기는 여성과 가족",
+          "proposal_id": "woman-2026-08-02",
+          "role": "보험료 탐색",
+          "scene": "아기와 가족이 함께 건강을 준비하는 장면",
+          "asset": "assets/insurance/family-baby-animation-v3.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 임신 탐색 의도와 가입 편의 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "여성건강보험 검색 맥락을 아기와 가족이 함께 건강을 준비하는 장면으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "전환 보조",
-          "scene": "진료 상담을 앞두고 차분히 준비하는 장면",
+          "proposal_id": "woman-2026-08-03",
+          "role": "보장내용 탐색",
+          "scene": "예비 부모가 출산 준비물을 확인하는 장면",
+          "asset": "assets/insurance/family-pregnancy-3d.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 임신 탐색 의도와 가입 편의 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "여성건강보험 검색 맥락을 예비 부모가 출산 준비물을 확인하는 장면으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
+        },
+        {
+          "proposal_id": "woman-2026-08-04",
+          "role": "가입안내 탐색",
+          "scene": "보험료와 가입 항목을 확인하는 계산기 오브젝트",
+          "asset": "assets/insurance/calculator-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "여성건강보험 검색 맥락을 보험료와 가입 항목을 확인하는 계산기 오브젝트으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
         }
       ],
+      "image_plan": {
+        "set_id": "woman-2026-08",
+        "planning_month": "2026-08",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "selection": "monthly_rotating_product_pool"
+      },
       "power_content_topics": [
         {
           "id": "woman-serp-topic-1",
@@ -1451,7 +1668,7 @@
       },
       "observed_count": 1,
       "copy_direction": "태아보험 상품명·행동어를 기본으로 두고 미숙아 상황을 차별 각도로 사용",
-      "visual_direction": "보험종목 장면: 아기방을 준비하는 예비 부모",
+      "visual_direction": "보험종목 장면: 일상에서 건강 상태를 확인하는 성인",
       "operating_gap": {
         "current_gap": "실제 SERP의 상품명·행동어·확장소재 구조보다 기존 제안이 추상적",
         "direction": "태아보험 검색자의 다음 행동과 미숙아 상황을 제목·설명·추가설명에 일관되게 연결",
@@ -1507,30 +1724,66 @@
       ],
       "image_directions": [
         {
-          "role": "주 상황",
-          "scene": "아기방을 준비하는 예비 부모",
+          "proposal_id": "birth-2026-08-01",
+          "role": "파워링크 대표",
+          "scene": "일상에서 건강 상태를 확인하는 성인",
+          "asset": "assets/insurance/health-check-animation-v3.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 미숙아 탐색 의도와 가입 편의 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "임신·출산(태아)보험 검색 맥락을 일상에서 건강 상태를 확인하는 성인으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "검색 의도 보조",
-          "scene": "산모수첩과 초음파 사진을 확인하는 부부",
+          "proposal_id": "birth-2026-08-02",
+          "role": "보험료 탐색",
+          "scene": "건강검진 결과와 체크리스트를 보는 장면",
+          "asset": "assets/insurance/health-review-3d.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 미숙아 탐색 의도와 가입 편의 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "임신·출산(태아)보험 검색 맥락을 건강검진 결과와 체크리스트를 보는 장면으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "전환 보조",
-          "scene": "신생아 용품을 정리하는 따뜻한 가족 장면",
+          "proposal_id": "birth-2026-08-03",
+          "role": "보장내용 탐색",
+          "scene": "보험료와 가입 항목을 확인하는 계산기 오브젝트",
+          "asset": "assets/insurance/calculator-animation-v3.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 미숙아 탐색 의도와 가입 편의 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "임신·출산(태아)보험 검색 맥락을 보험료와 가입 항목을 확인하는 계산기 오브젝트으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
+        },
+        {
+          "proposal_id": "birth-2026-08-04",
+          "role": "가입안내 탐색",
+          "scene": "아기와 가족이 함께 건강을 준비하는 장면",
+          "asset": "assets/insurance/family-baby-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "임신·출산(태아)보험 검색 맥락을 아기와 가족이 함께 건강을 준비하는 장면으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
         }
       ],
+      "image_plan": {
+        "set_id": "birth-2026-08",
+        "planning_month": "2026-08",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "selection": "monthly_rotating_product_pool"
+      },
       "power_content_topics": [
         {
           "id": "birth-serp-topic-1",
@@ -1684,7 +1937,7 @@
       },
       "observed_count": 2,
       "copy_direction": "해외여행보험 상품명·행동어를 기본으로 두고 실손 상황을 차별 각도로 사용",
-      "visual_direction": "보험종목 장면: 공항 출국장 앞에서 여권과 짐을 확인하는 여행자",
+      "visual_direction": "보험종목 장면: 해외 캠퍼스에 도착한 유학생",
       "operating_gap": {
         "current_gap": "실제 SERP의 상품명·행동어·확장소재 구조보다 기존 제안이 추상적",
         "direction": "해외여행보험 검색자의 다음 행동과 실손 상황을 제목·설명·추가설명에 일관되게 연결",
@@ -1740,30 +1993,66 @@
       ],
       "image_directions": [
         {
-          "role": "주 상황",
-          "scene": "공항 출국장 앞에서 여권과 짐을 확인하는 여행자",
+          "proposal_id": "overseas-2026-08-01",
+          "role": "파워링크 대표",
+          "scene": "해외 캠퍼스에 도착한 유학생",
+          "asset": "assets/insurance/student-campus-animation-v3.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 실손 탐색 의도와 가입 편의 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "해외여행보험 검색 맥락을 해외 캠퍼스에 도착한 유학생으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "검색 의도 보조",
-          "scene": "항공 지연 안내판을 확인하는 여행자",
+          "proposal_id": "overseas-2026-08-02",
+          "role": "보험료 탐색",
+          "scene": "장기 체류용 짐과 서류를 준비하는 학생",
+          "asset": "assets/insurance/student-overseas-3d.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 실손 탐색 의도와 가입 편의 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "해외여행보험 검색 맥락을 장기 체류용 짐과 서류를 준비하는 학생으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "전환 보조",
-          "scene": "여행지에서 휴대품을 챙기는 생활 장면",
+          "proposal_id": "overseas-2026-08-03",
+          "role": "보장내용 탐색",
+          "scene": "보험료와 가입 항목을 확인하는 계산기 오브젝트",
+          "asset": "assets/insurance/calculator-animation-v3.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 실손 탐색 의도와 가입 편의 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "해외여행보험 검색 맥락을 보험료와 가입 항목을 확인하는 계산기 오브젝트으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
+        },
+        {
+          "proposal_id": "overseas-2026-08-04",
+          "role": "가입안내 탐색",
+          "scene": "여권과 여행 가방을 챙기는 출국 장면",
+          "asset": "assets/insurance/travel-airport-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "해외여행보험 검색 맥락을 여권과 여행 가방을 챙기는 출국 장면으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
         }
       ],
+      "image_plan": {
+        "set_id": "overseas-2026-08",
+        "planning_month": "2026-08",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "selection": "monthly_rotating_product_pool"
+      },
       "power_content_topics": [
         {
           "id": "overseas-serp-topic-1",
@@ -1894,7 +2183,7 @@
       },
       "observed_count": 1,
       "copy_direction": "유학생보험 상품명·행동어를 기본으로 두고 유학 상황을 차별 각도로 사용",
-      "visual_direction": "보험종목 장면: 해외 캠퍼스에 도착한 유학생",
+      "visual_direction": "보험종목 장면: 보험료와 가입 항목을 확인하는 계산기 오브젝트",
       "operating_gap": {
         "current_gap": "실제 SERP의 상품명·행동어·확장소재 구조보다 기존 제안이 추상적",
         "direction": "유학생보험 검색자의 다음 행동과 유학 상황을 제목·설명·추가설명에 일관되게 연결",
@@ -1950,30 +2239,66 @@
       ],
       "image_directions": [
         {
-          "role": "주 상황",
+          "proposal_id": "overseaslong-2026-08-01",
+          "role": "파워링크 대표",
+          "scene": "보험료와 가입 항목을 확인하는 계산기 오브젝트",
+          "asset": "assets/insurance/calculator-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "해외장기체류보험 검색 맥락을 보험료와 가입 항목을 확인하는 계산기 오브젝트으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 보장·특약 제시 패턴은 역할 선정에만 연결"
+        },
+        {
+          "proposal_id": "overseaslong-2026-08-02",
+          "role": "보험료 탐색",
           "scene": "해외 캠퍼스에 도착한 유학생",
+          "asset": "assets/insurance/student-campus-animation-v3.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 유학 탐색 의도와 보장·특약 제시 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "해외장기체류보험 검색 맥락을 해외 캠퍼스에 도착한 유학생으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 보장·특약 제시 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "검색 의도 보조",
+          "proposal_id": "overseaslong-2026-08-03",
+          "role": "보장내용 탐색",
           "scene": "장기 체류용 짐과 서류를 준비하는 학생",
+          "asset": "assets/insurance/student-overseas-3d.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 유학 탐색 의도와 보장·특약 제시 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "해외장기체류보험 검색 맥락을 장기 체류용 짐과 서류를 준비하는 학생으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 보장·특약 제시 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "전환 보조",
-          "scene": "기숙사에서 새 생활을 시작하는 유학생",
+          "proposal_id": "overseaslong-2026-08-04",
+          "role": "가입안내 탐색",
+          "scene": "여권과 여행 가방을 챙기는 출국 장면",
+          "asset": "assets/insurance/travel-airport-animation-v3.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 유학 탐색 의도와 보장·특약 제시 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "해외장기체류보험 검색 맥락을 여권과 여행 가방을 챙기는 출국 장면으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 보장·특약 제시 패턴은 역할 선정에만 연결"
         }
       ],
+      "image_plan": {
+        "set_id": "overseaslong-2026-08",
+        "planning_month": "2026-08",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "selection": "monthly_rotating_product_pool"
+      },
       "power_content_topics": [
         {
           "id": "overseaslong-serp-topic-1",
@@ -2107,7 +2432,7 @@
       },
       "observed_count": 1,
       "copy_direction": "홀인원보험 상품명·행동어를 기본으로 두고 홀인원축하비용 상황을 차별 각도로 사용",
-      "visual_direction": "보험종목 장면: 홀인원 직후 동반자들과 기뻐하는 골퍼",
+      "visual_direction": "보험종목 장면: 깃대와 공이 보이는 홀인원 장면",
       "operating_gap": {
         "current_gap": "실제 SERP의 상품명·행동어·확장소재 구조보다 기존 제안이 추상적",
         "direction": "홀인원보험 검색자의 다음 행동과 홀인원축하비용 상황을 제목·설명·추가설명에 일관되게 연결",
@@ -2163,30 +2488,66 @@
       ],
       "image_directions": [
         {
-          "role": "주 상황",
-          "scene": "홀인원 직후 동반자들과 기뻐하는 골퍼",
+          "proposal_id": "holeinone-2026-08-01",
+          "role": "파워링크 대표",
+          "scene": "깃대와 공이 보이는 홀인원 장면",
+          "asset": "assets/insurance/golf-holeinone-3d.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 홀인원축하비용 탐색 의도와 보장·특약 제시 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "홀인원보험 검색 맥락을 깃대와 공이 보이는 홀인원 장면으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 보장·특약 제시 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "검색 의도 보조",
-          "scene": "깃대와 공이 함께 보이는 그린 클로즈업",
+          "proposal_id": "holeinone-2026-08-02",
+          "role": "보험료 탐색",
+          "scene": "보험료와 가입 항목을 확인하는 계산기 오브젝트",
+          "asset": "assets/insurance/calculator-animation-v3.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 홀인원축하비용 탐색 의도와 보장·특약 제시 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "홀인원보험 검색 맥락을 보험료와 가입 항목을 확인하는 계산기 오브젝트으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 보장·특약 제시 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "전환 보조",
-          "scene": "라운드 전 스코어카드와 장비를 챙기는 장면",
+          "proposal_id": "holeinone-2026-08-03",
+          "role": "보장내용 탐색",
+          "scene": "행사 현장의 시설과 동선을 확인하는 운영자",
+          "asset": "assets/insurance/event-safety-3d.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 홀인원축하비용 탐색 의도와 보장·특약 제시 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "홀인원보험 검색 맥락을 행사 현장의 시설과 동선을 확인하는 운영자으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 보장·특약 제시 패턴은 역할 선정에만 연결"
+        },
+        {
+          "proposal_id": "holeinone-2026-08-04",
+          "role": "가입안내 탐색",
+          "scene": "도심 도로에서 안전운전하는 운전자",
+          "asset": "assets/insurance/driver-safe-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "홀인원보험 검색 맥락을 도심 도로에서 안전운전하는 운전자으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 보장·특약 제시 패턴은 역할 선정에만 연결"
         }
       ],
+      "image_plan": {
+        "set_id": "holeinone-2026-08",
+        "planning_month": "2026-08",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "selection": "monthly_rotating_product_pool"
+      },
       "power_content_topics": [
         {
           "id": "holeinone-serp-topic-1",
@@ -2324,7 +2685,7 @@
       },
       "observed_count": 1,
       "copy_direction": "행사보험 상품명·행동어를 기본으로 두고 공연행사 상황을 차별 각도로 사용",
-      "visual_direction": "보험종목 장면: 공연 시작 전 무대와 관객 동선을 점검하는 스태프",
+      "visual_direction": "보험종목 장면: 행사 현장의 시설과 동선을 확인하는 운영자",
       "operating_gap": {
         "current_gap": "실제 SERP의 상품명·행동어·확장소재 구조보다 기존 제안이 추상적",
         "direction": "행사보험 검색자의 다음 행동과 공연행사 상황을 제목·설명·추가설명에 일관되게 연결",
@@ -2380,30 +2741,66 @@
       ],
       "image_directions": [
         {
-          "role": "주 상황",
-          "scene": "공연 시작 전 무대와 관객 동선을 점검하는 스태프",
+          "proposal_id": "event-2026-08-01",
+          "role": "파워링크 대표",
+          "scene": "행사 현장의 시설과 동선을 확인하는 운영자",
+          "asset": "assets/insurance/event-safety-3d.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 공연행사 탐색 의도와 보험료·견적 확인 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "행사배상책임보험 검색 맥락을 행사 현장의 시설과 동선을 확인하는 운영자으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 보험료·견적 확인 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "검색 의도 보조",
-          "scene": "체육행사 현장에서 안전 펜스를 확인하는 운영자",
+          "proposal_id": "event-2026-08-02",
+          "role": "보험료 탐색",
+          "scene": "주택 외부 설비의 화재를 발견한 가족",
+          "asset": "assets/insurance/home-fire-animation-v3.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 공연행사 탐색 의도와 보험료·견적 확인 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "행사배상책임보험 검색 맥락을 주택 외부 설비의 화재를 발견한 가족으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 보험료·견적 확인 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "전환 보조",
-          "scene": "야외행사 전 시설을 살피는 안전관리 장면",
+          "proposal_id": "event-2026-08-03",
+          "role": "보장내용 탐색",
+          "scene": "보험료와 가입 항목을 확인하는 계산기 오브젝트",
+          "asset": "assets/insurance/calculator-animation-v3.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 공연행사 탐색 의도와 보험료·견적 확인 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "행사배상책임보험 검색 맥락을 보험료와 가입 항목을 확인하는 계산기 오브젝트으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 보험료·견적 확인 패턴은 역할 선정에만 연결"
+        },
+        {
+          "proposal_id": "event-2026-08-04",
+          "role": "가입안내 탐색",
+          "scene": "비 오는 날 집 안 누수 위험을 점검하는 장면",
+          "asset": "assets/insurance/home-weather-3d.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "행사배상책임보험 검색 맥락을 비 오는 날 집 안 누수 위험을 점검하는 장면으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 보험료·견적 확인 패턴은 역할 선정에만 연결"
         }
       ],
+      "image_plan": {
+        "set_id": "event-2026-08",
+        "planning_month": "2026-08",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "selection": "monthly_rotating_product_pool"
+      },
       "power_content_topics": [
         {
           "id": "event-serp-topic-1",
@@ -2542,7 +2939,7 @@
       },
       "observed_count": 1,
       "copy_direction": "유병자보험 상품명·행동어를 기본으로 두고 고혈압 상황을 차별 각도로 사용",
-      "visual_direction": "보험종목 장면: 복용약과 건강기록을 정리하는 성인",
+      "visual_direction": "보험종목 장면: 보험료와 가입 항목을 확인하는 계산기 오브젝트",
       "operating_gap": {
         "current_gap": "실제 SERP의 상품명·행동어·확장소재 구조보다 기존 제안이 추상적",
         "direction": "유병자보험 검색자의 다음 행동과 고혈압 상황을 제목·설명·추가설명에 일관되게 연결",
@@ -2598,30 +2995,66 @@
       ],
       "image_directions": [
         {
-          "role": "주 상황",
-          "scene": "복용약과 건강기록을 정리하는 성인",
+          "proposal_id": "chronic-2026-08-01",
+          "role": "파워링크 대표",
+          "scene": "보험료와 가입 항목을 확인하는 계산기 오브젝트",
+          "asset": "assets/insurance/calculator-animation-v3.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 고혈압 탐색 의도와 가입 편의 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "유병자 간편보험 검색 맥락을 보험료와 가입 항목을 확인하는 계산기 오브젝트으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "검색 의도 보조",
-          "scene": "건강상담 전 체크리스트를 확인하는 장면",
+          "proposal_id": "chronic-2026-08-02",
+          "role": "보험료 탐색",
+          "scene": "아기와 가족이 함께 건강을 준비하는 장면",
+          "asset": "assets/insurance/family-baby-animation-v3.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 고혈압 탐색 의도와 가입 편의 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "유병자 간편보험 검색 맥락을 아기와 가족이 함께 건강을 준비하는 장면으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
         },
         {
-          "role": "전환 보조",
-          "scene": "일상 속 혈압·건강 상태를 편안하게 확인하는 장면",
+          "proposal_id": "chronic-2026-08-03",
+          "role": "보장내용 탐색",
+          "scene": "치아 모형을 보며 상담하는 장면",
+          "asset": "assets/insurance/dental-consult-animation-v3.png",
           "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
           "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
           "text_overlay": false,
-          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 고혈압 탐색 의도와 가입 편의 패턴 연결"
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "유병자 간편보험 검색 맥락을 치아 모형을 보며 상담하는 장면으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
+        },
+        {
+          "proposal_id": "chronic-2026-08-04",
+          "role": "가입안내 탐색",
+          "scene": "일상에서 건강 상태를 확인하는 성인",
+          "asset": "assets/insurance/health-check-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-08",
+          "generation_brief": "유병자 간편보험 검색 맥락을 일상에서 건강 상태를 확인하는 성인으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
+          "why": "2026-08 월간 SERP · 캡처 2026-08-23 · 패턴 2026-07-26 · 최근 35일 7회 · 상품종목을 우선 고정하고 SERP의 가입 편의 패턴은 역할 선정에만 연결"
         }
       ],
+      "image_plan": {
+        "set_id": "chronic-2026-08",
+        "planning_month": "2026-08",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "selection": "monthly_rotating_product_pool"
+      },
       "power_content_topics": [
         {
           "id": "chronic-serp-topic-1",
