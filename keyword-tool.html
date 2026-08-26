@@ -92,6 +92,16 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .pill.거래{background:var(--trx-bg);color:var(--trx);} .pill.정보{background:var(--inf-bg);color:var(--inf);} .pill.브랜드{background:var(--brd-bg);color:var(--brd);} .pill.담보{background:var(--brand-50);color:var(--brand-600);}
 .pill.AI{background:rgba(14,158,156,.16);color:#0b7370;}
 .src{font-size:9.5px;font-weight:800;padding:1px 6px;border-radius:5px;} .src.도구{background:var(--line-2);color:var(--ink-2);} .src.네이버{background:var(--nav-bg);color:var(--nav-ink);} .src.검색광고{background:var(--goo-bg);color:var(--goo-ink);}
+.src.자동완성{background:var(--nav-bg);color:var(--nav-ink);border:1px solid rgba(3,199,90,.2);}
+.auto-panel{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--nav);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh);margin-bottom:16px;}
+.auto-head{display:flex;align-items:flex-start;gap:10px;justify-content:space-between;flex-wrap:wrap;margin-bottom:10px;}
+.auto-head h3{font-size:13px;margin:0}.auto-head p{font-size:10.5px;color:var(--muted);margin-top:3px;line-height:1.55;}
+.auto-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.auto-check{width:15px;height:15px;accent-color:var(--nav);cursor:pointer;}
+.auto-state{font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:99px;display:inline-flex;}
+.auto-state.new{background:var(--nav-bg);color:var(--nav-ink)}.auto-state.base{background:var(--line-2);color:var(--muted)}
+.auto-reg{font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:99px;display:inline-flex;}
+.auto-reg.recommended{background:var(--nav-bg);color:var(--nav-ink)}.auto-reg.review{background:var(--trx-bg);color:var(--trx)}.auto-reg.exclude{background:var(--line-2);color:var(--muted)}
+.auto-summary{display:grid;grid-template-columns:repeat(3,minmax(100px,1fr));gap:8px;margin-top:9px}.auto-summary div{background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:9px 10px}.auto-summary b{display:block;font-family:var(--mono);font-size:17px}.auto-summary span{font-size:10px;color:var(--muted);font-weight:700}
 @media(prefers-color-scheme:dark){.pill.AI{color:#5fe0dc;}}
 :root[data-theme="dark"] .pill.AI{color:#5fe0dc;} :root[data-theme="light"] .pill.AI{color:#0b7370;}
 .tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface);box-shadow:var(--sh);}
@@ -245,7 +255,7 @@ function genKeywords(p){
 const ALL={}; PRODUCTS.forEach(p=>ALL[p.key]=genKeywords(p));
 const INTENT_COL={거래:"var(--trx)",정보:"var(--inf)",브랜드:"var(--brd)",담보:"var(--brand)"};
 
-let curKey="__all", pf="all", VOL={},VOL_META={asof:null,source:"none"},VOL_HISTORY={snapshots:{}};
+let curKey="__all", pf="all", VOL={},VOL_META={asof:null,source:"none"},VOL_HISTORY={snapshots:{}},AUTOCOMPLETE={products:{}},AUTO_META=new Map(),AUTO_SELECTED=new Set();
 const NEW_MIN=100,RISING_MIN_BASE=10,RISING_MIN_DELTA=50,RISING_MIN_RATE=.5;
 const nk=s=>String(s).replace(/\s/g,"");
 const hasVol=()=>Object.keys(VOL).length>0;
@@ -300,6 +310,26 @@ function applyVolumeHistory(history){
   if(history&&history.source==="searchad"&&history.snapshots)VOL_HISTORY=history;
   render();
 }
+function autoSelectionKey(productKey,keyword){return `${productKey}|${nk(keyword)}`;}
+function autocompleteRows(key){return (((AUTOCOMPLETE.products||{})[key]||{}).suggestions)||[];}
+function applyAutocompleteData(data){
+  if(!data||data.source!=="naver-visible-autocomplete"||!data.products)return;
+  AUTOCOMPLETE=data;AUTO_META=new Map();AUTO_SELECTED=new Set();
+  Object.keys(data.products).forEach(key=>{
+    if(!PRODUCTS.some(product=>product.key===key))return;
+    const existing=new Set(rowsOf(key).map(row=>nk(row.kw))),add=[];
+    autocompleteRows(key).forEach(item=>{
+      const normal=nk(item.keyword),selectionKey=autoSelectionKey(key,item.keyword);
+      AUTO_META.set(selectionKey,item);
+      if(item.isNew&&item.registration==="recommended")AUTO_SELECTED.add(selectionKey);
+      if(!item.keyword||existing.has(normal))return;existing.add(normal);
+      const c=classifyImported(item.keyword);
+      add.push({kw:item.keyword,gram:c.gram,intent:c.intent,pf:"네이버",mt:c.mt,src:"자동완성",registration:item.registration,isNew:item.isNew});
+    });
+    if(add.length)IMPORTED[key]=(IMPORTED[key]||[]).concat(add);
+  });
+  render();
+}
 function snapshotKeywordMap(period,key){
   const snapshot=(VOL_HISTORY.snapshots||{})[period]||{};
   const keywords=(((snapshot.products||{})[key]||{}).keywords)||{},mapped=new Map();
@@ -329,6 +359,27 @@ function moverPanel(key){
   const rows=report.rows.slice(0,key==="__all"?16:12);
   return `<div class="mover-panel"><div class="mover-head"><b>📈 ${report.previous}→${report.current} 신규·급상승 · ${scope}</b><span>${rows.length}개 후보 · 현재 키워드셋에 자동 반영됨</span></div>
     ${rows.length?`<div class="mover-list">${rows.map(row=>`<div class="mover ${row.kind}"><span class="kind">${row.kind==="new"?"신규":"급상승"}</span><b>${esc(row.keyword)}</b>${key==="__all"?`<span>${esc(row.productName)}</span>`:""}<span class="delta">${fmtVol(row.previous)}→${fmtVol(row.total)} · +${row.rate==null?"신규":Math.round(row.rate*100)+"%"}</span></div>`).join("")}</div>`:`<div style="font-size:11.5px;color:var(--muted)">설정한 기준을 충족한 후보가 없습니다.</div>`}</div>`;
+}
+function autocompleteOverviewPanel(){
+  const products=Object.values(AUTOCOMPLETE.products||{}),rows=products.flatMap(product=>product.suggestions||[]);
+  const newCount=rows.filter(row=>row.isNew).length,recommended=rows.filter(row=>row.registration==="recommended").length;
+  if(!AUTOCOMPLETE.asof)return `<div class="auto-panel"><div class="auto-head"><div><h3>네이버 자동완성 롱테일</h3><p>월간 수집 전입니다. 매월 1일 공개 검색 화면에서 새 제안을 수집합니다.</p></div></div></div>`;
+  return `<div class="auto-panel"><div class="auto-head"><div><h3>네이버 자동완성 롱테일 · ${esc(AUTOCOMPLETE.month||"")}</h3><p>${esc(AUTOCOMPLETE.asof)} 기준 · 상품을 선택하면 키워드별 신규 여부와 등록 판정을 확인할 수 있습니다.</p></div></div>
+    <div class="auto-summary"><div><b>${rows.length}</b><span>표시어</span></div><div><b>${newCount}</b><span>직전월 대비 신규</span></div><div><b>${recommended}</b><span>등록 추천 후보</span></div></div></div>`;
+}
+function autocompletePanel(p){
+  const rows=autocompleteRows(p.key),month=AUTOCOMPLETE.month||"수집 대기",previous=AUTOCOMPLETE.previousMonth;
+  if(!rows.length)return `<div class="auto-panel"><div class="auto-head"><div><h3>네이버 자동완성 롱테일</h3><p>${esc(month)} 기준 표시어가 없습니다. 다음 월간 수집에서 다시 확인합니다.</p></div></div></div>`;
+  const newCount=rows.filter(row=>row.isNew).length,recommended=rows.filter(row=>row.registration==="recommended").length;
+  const trows=rows.map(row=>{const selectionKey=autoSelectionKey(p.key,row.keyword),v=volOf(row.keyword),vol=v?(v.pc||0)+(v.mobile||0):null;
+    return `<tr><td class="c"><input class="auto-check" type="checkbox" data-auto-key="${esc(selectionKey)}" ${AUTO_SELECTED.has(selectionKey)?"checked":""} ${row.registration==="exclude"?"disabled":""} aria-label="${esc(row.keyword)} 선택"></td>
+      <td class="kw">${esc(row.keyword)}</td><td class="c">${row.isNew?'<span class="auto-state new">신규</span>':`<span class="auto-state base">${previous?"유지":"기준"}</span>`}</td>
+      <td class="c"><span class="auto-reg ${esc(row.registration)}">${row.registration==="recommended"?"등록 추천":row.registration==="review"?"관련성 확인":"운영 제외"}</span></td>
+      <td class="c gram">${esc(row.intent||"")}</td><td class="c gram">${vol==null?"—":fmtVol(vol)}</td><td class="c gram">${v?esc(v.comp||"—"):"—"}</td><td class="gram">${esc(row.reason||"")}</td></tr>`;}).join("");
+  return `<div class="auto-panel"><div class="auto-head"><div><h3>네이버 자동완성 롱테일 · ${esc(month)}</h3><p>${previous?`${esc(previous)} 대비 새로 등장한 검색어를 신규로 표시합니다.`:"이번 달은 최초 기준선입니다. 다음 달부터 신규를 구분합니다."} 자동완성 노출 자체가 저가·고성과를 보장하지 않아 검색량·경쟁도와 함께 판단합니다.</p></div>
+    <div class="auto-actions"><button class="btn" type="button" id="autoSelectNew">신규 추천 선택</button><button class="btn primary" type="button" id="autoExport">선택 키워드 등록 CSV</button></div></div>
+    <div class="auto-summary"><div><b>${rows.length}</b><span>자동완성 표시어</span></div><div><b>${newCount}</b><span>신규</span></div><div><b>${recommended}</b><span>등록 추천</span></div></div>
+    <div class="tbl-wrap" style="margin-top:10px"><table><thead><tr><th class="c">선택</th><th>키워드</th><th class="c">월 상태</th><th class="c">등록 판정</th><th class="c">의도</th><th class="c">월검색량</th><th class="c">경쟁도</th><th>판정 이유</th></tr></thead><tbody>${trows}</tbody></table></div></div>`;
 }
 function importKeywords(text){
   text=(text||"").trim(); if(!text)return;
@@ -381,6 +432,7 @@ function renderOverview(){
       ${kpi(pc.구글+pc.공통,"구글 우선","정보·롱테일 중심","var(--goo-ink)")}
       ${kpi(ic.거래,"거래형 키워드","가입·보험료·비교","var(--trx)")}
     </div>
+    ${autocompleteOverviewPanel()}
     ${moverPanel("__all")}
     <div class="sec-lbl">상품별 키워드 집합 <span style="font-weight:600;color:var(--muted);text-transform:none">· 카드를 클릭하면 상세</span></div>
     <div class="ov-grid">${cards}</div>
@@ -395,14 +447,15 @@ function renderOverview(){
 }
 function productBody(p){
   const rows=filt(rowsOf(p.key)),ic=intentCounts(rows),pc=pfCounts(rows);
-  const nvCnt=rows.filter(r=>r.src==="네이버").length;
+  const nvCnt=rows.filter(r=>["네이버","검색광고","자동완성"].includes(r.src)).length;
   const kpi=(n,l,col)=>`<div class="kpi"><div class="n"${col?` style="color:${col}"`:""}>${n}</div><div class="l">${l}</div></div>`;
   const vh=hasVol();
   const rows2=vh?rows.slice().sort((a,b)=>{const va=volOf(a.kw),vb=volOf(b.kw);return((vb?vb.pc+vb.mobile:-1)-(va?va.pc+va.mobile:-1));}):rows;
   const movement=new Map(monthlyMovers(p.key).rows.map(row=>[nk(row.keyword),row]));
-  const trows=rows2.map(r=>{const v=volOf(r.kw),move=movement.get(nk(r.kw)),vol=v?(v.pc||0)+(v.mobile||0):null;
-    return `<tr><td class="kw">${esc(r.kw)}${move?`<span class="move-tag">${move.kind==="new"?"신규":"▲ "+Math.round(move.rate*100)+"%"}</span>`:""}</td><td class="c"><span class="src ${r.src||"도구"}">${r.src||"도구"}</span></td><td class="c gram">${r.gram}단어</td><td class="c"><span class="pill ${r.intent}">${r.intent}</span></td><td class="c"><span class="pill ${r.pf}">${r.pf}</span></td><td class="c gram">${r.mt}</td>`+(vh?`<td class="c" style="font-family:var(--mono);font-weight:700">${vol!=null?fmtVol(vol):"—"}</td><td class="c gram">${v?esc(v.comp||"—"):"—"}</td>`:"")+`</tr>`;}).join("");
+  const trows=rows2.map(r=>{const v=volOf(r.kw),move=movement.get(nk(r.kw)),auto=AUTO_META.get(autoSelectionKey(p.key,r.kw)),vol=v?(v.pc||0)+(v.mobile||0):null;
+    return `<tr><td class="kw">${esc(r.kw)}${auto?.isNew?'<span class="move-tag">신규 자동완성</span>':move?`<span class="move-tag">${move.kind==="new"?"신규":"▲ "+Math.round(move.rate*100)+"%"}</span>`:""}</td><td class="c"><span class="src ${r.src||"도구"}">${r.src||"도구"}</span></td><td class="c gram">${r.gram}단어</td><td class="c"><span class="pill ${r.intent}">${r.intent}</span></td><td class="c"><span class="pill ${r.pf}">${r.pf}</span></td><td class="c gram">${r.mt}</td>`+(vh?`<td class="c" style="font-family:var(--mono);font-weight:700">${vol!=null?fmtVol(vol):"—"}</td><td class="c gram">${v?esc(v.comp||"—"):"—"}</td>`:"")+`</tr>`;}).join("");
   return `<div class="kpi-row">${kpi(rows.length,"총 키워드")}${kpi(nvCnt,"네이버 도구 추가","var(--nav-ink)")}${kpi(ic.거래+ic.담보,"거래·담보형","var(--trx)")}${kpi(pc.구글+pc.공통+ic.AI,"구글·AI","var(--goo-ink)")}</div>
+    ${autocompletePanel(p)}
     ${moverPanel(p.key)}
     <div class="sec-lbl">키워드셋 <span style="font-weight:600;color:var(--muted);text-transform:none">· 도구 생성 + 네이버 실시간 검색량(프록시) · 인텐트·플랫폼 자동 분류</span></div>
     <div class="tbl-wrap"><table><thead><tr><th>키워드</th><th class="c">출처</th><th class="c">구성</th><th class="c">인텐트</th><th class="c">추천 플랫폼</th><th class="c">매치타입</th>${vh?'<th class="c">월검색량</th><th class="c">경쟁도</th>':''}</tr></thead><tbody>${trows}</tbody></table></div>`;
@@ -467,7 +520,7 @@ function exportNaverBulk(){
   const vsum=kw=>{const v=volOf(kw);return v?((v.pc||0)+(v.mobile||0)):-1;};   // 검색량 합(없으면 -1 → 뒤로)
   const rows=[header]; let n=0;
   list.forEach(p=>{ if(!p)return;
-    const kws=filt(rowsOf(p.key)).filter(r=>r.pf!=="구글" && r.intent!=="AI"); // 네이버 파워링크 대상만
+    const kws=filt(rowsOf(p.key)).filter(r=>{const auto=AUTO_META.get(autoSelectionKey(p.key,r.kw));return r.pf!=="구글" && r.intent!=="AI" && (!auto||auto.registration==="recommended");}); // 자동완성 검토·제외 키워드는 선택 내보내기에서만 허용
     const by={}; kws.forEach(r=>{(by[r.intent]=by[r.intent]||[]).push(r);});
     const camp=`CM_파워링크_${p.name}`;
     const order=INTENT_ORDER.concat(Object.keys(by).filter(i=>!INTENT_ORDER.includes(i)));
@@ -484,8 +537,23 @@ function exportNaverBulk(){
   a.download=`네이버_내부검토_${nm}_${new Date().toISOString().slice(0,10)}.csv`;a.click();
   toast(`네이버 내부 검토용 · ${n}키워드 · 시작 입찰가 ${DEFAULT_BID}원`+(vh?" · 광고그룹 내 검색량순":"")+" · 공식 템플릿 확인 전 업로드 금지");
 }
+function exportSelectedAutocomplete(){
+  const list=curKey==="__all"?PRODUCTS:[getP(curKey)],rows=[["캠페인 유형","캠페인 이름","광고그룹 이름","키워드","키워드 입찰가","연결URL(PC)","연결URL(모바일)"]];
+  list.forEach(p=>{if(!p)return;autocompleteRows(p.key).forEach(row=>{
+    if(!AUTO_SELECTED.has(autoSelectionKey(p.key,row.keyword))||row.registration==="exclude")return;
+    rows.push(["파워링크",`CM_파워링크_${p.name}`,`${p.name} · 자동완성`,row.keyword,DEFAULT_BID,"",""]);
+  });});
+  if(rows.length===1){toast("먼저 등록할 자동완성 키워드를 선택하세요");return;}
+  const csv="﻿"+rows.map(row=>row.map(value=>`"${String(value).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+  const nm=curKey==="__all"?"전체":(getP(curKey)?.name||"상품");a.download=`네이버_자동완성_선택키워드_${nm}_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+  toast(`선택 키워드 ${rows.length-1}개 · 등록 전 상품 관련성과 입찰가를 확인하세요`);
+}
 
 document.addEventListener("click",e=>{
+  const autoInput=e.target.closest("[data-auto-key]");if(autoInput){autoInput.checked?AUTO_SELECTED.add(autoInput.dataset.autoKey):AUTO_SELECTED.delete(autoInput.dataset.autoKey);return;}
+  if(e.target.closest("#autoSelectNew")){const p=getP(curKey);if(!p)return;autocompleteRows(p.key).forEach(row=>{const key=autoSelectionKey(p.key,row.keyword);if(row.isNew&&row.registration==="recommended")AUTO_SELECTED.add(key);});render();toast("신규 등록 추천 키워드를 선택했습니다");return;}
+  if(e.target.closest("#autoExport")){exportSelectedAutocomplete();return;}
   const si=e.target.closest(".sb-item,[data-key]"); if(si&&si.dataset.key){curKey=si.dataset.key;render();return;}
   const sg=e.target.closest("#pfSeg button"); if(sg){pf=sg.dataset.pf;document.querySelectorAll("#pfSeg button").forEach(b=>b.classList.toggle("on",b===sg));render();return;}
 });
@@ -584,6 +652,8 @@ render();
 fetch("data/volume.json").then(r=>r.ok?r.json():null).then(d=>{if(d)applyVolumeData(d);}).catch(()=>{});
 // 월별 스냅샷이 2개 이상 쌓이면 신규·급상승 후보를 자동 계산한다.
 fetch("data/volume-history.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)applyVolumeHistory(d);}).catch(()=>{});
+// 공개 네이버 검색 화면의 월간 자동완성 표시어. 직전 수집월 대비 신규 여부를 데이터에 포함한다.
+fetch("data/keyword-autocomplete.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)applyAutocompleteData(d);}).catch(()=>{});
 </script>
 
 </body>

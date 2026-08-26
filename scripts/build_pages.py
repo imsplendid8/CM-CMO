@@ -12,6 +12,7 @@ PUBLIC_DATA = (
     "data/signals.json",
     "data/volume.json",
     "data/volume-history.json",
+    "data/keyword-autocomplete.json",
     "data/seasonal.json",
     "data/trends.json",
     "data/briefing/latest.json",

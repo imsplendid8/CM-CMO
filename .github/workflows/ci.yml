@@ -60,3 +60,8 @@ jobs:
         run: node scripts/check_powercontent.mjs
       - name: 월간 신규·급상승 키워드 판정 검증
         run: node scripts/check_keyword_monthly.mjs
+      - name: 월간 네이버 자동완성 신규·등록 판정 검증
+        run: |
+          node --check scripts/capture_naver_autocomplete.mjs
+          node --check scripts/keyword_autocomplete_core.mjs
+          node scripts/check_keyword_autocomplete.mjs

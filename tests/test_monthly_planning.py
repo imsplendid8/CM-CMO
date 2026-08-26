@@ -78,6 +78,20 @@ class TestMonthlyPlanningUiContract(unittest.TestCase):
         self.assertIn("RISING_MIN_RATE=.5", keyword)
         self.assertIn("data/volume-history.json", workflow)
 
+    def test_monthly_autocomplete_discovery_and_selected_export_contract(self):
+        keyword = self.read("keyword-tool.html")
+        workflow = self.read(".github/workflows/monthly-keyword-discovery.yml")
+        collector = self.read("scripts/capture_naver_autocomplete.mjs")
+        core = self.read("scripts/keyword_autocomplete_core.mjs")
+        pages = self.read("scripts/build_pages.py")
+        self.assertIn("data/keyword-autocomplete.json", keyword)
+        self.assertIn("선택 키워드 등록 CSV", keyword)
+        self.assertIn("registration===\"recommended\"", keyword)
+        self.assertIn('cron: "45 0 1 * *"', workflow)
+        self.assertIn("playwright-visible-ui", core)
+        self.assertIn("비공개 API", collector)
+        self.assertIn("data/keyword-autocomplete.json", pages)
+
     def test_seo_proposes_four_review_gated_faqs_without_retired_rich_result(self):
         seo = self.read("seo-audit.html")
         self.assertIn("function faqCandidates", seo)
