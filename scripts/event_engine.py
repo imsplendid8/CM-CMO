@@ -29,6 +29,7 @@ import re
 from datetime import date, datetime, timedelta, timezone
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MATERIAL_EXCLUDED_PRODUCTS = {"home"}
 KST = timezone(timedelta(hours=9))
 
 LEAD_DAYS = 21          # upcoming→emerging 경계(예정일 앞)
@@ -571,6 +572,8 @@ def run(bundle, today=None):
     recos, suppressed = [], 0
     for ev in events:
         for pk in ev.get("products", []):
+            if pk in MATERIAL_EXCLUDED_PRODUCTS:
+                continue
             r = make_reco(ev, pk, bundle, today, transition=trans_map.get(ev["id"]))
             if not r:
                 continue

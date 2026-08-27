@@ -286,7 +286,6 @@ function lintMessage(value){const findings=reviewAdText(value).findings.filter(f
 
 /* 상품별 소구 토큰 — 제목용 short(짧게), 설명용 usp(문장 조각), 담보 covers */
 const PRODUCTS=[
- {key:"home",cat:"사이트",name:"다이렉트 홈(브랜드)",al:"다이렉트",brand:"한화손보 다이렉트",short:["공식","간편가입","보험료"],usp:["담당 상품을 한곳에서 확인하고 간편하게","공식 채널에서 보험료 확인하고 바로"],covers:["운전자·장기 다이렉트"],blocked:["자동차보험"]},
  {key:"hrmf",cat:"장기",name:"주택화재보험",al:"화재보험",short:["누수·도난","주택맞춤","화재"],usp:["화재·누수·도난·배상책임까지","아파트·빌라·오피스텔 유형별 맞춤으로"],covers:["화재","누수","도난","일상배상책임"]},
  {key:"golf",cat:"장기",name:"골프보험",short:["홀인원","정찰제","선물하기"],usp:["홀인원 축하비용·골프용품까지","팀 단위 정찰제로 부담 없이"],covers:["홀인원 축하비용","골프용품손해","배상책임"]},
  {key:"cncr",cat:"장기",name:"암보험",short:["진단비","표적항암","비갱신"],usp:["암진단비·표적항암까지 든든하게","갱신·비갱신 골라 필요한 담보만"],covers:["암진단비","표적항암약물","항암방사선"]},
@@ -302,7 +301,6 @@ const PRODUCTS=[
 ];
 /* 시즌 캘린더 이슈(seasonal-tool과 동일 데이터) — m:월배열, tag:이슈, why:설명, kws:키워드 */
 let SEASONAL={
- home:[{m:[1,2],tag:"신년 보험 리모델링",why:"새해 재무점검으로 보험 재정비·비교 수요 증가.",kws:["보험 리모델링","보험 점검","다이렉트 보험 비교"]}],
  hrmf:[{m:[6,7,8],tag:"장마·집중호우·태풍",why:"장마·호우로 누수·침수·풍수재 사고 급증(대표 예: 7월 장마 누수).",kws:["누수","침수","풍수재","벽지 곰팡이"]},
   {m:[11,12,1,2],tag:"겨울 난방화재·동파",why:"전기장판·난로 등 난방기구 화재와 한파 동파 피해 증가.",kws:["전기장판 화재","동파","난방 화재"]},
   {m:[3,4],tag:"봄철 건조·산불",why:"건조기 화재·산불 위험 상승.",kws:["봄철 화재","건조 화재","산불"]}],
@@ -839,7 +837,7 @@ function weatherSection(p){
 
 /* ── 실측 월검색량(data/volume.json · 검색광고 API 주간 갱신) ── */
 let VOL={asof:null,products:{}};
-const OUT_OF_SCOPE_VOLUME=["자동차보험","자동차 보험","한화생명"];
+const OUT_OF_SCOPE_VOLUME=["자동차보험","자동차 보험","한화생명","TM","텔레마케팅"];
 function loadVolume(){return fetch("data/volume.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(m=>{if(m&&m.products)VOL=m;}).catch(()=>{});}
 function loadSeasonal(){return fetch("data/seasonal.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(m=>{if(m&&m.seasonal)SEASONAL=m.seasonal;}).catch(()=>{});}
 function volList(pkey){const kw=(VOL.products&&VOL.products[pkey]&&VOL.products[pkey].keywords)||{};
@@ -1013,7 +1011,7 @@ function render(){
     <div class="xbar">
       <button class="btn xbtn" id="xExcel">⬇ 심의안 + 추가소재 초안</button>
       <button class="btn" id="xAds">⬇ 현재 상품 내부 검토 CSV (${batch.length}/50)</button>
-      <button class="btn" id="xAllAds">⬇ 전체 13상품 내부 검토 CSV (650행)</button>
+      <button class="btn" id="xAllAds">전체 12상품 내부 검토 CSV (600행)</button>
       <span class="xnote">첨부 심의안 블록 + 네이버 확장소재 추가설명 제안 · <span style="color:var(--bad);font-weight:800">빨강=신규 T&amp;D</span></span>
     </div>
     <div class="specbar">
@@ -1046,7 +1044,7 @@ function render(){
 
   $("#xExcel").addEventListener("click",()=>exportXls(p));
   $("#xAds").addEventListener("click",()=>exportReviewAds([p],p.name));
-  $("#xAllAds").addEventListener("click",()=>exportReviewAds(PRODUCTS,"전체13상품"));
+  $("#xAllAds").addEventListener("click",()=>exportReviewAds(PRODUCTS,"전체12상품"));
   bindThumbnailMaker(p);
   renderSidebar();
 }

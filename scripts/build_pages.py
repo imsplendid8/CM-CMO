@@ -20,6 +20,7 @@ PUBLIC_DATA = (
     "data/events/recommendations.json",
     "data/seo/faq-opportunities.json",
     "data/adcopy/powercontent-title-opportunities.json",
+    "data/adcopy/powercontent-history.json",
 )
 PUBLIC_SERP_JSON = (
     "serp/manifest.json",

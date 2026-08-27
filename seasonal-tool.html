@@ -257,7 +257,6 @@ function seasonOf(ms){const m=ms[0];if([3,4,5].includes(m))return"spring";if([6,
 const SEASON={spring:["봄","var(--spring)","var(--spring-bg)"],summer:["여름","var(--summer)","var(--summer-bg)"],fall:["가을","var(--fall)","var(--fall-bg)"],winter:["겨울","var(--winter)","var(--winter-bg)"],year:["연중","var(--year)","var(--year-bg)"]};
 const MAIN=new Set(["driver","hrmf","golf"]); // 메인 상품군(운전자·주택화재·골프)
 const PRODUCTS=[
- {key:"home",cat:"사이트",name:"다이렉트 홈(브랜드)",core:["한화손보 다이렉트", "한화 다이렉트보험"]},
  {key:"hrmf",cat:"장기",name:"주택화재보험",core:["주택화재보험", "화재보험"]},
  {key:"golf",cat:"장기",name:"골프보험",core:["골프보험", "홀인원보험"]},
  {key:"cncr",cat:"장기",name:"암보험",core:["암보험", "다이렉트 암보험"]},
@@ -274,8 +273,6 @@ const PRODUCTS=[
 /* 시즈널 이슈 윈도우: m=월배열, tag, why(이슈), kws(키워드), act(선제 대응) */
 // 초기값 = file:// 오프라인 폴백. 배포 시 data/seasonal.json(엔진·캘린더 공유 단일 소스)으로 교체됨.
 let SEASONAL={
- home:[
-  {m:[1,2],tag:"신년 보험 리모델링",why:"새해 재무점검으로 보험 재정비·비교 수요 증가.",kws:["보험 리모델링","보험 점검","다이렉트 보험 비교"],act:"12월 말~1월 초 리모델링 랜딩 노출"}],
  hrmf:[
   {m:[6,7,8],tag:"장마·집중호우·태풍",why:"장마·호우로 누수·침수·풍수재 사고 급증(대표 예: 7월 장마 누수).",kws:["누수","침수","풍수재","주택화재보험 누수","벽지 곰팡이"],act:"6월 중순부터 ‘누수·풍수재 보장’ 검색광고·콘텐츠 선제 세팅"},
   {m:[11,12,1,2],tag:"겨울 난방화재·동파",why:"전기장판·난로 등 난방기구 화재와 한파 동파 피해 증가.",kws:["전기장판 화재","동파","겨울 화재보험","난방 화재"],act:"11월 초 겨울 화재예방 콘텐츠·특약 안내"},

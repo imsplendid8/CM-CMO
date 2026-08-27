@@ -229,11 +229,11 @@ const TOOLS=[
   desc:"대표키워드(PC) 네이버 검색결과를 매주 스크린샷 아카이빙하고, 전/후 시각 diff로 변화·경쟁사 소구포인트 분석.",
   feats:["주간 스크린샷 아카이브 + 전/후 비교","전/후 시각 diff 자동 변화감지","경쟁사 소구포인트·한화 상위노출 갭"]},
  {id:"adcopy",name:"SA소재",tag:"소재",file:"adcopy-tool.html",url:"https://imsplendid8.github.io/CM-CMO/adcopy-tool.html",ac:"#e8553d",
-   desc:"네이버 파워링크 구조를 참고한 내부 검토용 소재를 13상품×50행으로 생성합니다. 상품·준법·광고심의 확인 전에는 업로드하지 않습니다.",
-   feats:["13상품×50행·글자수·중복 자동 검증","시즌 캘린더+뉴스/SERP 근거를 롤링 풀에 합류","내부 검토 CSV · Excel 심의안 초안"]},
+   desc:"12개 보험종목의 검색 수요와 월간 SERP 흐름을 반영해 운영 검토용 소재를 생성합니다.",
+   feats:["12상품×50행·글자수·중복 자동 검증","시즌 캘린더+뉴스/SERP 근거를 롤링 풀에 합류","내부 검토 CSV · Excel 심의안 초안"]},
  {id:"power",name:"파워콘텐츠",tag:"콘텐츠",file:"powercontent-tool.html",url:"https://imsplendid8.github.io/CM-CMO/powercontent-tool.html",ac:"#6657d9",
-  desc:"SearchAd 검색수요에서 키워드를 고르고 콘텐츠 3안, 도입부, 본문 5개 섹션, FAQ와 광고 문안을 함께 제안합니다.",
-  feats:["대표·연관·본문 보조·시즌 키워드","콘텐츠 소재 3안 · 본문 5개 섹션 · FAQ 4개","전체 키워드셋 Excel · 콘텐츠 브리프 CSV"]},
+  desc:"월간 SERP와 검색 수요를 바탕으로 중복 없는 주제 3안, 1,500자 이상 원고, 이미지 4장과 하단 배너까지 구성합니다.",
+  feats:["과거 제안·검색의도 카니벌라이제이션 검사","본문 5개 섹션 · FAQ 4개 · 이미지 4장","전체 키워드셋 Excel · 발행 패키지 CSV"]},
  {id:"eventcal",name:"연간플랜",tag:"캘린더",file:"seasonal-tool.html",url:"https://imsplendid8.github.io/CM-CMO/seasonal-tool.html",ac:"#d6456f",
   desc:"선택월 실행안과 익월 준비안을 나란히 보고 시즌 이슈, 데이터랩 추세와 SearchAd 월검색량을 함께 검토합니다.",
   feats:["기준월 선택 + 당월 실행·익월 준비","연간 매트릭스·데이터랩 추세·SearchAd 검색량","상품별 시즌 대응과 소재 작업 연결"]},
@@ -248,7 +248,7 @@ function loadUsage(boxId){
     if(!u||!u.tracked){box.innerHTML="";return;}   // KV 미연결 → 위젯 숨김
     const meter=(name,cat,limit)=>{const used=(u.usage&&u.usage[cat])||0;const pct=limit?Math.min(100,used/limit*100):0;
       return `<div class="um${limit&&pct>85?" warn":""}"><div class="l"><span>${esc(name)}</span><span><b>${used.toLocaleString()}</b>${limit?" / "+limit.toLocaleString():" 건"}</span></div><div class="bar"><div class="fill" style="width:${limit?pct:8}%"></div></div></div>`;};
-    box.innerHTML=`<div class="usage"><div class="ut">📊 오늘 API 사용량 <span style="color:var(--muted);font-weight:600">· ${esc(u.date)} · 팀 전체 합산(프록시 경유)</span></div>
+    box.innerHTML=`<div class="usage"><div class="ut">오늘 API 사용량 <span style="color:var(--muted);font-weight:600">· ${esc(u.date)} · 팀 전체 합산(프록시 경유)</span></div>
       ${meter("네이버 검색","search",u.limits&&u.limits.search)}
       ${meter("데이터랩 트렌드","datalab",u.limits&&u.limits.datalab)}
       ${meter("검색광고","searchad",u.limits&&u.limits.searchad)}
@@ -364,10 +364,10 @@ function closeSheet(){document.getElementById("sheetMask").classList.remove("on"
 function toggleSheet(){document.getElementById("sheet").classList.contains("on")?closeSheet():openSheet();}
 function renderHome(){
   home.innerHTML=`<div class="home-wrap">
-    <section class="home-hero" aria-labelledby="homeTitle"><div><div class="home-eyebrow">CM Marketing Workspace</div><h1 id="homeTitle">오늘의 근거를<br>실행 가능한 소재로</h1><p>월간 플랜, 실제 검색 수요, 뉴스와 경쟁 소재를 한 흐름으로 검토하고 승인 가능한 초안을 만듭니다.</p></div>
-      <div class="quick-actions" aria-label="빠른 시작"><button data-tool="eventcal">${ICON.eventcal}<span>이번 달 플랜 보기</span></button><button data-tool="kw">${ICON.kw}<span>급상승 키워드</span></button><button data-tool="adcopy">${ICON.adcopy}<span>SA 소재 만들기</span></button><button data-tool="power">${ICON.power}<span>파워콘텐츠 브리프</span></button></div></section>
+    <section class="home-hero" aria-labelledby="homeTitle"><div><div class="home-eyebrow">CM SEARCH OPERATIONS · 2026</div><h1 id="homeTitle">검색 마케팅<br>운영실</h1><p>연간 플랜과 검색 수요를 확인하고, 실제 SERP 흐름을 SA 소재와 파워콘텐츠 발행안에 연결합니다.</p></div>
+      <div class="quick-actions" aria-label="빠른 시작"><button data-tool="eventcal">${ICON.eventcal}<span>이번 달 운영 플랜</span></button><button data-tool="kw">${ICON.kw}<span>신규·급상승 키워드</span></button><button data-tool="adcopy">${ICON.adcopy}<span>SA 소재 검토</span></button><button data-tool="power">${ICON.power}<span>파워콘텐츠 발행안</span></button></div></section>
     <div id="usageBox"></div>
-    <section class="workflow" aria-labelledby="workflowTitle"><h2 id="workflowTitle">오늘의 업무 흐름</h2><p>근거를 찾고 검토한 뒤, 승인 가능한 소재로 연결합니다.</p>
+    <section class="workflow" aria-labelledby="workflowTitle"><h2 id="workflowTitle">운영 흐름</h2><p>수요 발견부터 경쟁 검토, 소재 제작까지 같은 기준월로 이어집니다.</p>
       <div class="workflow-steps">
         <div class="workflow-step"><h3>발견</h3><div class="workflow-links"><button data-tool="kw">키워드</button><button data-tool="news">뉴스</button><button data-tool="eventcal">시즌·이벤트</button></div></div>
         <div class="workflow-step"><h3>검토</h3><div class="workflow-links"><button data-tool="serp">경쟁 소재</button><button data-tool="seo">SEO</button></div></div>
@@ -378,7 +378,7 @@ function renderHome(){
       <div class="card-top"><div class="ico">${ICON[t.id]||t.icon}</div><span class="card-kicker">${esc(t.tag)}</span></div><h2>${esc(t.name)}</h2>
       <div class="desc">${esc(t.desc)}</div>
       <div class="go">열기 →</div></div>`).join("")}</div>
-    <div class="foot"><b>연결 구조</b> · 위 업무 흐름과 상단 메뉴에서 각 작업공간으로 전환합니다. 주요 분석·소재 도구는 같은 13개 상품 마스터를 공유합니다. · <a href="${WIKI}" target="_blank" rel="noopener noreferrer">📖 위키</a><br>
+    <div class="foot"><b>연결 구조</b> · 모니터링은 13개 마스터를, 키워드·소재 생성은 다이렉트 홈을 제외한 12개 보험종목을 사용합니다. · <a href="${WIKI}" target="_blank" rel="noopener noreferrer">운영 위키</a><br>
     자료 기준일은 각 화면에서 확인하세요. 광고 문구는 심의 후 사용합니다.</div>
   </div>`;
   loadDataHealth();

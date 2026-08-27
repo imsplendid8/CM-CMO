@@ -86,6 +86,21 @@ class TestSerpCopyAgent(unittest.TestCase):
         for asset in set(august_assets + september_assets):
             self.assertTrue((ROOT / asset).is_file(), asset)
 
+    def test_monthly_power_topics_rotate_without_repeating_the_same_three(self):
+        agent = module("serp_copy_agent")
+        product = {"key": "driver", "name": "운전자보험", "serpKw": "운전자보험",
+                   "core": ["운전자보험"], "special": ["벌금", "변호사선임", "교통사고"]}
+        products = {"products": [product]}
+        analysis = {"products": {"driver": {"observed_ads": [
+            {"date": "2026-08-24", "brand": "A", "title": "운전자보험 보장 확인"}]}}}
+        august = agent.generate(products, analysis, {}, planning_month="2026-08")["products"][0]
+        september = agent.generate(products, analysis, {}, planning_month="2026-09")["products"][0]
+        august_topics = {row["pattern"] for row in august["power_content_topics"]}
+        september_topics = {row["pattern"] for row in september["power_content_topics"]}
+        self.assertEqual(len(august_topics), 3)
+        self.assertEqual(len(september_topics), 3)
+        self.assertNotEqual(august_topics, september_topics)
+
     def test_monthly_thumbnail_workflow_archives_and_redeploys(self):
         workflow = (ROOT / ".github/workflows/monthly-image-plan.yml").read_text(encoding="utf-8")
         pages = (ROOT / ".github/workflows/pages.yml").read_text(encoding="utf-8")

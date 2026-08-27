@@ -255,6 +255,8 @@ def generate(
         "scope_limited": "검색 범위를 좁혀 전체 수요보다 노출 기회가 작을 수 있음",
     }
     for product in products.get("products", []):
+        if product.get("key") == "home" or product.get("cat") == "사이트":
+            continue
         rows = opportunity_rows(product, volume, faq)
         candidates = []
         private_rows: dict[tuple[str, str], float] = {}

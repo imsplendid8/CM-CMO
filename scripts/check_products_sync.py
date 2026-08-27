@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 """상품 마스터 드리프트 검사 — data/products.json 이 단일 소스.
 
-각 도구 HTML의 인라인 `PRODUCTS`에 캐노니컬 13개 상품이 모두 있고
-key별 name·cat 이 data/products.json 과 일치하는지 확인한다(자체완결 HTML 원칙상
-런타임 공유 대신 이 검사로 동기화를 강제). CI(.github/workflows/ci.yml)에서 실행.
+각 도구 HTML의 인라인 `PRODUCTS`가 data/products.json 과 일치하는지 확인한다.
+생성 도구는 보험종목이 아닌 `home`을 의도적으로 제외하며, 모니터링·SEO 도구는
+전체 캐노니컬 상품을 유지한다. 자체완결 HTML 원칙상 런타임 공유 대신 이 검사로
+동기화를 강제한다. CI(.github/workflows/ci.yml)에서 실행.
 
 사용: python3 scripts/check_products_sync.py   (불일치 시 exit 1)
 """
@@ -13,6 +14,12 @@ import json, re, sys, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FILES = ["seo-audit.html", "keyword-tool.html", "news-tool.html", "serp-tool.html", "seasonal-tool.html", "adcopy-tool.html", "powercontent-tool.html"]
 ALLOWED_EXTRA = {"pro", "__pro", "__all"}   # 범용 생성기 등 도구별 허용 키
+TOOL_EXCLUDED = {
+    "keyword-tool.html": {"home"},
+    "seasonal-tool.html": {"home"},
+    "adcopy-tool.html": {"home"},
+    "powercontent-tool.html": {"home"},
+}
 
 def canonical():
     d = json.load(open(os.path.join(ROOT, "data/products.json"), encoding="utf-8"))
@@ -50,7 +57,12 @@ def main():
             errors.append(f"[{f}] PRODUCTS 배열을 찾지 못함"); continue
         # 표준 cat 체계(사이트/장기/일반)를 쓰는 도구만 name·cat 까지 강제, 그 외(seo-audit)는 키 집합만
         standardized = {v["cat"] for v in prods.values() if v["cat"]} <= canon_cats
+        excluded = TOOL_EXCLUDED.get(f, set())
         for key, cv in canon.items():
+            if key in excluded:
+                if key in prods:
+                    errors.append(f"[{f}] 생성 제외 상품 '{key}'가 노출됨")
+                continue
             if key not in prods:
                 errors.append(f"[{f}] 상품 '{key}' 누락"); continue
             if standardized:
@@ -67,7 +79,7 @@ def main():
         for e in errors:
             print("  - " + e, file=sys.stderr)
         sys.exit(1)
-    print(f"✔ 상품 마스터 동기화 OK — {len(FILES)}개 도구 × {len(canon)}개 상품 일치")
+    print(f"✔ 상품 마스터 동기화 OK — 모니터링 {len(canon)}개 · 생성 {len(canon) - 1}개")
 
 if __name__ == "__main__":
     main()

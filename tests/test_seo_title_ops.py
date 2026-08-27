@@ -109,7 +109,8 @@ class TestSeoTitleOps(unittest.TestCase):
 
     def test_repository_output_contract(self):
         payload = json.loads((ROOT / "data/adcopy/powercontent-title-opportunities.json").read_text(encoding="utf-8"))
-        self.assertEqual(len(payload["products"]), 13)
+        self.assertEqual(len(payload["products"]), 12)
+        self.assertNotIn("home", {row["product_key"] for row in payload["products"]})
         self.assertEqual(self.agent.validate(payload), [])
         workflow = (ROOT / ".github/workflows/content-intelligence.yml").read_text(encoding="utf-8")
         seo_page = (ROOT / "seo-audit.html").read_text(encoding="utf-8")

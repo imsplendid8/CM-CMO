@@ -23,9 +23,9 @@ vm.runInContext(insuranceAdReview, context, { filename: "shared/insurance-ad-rev
 vm.runInContext(
   `${pureSection}
   ;globalThis.__POWER_CHECK__={
-    PRODUCTS,titleCandidates,reviewPowerMaterial,volumeRows,inScope,clen,keywordPlan,introFor,
+    PRODUCTS,titleCandidates,candidateCannibalization,sameCurrentTopic,reviewPowerMaterial,volumeRows,inScope,clen,keywordPlan,introFor,
     contentBriefFor,contentKeywordSet,visualPlanFor,
-    setData:(volume,seasonal,titles,serp)=>{DATA={volume,seasonal,titles,serp};}
+    setData:(volume,seasonal,titles,serp,history)=>{DATA={volume,seasonal,titles,serp,history};}
   };`,
   context,
   { filename: "powercontent-tool.html" },
@@ -33,20 +33,32 @@ vm.runInContext(
 
 const check = context.__POWER_CHECK__;
 const readJson = (path) => JSON.parse(fs.readFileSync(new URL(path, root), "utf8"));
+const volumeData = readJson("data/volume.json");
+const seasonalData = readJson("data/seasonal.json");
+const titleData = readJson("data/adcopy/powercontent-title-opportunities.json");
+const serpData = readJson("data/adcopy/serp-candidates.json");
+const historyData = readJson("data/adcopy/powercontent-history.json");
 check.setData(
-  readJson("data/volume.json"),
-  readJson("data/seasonal.json"),
-  readJson("data/adcopy/powercontent-title-opportunities.json"),
-  readJson("data/adcopy/serp-candidates.json"),
+  volumeData,
+  seasonalData,
+  titleData,
+  serpData,
+  historyData,
 );
 
-if (check.PRODUCTS.length !== 13) throw new Error(`상품 수 불일치: ${check.PRODUCTS.length}개`);
+if (check.PRODUCTS.length !== 12) throw new Error(`상품 수 불일치: ${check.PRODUCTS.length}개`);
 const forbidden = /자동차\s*보험|공개\s*관측|한화생명|고객센터|라이나|영업배상책임|재난배상책임/;
 const forbiddenKeyword = /삼성|DB|디비|동부|현대|KB|메리츠|라이나|AXA|악사|흥국|롯데|신한/;
 
 for (const product of check.PRODUCTS) {
   const candidates = check.titleCandidates(product);
   if (candidates.length !== 3) throw new Error(`${product.name}: 콘텐츠 소재 ${candidates.length}개 (기대 3개)`);
+  if (candidates.some((candidate) => check.candidateCannibalization(product, candidate))) {
+    throw new Error(`${product.name}: 과거 제안과 카니벌라이제이션 발생`);
+  }
+  if (candidates.some((candidate, index) => candidates.slice(0, index).some((old) => check.sameCurrentTopic(old, candidate)))) {
+    throw new Error(`${product.name}: 현재 콘텐츠 3안 사이 주제 중복`);
+  }
   for (const candidate of candidates) {
     const titleLength = check.clen(candidate.title);
     if (titleLength < 7 || titleLength > 28) throw new Error(`${product.name}: 제목 ${titleLength}자`);
@@ -120,4 +132,18 @@ for (const category of ["대표", "실측 연관", "담보·상황", "의사결�
 }
 console.log(`OK  운전자보험 전체 키워드셋 ${driverSet.length}개 · 중복/범위/Excel 필드 검증`);
 
-console.log("OK  파워콘텐츠 13상품 콘텐츠 제안 품질 가드 통과");
+const sample = check.titleCandidates(driver)[0];
+check.setData(volumeData, seasonalData, titleData, serpData, { entries: [{
+  product_key: driver.key,
+  planning_month: "2026-07",
+  title: sample.title,
+  target_query: sample.target_query,
+  angle: sample.angle || sample.pattern,
+  sections: sample.sections || [],
+}] });
+if (!check.candidateCannibalization(driver, sample)) {
+  throw new Error("운전자보험 과거 동일 제안 카니벌라이제이션을 감지하지 못함");
+}
+console.log("OK  과거 제목·검색의도·본문 각도 카니벌라이제이션 감지");
+
+console.log("OK  파워콘텐츠 12상품 콘텐츠 제안 품질 가드 통과");

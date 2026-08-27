@@ -193,7 +193,6 @@ td.kw{font-weight:700;color:var(--ink);white-space:normal;} td.c{text-align:cent
 "use strict";
 /* 상품(광고그룹) · 시드 키워드 · 담보 키워드 · 검색수요 tier */
 const PRODUCTS=[
- {key:"home",cat:"사이트",name:"다이렉트 홈(브랜드)",tier:"대형",core:["한화손보 다이렉트","한화 다이렉트보험","한화손해보험 다이렉트"],special:["운전자보험","장기보험","다이렉트보험"],excluded:["자동차보험"]},
  {key:"hrmf",cat:"장기",name:"주택화재보험",tier:"대형",core:["주택화재보험","화재보험","다이렉트 화재보험"],special:["풍수재","스크린홀인원","임시거주비","누수","도난"]},
  {key:"golf",cat:"장기",name:"골프보험",tier:"중형",core:["골프보험","홀인원보험","다이렉트 골프보험"],special:["홀인원","배상책임","캐디","용품손해"]},
  {key:"cncr",cat:"장기",name:"암보험",tier:"중형",core:["암보험","다이렉트 암보험","내가고른 암보험"],special:["유사암","진단비","소액암","표적항암","재발암"]},
@@ -215,6 +214,7 @@ const MODS=[
 ];
 const AGES=["20대","30대","40대","50대","60대"];
 const TIER_IDX={대형:92,중형:55,니치:24};
+const BUSINESS_EXCLUDED=/\bTM\b|텔레마케팅/i;
 
 const $=(s,el=document)=>el.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
@@ -229,7 +229,7 @@ function genKeywords(p){
     const mt = gram>=3 ? "구문" : (intent==="거래"?"구문":intent==="정보"?"확장":intent==="브랜드"?"일치":"구문");
     return [pf,mt];
   };
-  const push=(kw,gram,intent,pfO,mtO)=>{kw=kw.trim().replace(/\s+/g," ");if(!kw||seen.has(kw))return;seen.add(kw);
+  const push=(kw,gram,intent,pfO,mtO)=>{kw=kw.trim().replace(/\s+/g," ");if(!kw||BUSINESS_EXCLUDED.test(kw)||seen.has(kw))return;seen.add(kw);
     let pf,mt; if(pfO){pf=pfO;mt=mtO||"대화형";}else{[pf,mt]=rule(intent,gram);} rows.push({kw,gram,intent,pf,mt});};
   p.core.forEach(c=>push(c,c.split(" ").length,"거래"));           // 시드·동의어
   MODS.forEach(g=>g.words.forEach(w=>{push(`${core} ${w}`,2,g.intent);if(g.front)push(`${w} ${core}`,2,g.intent);}));
@@ -282,7 +282,7 @@ function importMap(map,target){
   const add=[];
   Object.keys(map).forEach(k=>{const key=nk(k);const v=map[k]||{};
     if(v.pc!=null||v.mobile!=null)VOL[key]={pc:v.pc||0,mobile:v.mobile||0,comp:v.comp||""};   // 검색량 있으면 함께 반영
-    if(!k.trim()||existing.has(key))return;existing.add(key);
+    if(!k.trim()||BUSINESS_EXCLUDED.test(k)||existing.has(key))return;existing.add(key);
     const c=classifyImported(k);add.push({kw:k.trim(),gram:c.gram,intent:c.intent,pf:c.pf,mt:c.mt,src:"네이버"});
   });
   IMPORTED[target]=(IMPORTED[target]||[]).concat(add);
@@ -299,7 +299,7 @@ function applyVolumeData(vd){
     const add=[];
     Object.keys(map).forEach(k=>{const nkey=nk(k);const v=map[k]||{};
       if(v.pc!=null||v.mobile!=null)VOL[nkey]={pc:v.pc||0,mobile:v.mobile||0,comp:v.comp||""};
-      if(!k.trim()||existing.has(nkey))return;existing.add(nkey);
+      if(!k.trim()||BUSINESS_EXCLUDED.test(k)||existing.has(nkey))return;existing.add(nkey);
       const c=classifyImported(k);add.push({kw:k.trim(),gram:c.gram,intent:c.intent,pf:c.pf,mt:c.mt,src:"검색광고"});
     });
     if(add.length)IMPORTED[key]=(IMPORTED[key]||[]).concat(add);
@@ -322,7 +322,7 @@ function applyAutocompleteData(data){
       const normal=nk(item.keyword),selectionKey=autoSelectionKey(key,item.keyword);
       AUTO_META.set(selectionKey,item);
       if(item.isNew&&item.registration==="recommended")AUTO_SELECTED.add(selectionKey);
-      if(!item.keyword||existing.has(normal))return;existing.add(normal);
+      if(!item.keyword||BUSINESS_EXCLUDED.test(item.keyword)||existing.has(normal))return;existing.add(normal);
       const c=classifyImported(item.keyword);
       add.push({kw:item.keyword,gram:c.gram,intent:c.intent,pf:"네이버",mt:c.mt,src:"자동완성",registration:item.registration,isNew:item.isNew});
     });

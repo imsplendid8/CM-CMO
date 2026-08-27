@@ -25,8 +25,16 @@ class TestAdcopyContract(unittest.TestCase):
         for removed in ("공식 템플릿 열 매핑", "NAVER_TEMPLATE", 'id="xOfficial"', 'id="naverTpl"', "필수 열 매핑 실패"):
             self.assertNotIn(removed, ADCOPY)
 
-    def test_ci_runs_650_row_validation(self):
+    def test_ci_runs_600_row_validation(self):
         self.assertIn("node scripts/check_adcopy_export.mjs", CI)
+
+    def test_generation_excludes_brand_home_and_tm(self):
+        seasonal = (ROOT / "seasonal-tool.html").read_text(encoding="utf-8")
+        for page in (ADCOPY, POWER, KEYWORD, seasonal):
+            self.assertNotIn('{key:"home"', page)
+        self.assertIn("TM", ADCOPY)
+        self.assertIn("TM", POWER)
+        self.assertIn("BUSINESS_EXCLUDED", KEYWORD)
 
     def test_serp_monitoring_changes_generated_sa_without_copying_claims(self):
         self.assertIn("function serpIdeas(p)", ADCOPY)
@@ -36,7 +44,7 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn('strategy:"검색 의도 연결"', ADCOPY)
         self.assertIn('strategy:"담보 탐색"', ADCOPY)
         self.assertIn("실제 반영된 SA 소재", ADCOPY)
-        self.assertIn('const OUT_OF_SCOPE_VOLUME=["자동차보험","자동차 보험","한화생명"]', ADCOPY)
+        self.assertIn('const OUT_OF_SCOPE_VOLUME=["자동차보험","자동차 보험","한화생명","TM","텔레마케팅"]', ADCOPY)
         self.assertNotIn("공개 광고 관측", ADCOPY)
         self.assertNotIn("공개 SERP 관측", ADCOPY)
         self.assertIn("SERP 분석 반영", ADCOPY)
@@ -99,6 +107,9 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn("파워콘텐츠 소재", POWER)
         self.assertIn("const POWER_SPEC=MATERIAL_SPEC.powerContent", POWER)
         self.assertIn("data/adcopy/powercontent-title-opportunities.json", POWER)
+        self.assertIn("data/adcopy/powercontent-history.json", POWER)
+        self.assertIn("function candidateCannibalization", POWER)
+        self.assertIn("반복·카니벌라이제이션 검사", POWER)
         self.assertNotIn("data/evidence/claims.json", POWER)
         self.assertIn("1. 키워드 전략", POWER)
         self.assertIn("2. 콘텐츠 소재 3안", POWER)

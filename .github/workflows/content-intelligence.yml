@@ -22,6 +22,8 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
+      - name: 기존 파워콘텐츠 제안 이력 보존
+        run: python scripts/powercontent_history.py
       - name: SERP 분석과 소재 입력 신호 생성
         run: |
           python scripts/serp_analysis.py
@@ -43,7 +45,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add serp/ad_analysis.json data/adcopy/serp-candidates.json data/adcopy/powercontent-title-opportunities.json data/seo/faq-opportunities.json
+          git add serp/ad_analysis.json data/adcopy/serp-candidates.json data/adcopy/powercontent-title-opportunities.json data/adcopy/powercontent-history.json data/seo/faq-opportunities.json
           git diff --cached --quiet && exit 0
           git commit -m "chore(content): SERP 소재 입력·FAQ 기회 갱신 $(date -u +%F)"
           for attempt in 1 2 3; do

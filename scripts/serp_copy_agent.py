@@ -286,16 +286,37 @@ def image_directions(product, angle, patterns, basis, planning_month):
     } for index, asset in enumerate(assets)]
 
 
-def power_topics(product, keyword, angle, table_stakes, basis):
+def power_topics(product, keyword, angle, table_stakes, basis, planning_month):
     name = product.get("serpKw") or product["name"]
     second = (table_stakes or product.get("special") or [angle])[0]
     specs = [
-        ("serp_gap", f"{keyword}, 가입 전 {angle} 확인하는 순서", "가입 전 준비", angle),
-        ("coverage_question", f"{angle} 관련 특약은 무엇을 확인해야 할까", "보장 정보 탐색", angle),
-        ("decision_guide", f"{name} 보험료와 가입조건 확인 순서", "비교·의사결정", second),
+        ("serp_gap", f"{keyword}, 가입 전 {angle} 확인하는 순서", "가입 전 준비", angle,
+         [f"{angle}이 필요한 상황", "지급사유와 보장하지 않는 경우", "가입 전 확인 순서", "최종 체크리스트"]),
+        ("coverage_question", f"{angle} 특약의 보장 범위를 읽는 방법", "보장 정보 탐색", angle,
+         [f"{angle} 특약을 찾는 이유", "약관의 지급사유 읽기", "한도·기간·제외 조건", "청약 화면과 대조하기"]),
+        ("decision_guide", f"{name} 보험료와 가입조건 확인 순서", "비교·의사결정", second,
+         ["가입 목적 먼저 정하기", "같은 담보 조건으로 맞추기", "보험료에 영향을 주는 항목", "최종 선택 전 확인"]),
+        ("exclusion_guide", f"{name} 보장하지 않는 경우 찾는 법", "약관 정보 탐색", angle,
+         ["보장 내용과 제외 조건 함께 보기", "면책·감액기간 확인", "알릴 의무 확인", "궁금한 조항 기록하기"]),
+        ("claim_ready", f"{name} 청구 전에 준비할 체크리스트", "청구 준비", second,
+         ["사고 직후 기록할 내용", "필요 서류 확인", "청구 절차와 기한", "접수 전 최종 점검"]),
+        ("audience_fit", f"{name}, 내 상황에 필요한지 판단하는 법", "필요성 판단", angle,
+         ["대비하려는 상황 정의", "현재 보장과 겹치는 항목", "필요한 기간과 범위", "가입 여부 판단 질문"]),
+        ("terms_navigation", f"{name} 약관에서 먼저 찾아볼 항목", "약관 정보 탐색", angle,
+         ["약관 목차 활용하기", "용어 정의 먼저 읽기", "지급사유와 제외 조항 연결", "확인한 기준일 기록"]),
+        ("renewal_period", f"{name} 보험기간과 갱신 조건 보는 법", "계약 조건 탐색", second,
+         ["보험기간과 납입기간 구분", "갱신 여부 확인", "보험료 변경 가능성", "장기 유지 가능성 점검"]),
+        ("search_to_contract", f"{keyword} 검색 뒤 청약까지 확인할 것", "가입 전 준비", angle,
+         ["검색 결과에서 질문 만들기", "상품설명서와 약관 대조", "보험료 계산 조건 확인", "청약 내용 최종 검토"]),
     ]
+    try:
+        year, month = (int(value) for value in str(planning_month).split("-")[:2])
+    except (TypeError, ValueError):
+        year, month = date.today().year, date.today().month
+    offset = (year * 12 + month + sum(ord(char) for char in product["key"])) % len(specs)
+    specs = (specs[offset:] + specs[:offset])[:3]
     rows = []
-    for index, (pattern, title, intent, focus) in enumerate(specs, 1):
+    for index, (pattern, title, intent, focus, sections) in enumerate(specs, 1):
         rows.append({
             "id": f"{product['key']}-serp-topic-{index}",
             "pattern": pattern,
@@ -304,7 +325,7 @@ def power_topics(product, keyword, angle, table_stakes, basis):
             "intent": intent,
             "focus": focus,
             "angle": f"경쟁 광고의 짧은 보장 나열에서 빠진 ‘{focus} 확인 기준’을 실제 생활 질문으로 확장",
-            "sections": [f"{keyword} 검색자가 먼저 묻는 것", f"{focus} 지급사유와 제외 조건", "보험료·가입조건을 같은 기준으로 보는 법", "가입 전 최종 체크리스트"],
+            "sections": sections,
             "faq": [f"{focus} 관련 내용은 무엇을 확인해야 하나요?", f"{name} 보험료는 무엇에 따라 달라지나요?"],
             "image_brief": f"{SCENES.get(product['key'], SCENES['home'])[index-1]}. 텍스트·숫자·로고 없이 프리미엄 3D 애니메이션으로 표현.",
             "serp_basis": basis,
@@ -339,7 +360,7 @@ def generate(products, analysis, volume, manifest=None, dom=None, planning_month
         table_stakes = list(dict.fromkeys([*common, *observed_angles]))[:3]
         sa = sa_recommendations(product, keyword, angle, table_stakes, basis)
         images = image_directions(product, angle, patterns, basis, plan_month)
-        topics = power_topics(product, keyword, angle, table_stakes, basis)
+        topics = power_topics(product, keyword, angle, table_stakes, basis, plan_month)
         output.append({
             "product_key": product["key"],
             "month": plan_month,

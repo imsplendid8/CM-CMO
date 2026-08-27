@@ -23,7 +23,7 @@ Modooflow는 13개 보험상품의 SEO·키워드·뉴스·SERP·시즌·광고�
 | `news-tool.html` | 뉴스 모니터링과 클리핑 | 운영 |
 | `serp-tool.html` | 검색결과 캡처·diff·광고 관측 | 운영 |
 | `seasonal-tool.html` | 시즌·이벤트 추천과 상태 전이 | 운영 |
-| `adcopy-tool.html` | 소재 후보, 검토 상태, 심의안·내부 검토용 50/650행 내보내기 | 제품화 |
+| `adcopy-tool.html` | 12개 보험종목 소재 후보, 검토 상태, 심의안·내부 검토용 50/600행 내보내기 | 제품화 |
 | `powercontent-tool.html` | 키워드 전략, 콘텐츠 3안, 본문 5개 섹션·FAQ·광고 문안 브리프 | 제품화 |
 | `overview.html` | 전체 기능 안내 | 운영 |
 
@@ -34,7 +34,7 @@ Modooflow는 13개 보험상품의 SEO·키워드·뉴스·SERP·시즌·광고�
 - 정본: `data/products.json`
 - 총 13개 상품
 - `scripts/check_products_sync.py`가 7개 상품 기반 화면의 키·이름 드리프트를 검사
-- 광고소재 검증: `scripts/check_adcopy_export.mjs`가 상품별 50행, 총 650행과 길이·금지어·중복을 검사
+- 광고소재 검증: `scripts/check_adcopy_export.mjs`가 보험종목별 50행, 총 600행과 길이·금지어·중복을 검사
 
 ## Secret과 프록시
 
@@ -68,7 +68,7 @@ Modooflow는 13개 보험상품의 SEO·키워드·뉴스·SERP·시즌·광고�
 | `searchad.yml` | 주간 검색량 | 데이터 신선도에 포함 |
 | `trends.yml` | 월간 트렌드 | 데이터 신선도에 포함 |
 | `serp-capture.yml` | 주간 SERP 캡처 | 데이터 신선도에 포함 |
-| `ci.yml` | 테스트, 전체 HTML/공유 JS, 상품·650행 계약 검사 | PR #24 성공 |
+| `ci.yml` | 테스트, 전체 HTML/공유 JS, 상품·600행 계약 검사 | 운영 중 |
 
 과거 Daily Brief 실패 원인은 `signals.weather.active`에 문자열이 들어왔는데 객체로 가정한 것이었다. 현재 브랜치에서 문자열·객체 혼재와 잘못된 상위 데이터 형식을 방어하고 회귀 테스트를 추가했다.
 

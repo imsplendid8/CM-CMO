@@ -113,6 +113,13 @@ class TestRecommendation(unittest.TestCase):
                    TODAY)["recommendations"]
         self.assertTrue([x for x in r if x["event_id"] == "novel" and x["product"] == "cncr"])
 
+    def test_brand_home_never_becomes_material_recommendation(self):
+        data = bundle(calendar=[{"id": "brand", "type": "브랜드", "name": "신년",
+                               "start": "2026-07-01", "end": "2026-08-30",
+                               "products": ["home"], "keywords": ["신년"]}])
+        data["products"]["home"] = {"key": "home", "name": "다이렉트 홈", "newsQuery": "한화손보"}
+        self.assertEqual(ee.run(data, TODAY)["recommendations"], [])
+
 
 class TestFingerprintCooldown(unittest.TestCase):
     def test_fingerprint_same_for_ending_only_change(self):

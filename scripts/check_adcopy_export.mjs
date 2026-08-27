@@ -23,8 +23,8 @@ vm.runInContext(
 );
 
 const { PRODUCTS, buildSheet, buildNaverRows, validateNaverRow, setPlanMonth } = context.__AD_CHECK__;
-if (PRODUCTS.length !== 13) {
-  throw new Error(`상품 수 불일치: ${PRODUCTS.length}개 (기대 13개)`);
+if (PRODUCTS.length !== 12) {
+  throw new Error(`상품 수 불일치: ${PRODUCTS.length}개 (기대 12개)`);
 }
 
 setPlanMonth(8);
@@ -79,6 +79,6 @@ for (const product of PRODUCTS) {
   console.log(`OK  ${product.name}: 50행`);
 }
 
-if (total !== 650) throw new Error(`전체 행 수 불일치: ${total}행 (기대 650행)`);
+if (total !== 600) throw new Error(`전체 행 수 불일치: ${total}행 (기대 600행)`);
 console.log(`OK  전체 ${PRODUCTS.length}상품 × 50행 = ${total}행`);
 console.log("OK  선택월·익월 밖 시즌 소재 제외 (8월→9월, 신년 문구 없음)");

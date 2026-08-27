@@ -8,60 +8,6 @@
   },
   "products": [
     {
-      "product_key": "home",
-      "status": "blocked_gsc",
-      "authority_band": "not_checked",
-      "recommended_candidate_id": null,
-      "candidates": [
-        {
-          "id": "home-title-1",
-          "pattern": "situation_first",
-          "title": "한화다이렉트보험 가입 전 확인할 조건",
-          "title_length": 20,
-          "target_query": "한화다이렉트보험",
-          "search_demand": 5510,
-          "competition": "중간",
-          "query_tier": "head",
-          "gsc_status": "not_connected",
-          "weakness": "질문 의도에 바로 답하는 본문이 없으면 제목의 약속이 과해질 수 있음",
-          "body_alignment_required": true,
-          "review_status": "human_review_required",
-          "decision": "review_only_no_gsc_signal"
-        },
-        {
-          "id": "home-title-2",
-          "pattern": "subject_first",
-          "title": "한화손보 다이렉트: 가입 전 선택 기준과 주의사항",
-          "title_length": 27,
-          "target_query": "한화손보다이렉트",
-          "search_demand": 520,
-          "competition": "낮음",
-          "query_tier": "head",
-          "gsc_status": "not_connected",
-          "weakness": "상품명 중심이라 비브랜드 검색의 클릭 유인이 상대적으로 약할 수 있음",
-          "body_alignment_required": true,
-          "review_status": "human_review_required",
-          "decision": "review_only_no_gsc_signal"
-        },
-        {
-          "id": "home-title-3",
-          "pattern": "scope_limited",
-          "title": "한화다이렉트 비교할 때 놓치기 쉬운 조건",
-          "title_length": 22,
-          "target_query": "한화다이렉트",
-          "search_demand": 2140,
-          "competition": "중간",
-          "query_tier": "tail",
-          "gsc_status": "not_connected",
-          "weakness": "검색 범위를 좁혀 전체 수요보다 노출 기회가 작을 수 있음",
-          "body_alignment_required": true,
-          "review_status": "human_review_required",
-          "decision": "review_only_no_gsc_signal"
-        }
-      ],
-      "next_action": "비공개 GSC에서 후보 검색어의 노출·페이지 확인"
-    },
-    {
       "product_key": "hrmf",
       "status": "blocked_gsc",
       "authority_band": "not_checked",
