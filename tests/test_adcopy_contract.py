@@ -40,9 +40,12 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn("function serpIdeas(p)", ADCOPY)
         self.assertIn("SERP 모니터링 → 소재·이미지 반영", ADCOPY)
         self.assertIn("observed_ads", ADCOPY)
-        self.assertIn('strategy:"SERP 차별 소구"', ADCOPY)
-        self.assertIn('strategy:"검색 의도 연결"', ADCOPY)
-        self.assertIn('strategy:"담보 탐색"', ADCOPY)
+        self.assertIn("variation", ADCOPY)
+        self.assertIn("imageDirections", ADCOPY)
+        self.assertIn("powerTopics", ADCOPY)
+        self.assertIn("SERP 공백형", ADCOPY)
+        self.assertIn("검색 행동형", ADCOPY)
+        self.assertIn("항목 비교형", ADCOPY)
         self.assertIn("실제 반영된 SA 소재", ADCOPY)
         self.assertIn('const OUT_OF_SCOPE_VOLUME=["자동차보험","자동차 보험","한화생명","TM","텔레마케팅"]', ADCOPY)
         self.assertNotIn("공개 광고 관측", ADCOPY)
@@ -75,7 +78,7 @@ class TestAdcopyContract(unittest.TestCase):
             'accept="image/png,image/jpeg"',
             'id="thumbAll"',
             "SERP 기반 보험종목 이미지 소재",
-            "3D 애니메이션 장면 · 이미지 내부 텍스트 없음",
+            "프리미엄 3D 애니메이션 고정 · 이미지 내부 텍스트 없음",
             "downloadThumbnailPack",
             "ZIP_STORE.zipStore(files)",
             "manifest.json",
@@ -89,7 +92,8 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn('visual_style:"3d_animation_monthly"', ADCOPY)
         self.assertIn("text_overlay:false", ADCOPY)
         self.assertIn("function monthlyAssetSet", ADCOPY)
-        self.assertIn("같은 원본 연속 노출 방지", ADCOPY)
+        self.assertIn("반복 슬롯은 신규 제작으로 분리", ADCOPY)
+        self.assertIn("generationRequired", ADCOPY)
         self.assertNotIn("custom?.url||concept.asset", ADCOPY)
         self.assertNotIn("ctx.fillText(", ADCOPY)
         self.assertNotIn("new FileReader()", ADCOPY)

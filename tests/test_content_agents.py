@@ -101,6 +101,74 @@ class TestSerpCopyAgent(unittest.TestCase):
         self.assertEqual(len(september_topics), 3)
         self.assertNotEqual(august_topics, september_topics)
 
+    def test_moving_holiday_is_used_only_in_its_dated_month(self):
+        agent = module("serp_copy_agent")
+        products = {"products": [{"key": "driver", "name": "운전자보험", "serpKw": "운전자보험",
+                    "core": ["운전자보험"], "special": ["벌금", "변호사선임"]}]}
+        analysis = {"products": {"driver": {"observed_ads": [
+            {"date": "2026-08-24", "brand": "A", "title": "운전자보험 보험료"}]}}}
+        seasonal = {"seasonal": {"driver": [{"m": [9, 10], "tag": "명절 장거리 운전",
+                    "kws": ["추석 운전자보험"]}]}}
+        calendar = {"events": [{"id": "chuseok-2026", "type": "명절", "name": "추석 연휴",
+                    "start": "2026-09-24", "end": "2026-09-27", "products": ["driver"],
+                    "keywords": ["추석", "장거리 운전", "추석 운전자보험"]}]}
+        september = agent.generate(products, analysis, {}, planning_month="2026-09",
+                                   seasonal=seasonal, calendar=calendar)["products"][0]
+        october = agent.generate(products, analysis, {}, planning_month="2026-10",
+                                 seasonal=seasonal, calendar=calendar)["products"][0]
+        self.assertEqual(september["season_context"]["event_id"], "chuseok-2026")
+        self.assertEqual(september["power_content_topics"][0]["pattern"], "seasonal_scene")
+        self.assertEqual(october["season_context"]["status"], "evergreen")
+        self.assertNotIn("추석", json.dumps(october["sa_recommendations"], ensure_ascii=False))
+
+    def test_copy_uses_multiple_message_axes_without_generic_fear_template(self):
+        agent = module("serp_copy_agent")
+        products = {"products": [{"key": "driver", "name": "운전자보험", "serpKw": "운전자보험",
+                    "core": ["운전자보험"], "special": ["벌금", "변호사선임", "교통사고"]}]}
+        analysis = {"products": {"driver": {"common_soju": ["보험료"], "observed_ads": [
+            {"date": "2026-08-24", "brand": "A", "title": "보험료 계산", "desc": "간편 가입"}]}}}
+        result = agent.generate(products, analysis, {}, planning_month="2026-08")["products"][0]
+        rows = result["sa_recommendations"]
+        self.assertEqual(len({row["message_axis"] for row in rows}), 3)
+        text = json.dumps(rows, ensure_ascii=False)
+        for stale in ("갑작스러운", "미리 대비하세요", "든든하게 대비"):
+            self.assertNotIn(stale, text)
+        self.assertEqual(len({row["description"][-8:] for row in rows}), 3)
+
+    def test_same_annual_event_changes_with_year_and_serp_signature(self):
+        agent = module("serp_copy_agent")
+        products = {"products": [{"key": "driver", "name": "운전자보험", "serpKw": "운전자보험",
+                    "core": ["운전자보험"], "special": ["벌금", "변호사선임", "교통사고"]}]}
+        calendar = {"events": [
+            {"id": "chuseok-2026", "type": "명절", "name": "추석 연휴", "start": "2026-09-24", "end": "2026-09-27", "products": ["driver"]},
+            {"id": "chuseok-2027", "type": "명절", "name": "추석 연휴", "start": "2027-09-14", "end": "2027-09-16", "products": ["driver"]},
+        ]}
+        analysis_a = {"products": {"driver": {"common_soju": ["보험료"], "observed_ads": [
+            {"date": "2026-08-24", "brand": "A", "title": "보험료 계산"}]}}}
+        analysis_b = {"products": {"driver": {"common_soju": ["간편가입"], "observed_ads": [
+            {"date": "2027-08-24", "brand": "B", "title": "온라인 가입"}]}}}
+        first = agent.generate(products, analysis_a, {}, planning_month="2026-09", calendar=calendar)["products"][0]
+        second = agent.generate(products, analysis_b, {}, planning_month="2027-09", calendar=calendar)["products"][0]
+        self.assertNotEqual(first["variation"]["variation_key"], second["variation"]["variation_key"])
+        self.assertNotEqual(first["serp_signature"], second["serp_signature"])
+        self.assertNotEqual(first["power_content_topics"][0]["title"], second["power_content_topics"][0]["title"])
+
+    def test_previous_month_images_are_marked_for_new_generation(self):
+        agent = module("serp_copy_agent")
+        product = {"key": "driver", "name": "운전자보험", "serpKw": "운전자보험",
+                   "core": ["운전자보험"], "special": ["벌금", "교통사고"]}
+        products = {"products": [product]}
+        analysis = {"products": {"driver": {"observed_ads": [
+            {"date": "2026-08-24", "brand": "A", "title": "운전자보험"}]}}}
+        august = agent.generate(products, analysis, {}, planning_month="2026-08")
+        archive = agent.image_plan_archive(august)
+        september = agent.generate(products, analysis, {}, planning_month="2026-09",
+                                   image_history=[archive])["products"][0]
+        self.assertGreaterEqual(september["image_plan"]["new_generation_required"], 3)
+        self.assertTrue(all(row["style_family"] == "premium_3d_animation_v4"
+                            for row in september["image_directions"]))
+        self.assertEqual(len({row["concept_id"] for row in september["image_directions"]}), 4)
+
     def test_monthly_thumbnail_workflow_archives_and_redeploys(self):
         workflow = (ROOT / ".github/workflows/monthly-image-plan.yml").read_text(encoding="utf-8")
         pages = (ROOT / ".github/workflows/pages.yml").read_text(encoding="utf-8")

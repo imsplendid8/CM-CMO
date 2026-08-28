@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 from collections import Counter
@@ -68,19 +69,31 @@ ASSET_SCENES = {
 
 IMAGE_POOLS = {
     "home": ["calculator-animation-v3.png", "driver-safe-animation-v3.png", "home-fire-animation-v3.png", "health-check-animation-v3.png", "travel-airport-animation-v3.png"],
-    "hrmf": ["home-fire-animation-v3.png", "home-leak-animation-v3.png", "home-weather-3d.png", "event-safety-animation-v3.png", "calculator-animation-v3.png"],
-    "golf": ["golf-hole-animation-v3.png", "golf-holeinone-3d.png", "calculator-animation-v3.png", "event-safety-animation-v3.png", "driver-safe-animation-v3.png"],
-    "cncr": ["health-check-animation-v3.png", "health-review-3d.png", "family-baby-animation-v3.png", "family-pregnancy-3d.png", "calculator-animation-v3.png"],
-    "dntl": ["dental-consult-animation-v3.png", "dental-consult-3d.png", "health-check-animation-v3.png", "health-review-3d.png", "calculator-animation-v3.png"],
+    "hrmf": ["home-fire-animation-v3.png", "home-leak-animation-v3.png", "home-weather-3d.png", "calculator-animation-v3.png"],
+    "golf": ["golf-hole-animation-v3.png", "golf-holeinone-3d.png", "calculator-animation-v3.png"],
+    "cncr": ["health-check-animation-v3.png", "health-review-3d.png", "calculator-animation-v3.png"],
+    "dntl": ["dental-consult-animation-v3.png", "dental-consult-3d.png", "health-check-animation-v3.png", "calculator-animation-v3.png"],
     "driver": ["driver-safe-animation-v3.png", "driver-traffic-3d.png", "driver-schoolzone-animation-v4.png", "driver-accident-animation-v4.png", "driver-rain-animation-v4.png"],
-    "woman": ["health-check-animation-v3.png", "health-review-3d.png", "family-baby-animation-v3.png", "family-pregnancy-3d.png", "calculator-animation-v3.png"],
-    "birth": ["family-baby-animation-v3.png", "family-pregnancy-3d.png", "health-check-animation-v3.png", "health-review-3d.png", "calculator-animation-v3.png"],
-    "overseas": ["travel-airport-animation-v3.png", "travel-airport-3d.png", "student-campus-animation-v3.png", "student-overseas-3d.png", "calculator-animation-v3.png"],
-    "overseaslong": ["student-campus-animation-v3.png", "student-overseas-3d.png", "travel-airport-animation-v3.png", "travel-airport-3d.png", "calculator-animation-v3.png"],
-    "holeinone": ["golf-hole-animation-v3.png", "golf-holeinone-3d.png", "calculator-animation-v3.png", "event-safety-3d.png", "driver-safe-animation-v3.png"],
-    "event": ["event-safety-animation-v3.png", "event-safety-3d.png", "home-fire-animation-v3.png", "calculator-animation-v3.png", "home-weather-3d.png"],
-    "chronic": ["health-check-animation-v3.png", "health-review-3d.png", "calculator-animation-v3.png", "family-baby-animation-v3.png", "dental-consult-animation-v3.png"],
+    "woman": ["health-check-animation-v3.png", "health-review-3d.png", "family-pregnancy-3d.png", "family-baby-animation-v3.png"],
+    "birth": ["family-baby-animation-v3.png", "family-pregnancy-3d.png", "health-check-animation-v3.png", "health-review-3d.png"],
+    "overseas": ["travel-airport-animation-v3.png", "travel-airport-3d.png", "student-campus-animation-v3.png", "calculator-animation-v3.png"],
+    "overseaslong": ["student-campus-animation-v3.png", "student-overseas-3d.png", "travel-airport-animation-v3.png", "calculator-animation-v3.png"],
+    "holeinone": ["golf-hole-animation-v3.png", "golf-holeinone-3d.png", "calculator-animation-v3.png", "event-safety-3d.png"],
+    "event": ["event-safety-animation-v3.png", "event-safety-3d.png", "home-fire-animation-v3.png", "calculator-animation-v3.png"],
+    "chronic": ["health-check-animation-v3.png", "health-review-3d.png", "calculator-animation-v3.png"],
 }
+
+COPY_AXES = (
+    "search_action", "decision_detail", "scope_compare",
+    "official_path", "serp_whitespace", "seasonal_scene",
+)
+AXIS_LABELS = {
+    "search_action": "검색 직후 행동", "decision_detail": "선택 기준 구체화",
+    "scope_compare": "항목 간 비교", "official_path": "공식 화면 대조",
+    "serp_whitespace": "경쟁 소재 공백", "seasonal_scene": "실제 시즌 장면",
+}
+MOVING_HOLIDAY_TERMS = ("추석", "설 연휴", "명절")
+STYLE_FAMILY = "premium_3d_animation_v4"
 
 
 def read(rel, default, root=ROOT):
@@ -219,122 +232,332 @@ def _fit(options, minimum, maximum):
     return value[:maximum].rstrip(" ·,:")
 
 
-def sa_recommendations(product, keyword, angle, table_stakes, basis):
+def _josa(value, batchim, open_value):
+    text = str(value or "")
+    if not text:
+        return text
+    code = ord(text[-1])
+    has_batchim = 0xAC00 <= code <= 0xD7A3 and (code - 0xAC00) % 28
+    return text + (batchim if has_batchim else open_value)
+
+
+def _fingerprint(value, size=16):
+    payload = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:size]
+
+
+def _month_parts(planning_month):
+    try:
+        year, month = (int(value) for value in str(planning_month).split("-")[:2])
+        if not 1 <= month <= 12:
+            raise ValueError
+        return year, month
+    except (TypeError, ValueError):
+        today = date.today()
+        return today.year, today.month
+
+
+def _event_overlaps_month(event, year, month):
+    start, end = _d(event.get("start")), _d(event.get("end"))
+    if not start or not end:
+        return False
+    first = date(year, month, 1)
+    last = date(year + (month == 12), month % 12 + 1, 1) - timedelta(days=1)
+    return start <= last and end >= first
+
+
+def season_context(product, planning_month, seasonal=None, calendar=None):
+    """선택 월과 실제로 겹치는 이벤트만 소재에 허용한다."""
+    year, month = _month_parts(planning_month)
+    events = (calendar or {}).get("events") or []
+    exact = [event for event in events
+             if product["key"] in (event.get("products") or [])
+             and _event_overlaps_month(event, year, month)]
+    exact.sort(key=lambda row: (row.get("start") or "", row.get("name") or ""))
+    if exact:
+        event = exact[0]
+        family = re.sub(r"-\d{4}$", "", str(event.get("id") or event.get("name") or "event"))
+        return {
+            "status": "active_dated_event", "event_id": event.get("id"),
+            "season_key": family, "name": event.get("name") or "시즌 이슈",
+            "type": event.get("type") or "시즌", "start": event.get("start"),
+            "end": event.get("end"), "keywords": event.get("keywords") or [],
+            "year": year, "month": month, "phase": "selected_month",
+        }
+
+    issues = (((seasonal or {}).get("seasonal") or {}).get(product["key"]) or [])
+    for issue in issues:
+        if month not in (issue.get("m") or []):
+            continue
+        tag = str(issue.get("tag") or "")
+        if any(term in tag for term in MOVING_HOLIDAY_TERMS):
+            dated_same_year = [event for event in events
+                               if product["key"] in (event.get("products") or [])
+                               and _d(event.get("start")) and _d(event.get("start")).year == year
+                               and (event.get("type") == "명절"
+                                    or any(term in str(event.get("name") or "") for term in MOVING_HOLIDAY_TERMS))]
+            if dated_same_year:
+                continue
+            return {"status": "calendar_required", "season_key": None, "name": None,
+                    "year": year, "month": month, "phase": "blocked_without_exact_date"}
+        return {
+            "status": "active_monthly_window", "event_id": None,
+            "season_key": f"{product['key']}:{re.sub(r'[^0-9a-z가-힣]+', '-', tag.lower()).strip('-')}",
+            "name": tag, "type": "연간 시즌", "start": None, "end": None,
+            "keywords": issue.get("kws") or [], "why": issue.get("why"),
+            "year": year, "month": month, "phase": "selected_month",
+        }
+    return {"status": "evergreen", "season_key": None, "name": None,
+            "year": year, "month": month, "phase": "no_matching_season"}
+
+
+def serp_signature(patterns, diff, table_stakes, observed):
+    return _fingerprint({
+        "patterns": patterns, "entered": diff.get("entered_brands") or [],
+        "exited": diff.get("exited_brands") or [], "table_stakes": table_stakes,
+        "observed": [{"brand": row.get("brand"), "title": row.get("title"), "promo": row.get("promo")}
+                     for row in observed],
+    })
+
+
+def variation_context(product, planning_month, season, signature):
+    year, month = _month_parts(planning_month)
+    season_key = season.get("season_key") or "evergreen"
+    available = COPY_AXES if season.get("name") else tuple(axis for axis in COPY_AXES if axis != "seasonal_scene")
+    market_shift = int(signature[:8], 16) % len(available)
+    start = (year + month + market_shift + sum(ord(char) for char in product["key"])) % len(available)
+    axes = list(available[start:] + available[:start])
+    if season.get("name"):
+        axes = ["seasonal_scene", *[axis for axis in axes if axis != "seasonal_scene"]]
+    return {
+        "variation_key": _fingerprint({"product": product["key"], "season": season_key,
+                                        "year": year, "month": month, "serp": signature}),
+        "season_key": season_key, "serp_signature": signature,
+        "primary_axis": axes[0], "axes": axes, "year": year,
+    }
+
+
+def _copy_for_axis(axis, product, keyword, angle, other, season):
     name = product.get("serpKw") or product["name"]
-    other = (table_stakes or product.get("special") or [angle])[0]
-    rows = [
-        {
-            "strategy": "검색결과 운영형",
-            "title": _fit([f"{keyword} 보장 확인", f"{name} 보장 확인"], 4, 15),
-            "description": _fit([f"{angle} 관련 내용과 보험료를 가입 전에 한 번에 확인해 보세요.", f"{name} 보장내용과 보험료를 온라인에서 확인해 보세요."], 20, 45),
-            "additional_description": _fit([f"{angle} 관련 특약과 제외 조건을 상품자료에서 확인해 보세요.", f"{name} 가입 전 보장내용과 제외 조건을 확인해 보세요."], 2, 45),
-            "promo": _fit(["보험료 확인", "보장내용 확인"], 2, 14),
-            "sublinks": ["보험료계산", "보장내용", "가입조건", "상품안내"],
-            "why": f"{basis} · 실제 SERP의 상품명+행동어 구조를 적용",
-        },
-        {
-            "strategy": "상황·담보 차별형",
-            "title": _fit([f"{angle} 대비 {name}", f"{angle} 특약 확인", f"{name} 특약 확인"], 4, 15),
-            "description": _fit([f"{angle}부터 {other}까지 필요한 항목과 가입조건을 차례로 살펴보세요.", f"{angle} 관련 보장내용과 가입조건을 가입 전에 확인해 보세요."], 20, 45),
-            "additional_description": _fit([f"{angle} 상황이 걱정될 때 확인할 보장내용과 가입조건을 정리했습니다.", f"{angle} 관련 보장내용을 상품자료에서 확인해 보세요."], 2, 45),
-            "promo": _fit(["가입조건 확인", "특약 확인"], 2, 14),
-            "sublinks": ["보장내용", "가입조건", "보험료계산", "가입안내"],
-            "why": f"경쟁 공통 소구를 그대로 반복하지 않고 ‘{angle}’ 탐색 의도를 전면 배치",
-        },
-        {
-            "strategy": "공식채널 선택형",
-            "title": _fit([f"한화손보 {name}", f"{name} 공식 안내"], 4, 15),
-            "description": _fit([f"{name} 보장내용과 보험료, 가입 절차를 공식 채널에서 확인해 보세요.", f"{name} 가입 전 필요한 항목을 공식 채널에서 살펴보세요."], 20, 45),
-            "additional_description": _fit(["보장내용과 보험료, 가입 절차를 한화손보 다이렉트에서 확인하세요."], 2, 45),
-            "promo": _fit(["공식 채널", "상품 안내"], 2, 14),
-            "sublinks": ["보험료계산", "상품안내", "보장내용", "가입안내"],
-            "why": "운영 광고에서 반복되는 공식성·명확한 다음 행동을 반영",
-        },
-    ]
+    event = season.get("name")
+    if axis == "seasonal_scene" and event:
+        return {
+            "strategy": "시즌 장면형",
+            "title": _fit([f"{event} {name}", f"{event} 전 {name}", f"{name} 시즌 체크"], 4, 15),
+            "description": _fit([f"{event} 전 {angle}·{other} 항목과 보험료를 살펴보세요.",
+                                  f"{_josa(event, '을', '를')} 앞두고 {name}의 {angle} 항목을 읽어보세요."], 20, 45),
+            "additional_description": _fit([f"{event} 전 {angle} 선택 여부와 최종 보험료를 대조해 보세요."], 2, 45),
+            "promo": _fit([f"{event} 전 점검", "시즌 보험료 계산"], 2, 14),
+            "sublinks": ["보험료계산", "선택항목", "가입조건", "상품안내"],
+        }
+    if axis == "search_action":
+        return {"strategy": "검색 행동형", "title": _fit([f"{keyword} 보험료 계산", f"{name} 보험료 보기"], 4, 15),
+                "description": _fit([f"{name} 보험료 계산 전 {angle}·{other} 선택 항목을 비교해 보세요."], 20, 45),
+                "additional_description": _fit([f"{angle} 선택 여부와 최종 보험료를 설계 화면에서 대조해 보세요."], 2, 45),
+                "promo": _fit(["내 보험료 계산", "선택항목 보기"], 2, 14),
+                "sublinks": ["보험료계산", "선택항목", "가입조건", "상품안내"]}
+    if axis == "decision_detail":
+        return {"strategy": "선택 기준형", "title": _fit([f"{angle} 조건 읽기", f"{name} 선택 기준"], 4, 15),
+                "description": _fit([f"{angle}의 지급사유·제외 조건·적용 기간을 순서대로 읽어보세요."], 20, 45),
+                "additional_description": _fit([f"{angle} 관련 항목은 한도와 적용 시점까지 펼쳐서 살펴보세요."], 2, 45),
+                "promo": _fit(["조건 자세히 보기", "제외조건 읽기"], 2, 14),
+                "sublinks": ["보장내용", "제외조건", "가입조건", "상품안내"]}
+    if axis == "scope_compare":
+        return {"strategy": "항목 비교형", "title": _fit([f"{angle}·{other} 비교", f"{name} 항목 비교"], 4, 15),
+                "description": _fit([f"{_josa(angle, '과', '와')} {other}, 적용 상황의 차이를 상품 안내에서 비교해 보세요."], 20, 45),
+                "additional_description": _fit(["두 항목의 지급사유와 보장하지 않는 경우를 나란히 읽어보세요."], 2, 45),
+                "promo": _fit(["항목별 비교", "조건 나란히 보기"], 2, 14),
+                "sublinks": ["항목비교", "보장내용", "보험료계산", "가입안내"]}
+    if axis == "official_path":
+        return {"strategy": "공식 화면형", "title": _fit([f"한화손보 {name}", f"{name} 공식 설계"], 4, 15),
+                "description": _fit([f"{name} 상품 안내·보험료·청약 내용을 공식 화면에서 대조해 보세요."], 20, 45),
+                "additional_description": _fit(["선택한 항목과 보험기간, 납입 조건을 최종 화면에서 다시 읽어보세요."], 2, 45),
+                "promo": _fit(["공식 화면 설계", "보험료 계산"], 2, 14),
+                "sublinks": ["보험료계산", "상품안내", "가입조건", "청약확인"]}
+    return {"strategy": "SERP 공백형", "title": _fit([f"{angle} 질문부터", f"{name} 놓친 질문"], 4, 15),
+            "description": _fit([f"{_josa(angle, '을', '를')} 검색한 뒤 놓치기 쉬운 {other} 조건까지 살펴보세요."], 20, 45),
+            "additional_description": _fit([f"짧은 보장 나열 대신 {angle}의 적용 조건부터 차근차근 읽어보세요."], 2, 45),
+            "promo": _fit(["놓친 조건 보기", "검색 다음 질문"], 2, 14),
+            "sublinks": ["핵심질문", "보장내용", "보험료계산", "가입안내"]}
+
+
+def sa_recommendations(product, keyword, angle, table_stakes, basis, season, variation):
+    name = product.get("serpKw") or product["name"]
+    own_terms = [term for term in product.get("special") or [] if term != angle]
+    season_keywords = [str(term).replace(" ", "") for term in season.get("keywords") or []]
+    season_terms = [term for term in own_terms
+                    if any(term.replace(" ", "") in keyword or keyword in term.replace(" ", "")
+                           for keyword in season_keywords)]
+    other = (season_terms or own_terms or [name])[0]
+    rows, seen_endings = [], set()
+    for axis in variation["axes"]:
+        row = _copy_for_axis(axis, product, keyword, angle, other, season)
+        ending = re.sub(r"[^가-힣]+", "", row["description"])[-6:]
+        if ending in seen_endings:
+            continue
+        seen_endings.add(ending)
+        row.update({
+            "message_axis": axis, "variation_key": variation["variation_key"],
+            "serp_signature": variation["serp_signature"],
+            "why": f"{basis} · {AXIS_LABELS[axis]} 축 · 경쟁 공통 소구 {', '.join(table_stakes[:2]) or '미관측'}와 다른 전개",
+        })
+        rows.append(row)
+        if len(rows) == 3:
+            break
     return rows
 
 
-def monthly_image_assets(product_key, planning_month):
-    """기준월마다 상품 후보군에서 중복 없는 4개 원본을 순환 선정한다."""
+def _image_history_for_product(image_history, product_key, planning_month):
+    rows = []
+    for archive in image_history or []:
+        archive_month = str(archive.get("planning_month") or "")
+        if not archive_month or archive_month > str(planning_month):
+            continue
+        for product in archive.get("products") or []:
+            if product.get("product_key") != product_key:
+                continue
+            rows.append((archive_month, [row.get("asset") for row in product.get("image_directions") or [] if row.get("asset")]))
+    rows.sort(key=lambda row: row[0], reverse=True)
+    return rows
+
+
+def monthly_image_assets(product_key, planning_month, image_history=None):
+    """가장 오래 사용하지 않은 상품 적합 원본을 고른다.
+
+    상품별 원본이 4장보다 적으면 타 보험 이미지를 끼워 넣지 않는다. 같은 원본을 스타일
+    레퍼런스로 한 번 더 쓰되, 이후 image_directions에서 신규 제작 슬롯으로 표시한다.
+    """
     pool = list(dict.fromkeys(IMAGE_POOLS.get(product_key) or IMAGE_POOLS["home"]))
-    if len(pool) < 4:
-        raise ValueError(f"{product_key}: 월간 썸네일 후보 원본이 4개 미만")
-    try:
-        year, month = (int(value) for value in str(planning_month).split("-")[:2])
-    except (TypeError, ValueError):
-        year, month = date.today().year, date.today().month
-    offset = (year * 12 + month + sum(ord(char) for char in product_key)) % len(pool)
-    rotated = pool[offset:] + pool[:offset]
-    return rotated[:4]
+    if not pool:
+        raise ValueError(f"{product_key}: 월간 썸네일 후보 원본 없음")
+    history = _image_history_for_product(image_history, product_key, planning_month)
+    last_used = {}
+    for archive_month, assets in history:
+        for asset in assets:
+            last_used.setdefault(Path(asset).name, archive_month)
+    year, month = _month_parts(planning_month)
+    seed = year * 12 + month + sum(ord(char) for char in product_key)
+    order = {asset: (index - seed) % len(pool) for index, asset in enumerate(pool)}
+    ranked = sorted(pool, key=lambda asset: (last_used.get(asset, ""), order[asset], asset))
+    assets = []
+    while len(assets) < 4:
+        assets.append(ranked[len(assets) % len(ranked)])
+    return assets
 
 
-def image_directions(product, angle, patterns, basis, planning_month):
-    assets = monthly_image_assets(product["key"], planning_month)
+def image_directions(product, angle, patterns, basis, planning_month, season, variation, image_history=None):
+    assets = monthly_image_assets(product["key"], planning_month, image_history)
+    history = _image_history_for_product(image_history, product["key"], planning_month)
+    previous_assets = set(history[0][1]) if history else set()
     roles = ("파워링크 대표", "보험료 탐색", "보장내용 탐색", "가입안내 탐색")
-    return [{
-        "proposal_id": f"{product['key']}-{planning_month}-{index + 1:02d}",
-        "role": roles[index],
-        "scene": ASSET_SCENES[asset],
+    base_scenes = list(SCENES.get(product["key"], SCENES["home"]))
+    event = season.get("name")
+    scenes = []
+    if event:
+        scenes.append(f"{event} 일정에 맞춰 {base_scenes[0]}")
+        scenes.extend(base_scenes[1:])
+    else:
+        scenes.extend(base_scenes)
+    scenes.append(f"스마트폰에서 {product['name']} 설계 항목과 보험료를 살펴보는 성인")
+    scenes = list(dict.fromkeys(scenes))
+    while len(scenes) < 4:
+        scenes.append(f"{product['name']}의 {angle} 관련 생활 상황을 살펴보는 장면 {len(scenes) + 1}")
+    rows, used_assets = [], set()
+    for index, asset in enumerate(assets):
+        asset_name = Path(asset).name
+        reused_previous = asset_name in {Path(value).name for value in previous_assets}
+        repeated_this_set = asset_name in used_assets
+        used_assets.add(asset_name)
+        rows.append({
+        "proposal_id": f"{product['key']}-{planning_month}-{variation['variation_key'][:6]}-{index + 1:02d}",
+        "concept_id": _fingerprint({"product": product["key"], "month": planning_month,
+                                    "scene": scenes[index], "serp": variation["serp_signature"]}),
+        "role": roles[index], "scene": scenes[index],
+        "reference_scene": ASSET_SCENES[asset],
         "asset": f"assets/insurance/{asset}",
         "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
         "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
-        "text_overlay": False,
-        "refresh_cadence": "monthly",
-        "planning_month": planning_month,
-        "generation_brief": f"{product['name']} 검색 맥락을 {ASSET_SCENES[asset]}으로 표현. 텍스트·숫자·로고 없이 정사각형 3D 애니메이션으로 제작.",
-        "why": f"{basis} · 상품종목을 우선 고정하고 SERP의 {patterns[0][0] if patterns else '검색 행동'} 패턴은 역할 선정에만 연결",
-    } for index, asset in enumerate(assets)]
-
-
-def power_topics(product, keyword, angle, table_stakes, basis, planning_month):
-    name = product.get("serpKw") or product["name"]
-    second = (table_stakes or product.get("special") or [angle])[0]
-    specs = [
-        ("serp_gap", f"{keyword}, 가입 전 {angle} 확인하는 순서", "가입 전 준비", angle,
-         [f"{angle}이 필요한 상황", "지급사유와 보장하지 않는 경우", "가입 전 확인 순서", "최종 체크리스트"]),
-        ("coverage_question", f"{angle} 특약의 보장 범위를 읽는 방법", "보장 정보 탐색", angle,
-         [f"{angle} 특약을 찾는 이유", "약관의 지급사유 읽기", "한도·기간·제외 조건", "청약 화면과 대조하기"]),
-        ("decision_guide", f"{name} 보험료와 가입조건 확인 순서", "비교·의사결정", second,
-         ["가입 목적 먼저 정하기", "같은 담보 조건으로 맞추기", "보험료에 영향을 주는 항목", "최종 선택 전 확인"]),
-        ("exclusion_guide", f"{name} 보장하지 않는 경우 찾는 법", "약관 정보 탐색", angle,
-         ["보장 내용과 제외 조건 함께 보기", "면책·감액기간 확인", "알릴 의무 확인", "궁금한 조항 기록하기"]),
-        ("claim_ready", f"{name} 청구 전에 준비할 체크리스트", "청구 준비", second,
-         ["사고 직후 기록할 내용", "필요 서류 확인", "청구 절차와 기한", "접수 전 최종 점검"]),
-        ("audience_fit", f"{name}, 내 상황에 필요한지 판단하는 법", "필요성 판단", angle,
-         ["대비하려는 상황 정의", "현재 보장과 겹치는 항목", "필요한 기간과 범위", "가입 여부 판단 질문"]),
-        ("terms_navigation", f"{name} 약관에서 먼저 찾아볼 항목", "약관 정보 탐색", angle,
-         ["약관 목차 활용하기", "용어 정의 먼저 읽기", "지급사유와 제외 조항 연결", "확인한 기준일 기록"]),
-        ("renewal_period", f"{name} 보험기간과 갱신 조건 보는 법", "계약 조건 탐색", second,
-         ["보험기간과 납입기간 구분", "갱신 여부 확인", "보험료 변경 가능성", "장기 유지 가능성 점검"]),
-        ("search_to_contract", f"{keyword} 검색 뒤 청약까지 확인할 것", "가입 전 준비", angle,
-         ["검색 결과에서 질문 만들기", "상품설명서와 약관 대조", "보험료 계산 조건 확인", "청약 내용 최종 검토"]),
-    ]
-    try:
-        year, month = (int(value) for value in str(planning_month).split("-")[:2])
-    except (TypeError, ValueError):
-        year, month = date.today().year, date.today().month
-    offset = (year * 12 + month + sum(ord(char) for char in product["key"])) % len(specs)
-    specs = (specs[offset:] + specs[:offset])[:3]
-    rows = []
-    for index, (pattern, title, intent, focus, sections) in enumerate(specs, 1):
-        rows.append({
-            "id": f"{product['key']}-serp-topic-{index}",
-            "pattern": pattern,
-            "title": _fit([title, f"{name} 가입 전 확인할 핵심 기준"], 15, 34),
-            "target_query": keyword if index != 2 else f"{name} {focus}",
-            "intent": intent,
-            "focus": focus,
-            "angle": f"경쟁 광고의 짧은 보장 나열에서 빠진 ‘{focus} 확인 기준’을 실제 생활 질문으로 확장",
-            "sections": sections,
-            "faq": [f"{focus} 관련 내용은 무엇을 확인해야 하나요?", f"{name} 보험료는 무엇에 따라 달라지나요?"],
-            "image_brief": f"{SCENES.get(product['key'], SCENES['home'])[index-1]}. 텍스트·숫자·로고 없이 프리미엄 3D 애니메이션으로 표현.",
-            "serp_basis": basis,
-            "source": "월간 SERP 운영소재 분석",
+        "style_family": STYLE_FAMILY, "text_overlay": False,
+        "refresh_cadence": "monthly", "planning_month": planning_month,
+        "reused_from_previous_month": reused_previous,
+        "repeated_reference_in_month": repeated_this_set,
+        "generation_required": reused_previous or repeated_this_set,
+        "generation_brief": f"{product['name']} 검색 맥락을 ‘{scenes[index]}’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+        "why": f"{basis} · {AXIS_LABELS[variation['primary_axis']]} · SERP {patterns[0][0] if patterns else '검색 행동'} 변화에서 장면 역할을 도출",
         })
     return rows
 
 
-def generate(products, analysis, volume, manifest=None, dom=None, planning_month=None):
+def power_topics(product, keyword, angle, table_stakes, basis, planning_month, season, variation, content_history=None):
+    name = product.get("serpKw") or product["name"]
+    own_terms = [term for term in product.get("special") or [] if term != angle]
+    season_keywords = [str(term).replace(" ", "") for term in season.get("keywords") or []]
+    season_terms = [term for term in own_terms
+                    if any(term.replace(" ", "") in item or item in term.replace(" ", "")
+                           for item in season_keywords)]
+    second = (season_terms or own_terms or [name])[0]
+    saturated = "·".join(table_stakes[:2]) or "공통 보장 나열"
+    specs = [
+        ("serp_whitespace", f"{keyword} 검색 뒤 {_josa(angle, '을', '를')} 따져볼 질문", "검색 후 탐색", angle,
+         ["검색 결과에서 반복된 말", f"{angle}에서 빠지기 쉬운 조건", "보험료 계산에 넣을 항목", "최종 화면과 대조할 내용"]),
+        ("decision_detail", f"{name} 보험료 전에 맞춰볼 세 가지 조건", "비교·의사결정", second,
+         ["가입 목적과 기간 맞추기", f"{angle}·{second} 선택 항목 맞추기", "같은 조건으로 보험료 계산하기", "청약 화면에서 차이 찾기"]),
+        ("scope_compare", f"{_josa(angle, '과', '와')} {second}, 함께 볼 때 달라지는 점", "항목 비교", angle,
+         [f"{angle}을 찾게 되는 생활 상황", f"{second}와 겹치지 않는 지점", "지급사유와 제외 조건 나란히 읽기", "선택 항목 기록하기"]),
+        ("official_path", f"{name} 설계 화면을 끝까지 읽는 순서", "가입 흐름 탐색", second,
+         ["상품 안내에서 질문 만들기", "설계 화면에서 선택 항목 찾기", "보험료 결과의 조건 읽기", "최종 청약 내용 대조하기"]),
+        ("terms_navigation", f"{_josa(angle, '을', '를')} 약관 목차에서 빠르게 찾는 법", "약관 정보 탐색", angle,
+         ["용어 정의에서 시작하기", "지급사유 조항 연결하기", "보장하지 않는 경우 함께 읽기", "기준일과 질문 기록하기"]),
+        ("real_life", f"{_josa(angle, '이', '가')} 궁금해지는 생활 장면부터 약관까지", "상황 정보 탐색", angle,
+         ["실제 생활 질문으로 바꾸기", "광고 표현과 약관 용어 구분하기", "적용 조건을 사례 없이 설명하기", "내 조건으로 다시 계산하기"]),
+    ]
+    if season.get("name"):
+        hook = ("출발 전 체크", "검색 뒤 비교", "약관에서 볼 항목", "보험료 전 질문")[variation["year"] % 4]
+        seasonal_keyword = next((term for term in season.get("keywords") or [] if "보험" in term), keyword)
+        specs.insert(0, (
+            "seasonal_scene", f"{season['name']} {hook}, {name}", "시즌 의사결정", angle,
+            [f"{season['name']}에 달라지는 생활 동선", f"{angle}·{second}를 볼 질문",
+             f"{saturated} 중심 검색 결과와 다른 관점", "일정 전 최종 설계 점검"],
+            seasonal_keyword,
+        ))
+    year, month = _month_parts(planning_month)
+    offset = (year * 12 + month + int(variation["serp_signature"][:6], 16)) % len(specs)
+    rotated = specs[offset:] + specs[:offset]
+    if season.get("name"):
+        seasonal_spec = next(row for row in specs if row[0] == "seasonal_scene")
+        rotated = [seasonal_spec, *[row for row in rotated if row[0] != "seasonal_scene"]]
+    used_titles = {re.sub(r"\s+", "", str(row.get("title") or "")).lower()
+                   for row in ((content_history or {}).get("entries") or [])
+                   if row.get("product_key") == product["key"]}
+    rows = []
+    for spec in rotated:
+        pattern, title, intent, focus, sections, *query_override = spec
+        fitted = _fit([title, f"{name} 선택 전에 질문을 정리하는 법"], 15, 34)
+        if re.sub(r"\s+", "", fitted).lower() in used_titles:
+            continue
+        index = len(rows) + 1
+        rows.append({
+            "id": f"{product['key']}-serp-topic-{variation['variation_key'][:6]}-{index}",
+            "fingerprint": _fingerprint({"product": product["key"], "title": fitted,
+                                         "season": variation["season_key"], "serp": variation["serp_signature"]}),
+            "pattern": pattern, "message_axis": pattern, "title": fitted,
+            "target_query": query_override[0] if query_override else (keyword if index != 2 else f"{name} {focus}"),
+            "intent": intent, "focus": focus,
+            "angle": f"SERP의 ‘{saturated}’ 반복에서 벗어나 {AXIS_LABELS.get(pattern, '생활 질문')}으로 전개",
+            "sections": sections,
+            "faq": [f"{focus}을 볼 때 먼저 비교할 항목은 무엇인가요?", f"{name} 보험료 계산 조건은 어떻게 맞추나요?"],
+            "image_brief": f"{SCENES.get(product['key'], SCENES['home'])[(index-1) % 3]}. 텍스트·숫자·로고 없이 프리미엄 3D 애니메이션으로 표현.",
+            "serp_basis": basis, "serp_signature": variation["serp_signature"],
+            "variation_key": variation["variation_key"], "season_context": season,
+            "source": "월간 SERP 변화·시즌 캘린더 결합",
+        })
+        if len(rows) == 3:
+            break
+    return rows
+
+
+def generate(products, analysis, volume, manifest=None, dom=None, planning_month=None,
+             seasonal=None, calendar=None, content_history=None, image_history=None):
     manifest, dom = manifest or {}, dom or {}
     output = []
     for product in products.get("products") or []:
@@ -358,9 +581,18 @@ def generate(products, analysis, volume, manifest=None, dom=None, planning_month
         plan_month = planning_month or monitoring["planning_month"]
         basis = f"{plan_month} 월간 SERP · 캡처 {monitoring['capture_latest'] or '없음'} · 패턴 {pattern_date} · 최근 35일 {monitoring['capture_count_35d']}회"
         table_stakes = list(dict.fromkeys([*common, *observed_angles]))[:3]
-        sa = sa_recommendations(product, keyword, angle, table_stakes, basis)
-        images = image_directions(product, angle, patterns, basis, plan_month)
-        topics = power_topics(product, keyword, angle, table_stakes, basis, plan_month)
+        season = season_context(product, plan_month, seasonal, calendar)
+        season_keywords = [str(term).replace(" ", "") for term in season.get("keywords") or []]
+        seasonal_angle = next((term for term in product.get("special") or []
+                               if any(term.replace(" ", "") in keyword or keyword in term.replace(" ", "")
+                                      for keyword in season_keywords)), None)
+        if seasonal_angle:
+            angle = seasonal_angle
+        signature = serp_signature(patterns, diff, table_stakes, ads)
+        variation = variation_context(product, plan_month, season, signature)
+        sa = sa_recommendations(product, keyword, angle, table_stakes, basis, season, variation)
+        images = image_directions(product, angle, patterns, basis, plan_month, season, variation, image_history)
+        topics = power_topics(product, keyword, angle, table_stakes, basis, plan_month, season, variation, content_history)
         output.append({
             "product_key": product["key"],
             "month": plan_month,
@@ -379,12 +611,15 @@ def generate(products, analysis, volume, manifest=None, dom=None, planning_month
             "selected_angle": angle,
             "latest_date": monitoring["capture_latest"] or monitoring["auto_pattern_latest"] or diff["latest"],
             "serp_diff": diff,
+            "serp_signature": signature,
+            "season_context": season,
+            "variation": variation,
             "observed_count": len(ads),
-            "copy_direction": f"{keyword} 상품명·행동어를 기본으로 두고 {angle} 상황을 차별 각도로 사용",
-            "visual_direction": f"보험종목 장면: {images[0]['scene']}",
+            "copy_direction": f"{keyword} 검색자의 {_josa(AXIS_LABELS[variation['primary_axis']], '을', '를')} 중심으로 {_josa(angle, '을', '를')} 구체화",
+            "visual_direction": f"보험종목 장면 · {STYLE_FAMILY} · {images[0]['scene']}",
             "operating_gap": {
                 "current_gap": "실제 SERP의 상품명·행동어·확장소재 구조보다 기존 제안이 추상적",
-                "direction": f"{keyword} 검색자의 다음 행동과 {angle} 상황을 제목·설명·추가설명에 일관되게 연결",
+                "direction": f"{keyword} 검색자의 다음 행동, {angle}, {season.get('name') or '선택 월의 상시 수요'}를 제목·설명·이미지·파워콘텐츠에 같은 축으로 연결",
                 "guardrails": ["경쟁사 원문·프로모션 수치 복사 금지", "상품자료에 없는 금액·기간·할인 단정 금지", "이미지 안 텍스트·숫자·로고 금지"],
             },
             "sa_recommendations": sa,
@@ -395,7 +630,9 @@ def generate(products, analysis, volume, manifest=None, dom=None, planning_month
                 "refresh_cadence": "monthly",
                 "slot_count": len(images),
                 "unique_asset_count": len({row["asset"] for row in images}),
-                "selection": "monthly_rotating_product_pool",
+                "new_generation_required": sum(bool(row["generation_required"]) for row in images),
+                "style_family": STYLE_FAMILY,
+                "selection": "least_recently_used_product_pool_then_new_generation",
             },
             "power_content_topics": topics,
             "analysis_status": "ready",
@@ -404,7 +641,7 @@ def generate(products, analysis, volume, manifest=None, dom=None, planning_month
     asof = _latest(*dates) or date.today().isoformat()
     return {
         "_comment": "월간 SERP 캡처·자동 DOM 패턴·검토 관측·검색량을 결합한 공통 소재 기획안. 경쟁사 원문은 자동 제안에 복사하지 않는다.",
-        "schema_version": 2,
+        "schema_version": 3,
         "asof": asof,
         "planning_month": planning_month or asof[:7],
         "cadence": "weekly_capture_monthly_material_plan",
@@ -429,6 +666,16 @@ def image_plan_archive(result):
     }
 
 
+def _read_image_history(root):
+    rows = []
+    for path in sorted((root / "data/adcopy/image-plans").glob("*.json")):
+        try:
+            rows.append(json.loads(path.read_text(encoding="utf-8")))
+        except (OSError, ValueError):
+            continue
+    return rows
+
+
 def main(root=ROOT, planning_month=None, archive_images=False):
     planning_month = planning_month or date.today().strftime("%Y-%m")
     result = generate(
@@ -438,6 +685,10 @@ def main(root=ROOT, planning_month=None, archive_images=False):
         read("serp/manifest.json", {}, root),
         read("serp/dom_observations.json", {}, root),
         planning_month,
+        read("data/seasonal.json", {}, root),
+        read("data/events/calendar.json", {}, root),
+        read("data/adcopy/powercontent-history.json", {}, root),
+        _read_image_history(root),
     )
     output = root / "data/adcopy/serp-candidates.json"
     atomic_json_write(output, result)

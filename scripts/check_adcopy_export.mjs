@@ -33,8 +33,8 @@ for (const product of PRODUCTS) {
   if (sheet.subt.length > 15 || sheet.additionalDesc.length !== 4 || sheet.promo.length !== 2 || sheet.sub.length !== 4) {
     throw new Error(`${product.name}: 확장소재 후보 개수 불일치 (추가제목 ${sheet.subt.length}, 추가설명 ${sheet.additionalDesc.length}, 홍보 ${sheet.promo.length}, 서브링크 ${sheet.sub.length})`);
   }
-  if (sheet.issues.some((issue) => !issue.m.includes(8) && !issue.m.includes(9))) {
-    throw new Error(`${product.name}: 선택월(8월)·익월(9월) 밖 시즌 소재가 포함됨`);
+  if (sheet.issues.some((issue) => !issue.m.includes(8))) {
+    throw new Error(`${product.name}: 선택월(8월) 밖 시즌 소재가 포함됨`);
   }
 }
 const cancerSheet = buildSheet(PRODUCTS.find((product) => product.key === "cncr"));
@@ -55,6 +55,9 @@ for (const product of PRODUCTS) {
     const generatedCopy = [row.title, row.description, row.extraTitle, row.additionalDescription, row.promo].join(" ");
     if (/24시간|3분|바로 가입|최저|저렴|무료|무조건/.test(generatedCopy)) {
       throw new Error(`${product.name}: 근거 확인 전 사용할 수 없는 표현 '${generatedCopy}'`);
+    }
+    if (/갑작스러운|미리 대비하세요|든든하게 대비|보장 여부와 가입 조건을 확인하세요/.test(generatedCopy)) {
+      throw new Error(`${product.name}: 반복형 일반 문구 잔존 '${generatedCopy}'`);
     }
     const signature = [
       row.campaignName,
@@ -81,4 +84,4 @@ for (const product of PRODUCTS) {
 
 if (total !== 600) throw new Error(`전체 행 수 불일치: ${total}행 (기대 600행)`);
 console.log(`OK  전체 ${PRODUCTS.length}상품 × 50행 = ${total}행`);
-console.log("OK  선택월·익월 밖 시즌 소재 제외 (8월→9월, 신년 문구 없음)");
+console.log("OK  선택월 밖 시즌 소재 제외 (8월만 사용, 익월·신년 문구 없음)");

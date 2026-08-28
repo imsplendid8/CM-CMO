@@ -49,6 +49,7 @@ check.setData(
 if (check.PRODUCTS.length !== 12) throw new Error(`상품 수 불일치: ${check.PRODUCTS.length}개`);
 const forbidden = /자동차\s*보험|공개\s*관측|한화생명|고객센터|라이나|영업배상책임|재난배상책임/;
 const forbiddenKeyword = /삼성|DB|디비|동부|현대|KB|메리츠|라이나|AXA|악사|흥국|롯데|신한/;
+const bodyFingerprints = new Set();
 
 for (const product of check.PRODUCTS) {
   const candidates = check.titleCandidates(product);
@@ -69,6 +70,11 @@ for (const product of check.PRODUCTS) {
       throw new Error(`${product.name}: 제외 표현 포함 '${candidate.title}'`);
     }
     const brief = check.contentBriefFor(product, candidate);
+    const bodyText = brief.draft.map((row) => row.body).join(" ");
+    bodyFingerprints.add(bodyText.replace(/\s+/g, " ").slice(0, 420));
+    if (/갑작스러운|미리 대비하세요|든든하게 대비|보장하세요/.test(bodyText)) {
+      throw new Error(`${product.name}: 반복형 일반 본문 문구 잔존`);
+    }
     const introLength = check.clen(brief.intro);
     if (introLength < 80 || introLength > 110) throw new Error(`${product.name}: 도입부·광고 설명 ${introLength}자`);
     if (brief.draft.length !== 5) throw new Error(`${product.name}: 본문 초안 ${brief.draft.length}개 섹션`);
@@ -111,6 +117,8 @@ for (const product of check.PRODUCTS) {
   }
   console.log(`OK  ${product.name}: 키워드 전략 · 콘텐츠 3안 · 발행본문 1,500자+ · 대표 1/중간 3 · CTA 배너`);
 }
+if (bodyFingerprints.size < 30) throw new Error(`상품·주제별 본문 변주 부족: ${bodyFingerprints.size}/36`);
+console.log(`OK  상품·주제별 본문 문맥 ${bodyFingerprints.size}종 · 고정 원고 반복 없음`);
 
 const driver = check.PRODUCTS.find((product) => product.key === "driver");
 const driverSet = check.contentKeywordSet(driver);
@@ -123,6 +131,9 @@ if (driverMeasured.some((row) => !driverKeys.has(row.kw.replace(/\s/g, "").toLow
 }
 if (driverSet.some((row) => forbiddenKeyword.test(row.keyword) || /자동차\s*보험|원데이|일일운전자|1일운전자|단기운전자|하루운전자|렌트카보험|한문철/.test(row.keyword))) {
   throw new Error("운전자보험 전체 키워드셋에 제외 키워드가 포함됨");
+}
+if (driverSet.some((row) => /추석|설 연휴|명절/.test(row.keyword))) {
+  throw new Error("8월 운전자보험 키워드셋에 날짜 불일치 명절 키워드가 포함됨");
 }
 if (driverSet.some((row) => !row.priority || !row.category || !row.intent || !row.source || !row.use || !row.status)) {
   throw new Error("운전자보험 전체 키워드셋 Excel 필수 분류값 누락");
