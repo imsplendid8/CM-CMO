@@ -29,14 +29,34 @@ for(const forbidden of ["generated=agent.candidates", "new FileReader()", "PNG 4
   if(html.includes(forbidden))errors.push(`구형 이미지/SERP 코드 잔존: ${forbidden}`);
 }
 const powerHtml=fs.readFileSync(path.join(ROOT,"powercontent-tool.html"),"utf8");
-const productPools=[
-  ["adcopy INSURANCE_VISUALS golf", html.match(/golf:\{assets:\[([^\]]+)\]/)?.[1] || ""],
-  ["adcopy INSURANCE_VISUALS holeinone", html.match(/holeinone:\{assets:\[([^\]]+)\]/)?.[1] || ""],
-  ["powercontent FALLBACK_VISUALS golf", powerHtml.match(/golf:\[([^\]]+)\]/)?.[1] || ""],
-  ["powercontent FALLBACK_VISUALS holeinone", powerHtml.match(/holeinone:\[([^\]]+)\]/)?.[1] || ""],
-];
-for(const [label,pool] of productPools){
-  if(/event-safety/.test(pool))errors.push(`${label}: 행사배상책임 이미지가 골프/홀인원 후보에 섞임`);
+const allowedProductAssetPatterns={
+  home:/^(calculator-)/,
+  hrmf:/^(home-|calculator-)/,
+  golf:/^(golf-|calculator-)/,
+  cncr:/^(cancer-|health-|calculator-)/,
+  dntl:/^(dental-|calculator-)/,
+  driver:/^(driver-)/,
+  woman:/^(woman-|calculator-)/,
+  birth:/^(birth-|family-)/,
+  chronic:/^(chronic-|health-|calculator-)/,
+  overseas:/^(travel-|student-|calculator-)/,
+  overseaslong:/^(student-|travel-|calculator-)/,
+  holeinone:/^(golf-|calculator-)/,
+  event:/^(event-|calculator-)/,
+};
+const extractAdcopyPool=(key)=>html.match(new RegExp(`${key}:\\{assets:\\[([^\\]]+)\\]`))?.[1] || "";
+const extractPowerPool=(key)=>powerHtml.match(new RegExp(`${key}:\\[([^\\]]+)\\]`))?.[1] || "";
+const parsePoolNames=(pool)=>[...pool.matchAll(/assets\/insurance\/([a-z0-9-]+\.png)|"([a-z0-9-]+\.png)"/g)].map(match=>match[1]||match[2]).filter(Boolean);
+for(const [key,pattern] of Object.entries(allowedProductAssetPatterns)){
+  for(const [label,pool] of [
+    [`adcopy INSURANCE_VISUALS ${key}`,extractAdcopyPool(key)],
+    [`powercontent FALLBACK_VISUALS ${key}`,extractPowerPool(key)],
+  ]){
+    if(!pool)continue;
+    for(const name of parsePoolNames(pool)){
+      if(!pattern.test(name))errors.push(`${label}: ${name} 이미지가 ${key} 후보군에 섞임`);
+    }
+  }
 }
 
 const assetNames=[...html.matchAll(/assets\/insurance\/([a-z0-9-]+\.png)/g)].map(x=>x[1]);
@@ -70,11 +90,10 @@ for(const product of plan.products||[]){
   if(product.image_plan?.unique_asset_count!==distinct.length)errors.push(`${product.product_key}: image_plan 고유 원본 수 오류`);
   if(new Set(rows.map(row=>row.concept_id)).size!==4)errors.push(`${product.product_key}: 이미지 콘셉트 지문 중복`);
   if(rows.some(row=>row.style_family!=="premium_3d_animation_v4"))errors.push(`${product.product_key}: 3D 애니메이션 스타일 패밀리 불일치`);
-  if(product.product_key==="driver"&&distinct.some(source=>!path.basename(source).startsWith("driver-")))errors.push("driver: 운전자보험과 무관한 이미지 원본 포함");
-  if(product.product_key==="hrmf"&&distinct.some(source=>!/(home-|calculator-)/.test(path.basename(source))))errors.push("hrmf: 주택화재보험과 무관한 이미지 원본 포함");
-  if(product.product_key==="golf"&&distinct.some(source=>!/(golf-|calculator-)/.test(path.basename(source))))errors.push("golf: 골프보험과 무관한 이미지 원본 포함");
-  if(product.product_key==="cncr"&&distinct.some(source=>!/(health-|calculator-)/.test(path.basename(source))))errors.push("cncr: 암보험과 무관한 이미지 원본 포함");
-  if(product.product_key==="chronic"&&distinct.some(source=>!/(health-|calculator-)/.test(path.basename(source))))errors.push("chronic: 유병자보험과 무관한 이미지 원본 포함");
+  const allowedPattern=allowedProductAssetPatterns[product.product_key];
+  if(allowedPattern&&distinct.some(source=>!allowedPattern.test(path.basename(source)))){
+    errors.push(`${product.product_key}: 보험종목과 무관한 이미지 원본 포함 ${distinct.map(source=>path.basename(source)).join(", ")}`);
+  }
   const prior=[...priorArchives].reverse().find(archive=>(archive.products||[]).some(row=>row.product_key===product.product_key));
   const priorRow=(prior?.products||[]).find(row=>row.product_key===product.product_key),priorAssets=new Set((priorRow?.image_directions||[]).map(row=>row.asset));
   for(const row of rows)if(priorAssets.has(row.asset)&&row.generation_required!==true)errors.push(`${product.product_key}: 이전 원본을 신규 이미지처럼 재제안 ${row.asset}`);

@@ -161,19 +161,19 @@ function editorialDraft(p,c,q,focus,issue,monthly){const ctx=CONTENT_CONTEXT[p.k
 ]}
 function introFor(p,c){const q=c.target_query||p.serpKw,a=p.special[0],b=p.special[1];const options=[`${josa(q,"을","를")} 알아보는 분을 위해 ${a}·${b} 등 가입 전에 확인할 항목과 비교 순서를 정리했습니다. 실제 보장 내용과 제외 조건은 상품설명서와 약관을 기준으로 확인해 주세요.`,`${q} 가입 전에 살펴볼 기준을 정리했습니다. ${a}·${b} 관련 조건과 보험료 확인 순서, 놓치기 쉬운 제외 사항을 함께 짚고 실제 내용은 상품설명서와 약관에서 확인합니다.`];let text=options.find(x=>clen(x)>=POWER_SPEC.description.minLength&&clen(x)<=POWER_SPEC.description.maxLength)||options[1];if(clen(text)<POWER_SPEC.description.minLength)text+=" 가입 전 필요한 내용을 차근차근 확인해 보세요.";if(clen(text)>POWER_SPEC.description.maxLength)text=[...text].slice(0,POWER_SPEC.description.maxLength-1).join("").replace(/[ ,·]+$/g,"")+".";return HUMANIZE.light(text)}
 const FALLBACK_VISUALS={
-  home:["calculator-animation-v3.png","home-fire-animation-v3.png","home-leak-animation-v3.png","home-weather-3d.png"],
+  home:["calculator-animation-v3.png"],
   hrmf:["home-fire-animation-v3.png","home-leak-animation-v3.png","home-weather-3d.png","calculator-animation-v3.png"],
   golf:["golf-hole-animation-v3.png","golf-holeinone-3d.png","golf-tee-bag-animation-v1.png","golf-checklist-animation-v1.png","calculator-animation-v3.png"],
-  cncr:["health-check-animation-v3.png","health-review-3d.png","calculator-animation-v3.png","family-baby-animation-v3.png"],
-  dntl:["dental-consult-animation-v3.png","dental-consult-3d.png","health-check-animation-v3.png","calculator-animation-v3.png"],
+  cncr:["cancer-consult-animation-v1.png","health-check-animation-v3.png","health-review-3d.png","calculator-animation-v3.png"],
+  dntl:["dental-consult-animation-v3.png","dental-consult-3d.png","dental-model-animation-v1.png","calculator-animation-v3.png"],
   driver:["driver-schoolzone-animation-v4.png","driver-accident-animation-v4.png","driver-rain-animation-v4.png","driver-safe-animation-v3.png"],
-  woman:["family-baby-animation-v3.png","family-pregnancy-3d.png","health-review-3d.png","calculator-animation-v3.png"],
-  birth:["family-baby-animation-v3.png","family-pregnancy-3d.png","health-check-animation-v3.png","calculator-animation-v3.png"],
+  woman:["woman-health-planner-animation-v1.png","woman-clinic-lounge-animation-v1.png","woman-wellness-desk-animation-v1.png","calculator-animation-v3.png"],
+  birth:["birth-nursery-prep-animation-v1.png","birth-planner-animation-v1.png","family-baby-animation-v3.png","family-pregnancy-3d.png"],
   overseas:["travel-airport-animation-v3.png","travel-airport-3d.png","student-overseas-3d.png","calculator-animation-v3.png"],
   overseaslong:["student-campus-animation-v3.png","student-overseas-3d.png","travel-airport-animation-v3.png","calculator-animation-v3.png"],
   holeinone:["golf-hole-animation-v3.png","golf-holeinone-3d.png","golf-tee-bag-animation-v1.png","golf-checklist-animation-v1.png","calculator-animation-v3.png"],
-  event:["event-safety-animation-v3.png","event-safety-3d.png","calculator-animation-v3.png","travel-airport-animation-v3.png"],
-  chronic:["health-check-animation-v3.png","health-review-3d.png","calculator-animation-v3.png","family-baby-animation-v3.png"]
+  event:["event-safety-animation-v3.png","event-safety-3d.png","event-venue-flow-animation-v1.png","calculator-animation-v3.png"],
+  chronic:["chronic-health-record-animation-v1.png","health-check-animation-v3.png","health-review-3d.png","calculator-animation-v3.png"]
 };
 function visualPlanFor(p,c){const monthly=serpPlan(p),fallback=FALLBACK_VISUALS[p.key]||FALLBACK_VISUALS.chronic,rows=[...(monthly?.image_directions||[]),...fallback.map((file,index)=>({asset:`assets/insurance/${file}`,scene:`${p.name} ${index+1}번째 생활 장면`,generation_brief:`${p.name} 검색 맥락을 보여 주는 텍스트 없는 3D 애니메이션 장면`}))],seen=new Set(),unique=[];rows.forEach(row=>{const asset=String(row.asset||"");if(!asset||seen.has(asset))return;seen.add(asset);unique.push({asset,scene:row.scene||p.name,brief:row.generation_brief||c.image_brief||`${p.name} 생활 장면`,source:monthly?.month?`${monthly.month} SERP 이미지 방향`:`${month}월 상품 이미지 방향`,textOverlay:false})});const selected=unique.slice(0,4);return{hero:{...selected[0],role:"대표 이미지",placement:"제목 아래"},mid:selected.slice(1,4).map((row,index)=>({...row,role:`중간 이미지 ${index+1}`,placement:`본문 ${index+1}절 뒤`})),rule:"같은 원본 연속 노출 방지 · 이미지 내부 텍스트 없음 · 3D 애니메이션 스타일"}}
 function contentBriefFor(p,c){const q=c.target_query||p.serpKw,keywords=keywordPlan(p,c),intro=introFor(p,c),intent=c.intent||intentFor(c),s=p.special,issue=keywords.issue,monthly=serpPlan(p),focus=c.focus||s[0],visuals=visualPlanFor(p,c);const draft=[

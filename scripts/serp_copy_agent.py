@@ -45,6 +45,7 @@ ASSET_SCENES = {
     "calculator-animation-v3.png": "보험료와 가입 항목을 확인하는 계산기 오브젝트",
     "dental-consult-3d.png": "치과 상담실에서 치료 계획을 확인하는 장면",
     "dental-consult-animation-v3.png": "치아 모형을 보며 상담하는 장면",
+    "dental-model-animation-v1.png": "치아 모형과 빈 상담 카드를 놓고 치료 항목을 확인하는 장면",
     "driver-safe-animation-v3.png": "도심 도로에서 안전운전하는 운전자",
     "driver-traffic-3d.png": "교차로 신호와 앞차를 확인하는 운전자",
     "driver-schoolzone-animation-v4.png": "스쿨존 횡단보도 앞에서 감속하는 운전자",
@@ -52,9 +53,17 @@ ASSET_SCENES = {
     "driver-rain-animation-v4.png": "비 오는 저녁 도로에서 방어운전하는 운전자",
     "event-safety-3d.png": "행사 현장의 시설과 동선을 확인하는 운영자",
     "event-safety-animation-v3.png": "공연 시작 전 안전을 점검하는 스태프",
+    "event-venue-flow-animation-v1.png": "행사장 동선과 안전 구역을 사전에 점검하는 장면",
+    "cancer-consult-animation-v1.png": "암보험 상담 전 건강자료와 빈 기록지를 차분히 확인하는 장면",
+    "chronic-health-record-animation-v1.png": "복용약과 건강기록을 함께 정리하는 장면",
+    "woman-health-planner-animation-v1.png": "여성 건강관리 일정을 빈 플래너로 정리하는 장면",
+    "woman-clinic-lounge-animation-v1.png": "여성 건강 상담 전 빈 폴더를 들고 대기하는 장면",
+    "woman-wellness-desk-animation-v1.png": "여성 건강 상담 전 노트와 생활용품을 정돈하는 장면",
     "golf-checklist-animation-v1.png": "라운드 전 장비와 빈 체크카드를 확인하는 장면",
     "family-baby-animation-v3.png": "아기와 가족이 함께 건강을 준비하는 장면",
     "family-pregnancy-3d.png": "예비 부모가 출산 준비물을 확인하는 장면",
+    "birth-nursery-prep-animation-v1.png": "아기방과 출산 준비물을 정리하는 장면",
+    "birth-planner-animation-v1.png": "빈 산모 플래너와 아기용품을 함께 확인하는 장면",
     "golf-hole-animation-v3.png": "그린 위 홀인원 순간을 기뻐하는 골퍼",
     "golf-holeinone-3d.png": "깃대와 공이 보이는 홀인원 장면",
     "golf-tee-bag-animation-v1.png": "티박스에서 골프백과 클럽을 준비하는 장면",
@@ -70,19 +79,19 @@ ASSET_SCENES = {
 }
 
 IMAGE_POOLS = {
-    "home": ["calculator-animation-v3.png", "driver-safe-animation-v3.png", "home-fire-animation-v3.png", "health-check-animation-v3.png", "travel-airport-animation-v3.png"],
+    "home": ["calculator-animation-v3.png"],
     "hrmf": ["home-fire-animation-v3.png", "home-leak-animation-v3.png", "home-weather-3d.png", "calculator-animation-v3.png"],
     "golf": ["golf-hole-animation-v3.png", "golf-holeinone-3d.png", "golf-tee-bag-animation-v1.png", "golf-checklist-animation-v1.png", "calculator-animation-v3.png"],
-    "cncr": ["health-check-animation-v3.png", "health-review-3d.png", "calculator-animation-v3.png"],
-    "dntl": ["dental-consult-animation-v3.png", "dental-consult-3d.png", "health-check-animation-v3.png", "calculator-animation-v3.png"],
+    "cncr": ["cancer-consult-animation-v1.png", "health-check-animation-v3.png", "health-review-3d.png", "calculator-animation-v3.png"],
+    "dntl": ["dental-consult-animation-v3.png", "dental-consult-3d.png", "dental-model-animation-v1.png", "calculator-animation-v3.png"],
     "driver": ["driver-safe-animation-v3.png", "driver-traffic-3d.png", "driver-schoolzone-animation-v4.png", "driver-accident-animation-v4.png", "driver-rain-animation-v4.png"],
-    "woman": ["health-check-animation-v3.png", "health-review-3d.png", "family-pregnancy-3d.png", "family-baby-animation-v3.png"],
-    "birth": ["family-baby-animation-v3.png", "family-pregnancy-3d.png", "health-check-animation-v3.png", "health-review-3d.png"],
+    "woman": ["woman-health-planner-animation-v1.png", "woman-clinic-lounge-animation-v1.png", "woman-wellness-desk-animation-v1.png", "calculator-animation-v3.png"],
+    "birth": ["birth-nursery-prep-animation-v1.png", "birth-planner-animation-v1.png", "family-baby-animation-v3.png", "family-pregnancy-3d.png"],
     "overseas": ["travel-airport-animation-v3.png", "travel-airport-3d.png", "student-campus-animation-v3.png", "calculator-animation-v3.png"],
     "overseaslong": ["student-campus-animation-v3.png", "student-overseas-3d.png", "travel-airport-animation-v3.png", "calculator-animation-v3.png"],
     "holeinone": ["golf-hole-animation-v3.png", "golf-holeinone-3d.png", "golf-tee-bag-animation-v1.png", "golf-checklist-animation-v1.png", "calculator-animation-v3.png"],
-    "event": ["event-safety-animation-v3.png", "event-safety-3d.png", "home-fire-animation-v3.png", "calculator-animation-v3.png"],
-    "chronic": ["health-check-animation-v3.png", "health-review-3d.png", "calculator-animation-v3.png"],
+    "event": ["event-safety-animation-v3.png", "event-safety-3d.png", "event-venue-flow-animation-v1.png", "calculator-animation-v3.png"],
+    "chronic": ["chronic-health-record-animation-v1.png", "health-check-animation-v3.png", "health-review-3d.png", "calculator-animation-v3.png"],
 }
 
 COPY_AXES = (
@@ -467,15 +476,17 @@ def image_directions(product, angle, patterns, basis, planning_month, season, va
     rows, used_assets = [], set()
     for index, asset in enumerate(assets):
         asset_name = Path(asset).name
+        asset_scene = ASSET_SCENES[asset]
+        scene = f"{event} 일정에 맞춰 {asset_scene}" if event and index == 0 else asset_scene
         reused_previous = asset_name in {Path(value).name for value in previous_assets}
         repeated_this_set = asset_name in used_assets
         used_assets.add(asset_name)
         rows.append({
         "proposal_id": f"{product['key']}-{planning_month}-{variation['variation_key'][:6]}-{index + 1:02d}",
         "concept_id": _fingerprint({"product": product["key"], "month": planning_month,
-                                    "scene": scenes[index], "serp": variation["serp_signature"]}),
-        "role": roles[index], "scene": scenes[index],
-        "reference_scene": ASSET_SCENES[asset],
+                                    "scene": scene, "serp": variation["serp_signature"]}),
+        "role": roles[index], "scene": scene,
+        "reference_scene": asset_scene,
         "asset": f"assets/insurance/{asset}",
         "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
         "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
@@ -484,7 +495,7 @@ def image_directions(product, angle, patterns, basis, planning_month, season, va
         "reused_from_previous_month": reused_previous,
         "repeated_reference_in_month": repeated_this_set,
         "generation_required": reused_previous or repeated_this_set,
-        "generation_brief": f"{product['name']} 검색 맥락을 ‘{scenes[index]}’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+        "generation_brief": f"{product['name']} 검색 맥락을 ‘{scene}’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
         "why": f"{basis} · {AXIS_LABELS[variation['primary_axis']]} · SERP {patterns[0][0] if patterns else '검색 행동'} 변화에서 장면 역할을 도출",
         })
     return rows
