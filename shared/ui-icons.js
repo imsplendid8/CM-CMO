@@ -39,6 +39,7 @@
     "seasonal-tool.html": "calendar",
     "adcopy-tool.html": "adcopy",
     "powercontent-tool.html": "power",
+    "material-admin.html": "list",
     "overview.html": "overview",
   };
   const page = location.pathname.split("/").pop() || "index.html";
@@ -82,7 +83,7 @@
     if (page === "overview.html") {
       const routeIcons = {
         "seo-audit.html": "seo", "keyword-tool.html": "keyword", "news-tool.html": "news", "serp-tool.html": "serp",
-        "seasonal-tool.html": "calendar", "adcopy-tool.html": "adcopy", "powercontent-tool.html": "power",
+        "seasonal-tool.html": "calendar", "adcopy-tool.html": "adcopy", "powercontent-tool.html": "power", "material-admin.html": "list",
       };
       const titleIcons = [
         [/브랜드검색/, "tag"], [/클리핑/, "archive"], [/수요 신호/, "signal"], [/SERP 캡쳐/, "camera"], [/보안 설정/, "lock"],

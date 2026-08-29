@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>소재제작소 Admin</title>
+<link rel="preload" href="fonts/PretendardVariable.woff2" as="font" type="font/woff2" crossorigin>
+<script src="shared/ui-icons.js"></script>
+<script src="shared/insurance-ad-review.js"></script>
+<script src="shared/material-feedback.js"></script>
+<style>
+@font-face{font-family:Pretendard;src:url("fonts/PretendardVariable.woff2") format("woff2");font-display:swap}
+:root{--bg:#f6f4f0;--paper:#fffefa;--ink:#171717;--muted:#75716b;--line:#e8e1d8;--soft:#f0ece5;--brand:#f37321;--good:#18794e;--warn:#a56315;--bad:#b4232a;--blue:#265ebf}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top left,#fff3e1,transparent 32%),var(--bg);font-family:Pretendard,system-ui,-apple-system,sans-serif;color:var(--ink)}
+main{max-width:1280px;margin:0 auto;padding:28px 20px 48px}
+.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;align-items:stretch;margin-bottom:18px}
+.panel{background:rgba(255,254,250,.92);border:1px solid var(--line);border-radius:24px;box-shadow:0 18px 48px rgba(42,34,23,.08)}
+.intro{padding:28px}.eyebrow{font-size:12px;font-weight:900;color:var(--brand);letter-spacing:.08em}.intro h1{font-size:34px;letter-spacing:-.05em;margin:8px 0 10px}.intro p{margin:0;line-height:1.75;color:#4d4944}
+.privacy{padding:22px}.privacy h2{font-size:16px;margin:0 0 10px}.privacy ul{margin:0;padding-left:18px;color:#5c5750;line-height:1.8;font-size:13px}
+.toolbar{display:grid;grid-template-columns:1.2fr 1fr 1fr auto;gap:10px;padding:14px;margin-bottom:14px;position:sticky;top:0;z-index:5;backdrop-filter:blur(12px)}
+input,select,textarea,button{font:inherit}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:13px;background:#fff;color:var(--ink);padding:11px 12px}button{border:0;border-radius:999px;background:#171717;color:#fff;padding:10px 14px;font-weight:850;cursor:pointer}button.secondary{background:#fff;color:#222;border:1px solid var(--line)}button.good{background:var(--good)}button.warn{background:var(--warn)}button.bad{background:var(--bad)}button.blue{background:var(--blue)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}.stat{padding:14px 15px}.stat b{display:block;font-size:24px;letter-spacing:-.04em}.stat span{font-size:12px;color:var(--muted);font-weight:800}
+.layout{display:grid;grid-template-columns:1fr 360px;gap:16px}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.card{padding:16px;border-radius:20px;background:var(--paper);border:1px solid var(--line);box-shadow:0 10px 28px rgba(42,34,23,.05)}.card.reviewed{outline:2px solid rgba(24,121,78,.18)}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:9px}.pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;background:var(--soft);color:#5c5750;padding:5px 8px;font-size:11px;font-weight:850}.pill.sa{background:#eaf1ff;color:#244d9a}.pill.power{background:#f3edff;color:#5c3aa0}.pill.thumb{background:#fff0d6;color:#8b4d00}.pill.risk{background:#fdecec;color:var(--bad)}
+.card h3{font-size:17px;letter-spacing:-.03em;margin:0 0 8px}.copy{font-size:14px;line-height:1.65;color:#37332e;white-space:pre-wrap}.small{font-size:12px;color:var(--muted);line-height:1.6}.actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.actions button{font-size:12px;padding:8px 10px}.reviewbox{display:grid;gap:7px;margin-top:10px}.reviewbox textarea{min-height:58px;resize:vertical}
+.side{padding:16px;position:sticky;top:88px;align-self:start}.side h2{font-size:16px;margin:0 0 10px}.side p{font-size:12px;color:var(--muted);line-height:1.65}.side pre{white-space:pre-wrap;word-break:break-all;background:#171717;color:#fff;border-radius:14px;padding:12px;max-height:280px;overflow:auto;font-size:11px}.side .stack{display:grid;gap:8px}
+.empty{padding:36px;text-align:center;color:var(--muted)}.toast{position:fixed;right:18px;bottom:18px;background:#171717;color:#fff;padding:12px 15px;border-radius:14px;box-shadow:0 15px 35px rgba(0,0,0,.2);opacity:0;transform:translateY(8px);transition:.2s}.toast.on{opacity:1;transform:none}
+@media(max-width:960px){.hero,.layout{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr 1fr}.stats{grid-template-columns:repeat(2,1fr)}.side{position:static}}
+</style>
+</head>
+<body>
+<main>
+  <section class="hero">
+    <div class="panel intro">
+      <div class="eyebrow">MATERIAL REVIEW LAB</div>
+      <h1>소재제작소 Admin</h1>
+      <p>생성된 SA 문구, 파워콘텐츠 주제, 이미지 썸네일 브리프를 한곳에서 검수합니다. 채택·수정·반려 사유는 내 브라우저에만 저장되고, 필요할 때 생성 규칙 JSON으로 내보낼 수 있습니다.</p>
+    </div>
+    <aside class="panel privacy">
+      <h2>운영 원칙</h2>
+      <ul>
+        <li>원문 전체 저장 대신 짧은 미리보기와 fingerprint만 저장합니다.</li>
+        <li>반려 사유는 다음 SA·파워콘텐츠·썸네일 생성 규칙으로 환류합니다.</li>
+        <li>SERP 이미지는 참고만 하고, 구조화된 텍스트 관측을 우선합니다.</li>
+      </ul>
+    </aside>
+  </section>
+
+  <section class="panel toolbar">
+    <input id="q" placeholder="문구·상품·장면 검색">
+    <select id="product"></select>
+    <select id="channel">
+      <option value="">전체 유형</option>
+      <option value="search_ad">SA 소재</option>
+      <option value="power_content">파워콘텐츠</option>
+      <option value="thumbnail">썸네일</option>
+    </select>
+    <button class="secondary" id="downloadBackup" type="button">백업 JSON</button>
+  </section>
+
+  <section class="stats" id="stats"></section>
+
+  <section class="layout">
+    <div class="cards" id="cards"></div>
+    <aside class="panel side">
+      <h2>생성 규칙 내보내기</h2>
+      <p>반려가 누적된 소재를 차단 힌트로 내보냅니다. 이 JSON을 <code>data/adcopy/material-feedback-rules.json</code>에 반영하면 다음 생성 시 같은 실패 패턴을 줄일 수 있습니다.</p>
+      <div class="stack">
+        <button id="exportRules" class="blue" type="button">규칙 JSON 만들기</button>
+        <button id="copyRules" class="secondary" type="button">클립보드 복사</button>
+        <button id="clearReviews" class="secondary" type="button">로컬 검수 기록 비우기</button>
+      </div>
+      <pre id="rulesPreview">아직 내보낸 규칙이 없습니다.</pre>
+    </aside>
+  </section>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+const DATA_URL="data/adcopy/serp-candidates.json";
+const RULE_URL="data/adcopy/material-feedback-rules.json";
+const channelLabel={search_ad:"SA 소재",power_content:"파워콘텐츠",thumbnail:"썸네일"};
+let allItems=[],rules=null;
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+function toast(msg){$("toast").textContent=msg;$("toast").classList.add("on");setTimeout(()=>$("toast").classList.remove("on"),1700)}
+function itemId(channel,productKey,id,text){return `${channel}:${productKey}:${id||ModooMaterialFeedback.fingerprint(text)}`}
+function normalize(data){
+  const rows=[];
+  for(const product of data.products||[]){
+    const pk=product.product_key||product.key||"unknown";
+    const name=product.keyword||product.product_name||pk;
+    for(const [i,row] of (product.sa_recommendations||[]).entries()){
+      const text=[row.title,row.description,row.additional_description,row.promo,(row.sublinks||[]).join(" · ")].filter(Boolean).join("\n");
+      rows.push({id:itemId("search_ad",pk,row.id||i,text),channel:"search_ad",productKey:pk,productName:name,title:row.strategy||row.title,text,meta:row.why,risk:row.review_lab_feedback?.blocked_phrase_hits||[]});
+    }
+    for(const row of product.power_content_topics||[]){
+      const text=[row.title,row.intent,row.angle,(row.sections||[]).join("\n"),row.image_brief].filter(Boolean).join("\n");
+      rows.push({id:itemId("power_content",pk,row.id,text),channel:"power_content",productKey:pk,productName:name,title:row.title,text,meta:row.serp_basis||row.source,risk:row.review_lab_feedback?.blocked_phrase_hits||[]});
+    }
+    for(const row of product.image_directions||[]){
+      const text=[row.role,row.scene,row.composition,row.style,row.generation_brief].filter(Boolean).join("\n");
+      const risk=[row.repeated_reference_in_month&&"같은 달 원본 반복",row.reused_from_previous_month&&"전월 원본 재사용",row.review_lab_feedback?.rejected_reference&&"이전 반려 원본"].filter(Boolean);
+      rows.push({id:itemId("thumbnail",pk,row.proposal_id,text),channel:"thumbnail",productKey:pk,productName:name,title:row.role||row.scene,text,meta:row.asset,risk,asset:row.asset});
+    }
+  }
+  return rows;
+}
+function productOptions(){
+  const opts=[`<option value="">전체 상품</option>`];
+  [...new Map(allItems.map(x=>[x.productKey,x.productName])).entries()].forEach(([key,name])=>opts.push(`<option value="${esc(key)}">${esc(name)}</option>`));
+  $("product").innerHTML=opts.join("");
+}
+function reviewMap(){return new Map(ModooMaterialFeedback.load().reviews.map(r=>[r.item_id,r]));}
+function renderStats(){
+  const s=ModooMaterialFeedback.stats();
+  const a=s.byAction||{};
+  $("stats").innerHTML=[
+    ["전체 검수",s.total],
+    ["사용 가능",a.accepted||0],
+    ["수정 필요",a.edit_requested||0],
+    ["사용 불가",a.rejected||0],
+    ["심의 확인",a.compliance_review||0],
+  ].map(([k,v])=>`<div class="panel stat"><b>${v}</b><span>${k}</span></div>`).join("");
+}
+function filtered(){
+  const q=$("q").value.trim().toLowerCase(),p=$("product").value,c=$("channel").value;
+  return allItems.filter(x=>(!p||x.productKey===p)&&(!c||x.channel===c)&&(!q||`${x.productName} ${x.title} ${x.text}`.toLowerCase().includes(q)));
+}
+function renderCards(){
+  const reviews=reviewMap();
+  const items=filtered();
+  $("cards").innerHTML=items.length?items.map(item=>{
+    const r=reviews.get(item.id), cls=item.channel==="search_ad"?"sa":item.channel==="power_content"?"power":"thumb";
+    return `<article class="card ${r?"reviewed":""}">
+      <div class="meta"><span class="pill">${esc(item.productName)}</span><span class="pill ${cls}">${channelLabel[item.channel]}</span>${item.risk?.map(x=>`<span class="pill risk">${esc(x)}</span>`).join("")||""}</div>
+      <h3>${esc(item.title)}</h3>
+      <div class="copy">${esc(item.text)}</div>
+      ${item.meta?`<p class="small">${esc(item.meta)}</p>`:""}
+      ${r?`<p class="small">최근 검수: ${esc(ModooMaterialFeedback.reasons[r.reason_code]||r.reason_code)} · ${esc(r.action)}</p>`:""}
+      <div class="reviewbox">
+        <select data-reason="${esc(item.id)}">${Object.entries(ModooMaterialFeedback.reasons).map(([k,v])=>`<option value="${esc(k)}">${esc(v)}</option>`).join("")}</select>
+        <textarea data-note="${esc(item.id)}" placeholder="수정 방향 또는 반려 사유 메모"></textarea>
+      </div>
+      <div class="actions">
+        <button class="good" data-act="accepted" data-id="${esc(item.id)}">사용 가능</button>
+        <button class="warn" data-act="edit_requested" data-id="${esc(item.id)}">수정 필요</button>
+        <button class="bad" data-act="rejected" data-id="${esc(item.id)}">사용 불가</button>
+        <button class="blue" data-act="compliance_review" data-id="${esc(item.id)}">심의 확인</button>
+      </div>
+    </article>`;
+  }).join(""):`<div class="panel empty">조건에 맞는 소재가 없습니다.</div>`;
+}
+function saveReview(action,id){
+  const item=allItems.find(x=>x.id===id); if(!item)return;
+  ModooMaterialFeedback.addReview({
+    item_id:id, channel:item.channel, product_key:item.productKey, product_name:item.productName,
+    action, reason_code:document.querySelector(`[data-reason="${CSS.escape(id)}"]`)?.value,
+    note:document.querySelector(`[data-note="${CSS.escape(id)}"]`)?.value,
+    text:item.text, title:item.title, asset:item.asset
+  });
+  renderStats(); renderCards(); toast("검수 기록을 저장했습니다");
+}
+async function init(){
+  const [data,r]=await Promise.all([fetch(DATA_URL).then(r=>r.json()),fetch(RULE_URL).then(r=>r.json()).catch(()=>null)]);
+  rules=r; allItems=normalize(data); productOptions(); renderStats(); renderCards();
+}
+["q","product","channel"].forEach(id=>$(id).addEventListener("input",renderCards));
+$("cards").addEventListener("click",e=>{const b=e.target.closest("button[data-act]"); if(b)saveReview(b.dataset.act,b.dataset.id)});
+$("downloadBackup").addEventListener("click",()=>ModooMaterialFeedback.download(ModooMaterialFeedback.load(),"material-review-backup.json"));
+$("exportRules").addEventListener("click",()=>{$("rulesPreview").textContent=JSON.stringify(ModooMaterialFeedback.exportRules(rules||{}),null,2);toast("규칙 JSON을 만들었습니다")});
+$("copyRules").addEventListener("click",async()=>{await navigator.clipboard.writeText($("rulesPreview").textContent);toast("클립보드에 복사했습니다")});
+$("clearReviews").addEventListener("click",()=>{if(confirm("이 브라우저의 소재 검수 기록을 비울까요?")){ModooMaterialFeedback.clear();renderStats();renderCards();toast("로컬 기록을 비웠습니다")}});
+init().catch(err=>{$("cards").innerHTML=`<div class="panel empty">데이터를 읽지 못했습니다. ${esc(err.message)}</div>`});
+</script>
+</body>
+</html>

@@ -17,6 +17,7 @@ PUBLIC_DATA = (
     "data/trends.json",
     "data/briefing/latest.json",
     "data/adcopy/serp-candidates.json",
+    "data/adcopy/material-feedback-rules.json",
     "data/events/recommendations.json",
     "data/seo/faq-opportunities.json",
     "data/adcopy/powercontent-title-opportunities.json",

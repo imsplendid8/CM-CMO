@@ -21,6 +21,7 @@ except ModuleNotFoundError:  # python scripts/serp_copy_agent.py
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data/adcopy/serp-candidates.json"
+FEEDBACK_RULES = "data/adcopy/material-feedback-rules.json"
 WINDOW_DAYS = 35
 
 SCENES = {
@@ -112,6 +113,31 @@ def read(rel, default, root=ROOT):
         return json.loads((root / rel).read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return default
+
+
+def apply_feedback_rules(text, feedback_rules=None):
+    value = str(text or "")
+    for item in (feedback_rules or {}).get("copy_replacements") or []:
+        pattern = str(item.get("pattern") or "")
+        if pattern:
+            value = value.replace(pattern, str(item.get("replacement") or ""))
+    return re.sub(r"\s+", " ", value).strip()
+
+
+def feedback_findings(fields, feedback_rules=None):
+    text = " ".join(str(value or "") for value in fields.values())
+    hits = [phrase for phrase in (feedback_rules or {}).get("blocked_phrases") or [] if phrase and phrase in text]
+    return sorted(set(hits))
+
+
+def rejected_asset_lookup(feedback_rules=None):
+    lookup = {}
+    for row in (feedback_rules or {}).get("rejected_assets") or []:
+        product_key = row.get("product_key") or ""
+        asset = row.get("asset") or ""
+        if product_key and asset:
+            lookup[(product_key, Path(asset).name)] = row
+    return lookup
 
 
 def _d(value):
@@ -392,7 +418,7 @@ def _copy_for_axis(axis, product, keyword, angle, other, season):
             "sublinks": ["핵심질문", "보장내용", "보험료계산", "가입안내"]}
 
 
-def sa_recommendations(product, keyword, angle, table_stakes, basis, season, variation):
+def sa_recommendations(product, keyword, angle, table_stakes, basis, season, variation, feedback_rules=None):
     name = product.get("serpKw") or product["name"]
     own_terms = [term for term in product.get("special") or [] if term != angle]
     season_keywords = [str(term).replace(" ", "") for term in season.get("keywords") or []]
@@ -403,6 +429,8 @@ def sa_recommendations(product, keyword, angle, table_stakes, basis, season, var
     rows, seen_endings = [], set()
     for axis in variation["axes"]:
         row = _copy_for_axis(axis, product, keyword, angle, other, season)
+        for key in ("title", "description", "additional_description", "promo"):
+            row[key] = apply_feedback_rules(row.get(key), feedback_rules)
         ending = re.sub(r"[^가-힣]+", "", row["description"])[-6:]
         if ending in seen_endings:
             continue
@@ -411,6 +439,13 @@ def sa_recommendations(product, keyword, angle, table_stakes, basis, season, var
             "message_axis": axis, "variation_key": variation["variation_key"],
             "serp_signature": variation["serp_signature"],
             "why": f"{basis} · {AXIS_LABELS[axis]} 축 · 경쟁 공통 소구 {', '.join(table_stakes[:2]) or '미관측'}와 다른 전개",
+            "review_lab_feedback": {
+                "applied_rules_version": (feedback_rules or {}).get("schema_version"),
+                "blocked_phrase_hits": feedback_findings({
+                    "title": row.get("title"), "description": row.get("description"),
+                    "additional_description": row.get("additional_description"), "promo": row.get("promo"),
+                }, feedback_rules),
+            },
         })
         rows.append(row)
         if len(rows) == 3:
@@ -456,8 +491,9 @@ def monthly_image_assets(product_key, planning_month, image_history=None):
     return assets
 
 
-def image_directions(product, angle, patterns, basis, planning_month, season, variation, image_history=None):
+def image_directions(product, angle, patterns, basis, planning_month, season, variation, image_history=None, feedback_rules=None):
     assets = monthly_image_assets(product["key"], planning_month, image_history)
+    rejected_assets = rejected_asset_lookup(feedback_rules)
     history = _image_history_for_product(image_history, product["key"], planning_month)
     previous_assets = set(history[0][1]) if history else set()
     roles = ("파워링크 대표", "보험료 탐색", "보장내용 탐색", "가입안내 탐색")
@@ -480,6 +516,7 @@ def image_directions(product, angle, patterns, basis, planning_month, season, va
         scene = f"{event} 일정에 맞춰 {asset_scene}" if event and index == 0 else asset_scene
         reused_previous = asset_name in {Path(value).name for value in previous_assets}
         repeated_this_set = asset_name in used_assets
+        rejected_reference = rejected_assets.get((product["key"], asset_name))
         used_assets.add(asset_name)
         rows.append({
         "proposal_id": f"{product['key']}-{planning_month}-{variation['variation_key'][:6]}-{index + 1:02d}",
@@ -494,14 +531,19 @@ def image_directions(product, angle, patterns, basis, planning_month, season, va
         "refresh_cadence": "monthly", "planning_month": planning_month,
         "reused_from_previous_month": reused_previous,
         "repeated_reference_in_month": repeated_this_set,
-        "generation_required": reused_previous or repeated_this_set,
+        "generation_required": reused_previous or repeated_this_set or bool(rejected_reference),
         "generation_brief": f"{product['name']} 검색 맥락을 ‘{scene}’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
         "why": f"{basis} · {AXIS_LABELS[variation['primary_axis']]} · SERP {patterns[0][0] if patterns else '검색 행동'} 변화에서 장면 역할을 도출",
+        "review_lab_feedback": {
+            "applied_rules_version": (feedback_rules or {}).get("schema_version"),
+            "rejected_reference": bool(rejected_reference),
+            "reason_code": (rejected_reference or {}).get("reason_code"),
+        },
         })
     return rows
 
 
-def power_topics(product, keyword, angle, table_stakes, basis, planning_month, season, variation, content_history=None):
+def power_topics(product, keyword, angle, table_stakes, basis, planning_month, season, variation, content_history=None, feedback_rules=None):
     name = product.get("serpKw") or product["name"]
     own_terms = [term for term in product.get("special") or [] if term != angle]
     season_keywords = [str(term).replace(" ", "") for term in season.get("keywords") or []]
@@ -545,7 +587,8 @@ def power_topics(product, keyword, angle, table_stakes, basis, planning_month, s
     rows = []
     for spec in rotated:
         pattern, title, intent, focus, sections, *query_override = spec
-        fitted = _fit([title, f"{name} 선택 전에 질문을 정리하는 법"], 15, 34)
+        fitted = apply_feedback_rules(_fit([title, f"{name} 선택 전에 질문을 정리하는 법"], 15, 34), feedback_rules)
+        safe_sections = [apply_feedback_rules(section, feedback_rules) for section in sections]
         if re.sub(r"\s+", "", fitted).lower() in used_titles:
             continue
         index = len(rows) + 1
@@ -557,12 +600,19 @@ def power_topics(product, keyword, angle, table_stakes, basis, planning_month, s
             "target_query": query_override[0] if query_override else (keyword if index != 2 else f"{name} {focus}"),
             "intent": intent, "focus": focus,
             "angle": f"SERP의 ‘{saturated}’ 반복에서 벗어나 {AXIS_LABELS.get(pattern, '생활 질문')}으로 전개",
-            "sections": sections,
+            "sections": safe_sections,
             "faq": [f"{focus}을 볼 때 먼저 비교할 항목은 무엇인가요?", f"{name} 보험료 계산 조건은 어떻게 맞추나요?"],
             "image_brief": f"{SCENES.get(product['key'], SCENES['home'])[(index-1) % 3]}. 텍스트·숫자·로고 없이 프리미엄 3D 애니메이션으로 표현.",
             "serp_basis": basis, "serp_signature": variation["serp_signature"],
             "variation_key": variation["variation_key"], "season_context": season,
             "source": "월간 SERP 변화·시즌 캘린더 결합",
+            "review_lab_feedback": {
+                "applied_rules_version": (feedback_rules or {}).get("schema_version"),
+                "blocked_phrase_hits": feedback_findings({
+                    "title": fitted, "angle": f"SERP의 ‘{saturated}’ 반복에서 벗어나 {AXIS_LABELS.get(pattern, '생활 질문')}으로 전개",
+                    "sections": " ".join(safe_sections),
+                }, feedback_rules),
+            },
         })
         if len(rows) == 3:
             break
@@ -570,7 +620,7 @@ def power_topics(product, keyword, angle, table_stakes, basis, planning_month, s
 
 
 def generate(products, analysis, volume, manifest=None, dom=None, planning_month=None,
-             seasonal=None, calendar=None, content_history=None, image_history=None):
+             seasonal=None, calendar=None, content_history=None, image_history=None, feedback_rules=None):
     manifest, dom = manifest or {}, dom or {}
     output = []
     for product in products.get("products") or []:
@@ -603,9 +653,9 @@ def generate(products, analysis, volume, manifest=None, dom=None, planning_month
             angle = seasonal_angle
         signature = serp_signature(patterns, diff, table_stakes, ads)
         variation = variation_context(product, plan_month, season, signature)
-        sa = sa_recommendations(product, keyword, angle, table_stakes, basis, season, variation)
-        images = image_directions(product, angle, patterns, basis, plan_month, season, variation, image_history)
-        topics = power_topics(product, keyword, angle, table_stakes, basis, plan_month, season, variation, content_history)
+        sa = sa_recommendations(product, keyword, angle, table_stakes, basis, season, variation, feedback_rules)
+        images = image_directions(product, angle, patterns, basis, plan_month, season, variation, image_history, feedback_rules)
+        topics = power_topics(product, keyword, angle, table_stakes, basis, plan_month, season, variation, content_history, feedback_rules)
         output.append({
             "product_key": product["key"],
             "month": plan_month,
@@ -649,6 +699,11 @@ def generate(products, analysis, volume, manifest=None, dom=None, planning_month
             },
             "power_content_topics": topics,
             "analysis_status": "ready",
+            "review_lab_rules": {
+                "applied_rules_version": (feedback_rules or {}).get("schema_version"),
+                "source": (feedback_rules or {}).get("source"),
+                "updated_at": (feedback_rules or {}).get("updated_at"),
+            },
         })
     dates = [analysis.get("asof"), manifest.get("asof"), dom.get("asof"), volume.get("asof")]
     asof = _latest(*dates) or date.today().isoformat()
@@ -702,6 +757,7 @@ def main(root=ROOT, planning_month=None, archive_images=False):
         read("data/events/calendar.json", {}, root),
         read("data/adcopy/powercontent-history.json", {}, root),
         _read_image_history(root),
+        read(FEEDBACK_RULES, {}, root),
     )
     output = root / "data/adcopy/serp-candidates.json"
     atomic_json_write(output, result)

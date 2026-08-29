@@ -59,6 +59,17 @@ class TestAnalyze(unittest.TestCase):
         self.assertEqual(a["observed_ads"][0]["keyword"], "운전자보험")
         self.assertEqual(a["observed_ads"][0]["title"], "현대 운전자보험")
 
+    def test_structured_text_observation_fields(self):
+        a = sa.analyze(OBS)["driver"]
+        ad = a["observed_ads"][0]
+        self.assertIn("source_observation_id", ad)
+        self.assertIn("description", ad)
+        self.assertIn("extensions", ad)
+        self.assertIn("detected_angles", ad)
+        self.assertIn("cta_terms", ad)
+        self.assertIn("risk_flags", ad)
+        self.assertIn("monthly_diff", a)
+
     def test_empty_safe(self):
         self.assertEqual(sa.analyze([]), {})
         self.assertEqual(sa.analyze(None), {})
@@ -93,6 +104,7 @@ class TestRealData(unittest.TestCase):
         for pk, v in res.items():
             self.assertIn("common_soju", v)
             self.assertIsInstance(v["soju"], list)
+            self.assertIn("monthly_diff", v)
 
     def test_committed_analysis_is_current(self):
         # ad_observations.json 변경 후 재생성을 강제 — 커밋된 산출물이 build()와 일치해야 함

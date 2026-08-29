@@ -1,5 +1,20 @@
 {
  "_comment": "serp/ad_observations.json 관측 소재의 상품별 분석(규칙 기반·결정론·최신 lookback 창). serp_analysis.py가 생성.",
+ "schema_version": 2,
+ "required_observation_fields": [
+  "product",
+  "keyword",
+  "date",
+  "device",
+  "rank",
+  "brand",
+  "title",
+  "description",
+  "extensions",
+  "detected_angles",
+  "cta_terms",
+  "risk_flags"
+ ],
  "asof": "2026-08-02",
  "window_days": 35,
  "since": "2026-06-21",
@@ -36,15 +51,42 @@
    "latest_date": "2026-07-26",
    "observed_ads": [
     {
+     "source_observation_id": "6aa1d4b24fd37e5f",
      "brand": "각 손보사",
      "keyword": "태아보험",
      "date": "2026-07-26",
      "rank": 1,
      "title": "태아보험 다이렉트",
      "desc": "태아 진단·선천이상 보장, 서류 없이 간편 가입",
-     "promo": "서류 없이"
+     "description": "태아 진단·선천이상 보장, 서류 없이 간편 가입",
+     "promo": "서류 없이",
+     "extensions": {
+      "additional_titles": [],
+      "additional_descriptions": [],
+      "promotions": [
+       "서류 없이"
+      ],
+      "sitelinks": []
+     },
+     "detected_angles": [
+      "태아 진단",
+      "선천이상"
+     ],
+     "cta_terms": [
+      "가입",
+      "비교"
+     ],
+     "risk_flags": []
     }
-   ]
+   ],
+   "monthly_diff": {
+    "latest": "2026-07-26",
+    "previous": "",
+    "new_brands": [],
+    "dropped_brands": [],
+    "rising_angles": [],
+    "declining_angles": []
+   }
   },
   "chronic": {
    "n": 1,
@@ -78,15 +120,41 @@
    "latest_date": "2026-07-26",
    "observed_ads": [
     {
+     "source_observation_id": "2c3fc45f54d4b62f",
      "brand": "각 손보사",
      "keyword": "유병자보험",
      "date": "2026-07-26",
      "rank": 1,
      "title": "간편심사 유병자보험",
      "desc": "3가지 고지로 간편 가입, 유병력자 실손·건강 보장",
-     "promo": "3가지 고지"
+     "description": "3가지 고지로 간편 가입, 유병력자 실손·건강 보장",
+     "promo": "3가지 고지",
+     "extensions": {
+      "additional_titles": [],
+      "additional_descriptions": [],
+      "promotions": [
+       "3가지 고지"
+      ],
+      "sitelinks": []
+     },
+     "detected_angles": [
+      "간편심사",
+      "유병력자 실손"
+     ],
+     "cta_terms": [
+      "가입"
+     ],
+     "risk_flags": []
     }
-   ]
+   ],
+   "monthly_diff": {
+    "latest": "2026-07-26",
+    "previous": "",
+    "new_brands": [],
+    "dropped_brands": [],
+    "rising_angles": [],
+    "declining_angles": []
+   }
   },
   "cncr": {
    "n": 2,
@@ -141,24 +209,70 @@
    "latest_date": "2026-07-26",
    "observed_ads": [
     {
+     "source_observation_id": "345507cfb74224e1",
      "brand": "라이나생명",
      "keyword": "암보험",
      "date": "2026-07-26",
      "rank": 1,
      "title": "라이나 암보험 다이렉트",
      "desc": "일반암 진단비 4,500만·표적항암 3천만, 보험료 면제 옵션",
-     "promo": "보험료 면제"
+     "description": "일반암 진단비 4,500만·표적항암 3천만, 보험료 면제 옵션",
+     "promo": "보험료 면제",
+     "extensions": {
+      "additional_titles": [],
+      "additional_descriptions": [],
+      "promotions": [
+       "보험료 면제"
+      ],
+      "sitelinks": []
+     },
+     "detected_angles": [
+      "일반암 진단비",
+      "표적항암"
+     ],
+     "cta_terms": [
+      "가입",
+      "비교"
+     ],
+     "risk_flags": []
     },
     {
+     "source_observation_id": "4e35c18530a50be8",
      "brand": "DB손해보험",
      "keyword": "암보험 비교",
      "date": "2026-07-26",
      "rank": 2,
      "title": "DB 암보험",
      "desc": "진단+치료+생활비, 중입자치료까지 비갱신 설계",
-     "promo": "비갱신"
+     "description": "진단+치료+생활비, 중입자치료까지 비갱신 설계",
+     "promo": "비갱신",
+     "extensions": {
+      "additional_titles": [],
+      "additional_descriptions": [],
+      "promotions": [
+       "비갱신"
+      ],
+      "sitelinks": []
+     },
+     "detected_angles": [
+      "진단비",
+      "중입자치료",
+      "생활비"
+     ],
+     "cta_terms": [
+      "비교"
+     ],
+     "risk_flags": []
     }
-   ]
+   ],
+   "monthly_diff": {
+    "latest": "2026-07-26",
+    "previous": "",
+    "new_brands": [],
+    "dropped_brands": [],
+    "rising_angles": [],
+    "declining_angles": []
+   }
   },
   "dntl": {
    "n": 1,
@@ -194,15 +308,41 @@
    "latest_date": "2026-07-26",
    "observed_ads": [
     {
+     "source_observation_id": "9e617c449de6db34",
      "brand": "삼성생명 다이렉트",
      "keyword": "치아보험",
      "date": "2026-07-26",
      "rank": 1,
      "title": "삼성 치아보험 다이렉트",
      "desc": "1만원대 실속형·2만원대 고급형, 임플란트·크라운 보장",
-     "promo": "실속형/고급형 2트랙"
+     "description": "1만원대 실속형·2만원대 고급형, 임플란트·크라운 보장",
+     "promo": "실속형/고급형 2트랙",
+     "extensions": {
+      "additional_titles": [],
+      "additional_descriptions": [],
+      "promotions": [
+       "실속형/고급형 2트랙"
+      ],
+      "sitelinks": []
+     },
+     "detected_angles": [
+      "임플란트",
+      "크라운"
+     ],
+     "cta_terms": [
+      "가입"
+     ],
+     "risk_flags": []
     }
-   ]
+   ],
+   "monthly_diff": {
+    "latest": "2026-07-26",
+    "previous": "",
+    "new_brands": [],
+    "dropped_brands": [],
+    "rising_angles": [],
+    "declining_angles": []
+   }
   },
   "driver": {
    "n": 2,
@@ -255,24 +395,74 @@
    "latest_date": "2026-07-26",
    "observed_ads": [
     {
+     "source_observation_id": "d39400bf78bc5d72",
      "brand": "현대해상 다이렉트",
      "keyword": "운전자보험",
      "date": "2026-07-26",
      "rank": 1,
      "title": "운전자보험 다이렉트 현대해상",
      "desc": "형사합의금 2억·변호사선임 500만·스쿨존 벌금 3천만원 보장, 다이렉트 7% 할인",
-     "promo": "다이렉트 7% 할인"
+     "description": "형사합의금 2억·변호사선임 500만·스쿨존 벌금 3천만원 보장, 다이렉트 7% 할인",
+     "promo": "다이렉트 7% 할인",
+     "extensions": {
+      "additional_titles": [],
+      "additional_descriptions": [],
+      "promotions": [
+       "다이렉트 7% 할인"
+      ],
+      "sitelinks": []
+     },
+     "detected_angles": [
+      "형사합의금",
+      "변호사선임",
+      "벌금"
+     ],
+     "cta_terms": [
+      "가입",
+      "견적"
+     ],
+     "risk_flags": []
     },
     {
+     "source_observation_id": "8d186523f639a775",
      "brand": "DB손해보험",
      "keyword": "운전자보험",
      "date": "2026-07-26",
      "rank": 2,
      "title": "DB운전자보험 프로미",
      "desc": "10년 연속 판매 1위·435만명 선택, 형사합의·변호사·벌금 한번에",
-     "promo": "10년 연속 1위"
+     "description": "10년 연속 판매 1위·435만명 선택, 형사합의·변호사·벌금 한번에",
+     "promo": "10년 연속 1위",
+     "extensions": {
+      "additional_titles": [],
+      "additional_descriptions": [],
+      "promotions": [
+       "10년 연속 1위"
+      ],
+      "sitelinks": []
+     },
+     "detected_angles": [
+      "형사합의금",
+      "변호사선임",
+      "벌금"
+     ],
+     "cta_terms": [
+      "가입",
+      "비교"
+     ],
+     "risk_flags": [
+      "absolute_or_top_claim"
+     ]
     }
-   ]
+   ],
+   "monthly_diff": {
+    "latest": "2026-07-26",
+    "previous": "",
+    "new_brands": [],
+    "dropped_brands": [],
+    "rising_angles": [],
+    "declining_angles": []
+   }
   },
   "event": {
    "n": 1,
@@ -302,15 +492,43 @@
    "latest_date": "2026-07-26",
    "observed_ads": [
     {
+     "source_observation_id": "b04402ae594b9d27",
      "brand": "제휴/각 손보사",
      "keyword": "행사배상책임보험",
      "date": "2026-07-26",
      "rank": 1,
      "title": "행사배상책임보험 견적",
      "desc": "행사유형별 배상책임, 당일 행사도 즉시 가입",
-     "promo": "당일 즉시가입"
+     "description": "행사유형별 배상책임, 당일 행사도 즉시 가입",
+     "promo": "당일 즉시가입",
+     "extensions": {
+      "additional_titles": [],
+      "additional_descriptions": [],
+      "promotions": [
+       "당일 즉시가입"
+      ],
+      "sitelinks": []
+     },
+     "detected_angles": [
+      "행사배상책임"
+     ],
+     "cta_terms": [
+      "가입",
+      "견적"
+     ],
+     "risk_flags": [
+      "instant_join_claim"
+     ]
     }
-   ]
+   ],
+   "monthly_diff": {
+    "latest": "2026-07-26",
+    "previous": "",
+    "new_brands": [],
+    "dropped_brands": [],
+    "rising_angles": [],
+    "declining_angles": []
+   }
   },
   "golf": {
    "n": 2,
@@ -360,24 +578,69 @@
    "latest_date": "2026-07-26",
    "observed_ads": [
     {
+     "source_observation_id": "1307a1768d8bfa1e",
      "brand": "카카오페이손해보험",
      "keyword": "홀인원보험",
      "date": "2026-07-26",
      "rank": 1,
      "title": "DIY 골프·홀인원보험",
      "desc": "필요한 담보만 골라 그룹 할인, 카카오로 간편 가입",
-     "promo": "그룹 할인"
+     "description": "필요한 담보만 골라 그룹 할인, 카카오로 간편 가입",
+     "promo": "그룹 할인",
+     "extensions": {
+      "additional_titles": [],
+      "additional_descriptions": [],
+      "promotions": [
+       "그룹 할인"
+      ],
+      "sitelinks": []
+     },
+     "detected_angles": [
+      "홀인원",
+      "골프배상"
+     ],
+     "cta_terms": [
+      "가입"
+     ],
+     "risk_flags": []
     },
     {
+     "source_observation_id": "12927eba596c9850",
      "brand": "롯데손해보험 앨리스",
      "keyword": "스크린골프보험",
      "date": "2026-07-26",
      "rank": 2,
      "title": "스크린골프보험 4인",
      "desc": "스크린 홀인원 4인 7,400원 정찰제, 즉시 가입",
-     "promo": "4인 7,400원 정찰제"
+     "description": "스크린 홀인원 4인 7,400원 정찰제, 즉시 가입",
+     "promo": "4인 7,400원 정찰제",
+     "extensions": {
+      "additional_titles": [],
+      "additional_descriptions": [],
+      "promotions": [
+       "4인 7,400원 정찰제"
+      ],
+      "sitelinks": []
+     },
+     "detected_angles": [
+      "스크린 홀인원"
+     ],
+     "cta_terms": [
+      "가입"
+     ],
+     "risk_flags": [
+      "instant_join_claim"
+     ]
     }
-   ]
+   ],
+   "monthly_diff": {
+    "latest": "2026-07-26",
+    "previous": "",
+    "new_brands": [],
+    "dropped_brands": [],
+    "rising_angles": [],
+    "declining_angles": []
+   }
   },
   "holeinone": {
    "n": 1,
@@ -407,15 +670,40 @@
    "latest_date": "2026-07-26",
    "observed_ads": [
     {
+     "source_observation_id": "2429a52386227dff",
      "brand": "삼성화재 착",
      "keyword": "홀인원보험",
      "date": "2026-07-26",
      "rank": 1,
      "title": "착! 홀인원보험",
      "desc": "개인형 홀인원 축하비용 보장, 원데이 가입",
-     "promo": "원데이"
+     "description": "개인형 홀인원 축하비용 보장, 원데이 가입",
+     "promo": "원데이",
+     "extensions": {
+      "additional_titles": [],
+      "additional_descriptions": [],
+      "promotions": [
+       "원데이"
+      ],
+      "sitelinks": []
+     },
+     "detected_angles": [
+      "홀인원 축하비용"
+     ],
+     "cta_terms": [
+      "가입"
+     ],
+     "risk_flags": []
     }
-   ]
+   ],
+   "monthly_diff": {
+    "latest": "2026-07-26",
+    "previous": "",
+    "new_brands": [],
+    "dropped_brands": [],
+    "rising_angles": [],
+    "declining_angles": []
+   }
   },
   "home": {
    "n": 1,
@@ -440,15 +728,41 @@
    "latest_date": "2026-07-26",
    "observed_ads": [
     {
+     "source_observation_id": "27e803fffe5f9df8",
      "brand": "삼성화재 다이렉트",
      "keyword": "다이렉트 보험 비교",
      "date": "2026-07-26",
      "rank": 1,
      "title": "삼성화재 다이렉트",
      "desc": "브랜드 인지도 1위, 다이렉트 보험료 계산·비교",
-     "promo": "인지도 1위"
+     "description": "브랜드 인지도 1위, 다이렉트 보험료 계산·비교",
+     "promo": "인지도 1위",
+     "extensions": {
+      "additional_titles": [],
+      "additional_descriptions": [],
+      "promotions": [
+       "인지도 1위"
+      ],
+      "sitelinks": []
+     },
+     "detected_angles": [],
+     "cta_terms": [
+      "계산",
+      "비교"
+     ],
+     "risk_flags": [
+      "absolute_or_top_claim"
+     ]
     }
-   ]
+   ],
+   "monthly_diff": {
+    "latest": "2026-07-26",
+    "previous": "",
+    "new_brands": [],
+    "dropped_brands": [],
+    "rising_angles": [],
+    "declining_angles": []
+   }
   },
   "hrmf": {
    "n": 2,
@@ -507,24 +821,70 @@
    "latest_date": "2026-07-26",
    "observed_ads": [
     {
+     "source_observation_id": "291ffa78322e05bd",
      "brand": "신한EZ손보",
      "keyword": "주택화재보험",
      "date": "2026-07-26",
      "rank": 1,
      "title": "주택화재보험 신한",
      "desc": "누수·일상배상·도난까지, 네이버페이 이벤트+장기고객 할인",
-     "promo": "네이버페이 이벤트"
+     "description": "누수·일상배상·도난까지, 네이버페이 이벤트+장기고객 할인",
+     "promo": "네이버페이 이벤트",
+     "extensions": {
+      "additional_titles": [],
+      "additional_descriptions": [],
+      "promotions": [
+       "네이버페이 이벤트"
+      ],
+      "sitelinks": []
+     },
+     "detected_angles": [
+      "누수",
+      "일상배상",
+      "도난"
+     ],
+     "cta_terms": [
+      "가입"
+     ],
+     "risk_flags": []
     },
     {
+     "source_observation_id": "9def2cca40b3002c",
      "brand": "메리츠화재",
      "keyword": "주택화재보험",
      "date": "2026-07-26",
      "rank": 2,
      "title": "메리츠 주택화재보험",
      "desc": "주택유형별 맞춤 설계, 누수·풍수재·잔존물제거 보장",
-     "promo": "주택유형별 맞춤"
+     "description": "주택유형별 맞춤 설계, 누수·풍수재·잔존물제거 보장",
+     "promo": "주택유형별 맞춤",
+     "extensions": {
+      "additional_titles": [],
+      "additional_descriptions": [],
+      "promotions": [
+       "주택유형별 맞춤"
+      ],
+      "sitelinks": []
+     },
+     "detected_angles": [
+      "누수",
+      "풍수재",
+      "잔존물제거"
+     ],
+     "cta_terms": [
+      "견적"
+     ],
+     "risk_flags": []
     }
-   ]
+   ],
+   "monthly_diff": {
+    "latest": "2026-07-26",
+    "previous": "",
+    "new_brands": [],
+    "dropped_brands": [],
+    "rising_angles": [],
+    "declining_angles": []
+   }
   },
   "overseas": {
    "n": 2,
@@ -580,24 +940,70 @@
    "latest_date": "2026-07-26",
    "observed_ads": [
     {
+     "source_observation_id": "28547fca6b14cb54",
      "brand": "현대해상 다이렉트",
      "keyword": "해외여행자보험",
      "date": "2026-07-26",
      "rank": 1,
      "title": "해외여행자보험 다이렉트",
      "desc": "질병·상해·휴대품·항공지연 보장, 여행일자만 입력",
-     "promo": "여행일자 자동추천"
+     "description": "질병·상해·휴대품·항공지연 보장, 여행일자만 입력",
+     "promo": "여행일자 자동추천",
+     "extensions": {
+      "additional_titles": [],
+      "additional_descriptions": [],
+      "promotions": [
+       "여행일자 자동추천"
+      ],
+      "sitelinks": []
+     },
+     "detected_angles": [
+      "질병",
+      "상해",
+      "휴대품",
+      "항공지연"
+     ],
+     "cta_terms": [
+      "가입"
+     ],
+     "risk_flags": []
     },
     {
+     "source_observation_id": "b3e4992340321e26",
      "brand": "NH농협손해보험",
      "keyword": "해외여행자보험 비교",
      "date": "2026-07-26",
      "rank": 2,
      "title": "NH 해외여행자보험",
      "desc": "오프라인 대비 20% 저렴한 다이렉트 여행자보험",
-     "promo": "오프라인 대비 20%"
+     "description": "오프라인 대비 20% 저렴한 다이렉트 여행자보험",
+     "promo": "오프라인 대비 20%",
+     "extensions": {
+      "additional_titles": [],
+      "additional_descriptions": [],
+      "promotions": [
+       "오프라인 대비 20%"
+      ],
+      "sitelinks": []
+     },
+     "detected_angles": [
+      "질병",
+      "상해"
+     ],
+     "cta_terms": [
+      "비교"
+     ],
+     "risk_flags": []
     }
-   ]
+   ],
+   "monthly_diff": {
+    "latest": "2026-07-26",
+    "previous": "",
+    "new_brands": [],
+    "dropped_brands": [],
+    "rising_angles": [],
+    "declining_angles": []
+   }
   },
   "overseaslong": {
    "n": 1,
@@ -626,15 +1032,39 @@
    "latest_date": "2026-07-26",
    "observed_ads": [
     {
+     "source_observation_id": "34108ca53ddbe448",
      "brand": "각 손보사",
      "keyword": "유학생보험",
      "date": "2026-07-26",
      "rank": 1,
      "title": "유학생·장기체류보험",
      "desc": "유학·어학연수 장기체류 의료·배상 보장, 출국 전 가입",
-     "promo": ""
+     "description": "유학·어학연수 장기체류 의료·배상 보장, 출국 전 가입",
+     "promo": "",
+     "extensions": {
+      "additional_titles": [],
+      "additional_descriptions": [],
+      "promotions": [],
+      "sitelinks": []
+     },
+     "detected_angles": [
+      "의료",
+      "배상책임"
+     ],
+     "cta_terms": [
+      "가입"
+     ],
+     "risk_flags": []
     }
-   ]
+   ],
+   "monthly_diff": {
+    "latest": "2026-07-26",
+    "previous": "",
+    "new_brands": [],
+    "dropped_brands": [],
+    "rising_angles": [],
+    "declining_angles": []
+   }
   },
   "woman": {
    "n": 1,
@@ -659,15 +1089,38 @@
    "latest_date": "2026-07-26",
    "observed_ads": [
     {
+     "source_observation_id": "1d50d1b5d3a65a9c",
      "brand": "각 손보사",
      "keyword": "여성건강보험",
      "date": "2026-07-26",
      "rank": 1,
      "title": "여성건강보험 다이렉트",
      "desc": "여성암 진단비 중심, 자궁·유방 검진 연계 보장",
-     "promo": ""
+     "description": "여성암 진단비 중심, 자궁·유방 검진 연계 보장",
+     "promo": "",
+     "extensions": {
+      "additional_titles": [],
+      "additional_descriptions": [],
+      "promotions": [],
+      "sitelinks": []
+     },
+     "detected_angles": [
+      "여성암 진단비"
+     ],
+     "cta_terms": [
+      "가입"
+     ],
+     "risk_flags": []
     }
-   ]
+   ],
+   "monthly_diff": {
+    "latest": "2026-07-26",
+    "previous": "",
+    "new_brands": [],
+    "dropped_brands": [],
+    "rising_angles": [],
+    "declining_angles": []
+   }
   }
  }
 }

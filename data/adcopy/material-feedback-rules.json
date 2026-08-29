@@ -1,0 +1,50 @@
+{
+  "_comment": "소재제작소 Admin에서 축적한 반려 사유를 생성 규칙으로 반영하기 위한 공개 가능한 규칙 파일. 원문 피드백·성과·사용자 정보는 저장하지 않는다.",
+  "schema_version": 1,
+  "updated_at": "2026-08-29",
+  "source": "operator_review_lab_seed_rules",
+  "copy_replacements": [
+    {
+      "pattern": "선택 항목과 최종 보험료를 대조하세요",
+      "replacement": "보험료 계산 전 확인할 항목을 먼저 정리하세요",
+      "reason_code": "unusable_search_ad_tone"
+    },
+    {
+      "pattern": "선택 항목과 최종 보험료를 설계 화면에서 대조해 보세요",
+      "replacement": "보험료 계산 전 선택할 항목을 먼저 정리해 보세요",
+      "reason_code": "unusable_search_ad_tone"
+    },
+    {
+      "pattern": "선택한 항목과 보험기간, 납입 조건을 최종 화면에서 다시 읽어보세요",
+      "replacement": "가입 전 보험기간과 납입 조건을 함께 확인해 보세요",
+      "reason_code": "unusable_search_ad_tone"
+    },
+    {
+      "pattern": "짧은 보장 나열 대신",
+      "replacement": "검색 결과에서 놓치기 쉬운",
+      "reason_code": "ai_template_tone"
+    }
+  ],
+  "blocked_phrases": [
+    "갑작스러운 사고에 대비하세요",
+    "든든한 보장",
+    "담보를 보장하세요",
+    "꼼꼼히 확인하세요",
+    "지금 바로 가입",
+    "누구나 가입",
+    "최저",
+    "최고",
+    "1위",
+    "100%"
+  ],
+  "reason_code_labels": {
+    "unusable_search_ad_tone": "실제 SA 운영문구로 부자연스러움",
+    "ai_template_tone": "AI 템플릿 말투",
+    "product_mismatch": "보험종목/담보 정합성 오류",
+    "season_mismatch": "선택월 시즌 부적합",
+    "serp_gap": "SERP 관측과 연결 부족",
+    "compliance_review": "상품·준법 검토 필요",
+    "image_product_mismatch": "이미지 상품 혼합"
+  },
+  "applies_to": ["search_ad", "power_content", "thumbnail"]
+}
