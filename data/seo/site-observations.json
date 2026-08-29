@@ -1,0 +1,37 @@
+{
+  "_comment": "SEO 인텔 입력 스키마. site: 도메인 검색, 크롤링, 수동 점검 결과를 한 파일에 모으되 종료 이벤트·판매 종료 랜딩은 제외 플래그로 남긴다.",
+  "schema_version": 1,
+  "asof": "2026-08-30",
+  "sources": [
+    "advertools",
+    "crawler",
+    "manual_review"
+  ],
+  "observations": [],
+  "site_queries": [],
+  "domain_queries": [],
+  "monthly_diff": {
+    "latest": "",
+    "previous": "",
+    "new_domains": [],
+    "dropped_domains": [],
+    "new_queries": [],
+    "dropped_queries": []
+  },
+  "default_filters": {
+    "exclude_flags": [
+      "ended_event",
+      "expired_product",
+      "sales_ended",
+      "noindex",
+      "redirect_chain"
+    ],
+    "exclude_status": [
+      "ended",
+      "expired",
+      "closed",
+      "sold_out",
+      "discontinued"
+    ]
+  }
+}

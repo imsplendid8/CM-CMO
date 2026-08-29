@@ -217,7 +217,12 @@ class TestFaqOpportunityAgent(unittest.TestCase):
     def test_generated_outputs_are_loaded_only_where_needed(self):
         seo = (ROOT / "seo-audit.html").read_text(encoding="utf-8")
         adcopy = (ROOT / "adcopy-tool.html").read_text(encoding="utf-8")
+        build_pages = (ROOT / "scripts" / "build_pages.py").read_text(encoding="utf-8")
         self.assertNotIn("data/seo/faq-opportunities.json", seo)
+        self.assertIn("SEO Intelligence", seo)
+        self.assertIn("SEO_INTEL_STORE", seo)
+        self.assertIn("data/seo/site-observations.json", seo)
+        self.assertIn("data/seo/site-observations.json", build_pages)
         self.assertIn("data/adcopy/serp-candidates.json", adcopy)
         self.assertIn("SERP_AGENT", adcopy)
 

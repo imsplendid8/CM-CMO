@@ -227,6 +227,33 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .wstd-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:11.5px;line-height:1.5;}
 @media(max-width:640px){.wstd-cols{grid-template-columns:1fr;}}
 .wstd-cols .bad b{color:var(--bad-ink);} .wstd-cols .good b{color:var(--good-ink);}
+.intel-shell{display:grid;grid-template-columns:320px 1fr;gap:16px;align-items:start}
+@media(max-width:960px){.intel-shell{grid-template-columns:1fr}}
+.intel-card,.intel-panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);}
+.intel-card{padding:18px 18px 16px}
+.intel-card h3,.intel-panel h3{font-size:14px;font-weight:800;margin-bottom:10px}
+.intel-card p{font-size:12px;color:var(--ink-2);line-height:1.6}
+.intel-form{display:grid;gap:10px;margin-top:14px}
+.intel-form label{font-size:11px;font-weight:800;color:var(--muted);display:block;margin-bottom:4px}
+.intel-form input,.intel-form textarea,.intel-form select{width:100%;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);padding:10px 11px;font:inherit;color:var(--ink)}
+.intel-form textarea{min-height:130px;resize:vertical}
+.intel-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.intel-actions .btn{flex:1 1 auto}
+.intel-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
+@media(max-width:760px){.intel-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.intel-kpi{padding:12px 13px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)}
+.intel-kpi b{display:block;font-size:22px;line-height:1;font-family:var(--mono)}
+.intel-kpi small{display:block;margin-top:5px;font-size:11px;color:var(--muted)}
+.intel-note{font-size:11.5px;color:var(--ink-2);line-height:1.6;margin-top:10px}
+.intel-table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:14px}
+.intel-table th,.intel-table td{padding:10px 10px;border-bottom:1px solid var(--line-2);vertical-align:top;font-size:12px;text-align:left}
+.intel-table th{font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--surface-2);position:sticky;top:0}
+.intel-table td code{font-family:var(--mono);font-size:10.5px;background:var(--line-2);padding:1px 4px;border-radius:4px}
+.intel-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border-radius:999px;font-size:10px;font-weight:800;margin-right:5px;margin-bottom:4px}
+.intel-pill.active{background:var(--good-bg);color:var(--good-ink)}
+.intel-pill.ended{background:var(--bad-bg);color:var(--bad-ink)}
+.intel-pill.warn{background:var(--mid-bg);color:var(--mid-ink)}
+.intel-empty{padding:22px;text-align:center;color:var(--muted);font-size:12px}
 /* 요금제 */
 .price-hero{text-align:center;padding:12px 0 22px;}
 .price-hero h2{font-size:24px;font-weight:800;letter-spacing:-.03em;}
@@ -357,6 +384,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
     <div class="content">
       <section class="view" id="v-dash"></section>
       <section class="view" id="v-product"></section>
+      <section class="view" id="v-intel"></section>
       <section class="view" id="v-pro"></section>
     </div>
   </main>
@@ -968,6 +996,183 @@ function runPro(){
   R.scrollIntoView({behavior:"smooth",block:"start"});
 }
 
+/* ── SEO INTEL ── */
+const SEO_INTEL_STORE="seo_intel_import_v1";
+let SEO_INTEL_DATA={schema_version:1,asof:"",observations:[],site_queries:[],monthly_diff:{latest:"",previous:"",new_brands:[],dropped_brands:[],rising_angles:[],declining_angles:[]}};
+function intelLoadStore(){try{return JSON.parse(localStorage.getItem(SEO_INTEL_STORE)||"null")||null}catch(_){return null}}
+function intelSaveStore(data){try{localStorage.setItem(SEO_INTEL_STORE,JSON.stringify(data));}catch(_){ } }
+function intelText(value){return String(value??"").trim();}
+function intelList(value){if(Array.isArray(value))return value.flatMap(intelList).map(intelText).filter(Boolean);if(value==null)return[];const text=intelText(value);return text?[text]:[];}
+function intelLooksEnded(row){
+  const hay=[row.status,row.reason,row.title,row.description,row.url,row.domain,...intelList(row.flags),...intelList(row.tags)].join(" ").toLowerCase();
+  return /(종료|만료|판매종료|폐점|discontinued|expired|ended|closed|sold\s*out|noindex)/i.test(hay);
+}
+function intelNormalizeRows(input){
+  const rows=[];
+  const push=(row,group={})=>{if(row&&typeof row==="object")rows.push(Object.assign({},group,row));};
+  const visit=(node,group={})=>{
+    if(!node)return;
+    if(Array.isArray(node)){node.forEach(item=>visit(item,group));return;}
+    if(typeof node!=="object")return;
+    const merged=Object.assign({},group);
+    if(node.domain||node.site||node.host)merged.domain=intelText(node.domain||node.site||node.host);
+    if(node.query||node.keyword||node.search_query||node.target_query)merged.query=intelText(node.query||node.keyword||node.search_query||node.target_query);
+    if(node.source)merged.source=intelText(node.source);
+    if(node.captured_at||node.capturedAt||node.date||node.timestamp)merged.captured_at=intelText(node.captured_at||node.capturedAt||node.date||node.timestamp);
+    if(node.status)merged.status=intelText(node.status);
+    if(node.reason||node.exclusion_reason||node.note)merged.reason=intelText(node.reason||node.exclusion_reason||node.note);
+    if(node.url||node.page||node.link)merged.url=intelText(node.url||node.page||node.link);
+    if(node.title)merged.title=intelText(node.title);
+    if(node.description||node.desc)merged.description=intelText(node.description||node.desc);
+    if(node.product_key)merged.product_key=intelText(node.product_key);
+    if(node.type)merged.type=intelText(node.type);
+    if(node.flags||node.tags||node.risk_flags)merged.flags=intelList(node.flags||node.tags||node.risk_flags);
+    if(node.rows)visit(node.rows,merged);
+    else if(node.results)visit(node.results,merged);
+    else if(node.observations)visit(node.observations,merged);
+    else if(node.site_queries)visit(node.site_queries,merged);
+    else if(node.domain_queries)visit(node.domain_queries,merged);
+    else push(merged,group);
+  };
+  visit(input);
+  return rows.map(row=>{
+    const status=intelText(row.status||"");
+    const reason=intelText(row.reason||"");
+    const domain=intelText(row.domain||((row.query||"").match(/site:([^\s]+)/i)||[])[1]||"");
+    const title=intelText(row.title||"");
+    const description=intelText(row.description||"");
+    const url=intelText(row.url||"");
+    const flags=intelList(row.flags);
+    const endedHint=intelLooksEnded({status,reason,title,description,url,domain,flags});
+    return Object.assign({},row,{
+      domain,query:intelText(row.query||""),source:intelText(row.source||""),
+      captured_at:intelText(row.captured_at||""),status:status||(endedHint?"ended":"active"),reason,
+      url,title,description,flags,ended:endedHint||/ended|expired|closed|sold/i.test(status)
+    });
+  }).filter(row=>row.query||row.url||row.title||row.domain);
+}
+function intelRows(){
+  const root=SEO_INTEL_DATA||{};
+  const rows=intelNormalizeRows(root.observations||root.rows||root.site_queries||root.domain_queries||root.queries||[]);
+  const extra=intelNormalizeRows(intelLoadStore()?.observations||[]);
+  const merged=[...rows,...extra];
+  const dedup=new Map();
+  merged.forEach(row=>{
+    const key=[row.domain,row.query,row.url,row.title,row.captured_at,row.product_key].join("|");
+    if(!dedup.has(key))dedup.set(key,row);
+  });
+  return [...dedup.values()].sort((a,b)=>String(b.captured_at||"").localeCompare(String(a.captured_at||""))||String(a.domain||"").localeCompare(String(b.domain||"")));
+}
+function intelStats(rows){
+  const domains=[...new Set(rows.map(r=>r.domain).filter(Boolean))];
+  const ended=rows.filter(r=>r.ended).length;
+  const active=rows.length-ended;
+  return {total:rows.length,active,ended,domains:domains.length};
+}
+function renderIntel(){
+  const rows=intelRows();
+  const onlyDomains=[...new Set(rows.map(r=>r.domain).filter(Boolean))].sort();
+  const activeRows=rows.filter(r=>!r.ended);
+  const domainFilter=($("#intelDomain")?.value||"").trim();
+  const queryFilter=($("#intelQuery")?.value||"").trim().toLowerCase();
+  const hideEnded=$("#intelHideEnded")?.checked!==false;
+  const filtered=rows.filter(r=>{
+    if(domainFilter&&r.domain!==domainFilter)return false;
+    if(queryFilter&&![r.domain,r.query,r.url,r.title,r.description,r.reason].join(" ").toLowerCase().includes(queryFilter))return false;
+    if(hideEnded&&r.ended)return false;
+    return true;
+  });
+  const stats=intelStats(rows);
+  const topReasons=rows.reduce((acc,r)=>{const k=r.ended?(r.reason||"ended"):(r.status||"active");acc[k]=(acc[k]||0)+1;return acc;},{});
+  const summaryPills=Object.entries(topReasons).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([label,count])=>`<span class="intel-pill ${/ended|expired|closed|종료|만료/i.test(label)?"ended":"active"}">${esc(label)} ${count}</span>`).join("");
+  $("#v-intel").innerHTML=`
+    <div class="scope"><span class="sc-tag">SEO Intelligence</span> 구조화된 사이트 관측 · site: 도메인 검색 · 종료 이벤트/판매 종료 필터</div>
+    <div class="intel-shell">
+      <aside class="intel-card">
+        <h3>입력 스키마</h3>
+        <p>Advertools류 수집 결과나 내부 크롤러 JSON을 붙여 넣으면, 도메인별 site 검색 결과를 필터링해서 볼 수 있습니다. 종료된 이벤트·만료 상품·판매 종료 랜딩은 기본적으로 제외합니다.</p>
+        <div class="intel-form">
+          <div><label>관측 JSON</label><textarea id="intelJson" placeholder='{"schema_version":1,"asof":"2026-08-30","observations":[{"domain":"www.carrotins.com","query":"site:www.carrotins.com ..."}]}'></textarea></div>
+          <div class="intel-actions">
+            <button class="btn primary" id="intelLoad">불러오기</button>
+            <button class="btn" id="intelSample">예시</button>
+            <button class="btn" id="intelReset">초기화</button>
+          </div>
+          <div><label>도메인 필터</label><select id="intelDomain"><option value="">전체 도메인</option>${onlyDomains.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join("")}</select></div>
+          <div><label>검색</label><input id="intelQuery" placeholder="query / title / url / reason 검색"></div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--ink-2)"><input id="intelHideEnded" type="checkbox" checked>종료된 이벤트·만료 상품 숨김</label>
+        </div>
+        <div class="intel-note">
+          <b>수집 기준</b> · `site:www.carrotins.com`, `site:hanwhadirect.com`처럼 도메인 검색 파라미터를 남기고, 이벤트 종료·판매 종료·만료 페이지는 리뷰 큐에만 남깁니다.
+        </div>
+      </aside>
+      <section class="intel-panel" style="padding:18px">
+        <h3>관측 요약</h3>
+        <div class="intel-kpis">
+          <div class="intel-kpi"><b>${stats.total}</b><small>총 관측행</small></div>
+          <div class="intel-kpi"><b>${stats.active}</b><small>활성 관측</small></div>
+          <div class="intel-kpi"><b>${stats.ended}</b><small>종료/만료 제외</small></div>
+          <div class="intel-kpi"><b>${stats.domains}</b><small>도메인 수</small></div>
+        </div>
+        <div style="margin-bottom:10px">${summaryPills||'<span class="intel-pill warn">아직 입력된 관측이 없습니다</span>'}</div>
+        <div class="intel-note" style="margin-bottom:12px">활성 관측만 ${hideEnded?"표시":"전체 표시"} 중입니다. 현재 필터 결과: ${filtered.length}행</div>
+        <div style="overflow:auto;border:1px solid var(--line);border-radius:14px">
+          <table class="intel-table">
+            <thead><tr><th>도메인</th><th>site 쿼리</th><th>대상 URL / 제목</th><th>상태</th><th>근거</th><th>기준일</th><th>출처</th></tr></thead>
+            <tbody>${filtered.length?filtered.map(row=>`
+              <tr>
+                <td><code>${esc(row.domain||"")}</code></td>
+                <td><code>${esc(row.query||"")}</code>${row.flags?.length?`<div style="margin-top:6px">${row.flags.map(f=>`<span class="intel-pill ${/ended|expired|closed|종료|만료/i.test(f)?"ended":"warn"}">${esc(f)}</span>`).join("")}</div>`:""}</td>
+                <td><div style="font-weight:800">${esc(row.title||row.url||"")}</div><div style="font-size:11.5px;color:var(--muted);margin-top:4px;word-break:break-all">${esc(row.url||row.description||"")}</div></td>
+                <td><span class="intel-pill ${row.ended?"ended":"active"}">${row.ended?"제외":"활성"}</span>${row.status&&row.status!==(row.ended?"ended":"active")?`<div style="margin-top:4px;font-size:11px;color:var(--ink-2)">${esc(row.status)}</div>`:""}</td>
+                <td style="font-size:11.5px;color:var(--ink-2)">${esc(row.reason||"")}</td>
+                <td><code>${esc(row.captured_at||"")}</code></td>
+                <td>${esc(row.source||"manual")}</td>
+              </tr>`).join(""):`<tr><td colspan="7"><div class="intel-empty">관측 JSON을 불러오면 도메인별 site:` 검색 결과와 종료 이벤트 제외 상태를 볼 수 있습니다.</div></td></tr>`}</tbody>
+          </table>
+        </div>
+      </section>
+    </div>`;
+  $("#intelLoad").addEventListener("click",()=>{
+    const parsed=parseIntelJson($("#intelJson").value);
+    if(!parsed)return;
+    SEO_INTEL_DATA=parsed;
+    intelSaveStore(parsed);
+    renderIntel();
+    toast("SEO 관측 JSON을 반영했습니다");
+  });
+  $("#intelSample").addEventListener("click",()=>{
+    $("#intelJson").value=JSON.stringify({
+      schema_version:1,asof:"2026-08-30",
+      observations:[
+        {domain:"www.carrotins.com",query:"site:www.carrotins.com 운전자보험",title:"운전자보험 안내",url:"https://www.carrotins.com/driver",status:"active",source:"advertools"},
+        {domain:"www.carrotins.com",query:"site:www.carrotins.com 추석 이벤트",title:"종료된 추석 이벤트",url:"https://www.carrotins.com/event/chuseok",status:"ended",reason:"판매 종료",flags:["ended_event"],source:"manual"},
+        {domain:"hanwhadirect.com",query:"site:hanwhadirect.com 자동차보험",title:"자동차보험",url:"https://www.hanwhadirect.com/car",status:"active",source:"advertools"}
+      ]
+    },null,2);
+  });
+  $("#intelReset").addEventListener("click",()=>{
+    if(confirm("저장된 SEO 관측 JSON을 지울까요?")){
+      localStorage.removeItem(SEO_INTEL_STORE);
+      SEO_INTEL_DATA={schema_version:1,asof:"",observations:[],site_queries:[],monthly_diff:{latest:"",previous:"",new_brands:[],dropped_brands:[],rising_angles:[],declining_angles:[]}};
+      renderIntel();
+      toast("관측 저장소를 초기화했습니다");
+    }
+  });
+  $("#intelDomain").addEventListener("change",renderIntel);
+  $("#intelQuery").addEventListener("input",renderIntel);
+  $("#intelHideEnded").addEventListener("change",renderIntel);
+}
+function parseIntelJson(raw){
+  let o;
+  try{o=JSON.parse(raw);}catch(e){toast("SEO 관측 JSON 파싱 실패");return null;}
+  if(Array.isArray(o))o={observations:o};
+  if(o&&o.report)o=o.report;
+  const base=Object.assign({schema_version:1,asof:o.asof||"",observations:[],site_queries:[],monthly_diff:{latest:"",previous:"",new_brands:[],dropped_brands:[],rising_angles:[],declining_angles:[]}},o||{});
+  if(!base.observations&&base.rows)base.observations=base.rows;
+  return base;
+}
+
 /* ── 대시보드 ── */
 function renderDash(){
   const rows=PRODUCTS.map(p=>({p,g:gScore(p),n:nScore(p)}));
@@ -1026,12 +1231,14 @@ function renderSidebar(){
     `<div class="sb-cap">장기 · ${catProducts("장기").length}</div>`+catProducts("장기").map(prodBtn).join("")+
     `<div class="sb-cap">일반 · ${catProducts("일반").length}</div>`+catProducts("일반").map(prodBtn).join("")+
     `<div class="sb-cap">도구</div>`+
+    `<button class="sb-item${view==="intel"?" on":""}" data-nav="intel"><span class="sb-ico">🧭</span>SEO 인텔</button>`+
     `<button class="sb-item${view==="pro"?" on":""}" data-nav="pro"><span class="sb-ico">⚡</span>범용 진단</button>`;
 }
 function setView(v){
   view=v;
-  ["dash","product","pro"].forEach(x=>$("#v-"+x).classList.remove("on"));
+  ["dash","product","intel","pro"].forEach(x=>$("#v-"+x).classList.remove("on"));
   if(v==="dash"){$("#v-dash").classList.add("on");$("#pageTitle").textContent="대시보드";renderDash();}
+  else if(v==="intel"){$("#v-intel").classList.add("on");$("#pageTitle").textContent="SEO 인텔";renderIntel();}
   else if(v==="pro"){$("#v-pro").classList.add("on");$("#pageTitle").textContent="범용 진단";renderPro();}
   else if(v==="product"){$("#v-product").classList.add("on");renderScreen();}
   renderSidebar();
@@ -1059,6 +1266,7 @@ $("#themeBtn").addEventListener("click",()=>{
 $("#productCount").textContent=PRODUCTS.length;
 setView("dash");
 Promise.all([
-  fetch("data/volume.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.source==="searchad"&&d.products)SEO_VOL=d;}).catch(()=>{})
-]).then(()=>{if(view==="product")renderScreen();});
+  fetch("data/volume.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.source==="searchad"&&d.products)SEO_VOL=d;}).catch(()=>{}),
+  fetch("data/seo/site-observations.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)SEO_INTEL_DATA=Object.assign({},SEO_INTEL_DATA,d,intelLoadStore()||{});}).catch(()=>{}),
+]).then(()=>{if(view==="product")renderScreen(); if(view==="intel")renderIntel();});
 </script>
