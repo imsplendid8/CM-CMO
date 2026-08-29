@@ -222,9 +222,19 @@ class TestFaqOpportunityAgent(unittest.TestCase):
         self.assertIn("SEO Intelligence", seo)
         self.assertIn("SEO_INTEL_STORE", seo)
         self.assertIn("data/seo/site-observations.json", seo)
+        self.assertIn("리뷰 큐", seo)
+        self.assertIn("월간 변화", seo)
         self.assertIn("data/seo/site-observations.json", build_pages)
         self.assertIn("data/adcopy/serp-candidates.json", adcopy)
         self.assertIn("SERP_AGENT", adcopy)
+
+    def test_seo_intel_schema_supports_query_and_diff_fields(self):
+        schema = (ROOT / "docs" / "seo-intelligence-schema.md").read_text(encoding="utf-8")
+        data = json.loads((ROOT / "data" / "seo" / "site-observations.json").read_text(encoding="utf-8"))
+        self.assertEqual(data["schema_version"], 2)
+        self.assertIn("site_query", schema)
+        self.assertIn("rising_angles", schema)
+        self.assertIn("declining_angles", schema)
 
     def test_gsc_and_serp_dom_review_automation_are_wired(self):
         workflow = (ROOT / ".github/workflows/content-intelligence.yml").read_text(encoding="utf-8")

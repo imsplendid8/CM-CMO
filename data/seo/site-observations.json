@@ -1,6 +1,6 @@
 {
   "_comment": "SEO 인텔 입력 스키마. site: 도메인 검색, 크롤링, 수동 점검 결과를 한 파일에 모으되 종료 이벤트·판매 종료 랜딩은 제외 플래그로 남긴다.",
-  "schema_version": 1,
+  "schema_version": 2,
   "asof": "2026-08-30",
   "sources": [
     "advertools",
@@ -16,7 +16,9 @@
     "new_domains": [],
     "dropped_domains": [],
     "new_queries": [],
-    "dropped_queries": []
+    "dropped_queries": [],
+    "rising_angles": [],
+    "declining_angles": []
   },
   "default_filters": {
     "exclude_flags": [

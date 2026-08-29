@@ -998,11 +998,18 @@ function runPro(){
 
 /* ── SEO INTEL ── */
 const SEO_INTEL_STORE="seo_intel_import_v1";
-let SEO_INTEL_DATA={schema_version:1,asof:"",observations:[],site_queries:[],monthly_diff:{latest:"",previous:"",new_brands:[],dropped_brands:[],rising_angles:[],declining_angles:[]}};
+let SEO_INTEL_DATA={schema_version:2,asof:"",observations:[],site_queries:[],domain_queries:[],monthly_diff:{latest:"",previous:"",new_domains:[],dropped_domains:[],new_queries:[],dropped_queries:[],rising_angles:[],declining_angles:[]},default_filters:{exclude_flags:["ended_event","expired_product","sales_ended","noindex","redirect_chain"],exclude_status:["ended","expired","closed","sold_out","discontinued"]}};
 function intelLoadStore(){try{return JSON.parse(localStorage.getItem(SEO_INTEL_STORE)||"null")||null}catch(_){return null}}
 function intelSaveStore(data){try{localStorage.setItem(SEO_INTEL_STORE,JSON.stringify(data));}catch(_){ } }
 function intelText(value){return String(value??"").trim();}
 function intelList(value){if(Array.isArray(value))return value.flatMap(intelList).map(intelText).filter(Boolean);if(value==null)return[];const text=intelText(value);return text?[text]:[];}
+function intelNormalizeStatus(value){
+  const t=intelText(value).toLowerCase();
+  if(!t)return"active";
+  if(/ended|expired|closed|sold|discontinued|만료|종료|폐점/.test(t))return"ended";
+  if(/review|pending|hold|검토/.test(t))return"review";
+  return t;
+}
 function intelLooksEnded(row){
   const hay=[row.status,row.reason,row.title,row.description,row.url,row.domain,...intelList(row.flags),...intelList(row.tags)].join(" ").toLowerCase();
   return /(종료|만료|판매종료|폐점|discontinued|expired|ended|closed|sold\s*out|noindex)/i.test(hay);
@@ -1016,10 +1023,11 @@ function intelNormalizeRows(input){
     if(typeof node!=="object")return;
     const merged=Object.assign({},group);
     if(node.domain||node.site||node.host)merged.domain=intelText(node.domain||node.site||node.host);
+    if(node.site_query||node.siteQuery)merged.site_query=intelText(node.site_query||node.siteQuery);
     if(node.query||node.keyword||node.search_query||node.target_query)merged.query=intelText(node.query||node.keyword||node.search_query||node.target_query);
     if(node.source)merged.source=intelText(node.source);
     if(node.captured_at||node.capturedAt||node.date||node.timestamp)merged.captured_at=intelText(node.captured_at||node.capturedAt||node.date||node.timestamp);
-    if(node.status)merged.status=intelText(node.status);
+    if(node.status)merged.status=intelNormalizeStatus(node.status);
     if(node.reason||node.exclusion_reason||node.note)merged.reason=intelText(node.reason||node.exclusion_reason||node.note);
     if(node.url||node.page||node.link)merged.url=intelText(node.url||node.page||node.link);
     if(node.title)merged.title=intelText(node.title);
@@ -1027,6 +1035,8 @@ function intelNormalizeRows(input){
     if(node.product_key)merged.product_key=intelText(node.product_key);
     if(node.type)merged.type=intelText(node.type);
     if(node.flags||node.tags||node.risk_flags)merged.flags=intelList(node.flags||node.tags||node.risk_flags);
+    if(node.month||node.period)merged.month=intelText(node.month||node.period);
+    if(node.source_observation_id)merged.source_observation_id=intelText(node.source_observation_id);
     if(node.rows)visit(node.rows,merged);
     else if(node.results)visit(node.results,merged);
     else if(node.observations)visit(node.observations,merged);
@@ -1036,18 +1046,23 @@ function intelNormalizeRows(input){
   };
   visit(input);
   return rows.map(row=>{
-    const status=intelText(row.status||"");
+    const status=intelNormalizeStatus(row.status||"");
     const reason=intelText(row.reason||"");
     const domain=intelText(row.domain||((row.query||"").match(/site:([^\s]+)/i)||[])[1]||"");
+    const siteQuery=intelText(row.site_query||row.query||"");
     const title=intelText(row.title||"");
     const description=intelText(row.description||"");
     const url=intelText(row.url||"");
     const flags=intelList(row.flags);
+    const filters=(SEO_INTEL_DATA.default_filters||{});
+    const filterFlags=intelList(filters.exclude_flags).map(x=>x.toLowerCase());
+    const filterStatus=intelList(filters.exclude_status).map(x=>x.toLowerCase());
     const endedHint=intelLooksEnded({status,reason,title,description,url,domain,flags});
     return Object.assign({},row,{
-      domain,query:intelText(row.query||""),source:intelText(row.source||""),
+      domain,query:intelText(row.query||""),site_query:siteQuery,source:intelText(row.source||""),
       captured_at:intelText(row.captured_at||""),status:status||(endedHint?"ended":"active"),reason,
-      url,title,description,flags,ended:endedHint||/ended|expired|closed|sold/i.test(status)
+      url,title,description,flags,month:intelText(row.month||row.period||""),source_observation_id:intelText(row.source_observation_id||""),
+      ended:endedHint||filterStatus.includes(status.toLowerCase())||filterFlags.some(f=>flags.map(x=>x.toLowerCase()).includes(f))
     });
   }).filter(row=>row.query||row.url||row.title||row.domain);
 }
@@ -1067,7 +1082,39 @@ function intelStats(rows){
   const domains=[...new Set(rows.map(r=>r.domain).filter(Boolean))];
   const ended=rows.filter(r=>r.ended).length;
   const active=rows.length-ended;
-  return {total:rows.length,active,ended,domains:domains.length};
+  const review=rows.filter(r=>r.status==="review").length;
+  const queryCount=[...new Set(rows.map(r=>r.query||r.site_query).filter(Boolean))].length;
+  const endedFlags=rows.flatMap(r=>r.flags||[]).filter(Boolean);
+  const byStatus=rows.reduce((acc,r)=>{const k=r.ended?"ended":(r.status||"active");acc[k]=(acc[k]||0)+1;return acc;},{});
+  return {total:rows.length,active,ended,review,domains:domains.length,queries:queryCount,byStatus,endedFlags};
+}
+function intelMonthlyDiff(data){
+  const diff=(data&&data.monthly_diff)||{};
+  const items=[
+    ["신규 도메인",diff.new_domains||[]],
+    ["이탈 도메인",diff.dropped_domains||[]],
+    ["신규 쿼리",diff.new_queries||[]],
+    ["이탈 쿼리",diff.dropped_queries||[]],
+    ["상승 소구",diff.rising_angles||[]],
+    ["하락 소구",diff.declining_angles||[]],
+  ];
+  return items.map(([label,list])=>({label,list:list.slice(0,6),empty:list.length===0}));
+}
+function intelBucket(row){
+  if(row.ended)return"review";
+  if(row.status==="review")return"review";
+  if(row.flags?.some(f=>/noindex|redirect_chain|expired|ended|closed/i.test(f)))return"review";
+  return"active";
+}
+function intelQueryLabel(row){
+  return row.site_query||row.query||row.domain||row.url||"";
+}
+function intelSuggestNextAction(row){
+  if(row.ended)return"리뷰 큐에서 제외 사유만 보관";
+  if((row.flags||[]).some(f=>/noindex/i.test(f)))return"noindex 확인";
+  if((row.flags||[]).some(f=>/redirect_chain/i.test(f)))return"리다이렉트 체인 점검";
+  if((row.flags||[]).some(f=>/expired|ended|closed/i.test(f)))return"종료 상태 확인";
+  return"상세 페이지 검수";
 }
 function renderIntel(){
   const rows=intelRows();
@@ -1084,6 +1131,9 @@ function renderIntel(){
   });
   const stats=intelStats(rows);
   const topReasons=rows.reduce((acc,r)=>{const k=r.ended?(r.reason||"ended"):(r.status||"active");acc[k]=(acc[k]||0)+1;return acc;},{});
+  const monthlyDiff=intelMonthlyDiff(SEO_INTEL_DATA);
+  const reviewRows=rows.filter(r=>intelBucket(r)==="review").slice(0,8);
+  const queryRows=[...rows].sort((a,b)=>String(b.captured_at||"").localeCompare(String(a.captured_at||""))||String(a.domain||"").localeCompare(String(b.domain||""))).slice(0,12);
   const summaryPills=Object.entries(topReasons).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([label,count])=>`<span class="intel-pill ${/ended|expired|closed|종료|만료/i.test(label)?"ended":"active"}">${esc(label)} ${count}</span>`).join("");
   $("#v-intel").innerHTML=`
     <div class="scope"><span class="sc-tag">SEO Intelligence</span> 구조화된 사이트 관측 · site: 도메인 검색 · 종료 이벤트/판매 종료 필터</div>
@@ -1112,17 +1162,56 @@ function renderIntel(){
           <div class="intel-kpi"><b>${stats.total}</b><small>총 관측행</small></div>
           <div class="intel-kpi"><b>${stats.active}</b><small>활성 관측</small></div>
           <div class="intel-kpi"><b>${stats.ended}</b><small>종료/만료 제외</small></div>
+          <div class="intel-kpi"><b>${stats.review}</b><small>리뷰 큐</small></div>
           <div class="intel-kpi"><b>${stats.domains}</b><small>도메인 수</small></div>
+          <div class="intel-kpi"><b>${stats.queries}</b><small>site 쿼리 수</small></div>
         </div>
         <div style="margin-bottom:10px">${summaryPills||'<span class="intel-pill warn">아직 입력된 관측이 없습니다</span>'}</div>
+        <div class="intel-note" style="margin-bottom:12px">
+          월간 변화 · 최신 ${esc(SEO_INTEL_DATA.monthly_diff?.latest||"")} / 직전 ${esc(SEO_INTEL_DATA.monthly_diff?.previous||"")}
+        </div>
+        <div class="intel-grid" style="margin-bottom:12px">
+          ${monthlyDiff.map(item=>`<div class="intel-card" style="padding:12px">
+            <div style="font-size:12px;font-weight:800;color:var(--ink-2)">${esc(item.label)}</div>
+            <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:8px">${item.empty?'<span class="intel-pill warn">없음</span>':item.list.map(x=>`<span class="intel-pill active">${esc(x)}</span>`).join("")}</div>
+          </div>`).join("")}
+        </div>
         <div class="intel-note" style="margin-bottom:12px">활성 관측만 ${hideEnded?"표시":"전체 표시"} 중입니다. 현재 필터 결과: ${filtered.length}행</div>
+        <div class="intel-grid" style="margin-bottom:12px">
+          <div class="intel-card" style="padding:12px">
+            <h3 style="margin:0 0 8px">리뷰 큐</h3>
+            <div style="display:grid;gap:8px">
+              ${reviewRows.length?reviewRows.map(row=>`<div style="padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff">
+                <div style="display:flex;align-items:center;gap:8px;justify-content:space-between">
+                  <b style="font-size:12px">${esc(row.domain||"")}</b>
+                  <span class="intel-pill ended">${row.ended?"제외":"검토"}</span>
+                </div>
+                <div style="margin-top:6px;font-size:11.5px;color:var(--ink-2)">${esc(intelQueryLabel(row))}</div>
+                <div style="margin-top:6px;font-size:11.5px;color:var(--muted)">${esc(intelSuggestNextAction(row))}</div>
+              </div>`).join(""):'<span class="intel-pill warn">리뷰 대기 없음</span>'}
+            </div>
+          </div>
+          <div class="intel-card" style="padding:12px">
+            <h3 style="margin:0 0 8px">최근 쿼리/도메인</h3>
+            <div style="display:grid;gap:8px">
+              ${queryRows.length?queryRows.map(row=>`<div style="padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff">
+                <div style="display:flex;align-items:center;gap:8px;justify-content:space-between">
+                  <b style="font-size:12px">${esc(row.domain||"")}</b>
+                  <span class="intel-pill ${row.ended?"ended":"active"}">${esc(row.status||"active")}</span>
+                </div>
+                <div style="margin-top:6px;font-size:11.5px;color:var(--ink-2)">${esc(intelQueryLabel(row))}</div>
+                <div style="margin-top:6px;font-size:11.5px;color:var(--muted)">${esc(row.title||row.description||row.reason||"")}</div>
+              </div>`).join(""):'<span class="intel-pill warn">최근 쿼리 없음</span>'}
+            </div>
+          </div>
+        </div>
         <div style="overflow:auto;border:1px solid var(--line);border-radius:14px">
           <table class="intel-table">
             <thead><tr><th>도메인</th><th>site 쿼리</th><th>대상 URL / 제목</th><th>상태</th><th>근거</th><th>기준일</th><th>출처</th></tr></thead>
             <tbody>${filtered.length?filtered.map(row=>`
               <tr>
                 <td><code>${esc(row.domain||"")}</code></td>
-                <td><code>${esc(row.query||"")}</code>${row.flags?.length?`<div style="margin-top:6px">${row.flags.map(f=>`<span class="intel-pill ${/ended|expired|closed|종료|만료/i.test(f)?"ended":"warn"}">${esc(f)}</span>`).join("")}</div>`:""}</td>
+                <td><code>${esc(row.site_query||row.query||"")}</code>${row.flags?.length?`<div style="margin-top:6px">${row.flags.map(f=>`<span class="intel-pill ${/ended|expired|closed|종료|만료/i.test(f)?"ended":"warn"}">${esc(f)}</span>`).join("")}</div>`:""}</td>
                 <td><div style="font-weight:800">${esc(row.title||row.url||"")}</div><div style="font-size:11.5px;color:var(--muted);margin-top:4px;word-break:break-all">${esc(row.url||row.description||"")}</div></td>
                 <td><span class="intel-pill ${row.ended?"ended":"active"}">${row.ended?"제외":"활성"}</span>${row.status&&row.status!==(row.ended?"ended":"active")?`<div style="margin-top:4px;font-size:11px;color:var(--ink-2)">${esc(row.status)}</div>`:""}</td>
                 <td style="font-size:11.5px;color:var(--ink-2)">${esc(row.reason||"")}</td>
@@ -1143,11 +1232,12 @@ function renderIntel(){
   });
   $("#intelSample").addEventListener("click",()=>{
     $("#intelJson").value=JSON.stringify({
-      schema_version:1,asof:"2026-08-30",
+      schema_version:2,asof:"2026-08-30",
+      monthly_diff:{latest:"2026-08-30",previous:"2026-07-30",new_domains:["www.carrotins.com"],dropped_domains:["old.example.com"],new_queries:["site:www.carrotins.com 운전자보험"],dropped_queries:["site:old.example.com 이벤트"],rising_angles:["운전자보험"],declining_angles:["이벤트"]},
       observations:[
-        {domain:"www.carrotins.com",query:"site:www.carrotins.com 운전자보험",title:"운전자보험 안내",url:"https://www.carrotins.com/driver",status:"active",source:"advertools"},
-        {domain:"www.carrotins.com",query:"site:www.carrotins.com 추석 이벤트",title:"종료된 추석 이벤트",url:"https://www.carrotins.com/event/chuseok",status:"ended",reason:"판매 종료",flags:["ended_event"],source:"manual"},
-        {domain:"hanwhadirect.com",query:"site:hanwhadirect.com 자동차보험",title:"자동차보험",url:"https://www.hanwhadirect.com/car",status:"active",source:"advertools"}
+        {domain:"www.carrotins.com",site_query:"site:www.carrotins.com 운전자보험",query:"site:www.carrotins.com 운전자보험",title:"운전자보험 안내",url:"https://www.carrotins.com/driver",status:"active",source:"advertools",captured_at:"2026-08-30"},
+        {domain:"www.carrotins.com",site_query:"site:www.carrotins.com 추석 이벤트",query:"site:www.carrotins.com 추석 이벤트",title:"종료된 추석 이벤트",url:"https://www.carrotins.com/event/chuseok",status:"ended",reason:"판매 종료",flags:["ended_event"],source:"manual",captured_at:"2026-08-30"},
+        {domain:"hanwhadirect.com",site_query:"site:hanwhadirect.com 자동차보험",query:"site:hanwhadirect.com 자동차보험",title:"자동차보험",url:"https://www.hanwhadirect.com/car",status:"review",flags:["redirect_chain"],source:"advertools",captured_at:"2026-08-30"}
       ]
     },null,2);
   });
@@ -1168,7 +1258,7 @@ function parseIntelJson(raw){
   try{o=JSON.parse(raw);}catch(e){toast("SEO 관측 JSON 파싱 실패");return null;}
   if(Array.isArray(o))o={observations:o};
   if(o&&o.report)o=o.report;
-  const base=Object.assign({schema_version:1,asof:o.asof||"",observations:[],site_queries:[],monthly_diff:{latest:"",previous:"",new_brands:[],dropped_brands:[],rising_angles:[],declining_angles:[]}},o||{});
+  const base=Object.assign({schema_version:2,asof:o.asof||"",observations:[],site_queries:[],domain_queries:[],monthly_diff:{latest:"",previous:"",new_domains:[],dropped_domains:[],new_queries:[],dropped_queries:[],rising_angles:[],declining_angles:[]},default_filters:{exclude_flags:["ended_event","expired_product","sales_ended","noindex","redirect_chain"],exclude_status:["ended","expired","closed","sold_out","discontinued"]}},o||{});
   if(!base.observations&&base.rows)base.observations=base.rows;
   return base;
 }

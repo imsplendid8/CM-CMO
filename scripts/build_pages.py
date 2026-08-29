@@ -44,16 +44,14 @@ def copy_file(root: Path, destination: Path, relative: str | Path) -> None:
 
 
 def build(root: Path = ROOT, destination: Path = DEST) -> list[Path]:
-    if destination.exists():
-        shutil.rmtree(destination)
-    destination.mkdir(parents=True)
+    destination.mkdir(parents=True, exist_ok=True)
 
     for source in root.glob("*.html"):
         copy_file(root, destination, source.relative_to(root))
     copy_file(root, destination, "site.webmanifest")
     for folder in ("shared", "icons"):
-        shutil.copytree(root / folder, destination / folder)
-    shutil.copytree(root / "assets/insurance", destination / "assets/insurance")
+        shutil.copytree(root / folder, destination / folder, dirs_exist_ok=True)
+    shutil.copytree(root / "assets/insurance", destination / "assets/insurance", dirs_exist_ok=True)
     for relative in (*PUBLIC_DATA, *PUBLIC_SERP_JSON):
         copy_file(root, destination, relative)
     for source in (root / "data/clips").glob("*.json"):

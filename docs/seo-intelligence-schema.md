@@ -12,11 +12,12 @@ This repository uses a structured SEO observation feed so technical SEO analysis
 
 ```json
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "asof": "2026-08-30",
   "observations": [
     {
       "domain": "www.carrotins.com",
+      "site_query": "site:www.carrotins.com 운전자보험",
       "query": "site:www.carrotins.com 운전자보험",
       "url": "https://www.carrotins.com/driver",
       "title": "운전자보험 안내",
@@ -35,7 +36,9 @@ This repository uses a structured SEO observation feed so technical SEO analysis
     "new_domains": [],
     "dropped_domains": [],
     "new_queries": [],
-    "dropped_queries": []
+    "dropped_queries": [],
+    "rising_angles": [],
+    "declining_angles": []
   },
   "default_filters": {
     "exclude_flags": ["ended_event", "expired_product", "sales_ended", "noindex", "redirect_chain"],
@@ -48,5 +51,6 @@ This repository uses a structured SEO observation feed so technical SEO analysis
 
 - `observations[]` is the main list.
 - `site_queries[]` and `domain_queries[]` may be used if the upstream crawler groups results by query.
+- `site_query` keeps the exact `site:` search string that produced the observation.
 - `flags[]` should carry review and exclusion signals.
 - The dashboard should treat screenshots as supporting evidence only; text fields are the primary input.
