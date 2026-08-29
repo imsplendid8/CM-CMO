@@ -28,6 +28,16 @@ for(const token of requiredCode)if(!html.includes(token))errors.push(`이미지 
 for(const forbidden of ["generated=agent.candidates", "new FileReader()", "PNG 4장 받기", "ctx.fillText(", "-serp-v2.png", "custom?.url||concept.asset"]){
   if(html.includes(forbidden))errors.push(`구형 이미지/SERP 코드 잔존: ${forbidden}`);
 }
+const powerHtml=fs.readFileSync(path.join(ROOT,"powercontent-tool.html"),"utf8");
+const productPools=[
+  ["adcopy INSURANCE_VISUALS golf", html.match(/golf:\{assets:\[([^\]]+)\]/)?.[1] || ""],
+  ["adcopy INSURANCE_VISUALS holeinone", html.match(/holeinone:\{assets:\[([^\]]+)\]/)?.[1] || ""],
+  ["powercontent FALLBACK_VISUALS golf", powerHtml.match(/golf:\[([^\]]+)\]/)?.[1] || ""],
+  ["powercontent FALLBACK_VISUALS holeinone", powerHtml.match(/holeinone:\[([^\]]+)\]/)?.[1] || ""],
+];
+for(const [label,pool] of productPools){
+  if(/event-safety/.test(pool))errors.push(`${label}: 행사배상책임 이미지가 골프/홀인원 후보에 섞임`);
+}
 
 const assetNames=[...html.matchAll(/assets\/insurance\/([a-z0-9-]+\.png)/g)].map(x=>x[1]);
 const unique=[...new Set(assetNames)];
