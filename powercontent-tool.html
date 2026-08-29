@@ -97,7 +97,7 @@ const CONTENT_KEYWORD_MODIFIERS=[
  {category:"정보탐색",intent:"기초·확인",terms:["이란","체크리스트","주의사항","보장하지 않는 경우","가입 전 확인"]}
 ];
 const COVERAGE_KEYWORD_MODIFIERS=["특약","보장","보장범위","지급사유","가입 전 확인"];
-let DATA={volume:{products:{}},seasonal:{seasonal:{}},titles:{products:[],sources:{}},serp:{products:[],planning_month:""},history:{entries:[]}};
+let DATA={volume:{products:{}},seasonal:{seasonal:{}},titles:{products:[],sources:{}},serp:{products:[],planning_month:""},history:{entries:[]},autocomplete:{products:{}}};
 let currentKey="driver",selectedId="",month=PLANNING.getMonth();
 const product=()=>PRODUCTS.find(p=>p.key===currentKey)||PRODUCTS[0];
 const nextMonth=()=>PLANNING.nextMonth(month);
@@ -131,6 +131,12 @@ function contentKeywordSet(p){const out=new Map(),volumeData=DATA.volume.product
   const useFor=category=>category==="대표"?"제목·도입부":category==="실측 연관"?"콘텐츠 주제·H2":category==="담보·상황"?"본문 H2·FAQ":category==="질문형"?"제목·FAQ":category==="시즌"?"시즌 콘텐츠·도입 훅":"제목·비교 본문";
   const add=(keyword,category,intent,source,basis)=>{const kw=String(keyword||"").replace(/\s+/g," ").trim(),key=kw.replace(/\s/g,"").toLowerCase();if(!kw||forbidden(p,kw)||relationRank(p,kw)>=9)return;const measured=volumeByKey.get(key),existing=out.get(key),merge=(a,b)=>uniq([...(a?String(a).split(" · "):[]),b]).join(" · ");if(existing){existing.category=merge(existing.category,category);existing.intent=merge(existing.intent,intent);existing.source=merge(existing.source,source);existing.basis=merge(existing.basis,basis);existing.use=merge(existing.use,useFor(category));return}const pc=measured?.pc||0,mobile=measured?.mobile||0,total=pc+mobile;out.set(key,{keyword:measured?.kw||kw,category,intent,pc,mobile,total,competition:measured?.comp||"미측정",source,basis,use:useFor(category),measured:Boolean(measured),priority:category==="대표"||total>=1000?"A":total>=100?"B":"C",status:"활용 후보 · 상품·준법 검토 필요"})};
   volumeRows(p).forEach(row=>add(row.kw,"실측 연관",intentFor({target_query:row.kw}),`SearchAd ${sourceDate(DATA.volume.asof)}`,"상품 범위·제외어 필터 통과"));
+  (DATA.autocomplete?.products?.[p.key]?.suggestions||[]).forEach(row=>{
+    if(row.registration==="exclude")return;
+    const platform=row.source_platform==="google"?"구글형 검색 제안":row.source_type==="visible_ui"?"네이버 자동완성":"네이버 자동완성 보강";
+    const category=row.source_platform==="google"?"구글 질문형":row.source_type==="visible_ui"?"네이버 자동완성":"네이버 보강";
+    add(row.keyword,category,row.intent||"검색 제안",`${platform} ${sourceDate(DATA.autocomplete.asof)}`,row.reason||row.seed_group||"월간 자동완성·검색 제안 후보");
+  });
   p.core.forEach(core=>{add(core,"대표","탐색·전환","상품 대표어","상품 마스터");CONTENT_KEYWORD_MODIFIERS.forEach(group=>group.terms.forEach(term=>add(`${core} ${term}`,group.category,group.intent,"기획 조합","대표어+콘텐츠 의도")))});
   p.special.forEach(term=>{add(`${p.serpKw} ${term}`,"담보·상황","보장 정보 탐색","상품 담보어","상품 마스터");add(`${term} ${p.serpKw}`,"담보·상황","보장 정보 탐색","상품 담보어","상품 마스터");COVERAGE_KEYWORD_MODIFIERS.forEach(mod=>add(`${term} ${mod}`,"담보·상황","보장 정보 탐색","기획 조합","담보어+확인 의도"))});
   [`${p.serpKw} 가입 전에 무엇을 확인해야 하나`,`${p.serpKw} 어떻게 비교할까`,`${p.serpKw} 보험료가 달라지는 이유`,`${p.serpKw} 어떤 특약을 확인해야 하나`,...p.special.map(term=>`${term} 특약은 무엇을 확인해야 하나`)].forEach(kw=>add(kw,"질문형","질문·답변","질문형 확장","검색자 후속 질문"));
@@ -228,7 +234,8 @@ Promise.all([
  fetch("data/seasonal.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(x=>{if(x)DATA.seasonal=x}).catch(()=>{}),
  fetch("data/adcopy/powercontent-title-opportunities.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(x=>{if(x)DATA.titles=x}).catch(()=>{}),
  fetch("data/adcopy/serp-candidates.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(x=>{if(x)DATA.serp=x}).catch(()=>{}),
- fetch("data/adcopy/powercontent-history.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(x=>{if(x)DATA.history=x}).catch(()=>{})
+ fetch("data/adcopy/powercontent-history.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(x=>{if(x)DATA.history=x}).catch(()=>{}),
+ fetch("data/keyword-autocomplete.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(x=>{if(x)DATA.autocomplete=x}).catch(()=>{})
 ]).then(render);
 </script>
 </body>

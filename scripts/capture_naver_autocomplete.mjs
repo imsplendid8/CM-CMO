@@ -6,7 +6,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { buildDataset } from "./keyword_autocomplete_core.mjs";
+import { buildDataset, seedQueries } from "./keyword_autocomplete_core.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUTPUT = path.join(ROOT, "data", "keyword-autocomplete.json");
@@ -53,7 +53,9 @@ async function main() {
   if (process.argv.includes("--reclassify")) {
     const captured = Object.fromEntries(products.map(product => [
       product.key,
-      ((previous.products || {})[product.key]?.suggestions || []).map(({ keyword, seed, rank }) => ({ keyword, seed, rank })),
+      ((previous.products || {})[product.key]?.suggestions || [])
+        .filter(row => (row.source_platform || "naver") === "naver" && (row.source_type || "visible_ui") === "visible_ui")
+        .map(({ keyword, seed, rank, source_platform, source_type, seed_group }) => ({ keyword, seed, rank, source_platform, source_type, seed_group })),
     ]));
     const data = buildDataset({ previous, products, captured, asof: previous.asof || asof });
     fs.writeFileSync(OUTPUT, JSON.stringify(data, null, 2) + "\n");
@@ -72,7 +74,7 @@ async function main() {
     await page.goto("https://search.naver.com/search.naver?query=%EB%B3%B4%ED%97%98", { waitUntil: "domcontentloaded", timeout: 45000 });
     for (const product of products) {
       const rows = [];
-      const seeds = [...new Set([product.serpKw, ...(product.core || [])].filter(Boolean))].slice(0, 3);
+      const seeds = seedQueries(product);
       for (const seed of seeds) {
         try {
           const suggestions = await extractSuggestions(page, seed);
