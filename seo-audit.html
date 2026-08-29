@@ -1116,6 +1116,9 @@ function intelSuggestNextAction(row){
   if((row.flags||[]).some(f=>/expired|ended|closed/i.test(f)))return"종료 상태 확인";
   return"상세 페이지 검수";
 }
+function intelDefaultData(){
+  return {schema_version:2,asof:"",observations:[],site_queries:[],domain_queries:[],monthly_diff:{latest:"",previous:"",new_domains:[],dropped_domains:[],new_queries:[],dropped_queries:[],rising_angles:[],declining_angles:[]},default_filters:{exclude_flags:["ended_event","expired_product","sales_ended","noindex","redirect_chain"],exclude_status:["ended","expired","closed","sold_out","discontinued"]}};
+}
 function renderIntel(){
   const rows=intelRows();
   const onlyDomains=[...new Set(rows.map(r=>r.domain).filter(Boolean))].sort();
@@ -1244,7 +1247,7 @@ function renderIntel(){
   $("#intelReset").addEventListener("click",()=>{
     if(confirm("저장된 SEO 관측 JSON을 지울까요?")){
       localStorage.removeItem(SEO_INTEL_STORE);
-      SEO_INTEL_DATA={schema_version:1,asof:"",observations:[],site_queries:[],monthly_diff:{latest:"",previous:"",new_brands:[],dropped_brands:[],rising_angles:[],declining_angles:[]}};
+      SEO_INTEL_DATA=intelDefaultData();
       renderIntel();
       toast("관측 저장소를 초기화했습니다");
     }
@@ -1258,8 +1261,11 @@ function parseIntelJson(raw){
   try{o=JSON.parse(raw);}catch(e){toast("SEO 관측 JSON 파싱 실패");return null;}
   if(Array.isArray(o))o={observations:o};
   if(o&&o.report)o=o.report;
-  const base=Object.assign({schema_version:2,asof:o.asof||"",observations:[],site_queries:[],domain_queries:[],monthly_diff:{latest:"",previous:"",new_domains:[],dropped_domains:[],new_queries:[],dropped_queries:[],rising_angles:[],declining_angles:[]},default_filters:{exclude_flags:["ended_event","expired_product","sales_ended","noindex","redirect_chain"],exclude_status:["ended","expired","closed","sold_out","discontinued"]}},o||{});
+  const base=Object.assign(intelDefaultData(),o||{});
   if(!base.observations&&base.rows)base.observations=base.rows;
+  base.schema_version=2;
+  base.default_filters=Object.assign(intelDefaultData().default_filters,base.default_filters||{});
+  base.monthly_diff=Object.assign(intelDefaultData().monthly_diff,base.monthly_diff||{});
   return base;
 }
 
