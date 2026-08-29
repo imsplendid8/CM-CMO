@@ -4,7 +4,7 @@
   "events": 42,
   "recommendations": 27,
   "suppressed_cooldown": 0,
-  "unclassified": 170,
+  "unclassified": 190,
   "transitions": 0
  },
  "events": [
@@ -591,6 +591,78 @@
    "confidence": 0.8
   },
   {
+   "fingerprint": "9b722a5ca078dabd",
+   "fact": [
+    "시즌: 장마·집중호우·태풍 (정확 기간 06-20~07-25, 08-05~09-25)",
+    "뉴스: '삼성화재, 거제·통영 수해 복구 총력…구호키트 1700세트·침수차 지원' (apnews.kr 2026-08-29)",
+    "검색량: '화재' 58,800회/월"
+   ],
+   "product": "hrmf",
+   "product_name": "주택화재보험",
+   "event_id": "season-hrmf-6-7-8",
+   "event_name": "장마·집중호우·태풍",
+   "event_type": "계절",
+   "event_state": "active",
+   "transition": null,
+   "title": "장마·집중호우·태풍 주택화재보험 지금 점검",
+   "description": "장마·집중호우·태풍 시기, 주택화재보험 보장 범위를 미리 확인해 두세요.",
+   "content_subhead": "장마·집중호우·태풍 대비 주택화재보험 확인 포인트",
+   "purpose": "시즌 대응",
+   "reason": "장마·집중호우·태풍(active) 시기의 주택화재보험 선제/대비 소구",
+   "data_used": [
+    "clips",
+    "seasonal",
+    "volume"
+   ],
+   "valid_from": "2026-08-29",
+   "valid_to": "2026-09-28",
+   "avoid_phrases": [
+    "끔찍",
+    "참사",
+    "비극",
+    "당신도",
+    "큰일",
+    "불행",
+    "공포",
+    "눈앞의 위험",
+    "지금 안 하면",
+    "이 사고 보고도",
+    "더 늦기 전에 가입",
+    "안 하면 후회",
+    "지금 가입 안 하면",
+    "서둘러 가입",
+    "꼭 가입",
+    "즉시 가입",
+    "사고 전에 가입",
+    "피해 전에 가입",
+    "안 들면 손해",
+    "누구나 가입",
+    "무조건",
+    "반드시",
+    "전액",
+    "100%",
+    "완벽 보장",
+    "모두 보장",
+    "가입 보장",
+    "보험금 확정",
+    "보상 확정",
+    "보장 확정",
+    "즉시 보상",
+    "최대 보장",
+    "최저가",
+    "업계 최고",
+    "가장 저렴",
+    "제일 싸",
+    "필수 보험"
+   ],
+   "channels": [
+    "검색광고"
+   ],
+   "product_basis": "미확인",
+   "review_status": "심의 검토 전 · 운영 후보",
+   "confidence": 0.8
+  },
+  {
    "fingerprint": "cdd0b853c9cb520a",
    "fact": [
     "시즌: 방학 치과 성수기 (1월, 2월, 7월, 8월)",
@@ -1118,76 +1190,6 @@
    ],
    "valid_from": "2026-08-29",
    "valid_to": "2026-09-07",
-   "avoid_phrases": [
-    "끔찍",
-    "참사",
-    "비극",
-    "당신도",
-    "큰일",
-    "불행",
-    "공포",
-    "눈앞의 위험",
-    "지금 안 하면",
-    "이 사고 보고도",
-    "더 늦기 전에 가입",
-    "안 하면 후회",
-    "지금 가입 안 하면",
-    "서둘러 가입",
-    "꼭 가입",
-    "즉시 가입",
-    "사고 전에 가입",
-    "피해 전에 가입",
-    "안 들면 손해",
-    "누구나 가입",
-    "무조건",
-    "반드시",
-    "전액",
-    "100%",
-    "완벽 보장",
-    "모두 보장",
-    "가입 보장",
-    "보험금 확정",
-    "보상 확정",
-    "보장 확정",
-    "즉시 보상",
-    "최대 보장",
-    "최저가",
-    "업계 최고",
-    "가장 저렴",
-    "제일 싸",
-    "필수 보험"
-   ],
-   "channels": [
-    "검색광고"
-   ],
-   "product_basis": "미확인",
-   "review_status": "심의 검토 전 · 운영 후보",
-   "confidence": 0.5
-  },
-  {
-   "fingerprint": "9b722a5ca078dabd",
-   "fact": [
-    "시즌: 장마·집중호우·태풍 (정확 기간 06-20~07-25, 08-05~09-25)",
-    "검색량: '화재' 58,800회/월"
-   ],
-   "product": "hrmf",
-   "product_name": "주택화재보험",
-   "event_id": "season-hrmf-6-7-8",
-   "event_name": "장마·집중호우·태풍",
-   "event_type": "계절",
-   "event_state": "active",
-   "transition": null,
-   "title": "장마·집중호우·태풍 주택화재보험 지금 점검",
-   "description": "장마·집중호우·태풍 시기, 주택화재보험 보장 범위를 미리 확인해 두세요.",
-   "content_subhead": "장마·집중호우·태풍 대비 주택화재보험 확인 포인트",
-   "purpose": "시즌 대응",
-   "reason": "장마·집중호우·태풍(active) 시기의 주택화재보험 선제/대비 소구",
-   "data_used": [
-    "seasonal",
-    "volume"
-   ],
-   "valid_from": "2026-08-29",
-   "valid_to": "2026-09-28",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2498,6 +2500,34 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "[골프IN화보] 안재희, 3라운드 경기 장면 '제15회 KG 레이디스 오픈'",
+   "src": "edaily.co.kr",
+   "date": "2026-08-29",
+   "url": "https://m.sports.naver.com/golf/article/018/0006360133",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "서교림, 2주 연속 우승과 시즌 5승 '불씨'...KLPGA투어 KG '무빙데이' 1타...",
+   "src": "g-enews.com",
+   "date": "2026-08-29",
+   "url": "https://www.g-enews.com/view.php?ud=202608291450593816daecd3dad5_1",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[위클립] 8월 4주",
+   "src": "laborplus.co.kr",
+   "date": "2026-08-29",
+   "url": "https://www.laborplus.co.kr/news/articleView.html?idxno=41385",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "우승상금만 10억5000만원, ‘하이브리드 킹’ 김홍택 등 현역 투어프로...",
+   "src": "sportsseoul.com",
+   "date": "2026-08-29",
+   "url": "https://m.sports.naver.com/golf/article/468/0001262811",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "[IS 용인] 노승희, KG 레이디스 2R서 비바람 뚫고 단독 선두…시즌 첫 승...",
    "src": "isplus.com",
    "date": "2026-08-28",
@@ -2736,6 +2766,13 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "[총수家] 젠슨 황 엔비디아 CEO ④ㅣ AI 생태계 판 키우는 중…투자·칩...",
+   "src": "cbci.co.kr",
+   "date": "2026-08-29",
+   "url": "https://www.cbci.co.kr/news/articleView.html?idxno=602155",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "'혈관 시한폭탄' 이상지질혈증… 50세 이상 여성·청장년 남성 '경고등'",
    "src": "jhealthmedia.joins.com",
    "date": "2026-08-28",
@@ -2845,6 +2882,13 @@
    "src": "wkorea.com",
    "date": "2026-08-29",
    "url": "https://www.wkorea.com/2026/08/29/2026%eb%85%84-9%ec%9b%94-%eb%b3%84%ec%9e%90%eb%a6%ac-%ec%9a%b4%ec%84%b8/?utm_source=naver&utm_medium=partnership",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "인천공항주차대행 에어로드 정식주차장 믿고 안전함과 편리한 주차서비...",
+   "src": "hemophilia.co.kr",
+   "date": "2026-08-29",
+   "url": "http://www.hemophilia.co.kr/news/articleView.html?idxno=44116",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
@@ -3198,6 +3242,69 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "실손 의료쇼핑 막으니 손보사 손해율 확 줄었다…체감은 아직 이르다는...",
+   "src": "mk.co.kr",
+   "date": "2026-08-29",
+   "url": "https://n.news.naver.com/mnews/article/009/0005727505?sid=101",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "DB손보, 2030년 연결 주주환원 40%…DPS 매년 10% 이상 늘린다",
+   "src": "apnews.kr",
+   "date": "2026-08-29",
+   "url": "https://www.apnews.kr/news/articleView.html?idxno=3050810",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "‘쌍포’ 활약으로 기선 제압…男배구, 바레인 평가전 3-1 승리",
+   "src": "sedaily.com",
+   "date": "2026-08-29",
+   "url": "https://m.sports.naver.com/volleyball/article/011/0004656441",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[금주의 평택시] 평택에서 프로배구 KB손해보험 스타즈 홈경기 연다… ...",
+   "src": "joongboo.com",
+   "date": "2026-08-29",
+   "url": "https://www.joongboo.com/news/articleView.html?idxno=363734939",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "'천군만마' 임동혁-허수봉 31점 폭발! 韓 배구, 바레인과 평가전 3-1 승리",
+   "src": "nocutnews.co.kr",
+   "date": "2026-08-29",
+   "url": "https://m.sports.naver.com/volleyball/article/079/0004183766",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "'임동혁 18점·허수봉 13점' 한국 남자배구, 평가전서 바레인 3-1 제압",
+   "src": "maniareport.com",
+   "date": "2026-08-29",
+   "url": "https://m.sports.naver.com/volleyball/article/425/0000204832",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "'찰떡 호흡' 한국 남자배구, 바레인에 3-1 승리",
+   "src": "jnilbo.com",
+   "date": "2026-08-29",
+   "url": "https://www.jnilbo.com/news/articleView.html?idxno=90000060594",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "'임동혁·허수봉 31점 합작' 한국, 바레인과 평가전 1차전 3-1 승리",
+   "src": "dailysportshankook.co.kr",
+   "date": "2026-08-29",
+   "url": "https://www.dailysportshankook.co.kr/news/articleView.html?idxno=432985",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "3-1로 바레인 제압한 한국 남자배구, 임동혁 18점 폭발",
+   "src": "topstarnews.net",
+   "date": "2026-08-29",
+   "url": "https://www.topstarnews.net/news/articleView.html?idxno=16176895",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "DB손보, 2030년 주주환원율 40%로 높인다",
    "src": "g-enews.com",
    "date": "2026-08-28",
@@ -3307,6 +3414,20 @@
    "src": "newsis.com",
    "date": "2026-08-29",
    "url": "https://n.news.naver.com/mnews/article/003/0014155798?sid=101",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "경상지역 수해 복구에 삼성 30억원· SK 20억 지원",
+   "src": "autodaily.co.kr",
+   "date": "2026-08-29",
+   "url": "https://www.autodaily.co.kr/news/articleView.html?idxno=546960",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "재계, 남부 수해 복구에 100억 지원… 성금 넘어 현장 지원 총동원",
+   "src": "newscj.com",
+   "date": "2026-08-29",
+   "url": "https://www.newscj.com/news/articleView.html?idxno=3428641",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
@@ -3454,6 +3575,27 @@
    "src": "newsclaim.co.kr",
    "date": "2026-08-29",
    "url": "https://www.newsclaim.co.kr/news/articleView.html?idxno=3073524",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "임동혁·허수봉 앞세운 한국 남자배구, 바레인에 3-1 승리",
+   "src": "yna.co.kr",
+   "date": "2026-08-29",
+   "url": "https://m.sports.naver.com/volleyball/article/001/0016277932",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "아시아선수권 앞둔 남자배구, 바레인 상대 평가전 첫 경기 3-1 승리",
+   "src": "newsis.com",
+   "date": "2026-08-29",
+   "url": "https://m.sports.naver.com/volleyball/article/003/0014156137",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[현장리포트] '허수봉 대표팀 복귀한' 한국, 아시아선수권 앞둔 평가전...",
+   "src": "thesportstimes.co.kr",
+   "date": "2026-08-29",
+   "url": "https://m.sports.naver.com/volleyball/article/472/0000041341",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
