@@ -46,6 +46,7 @@ const plan=JSON.parse(fs.readFileSync(path.join(ROOT,"data","adcopy","serp-candi
 if(plan.image_refresh_cadence!=="monthly")errors.push("월간 이미지 갱신 주기 누락");
 const archiveDir=path.join(ROOT,"data","adcopy","image-plans");
 const archives=fs.existsSync(archiveDir)?fs.readdirSync(archiveDir).filter(name=>name.endsWith(".json")).sort().map(name=>JSON.parse(fs.readFileSync(path.join(archiveDir,name),"utf8"))):[];
+const priorArchives=archives.filter(archive=>archive.planning_month!==plan.planning_month);
 for(const product of plan.products||[]){
   const rows=product.image_directions||[],sources=rows.map(row=>row.asset),distinct=[...new Set(sources)];
   if(rows.length!==4)errors.push(`${product.product_key}: 이미지 제안 ${rows.length}/4`);
@@ -64,7 +65,7 @@ for(const product of plan.products||[]){
   if(product.product_key==="golf"&&distinct.some(source=>!/(golf-|calculator-)/.test(path.basename(source))))errors.push("golf: 골프보험과 무관한 이미지 원본 포함");
   if(product.product_key==="cncr"&&distinct.some(source=>!/(health-|calculator-)/.test(path.basename(source))))errors.push("cncr: 암보험과 무관한 이미지 원본 포함");
   if(product.product_key==="chronic"&&distinct.some(source=>!/(health-|calculator-)/.test(path.basename(source))))errors.push("chronic: 유병자보험과 무관한 이미지 원본 포함");
-  const prior=[...archives].reverse().find(archive=>(archive.products||[]).some(row=>row.product_key===product.product_key));
+  const prior=[...priorArchives].reverse().find(archive=>(archive.products||[]).some(row=>row.product_key===product.product_key));
   const priorRow=(prior?.products||[]).find(row=>row.product_key===product.product_key),priorAssets=new Set((priorRow?.image_directions||[]).map(row=>row.asset));
   for(const row of rows)if(priorAssets.has(row.asset)&&row.generation_required!==true)errors.push(`${product.product_key}: 이전 원본을 신규 이미지처럼 재제안 ${row.asset}`);
   for(const source of distinct)if(!fs.existsSync(path.join(ROOT,source)))errors.push(`${product.product_key}: 제안 원본 누락 ${source}`);
