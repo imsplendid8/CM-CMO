@@ -84,7 +84,13 @@ for (const product of check.PRODUCTS) {
     if (brief.visuals.mid.length !== 3) throw new Error(`${product.name}: 중간 이미지 ${brief.visuals.mid.length}장`);
     const visualAssets = [brief.visuals.hero, ...brief.visuals.mid].map((row) => row.asset);
     if (new Set(visualAssets).size !== 4) throw new Error(`${product.name}: 대표·중간 이미지 원본 중복`);
-    if (visualAssets.some((asset) => !fs.existsSync(new URL(asset, root)))) {
+    // 이미지가 아직 생성되지 않은 슬롯은 빈 asset + generationRequired로 남긴다.
+    // 다른 보험종목 원본으로 채우는 것보다 운영자가 제작 큐에서 바로 확인할 수 있는
+    // 안전한 상태다. 실제 원본이 지정된 슬롯만 파일 존재를 검증한다.
+    if (visualAssets.some((asset, index) => !asset && ![brief.visuals.hero, ...brief.visuals.mid][index].generationRequired)) {
+      throw new Error(`${product.name}: 신규 이미지 슬롯에 생성 상태가 없음`);
+    }
+    if (visualAssets.some((asset) => asset && !fs.existsSync(new URL(asset, root)))) {
       throw new Error(`${product.name}: 이미지 파일 누락`);
     }
     if (!brief.visuals.rule.includes("이미지 내부 텍스트 없음") || brief.visuals.hero.textOverlay !== false) {
