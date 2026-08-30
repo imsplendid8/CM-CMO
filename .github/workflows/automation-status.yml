@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 concurrency:
   group: cm-cmo-data-writers   # 커밋 워크플로 공유 레인 → 수집이 끝난 상태를 안정적으로 판정(직렬화)
@@ -30,5 +31,39 @@ jobs:
         run: |
           echo "## 🔭 자동화 수집 상태 ($(TZ=Asia/Seoul date '+%F %H:%M') KST)" >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
+          python3 scripts/check_automation_health.py --json | tee automation-health.json >/dev/null
           python3 scripts/check_automation_health.py | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: 실패 이력 GitHub Issue 생성
+        if: always()
+        uses: actions/github-script@60a0d83039c74a4e8d3c7e3b5ba8f0c9f2c6e4a6 # v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'automation-health.json';
+            if (!fs.existsSync(path)) return;
+            const health = JSON.parse(fs.readFileSync(path, 'utf8'));
+            const failed = (health.items || []).filter(item => item.state && item.state !== 'healthy');
+            if (!failed.length) return;
+            const title = `자동화 실패 이력 · ${health.asof}`;
+            const body = [
+              `자동화 상태 점검에서 실패 항목이 감지되었습니다.`,
+              ``,
+              `- 기준 시각: ${health.asof} KST`,
+              `- 요약: healthy ${health.summary?.healthy ?? 0}, stale ${health.summary?.stale ?? 0}, missing ${health.summary?.missing ?? 0}, unknown ${health.summary?.unknown ?? 0}`,
+              ``,
+              `## 실패 항목`,
+              ...failed.map(item => `- ${item.name}: ${item.state}${item.date ? ` (${item.date})` : ""}`),
+              ``,
+              `## 워크플로`,
+              `- run_id: ${context.runId}`,
+              `- run_attempt: ${context.runAttempt}`,
+              `- workflow: ${context.workflow}`,
+            ].join('\n');
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['automation', 'failure', 'dashboard-summary']
+            });
