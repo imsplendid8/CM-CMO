@@ -335,11 +335,20 @@ def build_triggers(weather, travel, exit_tour=None, newreg=None):
     if newreg and newreg.get("count") is not None:
         count = newreg.get("count")
         if isinstance(count, (int, float)) and count >= 1000:
-            trg["driver_newreg"] = {
-                "level": "high",
-                "note": f"자동차 신규등록({newreg.get('period','')}) 수치 {count} → 운전자보험 수요 점검",
-                "basis": newreg.get("basis", "신규등록정보 서비스"),
-            }
+            note = f"자동차 신규등록({newreg.get('period','')}) 수치 {count} → 운전자보험 수요 점검"
+            if "driver" in trg and isinstance(trg["driver"], dict):
+                prev = str(trg["driver"].get("note") or "").strip()
+                trg["driver"]["note"] = prev + (" / " if prev else "") + note
+                trg["driver"].setdefault("basis", [])
+                if not isinstance(trg["driver"]["basis"], list):
+                    trg["driver"]["basis"] = [str(trg["driver"]["basis"])]
+                trg["driver"]["basis"].append(newreg.get("basis", "신규등록정보 서비스"))
+            else:
+                trg["driver"] = {
+                    "level": "high",
+                    "note": note,
+                    "basis": [newreg.get("basis", "신규등록정보 서비스")],
+                }
     return trg
 
 def sample():
