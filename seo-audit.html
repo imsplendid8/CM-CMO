@@ -1157,6 +1157,12 @@ function renderIntel(){
           </div>
           <div><label>도메인 필터</label><select id="intelDomain"><option value="">전체 도메인</option>${onlyDomains.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join("")}</select></div>
           <div><label>검색</label><input id="intelQuery" placeholder="query / title / url / reason 검색"></div>
+          <div><label>상태 필터</label><select id="intelState">
+            <option value="">전체</option>
+            <option value="active">활성만</option>
+            <option value="review">리뷰만</option>
+            <option value="ended">제외만</option>
+          </select></div>
           <label style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--ink-2)"><input id="intelHideEnded" type="checkbox" checked>종료된 이벤트·만료 상품 숨김</label>
         </div>
         <div class="intel-note">
@@ -1189,6 +1195,24 @@ function renderIntel(){
             <div style="font-size:12px;font-weight:800;color:var(--ink-2)">${esc(item.label)}</div>
             <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:8px">${item.empty?'<span class="intel-pill warn">없음</span>':item.list.map(x=>`<span class="intel-pill active">${esc(x)}</span>`).join("")}</div>
           </div>`).join("")}
+        </div>
+        <div class="intel-grid" style="margin-bottom:12px">
+          <div class="intel-card" style="padding:12px">
+            <h3 style="margin:0 0 8px">이번 달 새 쿼리</h3>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              ${(SEO_INTEL_DATA.monthly_diff?.new_queries||[]).length
+                ? SEO_INTEL_DATA.monthly_diff.new_queries.slice(0,10).map(x=>`<span class="intel-pill active">${esc(x)}</span>`).join("")
+                : '<span class="intel-pill warn">신규 쿼리 없음</span>'}
+            </div>
+          </div>
+          <div class="intel-card" style="padding:12px">
+            <h3 style="margin:0 0 8px">이번 달 제외 쿼리</h3>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              ${(SEO_INTEL_DATA.monthly_diff?.dropped_queries||[]).length
+                ? SEO_INTEL_DATA.monthly_diff.dropped_queries.slice(0,10).map(x=>`<span class="intel-pill ended">${esc(x)}</span>`).join("")
+                : '<span class="intel-pill warn">이탈 쿼리 없음</span>'}
+            </div>
+          </div>
         </div>
         <div class="intel-note" style="margin-bottom:12px">활성 관측만 ${hideEnded?"표시":"전체 표시"} 중입니다. 현재 필터 결과: ${filtered.length}행</div>
         <div class="intel-grid" style="margin-bottom:12px">
@@ -1265,7 +1289,7 @@ function renderIntel(){
   });
   $("#intelDomain").addEventListener("change",renderIntel);
   $("#intelQuery").addEventListener("input",renderIntel);
-  $("#intelState")?.addEventListener("change",renderIntel);
+  $("#intelState").addEventListener("change",renderIntel);
   $("#intelHideEnded").addEventListener("change",renderIntel);
 }
 function parseIntelJson(raw){
