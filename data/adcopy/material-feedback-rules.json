@@ -1,7 +1,7 @@
 {
   "_comment": "소재제작소 Admin에서 축적한 반려 사유를 생성 규칙으로 반영하기 위한 공개 가능한 규칙 파일. 원문 피드백·성과·사용자 정보는 저장하지 않는다.",
-  "schema_version": 1,
-  "updated_at": "2026-08-29",
+  "schema_version": 2,
+  "updated_at": "2026-08-31",
   "source": "operator_review_lab_seed_rules",
   "copy_replacements": [
     {
@@ -23,7 +23,34 @@
       "pattern": "짧은 보장 나열 대신",
       "replacement": "검색 결과에서 놓치기 쉬운",
       "reason_code": "ai_template_tone"
+    },
+    {
+      "pattern": "살펴보세요",
+      "replacement": "확인",
+      "reason_code": "unusable_search_ad_tone"
+    },
+    {
+      "pattern": "대조해 보세요",
+      "replacement": "비교",
+      "reason_code": "unusable_search_ad_tone"
+    },
+    {
+      "pattern": "확인해 보세요",
+      "replacement": "확인",
+      "reason_code": "unusable_search_ad_tone"
+    },
+    {
+      "pattern": "나란히 살펴보세요",
+      "replacement": "나란히 비교",
+      "reason_code": "unusable_search_ad_tone"
     }
+  ],
+  "retired_patterns": [
+    "generic_insurance_tone",
+    "ai_template_tone",
+    "season_mismatch",
+    "product_scene_mismatch",
+    "serp_gap_not_reflected"
   ],
   "blocked_phrases": [
     "갑작스러운 사고에 대비하세요",

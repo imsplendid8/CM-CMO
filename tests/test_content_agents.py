@@ -148,6 +148,25 @@ class TestSerpCopyAgent(unittest.TestCase):
             self.assertNotIn(stale, text)
         self.assertEqual(len({row["description"][-8:] for row in rows}), 3)
 
+    def test_refresh_version_removes_old_operator_tone(self):
+        agent = module("serp_copy_agent")
+        products = {"products": [{"key": "driver", "name": "운전자보험", "serpKw": "운전자보험",
+                    "core": ["운전자보험"], "special": ["벌금", "변호사선임", "교통사고"]}]}
+        analysis = {"products": {"driver": {"observed_ads": [
+            {"date": "2026-08-24", "brand": "A", "title": "운전자보험 보험료", "desc": "보험료 계산"}]}}}
+        result = agent.generate(products, analysis, {}, planning_month="2026-08")
+        self.assertEqual(result["material_rules_version"], 2)
+        self.assertEqual(result["refresh_scope"], "all_generated_materials")
+        serialized = json.dumps(result, ensure_ascii=False)
+        for stale in ("살펴보세요", "대조해 보세요", "확인해 보세요", "보장하세요", "풍수재을", "홀인원와"):
+            self.assertNotIn(stale, serialized)
+
+    def test_non_home_image_pools_never_fill_with_generic_calculator(self):
+        agent = module("serp_copy_agent")
+        for product_key, pool in agent.IMAGE_POOLS.items():
+            if product_key != "home":
+                self.assertNotIn("calculator-animation-v3.png", pool)
+
     def test_same_annual_event_changes_with_year_and_serp_signature(self):
         agent = module("serp_copy_agent")
         products = {"products": [{"key": "driver", "name": "운전자보험", "serpKw": "운전자보험",

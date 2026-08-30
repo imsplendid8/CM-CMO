@@ -81,18 +81,18 @@ ASSET_SCENES = {
 
 IMAGE_POOLS = {
     "home": ["calculator-animation-v3.png"],
-    "hrmf": ["home-fire-animation-v3.png", "home-leak-animation-v3.png", "home-weather-3d.png", "calculator-animation-v3.png"],
-    "golf": ["golf-hole-animation-v3.png", "golf-holeinone-3d.png", "golf-tee-bag-animation-v1.png", "golf-checklist-animation-v1.png", "calculator-animation-v3.png"],
-    "cncr": ["cancer-consult-animation-v1.png", "health-check-animation-v3.png", "health-review-3d.png", "calculator-animation-v3.png"],
-    "dntl": ["dental-consult-animation-v3.png", "dental-consult-3d.png", "dental-model-animation-v1.png", "calculator-animation-v3.png"],
+    "hrmf": ["home-fire-animation-v3.png", "home-leak-animation-v3.png", "home-weather-3d.png"],
+    "golf": ["golf-hole-animation-v3.png", "golf-holeinone-3d.png", "golf-tee-bag-animation-v1.png", "golf-checklist-animation-v1.png"],
+    "cncr": ["cancer-consult-animation-v1.png", "health-check-animation-v3.png", "health-review-3d.png"],
+    "dntl": ["dental-consult-animation-v3.png", "dental-consult-3d.png", "dental-model-animation-v1.png"],
     "driver": ["driver-safe-animation-v3.png", "driver-traffic-3d.png", "driver-schoolzone-animation-v4.png", "driver-accident-animation-v4.png", "driver-rain-animation-v4.png"],
-    "woman": ["woman-health-planner-animation-v1.png", "woman-clinic-lounge-animation-v1.png", "woman-wellness-desk-animation-v1.png", "calculator-animation-v3.png"],
+    "woman": ["woman-health-planner-animation-v1.png", "woman-clinic-lounge-animation-v1.png", "woman-wellness-desk-animation-v1.png"],
     "birth": ["birth-nursery-prep-animation-v1.png", "birth-planner-animation-v1.png", "family-baby-animation-v3.png", "family-pregnancy-3d.png"],
-    "overseas": ["travel-airport-animation-v3.png", "travel-airport-3d.png", "student-campus-animation-v3.png", "calculator-animation-v3.png"],
-    "overseaslong": ["student-campus-animation-v3.png", "student-overseas-3d.png", "travel-airport-animation-v3.png", "calculator-animation-v3.png"],
-    "holeinone": ["golf-hole-animation-v3.png", "golf-holeinone-3d.png", "golf-tee-bag-animation-v1.png", "golf-checklist-animation-v1.png", "calculator-animation-v3.png"],
-    "event": ["event-safety-animation-v3.png", "event-safety-3d.png", "event-venue-flow-animation-v1.png", "calculator-animation-v3.png"],
-    "chronic": ["chronic-health-record-animation-v1.png", "health-check-animation-v3.png", "health-review-3d.png", "calculator-animation-v3.png"],
+    "overseas": ["travel-airport-animation-v3.png", "travel-airport-3d.png", "student-campus-animation-v3.png"],
+    "overseaslong": ["student-campus-animation-v3.png", "student-overseas-3d.png", "travel-airport-animation-v3.png"],
+    "holeinone": ["golf-hole-animation-v3.png", "golf-holeinone-3d.png", "golf-tee-bag-animation-v1.png", "golf-checklist-animation-v1.png"],
+    "event": ["event-safety-animation-v3.png", "event-safety-3d.png", "event-venue-flow-animation-v1.png"],
+    "chronic": ["chronic-health-record-animation-v1.png", "health-check-animation-v3.png", "health-review-3d.png"],
 }
 
 COPY_AXES = (
@@ -106,6 +106,7 @@ AXIS_LABELS = {
 }
 MOVING_HOLIDAY_TERMS = ("추석", "설 연휴", "명절")
 STYLE_FAMILY = "premium_3d_animation_v4"
+MATERIAL_RULES_VERSION = 2
 
 
 def read(rel, default, root=ROOT):
@@ -392,41 +393,52 @@ def _copy_for_axis(axis, product, keyword, angle, other, season):
     if axis == "seasonal_scene" and event:
         return {
             "strategy": "시즌 장면형",
-            "title": _fit([f"{event} {name}", f"{event} 전 {name}", f"{name} 시즌 체크"], 4, 15),
-            "description": _fit([f"{event} 전 {angle}·{other} 항목과 보험료를 살펴보세요.",
-                                  f"{_josa(event, '을', '를')} 앞두고 {name}의 {angle} 항목을 읽어보세요."], 20, 45),
-            "additional_description": _fit([f"{event} 전 {angle} 선택 여부와 최종 보험료를 대조해 보세요."], 2, 45),
-            "promo": _fit([f"{event} 전 점검", "시즌 보험료 계산"], 2, 14),
+            "title": _fit([f"{event} 전 {name} 체크", f"{event} {name} 선택 기준", f"{name} 시즌 항목"], 4, 15),
+            "description": _fit([f"{event} 전 {angle}·{other}의 적용 장면과 선택 기준 정리",
+                                  f"{_josa(event, '을', '를')} 앞두고 {name}의 {angle} 항목을 읽는 순서"], 20, 45),
+            "additional_description": _fit([f"{event} 전 {angle} 선택 여부와 보험기간 조건 비교",
+                                             f"{name} 설계 화면의 {angle} 항목 확인"], 2, 45),
+            "promo": _fit([f"{event} 전 점검", "시즌 기준 보기", "항목 비교"], 2, 14),
             "sublinks": ["보험료계산", "선택항목", "가입조건", "상품안내"],
         }
     if axis == "search_action":
         return {"strategy": "검색 행동형", "title": _fit([f"{keyword} 보험료 계산", f"{name} 보험료 보기"], 4, 15),
-                "description": _fit([f"{name} 보험료 계산 전 {angle}·{other} 선택 항목을 비교해 보세요."], 20, 45),
-                "additional_description": _fit([f"{angle} 선택 여부와 최종 보험료를 설계 화면에서 대조해 보세요."], 2, 45),
-                "promo": _fit(["내 보험료 계산", "선택항목 보기"], 2, 14),
+                "description": _fit([f"{name} 보험료 계산 전 {angle}·{other} 선택 기준 정리",
+                                     f"{name} 계산 화면의 {angle} 항목 비교"], 20, 45),
+                "additional_description": _fit([f"{angle} 포함 여부와 보험기간을 한 화면에서 확인",
+                                                 f"{angle} 선택 기준 먼저 기록"], 2, 45),
+                "promo": _fit(["보험료 계산", "선택 기준 보기"], 2, 14),
                 "sublinks": ["보험료계산", "선택항목", "가입조건", "상품안내"]}
     if axis == "decision_detail":
         return {"strategy": "선택 기준형", "title": _fit([f"{angle} 조건 읽기", f"{name} 선택 기준"], 4, 15),
-                "description": _fit([f"{angle}의 지급사유·제외 조건·적용 기간을 순서대로 읽어보세요."], 20, 45),
-                "additional_description": _fit([f"{angle} 관련 항목은 한도와 적용 시점까지 펼쳐서 살펴보세요."], 2, 45),
-                "promo": _fit(["조건 자세히 보기", "제외조건 읽기"], 2, 14),
+                "description": _fit([f"{angle} 적용 대상과 제외 조건을 한 번에 읽는 기준",
+                                     f"{angle} 선택 전 확인할 기간·한도 항목"], 20, 45),
+                "additional_description": _fit([f"{angle} 관련 조건과 적용 시점을 함께 비교",
+                                                 f"{angle} 항목의 제외 조건부터 확인"], 2, 45),
+                "promo": _fit(["조건 비교", "제외 조건 보기"], 2, 14),
                 "sublinks": ["보장내용", "제외조건", "가입조건", "상품안내"]}
     if axis == "scope_compare":
         return {"strategy": "항목 비교형", "title": _fit([f"{angle}·{other} 비교", f"{name} 항목 비교"], 4, 15),
-                "description": _fit([f"{_josa(angle, '과', '와')} {other}, 적용 상황의 차이를 상품 안내에서 비교해 보세요."], 20, 45),
-                "additional_description": _fit(["두 항목의 지급사유와 보장하지 않는 경우를 나란히 읽어보세요."], 2, 45),
-                "promo": _fit(["항목별 비교", "조건 나란히 보기"], 2, 14),
+                "description": _fit([f"{_josa(angle, '과', '와')} {other} 적용 장면을 나누어 비교",
+                                     f"{_josa(angle, '과', '와')} {other}가 달라지는 조건 정리"], 20, 45),
+                "additional_description": _fit(["두 항목의 기간·제외 조건을 나란히 비교",
+                                                 "지급사유와 보장하지 않는 경우를 구분"], 2, 45),
+                "promo": _fit(["항목 비교", "조건 나누기"], 2, 14),
                 "sublinks": ["항목비교", "보장내용", "보험료계산", "가입안내"]}
     if axis == "official_path":
         return {"strategy": "공식 화면형", "title": _fit([f"한화손보 {name}", f"{name} 공식 설계"], 4, 15),
-                "description": _fit([f"{name} 상품 안내·보험료·청약 내용을 공식 화면에서 대조해 보세요."], 20, 45),
-                "additional_description": _fit(["선택한 항목과 보험기간, 납입 조건을 최종 화면에서 다시 읽어보세요."], 2, 45),
-                "promo": _fit(["공식 화면 설계", "보험료 계산"], 2, 14),
+                "description": _fit([f"{name} 상품 안내에서 선택 항목과 보험기간을 순서대로 확인",
+                                     f"설계 화면에 표시된 {angle} 조건을 기록"], 20, 45),
+                "additional_description": _fit(["선택 항목·납입 조건·보험기간을 한 번에 기록",
+                                                 f"최종 청약 전 {angle} 조건 다시 읽기"], 2, 45),
+                "promo": _fit(["설계 순서", "공식 안내"], 2, 14),
                 "sublinks": ["보험료계산", "상품안내", "가입조건", "청약확인"]}
     return {"strategy": "SERP 공백형", "title": _fit([f"{angle} 질문부터", f"{name} 놓친 질문"], 4, 15),
-            "description": _fit([f"{_josa(angle, '을', '를')} 검색한 뒤 놓치기 쉬운 {other} 조건까지 살펴보세요."], 20, 45),
-            "additional_description": _fit([f"짧은 보장 나열 대신 {angle}의 적용 조건부터 차근차근 읽어보세요."], 2, 45),
-            "promo": _fit(["놓친 조건 보기", "검색 다음 질문"], 2, 14),
+            "description": _fit([f"{_josa(angle, '을', '를')} 검색 후 놓치기 쉬운 {other} 조건까지 이어서 확인",
+                                 f"{name}에서 자주 빠지는 {angle} 기준 정리"], 20, 45),
+            "additional_description": _fit([f"{angle}의 적용 조건과 제외 항목을 먼저 확인",
+                                             "검색 결과와 공식 안내의 차이 메모"], 2, 45),
+            "promo": _fit(["질문 정리", "놓친 조건 보기"], 2, 14),
             "sublinks": ["핵심질문", "보장내용", "보험료계산", "가입안내"]}
 
 
@@ -500,9 +512,11 @@ def monthly_image_assets(product_key, planning_month, image_history=None):
     seed = year * 12 + month + sum(ord(char) for char in product_key)
     order = {asset: (index - seed) % len(pool) for index, asset in enumerate(pool)}
     ranked = sorted(pool, key=lambda asset: (last_used.get(asset, ""), order[asset], asset))
-    assets = []
+    # 상품별 원본이 4장보다 적으면 같은 이미지를 복제하지 않는다. 부족한 슬롯은
+    # 새 이미지 생성 대상으로 남겨 두어 소재제작소에서 실제 이미지가 반복 노출되지 않게 한다.
+    assets = ranked[:4]
     while len(assets) < 4:
-        assets.append(ranked[len(assets) % len(ranked)])
+        assets.append(None)
     return assets
 
 
@@ -526,27 +540,32 @@ def image_directions(product, angle, patterns, basis, planning_month, season, va
         scenes.append(f"{product['name']}의 {angle} 관련 생활 상황을 살펴보는 장면 {len(scenes) + 1}")
     rows, used_assets = [], set()
     for index, asset in enumerate(assets):
-        asset_name = Path(asset).name
-        asset_scene = ASSET_SCENES[asset]
+        asset_name = Path(asset).name if asset else ""
+        asset_scene = ASSET_SCENES.get(asset_name) if asset_name else None
+        if not asset_scene:
+            asset_scene = base_scenes[index % len(base_scenes)]
         scene = f"{event} 일정에 맞춰 {asset_scene}" if event and index == 0 else asset_scene
         reused_previous = asset_name in {Path(value).name for value in previous_assets}
-        repeated_this_set = asset_name in used_assets
+        repeated_this_set = bool(asset_name) and asset_name in used_assets
         rejected_reference = rejected_assets.get((product["key"], asset_name))
-        used_assets.add(asset_name)
+        if asset_name:
+            used_assets.add(asset_name)
         rows.append({
         "proposal_id": f"{product['key']}-{planning_month}-{variation['variation_key'][:6]}-{index + 1:02d}",
         "concept_id": _fingerprint({"product": product["key"], "month": planning_month,
                                     "scene": scene, "serp": variation["serp_signature"]}),
         "role": roles[index], "scene": scene,
         "reference_scene": asset_scene,
-        "asset": f"assets/insurance/{asset}",
+        "asset": f"assets/insurance/{asset}" if asset else "",
         "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
         "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
         "style_family": STYLE_FAMILY, "text_overlay": False,
         "refresh_cadence": "monthly", "planning_month": planning_month,
         "reused_from_previous_month": reused_previous,
         "repeated_reference_in_month": repeated_this_set,
-        "generation_required": reused_previous or repeated_this_set or bool(rejected_reference),
+        "generation_required": not asset or reused_previous or repeated_this_set or bool(rejected_reference),
+        "reference_only": not asset or reused_previous or repeated_this_set or bool(rejected_reference),
+        "refresh_action": "new_image_generation_required" if (not asset or reused_previous or repeated_this_set or rejected_reference) else "reuse_approved_asset",
         "generation_brief": f"{product['name']} 검색 맥락을 ‘{scene}’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
         "why": f"{basis} · {AXIS_LABELS[variation['primary_axis']]} · SERP {patterns[0][0] if patterns else '검색 행동'} 변화에서 장면 역할을 도출",
         "review_lab_feedback": {
@@ -569,11 +588,11 @@ def power_topics(product, keyword, angle, table_stakes, basis, planning_month, s
     saturated = "·".join(table_stakes[:2]) or "공통 보장 나열"
     specs = [
         ("serp_whitespace", f"{keyword} 검색 뒤 {_josa(angle, '을', '를')} 따져볼 질문", "검색 후 탐색", angle,
-         ["검색 결과에서 반복된 말", f"{angle}에서 빠지기 쉬운 조건", "보험료 계산에 넣을 항목", "최종 화면과 대조할 내용"]),
+         ["검색 결과에서 반복된 표현", f"{_josa(angle, '을', '를')} 기준에서 빠지기 쉬운 조건", "보험료 계산에 입력할 항목", "최종 화면에서 기록할 내용"]),
         ("decision_detail", f"{name} 보험료 전에 맞춰볼 세 가지 조건", "비교·의사결정", second,
          ["가입 목적과 기간 맞추기", f"{angle}·{second} 선택 항목 맞추기", "같은 조건으로 보험료 계산하기", "청약 화면에서 차이 찾기"]),
         ("scope_compare", f"{_josa(angle, '과', '와')} {second}, 함께 볼 때 달라지는 점", "항목 비교", angle,
-         [f"{angle}을 찾게 되는 생활 상황", f"{second}와 겹치지 않는 지점", "지급사유와 제외 조건 나란히 읽기", "선택 항목 기록하기"]),
+         [f"{_josa(angle, '을', '를')} 찾게 되는 생활 상황", f"{_josa(second, '과', '와')} 겹치지 않는 지점", "지급사유와 제외 조건 나란히 읽기", "선택 항목 기록하기"]),
         ("official_path", f"{name} 설계 화면을 끝까지 읽는 순서", "가입 흐름 탐색", second,
          ["상품 안내에서 질문 만들기", "설계 화면에서 선택 항목 찾기", "보험료 결과의 조건 읽기", "최종 청약 내용 대조하기"]),
         ("terms_navigation", f"{_josa(angle, '을', '를')} 약관 목차에서 빠르게 찾는 법", "약관 정보 탐색", angle,
@@ -586,7 +605,7 @@ def power_topics(product, keyword, angle, table_stakes, basis, planning_month, s
         seasonal_keyword = next((term for term in season.get("keywords") or [] if "보험" in term), keyword)
         specs.insert(0, (
             "seasonal_scene", f"{season['name']} {hook}, {name}", "시즌 의사결정", angle,
-            [f"{season['name']}에 달라지는 생활 동선", f"{angle}·{second}를 볼 질문",
+            [f"{season['name']}에 달라지는 생활 동선", f"{angle}·{second} 확인 질문",
              f"{saturated} 중심 검색 결과와 다른 관점", "일정 전 최종 설계 점검"],
             seasonal_keyword,
         ))
@@ -623,7 +642,7 @@ def power_topics(product, keyword, angle, table_stakes, basis, planning_month, s
             "intent": intent, "focus": focus,
             "angle": f"SERP의 ‘{saturated}’ 반복에서 벗어나 {AXIS_LABELS.get(pattern, '생활 질문')}으로 전개",
             "sections": safe_sections,
-            "faq": [f"{focus}을 볼 때 먼저 비교할 항목은 무엇인가요?", f"{name} 보험료 계산 조건은 어떻게 맞추나요?"],
+            "faq": [f"{_josa(focus, '을', '를')} 볼 때 먼저 비교할 항목은 무엇인가요?", f"{name} 보험료 계산 조건은 어떻게 맞추나요?"],
             "image_brief": f"{SCENES.get(product['key'], SCENES['home'])[(index-1) % 3]}. 텍스트·숫자·로고 없이 프리미엄 3D 애니메이션으로 표현.",
             "serp_basis": basis, "serp_signature": variation["serp_signature"],
             "variation_key": variation["variation_key"], "season_context": season,
@@ -723,12 +742,20 @@ def generate(products, analysis, volume, manifest=None, dom=None, planning_month
                 "source": (feedback_rules or {}).get("source"),
                 "updated_at": (feedback_rules or {}).get("updated_at"),
             },
+            "material_refresh": {
+                "rules_version": MATERIAL_RULES_VERSION,
+                "scope": "sa_powercontent_thumbnail",
+                "status": "regenerated_from_current_rules",
+            },
         })
     dates = [analysis.get("asof"), manifest.get("asof"), dom.get("asof"), volume.get("asof")]
     asof = _latest(*dates) or date.today().isoformat()
     return {
         "_comment": "월간 SERP 캡처·자동 DOM 패턴·검토 관측·검색량을 결합한 공통 소재 기획안. 경쟁사 원문은 자동 제안에 복사하지 않는다.",
         "schema_version": 3,
+        "material_rules_version": MATERIAL_RULES_VERSION,
+        "refresh_scope": "all_generated_materials",
+        "refresh_note": "기존 후보를 현재 SA·파워콘텐츠·썸네일 규칙으로 재생성",
         "asof": asof,
         "planning_month": planning_month or asof[:7],
         "cadence": "weekly_capture_monthly_material_plan",
