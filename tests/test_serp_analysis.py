@@ -68,6 +68,8 @@ class TestAnalyze(unittest.TestCase):
         self.assertIn("detected_angles", ad)
         self.assertIn("cta_terms", ad)
         self.assertIn("risk_flags", ad)
+        self.assertIn("landing", ad)
+        self.assertIn("price", ad)
         self.assertIn("monthly_diff", a)
 
     def test_empty_safe(self):
@@ -114,6 +116,10 @@ class TestRealData(unittest.TestCase):
         self.assertEqual(json.dumps(built, ensure_ascii=False, sort_keys=True),
                          json.dumps(committed, ensure_ascii=False, sort_keys=True),
                          "serp/ad_analysis.json 이 최신이 아님 — `python3 scripts/serp_analysis.py` 재실행 필요")
+        self.assertEqual(built["schema_version"], 3)
+        for pk, row in built["products"].items():
+            self.assertIn("autocomplete", row)
+            self.assertIn("dom", row)
 
 
 if __name__ == "__main__":

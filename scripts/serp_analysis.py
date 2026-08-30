@@ -6,6 +6,9 @@
 '경쟁 공통 소구(회피/차별 대상)·프로모션 유형·가격 신호·CTA 패턴'을 산출한다. 규칙 기반·결정론.
 serp-tool(소재분석)과 adcopy-tool(문구 근거)이 이 산출물을 공유한다.
 
+자동완성(data/keyword-autocomplete.json)과 DOM 리뷰 큐(serp/dom_observations.json)를 함께 읽어
+이미지 외부의 텍스트 신호(새 유입어, 제외어, 질문형 롱테일, 도메인 변화)를 보강한다.
+
 전부 샘플·공개 데이터. 순수 함수(analyze)는 주입된 리스트로 동작해 테스트가 fixture를 넣을 수 있다.
 표준 라이브러리만 사용.
 """
@@ -17,6 +20,8 @@ from datetime import datetime, timedelta
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = "serp/ad_observations.json"
+AUTOCOMPLETE = "data/keyword-autocomplete.json"
+DOM_SRC = "serp/dom_observations.json"
 OUT = "serp/ad_analysis.json"
 DEFAULT_WINDOW_DAYS = 35   # 최신 관측일 기준 lookback(주간 캡쳐 ~5주) — 중단된 프로모션·과거 광고주 제외
 
@@ -34,6 +39,18 @@ def _as_list(value):
     return [str(value).strip()] if str(value).strip() else []
 
 
+def _dedupe_keep_order(items):
+    seen = set()
+    out = []
+    for item in items or []:
+        value = str(item).strip()
+        if not value or value in seen:
+            continue
+        seen.add(value)
+        out.append(value)
+    return out
+
+
 def _extensions(o):
     ext = o.get("extensions") or {}
     return {
@@ -41,6 +58,63 @@ def _extensions(o):
         "additional_descriptions": _as_list(ext.get("additional_descriptions") or o.get("additional_descriptions")),
         "promotions": _as_list(ext.get("promotions") or o.get("promotion") or o.get("promo")),
         "sitelinks": _as_list(ext.get("sitelinks") or o.get("sitelinks")),
+    }
+
+
+def _load_json(root, rel):
+    try:
+        with open(os.path.join(root, rel), encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return {}
+
+
+def _autocomplete_signal(product_key, autocomplete):
+    prod = ((autocomplete or {}).get("products") or {}).get(product_key) or {}
+    suggestions = prod.get("suggestions") or []
+    naver_visible, google_longtail, new_terms, exclude_terms = [], [], [], []
+    for row in suggestions:
+        term = str(row.get("keyword") or "").strip()
+        if not term:
+            continue
+        platform = str(row.get("source_platform") or "").strip().lower()
+        if platform == "naver":
+            naver_visible.append(term)
+        elif platform == "google":
+            google_longtail.append(term)
+        if row.get("isNew"):
+            new_terms.append(term)
+        if str(row.get("registration") or "") == "exclude":
+            exclude_terms.append(term)
+    return {
+        "source": autocomplete.get("source", "") if isinstance(autocomplete, dict) else "",
+        "asof": autocomplete.get("asof", "") if isinstance(autocomplete, dict) else "",
+        "month": autocomplete.get("month", "") if isinstance(autocomplete, dict) else "",
+        "naver_visible": _dedupe_keep_order(naver_visible),
+        "google_longtail": _dedupe_keep_order(google_longtail),
+        "new_terms": _dedupe_keep_order(new_terms),
+        "exclude_terms": _dedupe_keep_order(exclude_terms),
+        "top_terms": _dedupe_keep_order([*(naver_visible[:10]), *(google_longtail[:10])]),
+    }
+
+
+def _dom_signal(product_key, dom_review):
+    obs = []
+    for row in (dom_review or {}).get("observations") or []:
+        if str(row.get("product") or "") != product_key:
+            continue
+        obs.append({
+            "keyword": str(row.get("keyword") or "").strip(),
+            "domain": str(row.get("domain") or row.get("host") or row.get("landing") or "").strip(),
+            "kind": str(row.get("kind") or row.get("type") or "review_queue").strip(),
+            "status": str(row.get("status") or row.get("decision") or "needs_review").strip(),
+            "note": str(row.get("note") or row.get("why") or "").strip(),
+        })
+    return {
+        "source": dom_review.get("source", "") if isinstance(dom_review, dict) else "",
+        "asof": dom_review.get("asof", "") if isinstance(dom_review, dict) else "",
+        "observations": obs,
+        "domains": _dedupe_keep_order([row["domain"] for row in obs if row["domain"]]),
     }
 
 
@@ -155,6 +229,8 @@ def analyze(observations, window_days=DEFAULT_WINDOW_DAYS):
             "detected_angles": _as_list(o.get("covers")),
             "cta_terms": _cta_terms(o),
             "risk_flags": _risk_flags(o),
+            "landing": str(o.get("landing") or "").strip(),
+            "price": str(o.get("price") or "").strip(),
         } for o in obs), key=lambda x: (x["date"], -(x["rank"] or 999), x["brand"]), reverse=True)
         dated = [o["date"] for o in observed_ads if o["date"]]
         out[pk] = {
@@ -165,6 +241,8 @@ def analyze(observations, window_days=DEFAULT_WINDOW_DAYS):
             "promos": _rank(promos),
             "cta": _rank(ctas),
             "prices": sorted(set(prices)),
+            "autocomplete": {},
+            "dom": {},
             # 공개 SERP 원문은 비교·회피 근거로만 UI에 노출한다. 우리 문구 생성기에 복사하지 않는다.
             "latest_date": max(dated) if dated else "",
             "observed_ads": observed_ads,
@@ -181,15 +259,21 @@ def load(root=ROOT):
 def build(root=ROOT, window_days=DEFAULT_WINDOW_DAYS):
     data = load(root)
     obs = data.get("observations", [])
+    autocomplete = _load_json(root, AUTOCOMPLETE)
+    dom_review = _load_json(root, DOM_SRC)
     cutoff = window_cutoff(obs, window_days)
+    products = analyze(obs, window_days)
+    for pk, row in products.items():
+        row["autocomplete"] = _autocomplete_signal(pk, autocomplete)
+        row["dom"] = _dom_signal(pk, dom_review)
     result = {
         "_comment": "serp/ad_observations.json 관측 소재의 상품별 분석(규칙 기반·결정론·최신 lookback 창). serp_analysis.py가 생성.",
-        "schema_version": 2,
-        "required_observation_fields": ["product", "keyword", "date", "device", "rank", "brand", "title", "description", "extensions", "detected_angles", "cta_terms", "risk_flags"],
+        "schema_version": 3,
+        "required_observation_fields": ["product", "keyword", "date", "device", "rank", "brand", "title", "description", "extensions", "detected_angles", "cta_terms", "risk_flags", "landing", "price"],
         "asof": data.get("asof", ""),
         "window_days": window_days,
         "since": cutoff.isoformat() if cutoff else None,
-        "products": analyze(obs, window_days),
+        "products": products,
     }
     return result
 
