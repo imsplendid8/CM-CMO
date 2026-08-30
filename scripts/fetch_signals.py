@@ -6,7 +6,8 @@
   {
     "asof": "2026-07-23", "source": "data.go.kr" | "sample",
     "weather": {"active": ["호우", ...]},
-    "travel":  {"overseas_ratio": 88.0, "avg": 61.0, "period": "2026-07-01"},  # 여행자보험 검색수요(데이터랩) + 출입국관광통계
+    "travel":  {"overseas_ratio": 88.0, "avg": 61.0, "period": "2026-07-01"},  # 여행자보험 검색수요(데이터랩)
+    "newreg":  {"count": 12345, "period": "2026-07", "mom": 4.2},  # 자동차 신규등록정보(통계누리)
     "triggers": { "hrmf": {"level":"high","note":"호우특보 발효 → 누수·침수 담보 수요"}, ... }
   }
 
@@ -14,6 +15,7 @@
 - 이 샌드박스는 외부망 차단 → 실제 호출은 GitHub Actions(signals.yml)에서. 로컬 미리보기는 --sample.
 - 키: 환경변수 DATA_GO_KR_KEY (data.go.kr 마이페이지 > 인증키. 하나로 여러 서비스 사용).
 - 관광 출입국 통계는 환경변수 TOUR_API_URL / TOUR_API_KEY 로 연결한다.
+- 자동차 신규등록정보는 환경변수 CAR_NEWREG_API_URL / CAR_NEWREG_KEY / CAR_NEWREG_FORM_ID / CAR_NEWREG_STYLE_NUM 로 연결한다.
 
 엔드포인트는 상수로 분리 — 첫 실행에서 응답 스키마에 맞춰 PARSE 부분만 조정하면 됩니다.
 """
@@ -34,6 +36,14 @@ TOUR_API_START_DT = os.environ.get("TOUR_API_START_DT", "").strip()
 TOUR_API_END_DT = os.environ.get("TOUR_API_END_DT", "").strip()
 TOUR_API_PAGE_NO = os.environ.get("TOUR_API_PAGE_NO", "1").strip()
 TOUR_API_NUM_OF_ROWS = os.environ.get("TOUR_API_NUM_OF_ROWS", "10").strip()
+CAR_NEWREG_API_URL = os.environ.get("CAR_NEWREG_API_URL", "http://stat.molit.go.kr/portal/openapi/service/rest/getList.do").strip()
+CAR_NEWREG_KEY = os.environ.get("CAR_NEWREG_KEY", "").strip()
+CAR_NEWREG_FORM_ID = os.environ.get("CAR_NEWREG_FORM_ID", "").strip()
+CAR_NEWREG_STYLE_NUM = os.environ.get("CAR_NEWREG_STYLE_NUM", "").strip()
+CAR_NEWREG_START_DT = os.environ.get("CAR_NEWREG_START_DT", "").strip()
+CAR_NEWREG_END_DT = os.environ.get("CAR_NEWREG_END_DT", "").strip()
+CAR_NEWREG_PAGE_NO = os.environ.get("CAR_NEWREG_PAGE_NO", "1").strip()
+CAR_NEWREG_NUM_OF_ROWS = os.environ.get("CAR_NEWREG_NUM_OF_ROWS", "100").strip()
 TODAY = datetime.date.today().isoformat()
 
 # ── 엔드포인트 ─────────────────────────────
@@ -183,7 +193,119 @@ def fetch_tour_exit():
     except Exception as e:
         return {"outbound_count": None, "error": str(e)[:140], "source": "tourism-api"}
 
-def build_triggers(weather, travel, exit_tour=None):
+def _looks_like_number(s):
+    if s is None:
+        return False
+    text = str(s).strip().replace(",", "")
+    if not text:
+        return False
+    try:
+        float(text)
+        return True
+    except Exception:
+        return False
+
+def _month_int(ym):
+    text = str(ym or "").strip()
+    if len(text) >= 6 and text[:6].isdigit():
+        return text[:6]
+    return ""
+
+def _extract_molit_count(payload):
+    """stat.molit 공통 응답에서 카운트성 숫자를 가능한 한 보수적으로 추출한다."""
+    candidates = []
+
+    def walk(node, key_hint=""):
+        if isinstance(node, dict):
+            for k, v in node.items():
+                walk(v, str(k))
+        elif isinstance(node, list):
+            for item in node:
+                walk(item, key_hint)
+        else:
+            if not _looks_like_number(node):
+                return
+            key = key_hint.lower()
+            val = str(node).strip().replace(",", "")
+            # 날짜/시계열 값은 제외, 카운트처럼 보이는 필드만 수집
+            if any(tok in key for tok in ("date", "dt", "ym", "year", "month", "ymd", "time", "period")):
+                return
+            if key in ("status_code",):
+                return
+            candidates.append(float(val))
+
+    walk(payload)
+    if not candidates:
+        return None
+    # 보통 표 내부의 카운트는 숫자 필드 중 가장 의미 있는 값이므로 마지막/최대보다
+    # 전체 범위를 놓치지 않도록 첫 번째 큰 숫자 후보를 채택한다.
+    candidates.sort(reverse=True)
+    return candidates[0]
+
+def fetch_car_newreg():
+    """한국교통안전공단_자동차종합정보 신규등록정보 서비스.
+
+    승인된 통계누리 API를 바로 붙여서 운전자보험 수요 분석용 신호로 사용한다.
+    전체 등록대수/누적 통계는 나중에 같은 패턴으로 추가 가능하도록 구조를 맞춘다.
+    """
+    if not (CAR_NEWREG_API_URL and CAR_NEWREG_KEY and CAR_NEWREG_FORM_ID and CAR_NEWREG_STYLE_NUM):
+        return {
+            "count": None,
+            "period": None,
+            "mom": None,
+            "source": "stat.molit",
+            "error": "CAR_NEWREG_API_URL/CAR_NEWREG_KEY/CAR_NEWREG_FORM_ID/CAR_NEWREG_STYLE_NUM 필요",
+        }
+
+    params = {
+        "key": CAR_NEWREG_KEY,
+        "form_id": CAR_NEWREG_FORM_ID,
+        "style_num": CAR_NEWREG_STYLE_NUM,
+        "pageNo": CAR_NEWREG_PAGE_NO,
+        "numOfRows": CAR_NEWREG_NUM_OF_ROWS,
+    }
+    start_dt = CAR_NEWREG_START_DT or _month_int(datetime.date.today().replace(day=1).isoformat().replace("-", ""))
+    end_dt = CAR_NEWREG_END_DT or _month_int(TODAY)
+    if start_dt:
+        params["start_dt"] = start_dt
+    if end_dt:
+        params["end_dt"] = end_dt
+    url = CAR_NEWREG_API_URL + "?" + urllib.parse.urlencode(params, safe="%")
+    try:
+        with urllib.request.urlopen(url, timeout=20) as r:
+            raw = r.read()
+            text = raw.decode("utf-8", errors="ignore").strip()
+        if text.startswith("{") or text.startswith("["):
+            payload = json.loads(text)
+        else:
+            try:
+                root = ET.fromstring(text)
+                payload = {elem.tag: elem.text for elem in root.iter() if elem.text}
+            except Exception:
+                payload = {"raw": text[:2000]}
+        count = _extract_molit_count(payload)
+        if count is None:
+            return {
+                "count": None,
+                "period": end_dt or TODAY,
+                "mom": None,
+                "source": "stat.molit",
+                "error": "신규등록정보 응답에서 수치 파싱 실패",
+                "raw_hint": str(payload)[:260],
+            }
+        return {
+            "count": round(count, 1) if isinstance(count, float) else count,
+            "period": end_dt or TODAY,
+            "mom": None,
+            "source": "stat.molit",
+            "basis": "신규등록정보 서비스",
+        }
+    except urllib.error.HTTPError as e:
+        return {"count": None, "period": end_dt or TODAY, "mom": None, "source": "stat.molit", "error": f"HTTP {e.code}"}
+    except Exception as e:
+        return {"count": None, "period": end_dt or TODAY, "mom": None, "source": "stat.molit", "error": str(e)[:140]}
+
+def build_triggers(weather, travel, exit_tour=None, newreg=None):
     """상품별 실시간 수요 신호 레벨 산출(정성 규칙). 여러 특보가 동시 발효면 사유를 누적."""
     w = set(weather.get("active", []))
     trg = {}
@@ -210,14 +332,23 @@ def build_triggers(weather, travel, exit_tour=None):
                 "note": f"출입국관광통계({exit_tour.get('period','')}) 수치 {count} → 해외여행보험 수요 모니터링",
                 "basis": exit_tour.get("basis", "출입국관광통계 API"),
             }
+    if newreg and newreg.get("count") is not None:
+        count = newreg.get("count")
+        if isinstance(count, (int, float)) and count >= 1000:
+            trg["driver_newreg"] = {
+                "level": "high",
+                "note": f"자동차 신규등록({newreg.get('period','')}) 수치 {count} → 운전자보험 수요 점검",
+                "basis": newreg.get("basis", "신규등록정보 서비스"),
+            }
     return trg
 
 def sample():
     weather = {"active": ["호우", "폭염"]}
     travel = {"overseas_ratio": 88.0, "period": "2026-07-23", "avg": 61.0, "peak": 100.0, "basis": "최근 7일 평균 vs 90일"}
     exit_tour = {"outbound_count": 128.4, "period": "2026-07", "basis": "출입국관광통계 API"}
-    return {"asof": TODAY, "source": "sample", "weather": weather, "travel": travel, "exit_tour": exit_tour,
-            "triggers": build_triggers(weather, travel, exit_tour)}
+    newreg = {"count": 17422, "period": "2026-07", "basis": "신규등록정보 서비스"}
+    return {"asof": TODAY, "source": "sample", "weather": weather, "travel": travel, "exit_tour": exit_tour, "newreg": newreg,
+            "triggers": build_triggers(weather, travel, exit_tour, newreg)}
 
 def main():
     if "--sample" in sys.argv or not KEY:
@@ -225,9 +356,9 @@ def main():
         if not KEY and "--sample" not in sys.argv:
             data["note"] = "DATA_GO_KR_KEY 미설정 → 샘플. Actions/로컬에서 키 설정 시 실데이터."
     else:
-        weather, travel, exit_tour = fetch_weather(), fetch_travel(), fetch_tour_exit()
-        data = {"asof": TODAY, "source": "data.go.kr", "weather": weather, "travel": travel, "exit_tour": exit_tour,
-                "triggers": build_triggers(weather, travel, exit_tour)}
+        weather, travel, exit_tour, newreg = fetch_weather(), fetch_travel(), fetch_tour_exit(), fetch_car_newreg()
+        data = {"asof": TODAY, "source": "data.go.kr", "weather": weather, "travel": travel, "exit_tour": exit_tour, "newreg": newreg,
+                "triggers": build_triggers(weather, travel, exit_tour, newreg)}
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     atomic_json_write(OUT, data)
     print(f"✔ data/signals.json ({data['source']}) · 트리거 {len(data['triggers'])}개 · 특보 {data['weather'].get('active')}")

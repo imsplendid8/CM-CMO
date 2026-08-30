@@ -84,7 +84,10 @@ def compute_action_lines(products, main, seasonal, signals, now):
     """오늘 할 일(우선순위) 텍스트 목록 산출 — 번호 없이 반환(채널별로 번호 부여)."""
     m = now.month
     nm = m % 12 + 1  # 다음 달
-    name = lambda k: products.get(k, {}).get("name", k)
+    def name(k):
+        if k == "driver_newreg":
+            return "운전자보험"
+        return products.get(k, {}).get("name", k)
     actions = {}  # key -> (priority, text)   낮을수록 우선
 
     def put(key, pri, text):
