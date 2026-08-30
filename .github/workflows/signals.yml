@@ -1,6 +1,6 @@
 name: Demand Signals
 
-# 공공데이터(기상특보·공항여객)로 상품별 실시간 수요 신호 → data/signals.json
+# 공공데이터(기상특보·여행수요·출입국관광통계)로 상품별 실시간 수요 신호 → data/signals.json
 on:
   schedule:
     - cron: "30 21 * * *"   # 매일 06:30 KST (UTC 21:30)
@@ -26,6 +26,13 @@ jobs:
           DATA_GO_KR_KEY: ${{ secrets.DATA_GO_KR_KEY }}
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+          TOUR_API_URL: ${{ secrets.TOUR_API_URL }}
+          TOUR_API_KEY: ${{ secrets.TOUR_API_KEY }}
+          TOUR_API_FORMAT: ${{ secrets.TOUR_API_FORMAT }}
+          TOUR_API_START_DT: ${{ secrets.TOUR_API_START_DT }}
+          TOUR_API_END_DT: ${{ secrets.TOUR_API_END_DT }}
+          TOUR_API_PAGE_NO: ${{ secrets.TOUR_API_PAGE_NO }}
+          TOUR_API_NUM_OF_ROWS: ${{ secrets.TOUR_API_NUM_OF_ROWS }}
         run: python3 scripts/fetch_signals.py
       - name: Commit signals
         run: |
