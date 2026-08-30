@@ -31,9 +31,13 @@ input,select,textarea,button{font:inherit}input,select,textarea{width:100%;borde
 .mini-row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:#fff}
 .mini-row b{font-size:12px}
 .mini-row span{font-size:12px;color:var(--muted);font-weight:750}
-.layout{display:grid;grid-template-columns:1fr 360px;gap:16px}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.card{padding:16px;border-radius:20px;background:var(--paper);border:1px solid var(--line);box-shadow:0 10px 28px rgba(42,34,23,.05)}.card.reviewed{outline:2px solid rgba(24,121,78,.18)}
-.meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:9px}.pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;background:var(--soft);color:#5c5750;padding:5px 8px;font-size:11px;font-weight:850}.pill.sa{background:#eaf1ff;color:#244d9a}.pill.power{background:#f3edff;color:#5c3aa0}.pill.thumb{background:#fff0d6;color:#8b4d00}.pill.risk{background:#fdecec;color:var(--bad)}
-.card h3{font-size:17px;letter-spacing:-.03em;margin:0 0 8px}.copy{font-size:14px;line-height:1.65;color:#37332e;white-space:pre-wrap}.small{font-size:12px;color:var(--muted);line-height:1.6}.actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.actions button{font-size:12px;padding:8px 10px}.reviewbox{display:grid;gap:7px;margin-top:10px}.reviewbox textarea{min-height:58px;resize:vertical}
+.layout{display:grid;grid-template-columns:1fr 360px;gap:16px}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.card{padding:14px;border-radius:20px;background:var(--paper);border:1px solid var(--line);box-shadow:0 10px 28px rgba(42,34,23,.05)}.card.reviewed{outline:2px solid rgba(24,121,78,.18)}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;background:var(--soft);color:#5c5750;padding:5px 8px;font-size:11px;font-weight:850}.pill.sa{background:#eaf1ff;color:#244d9a}.pill.power{background:#f3edff;color:#5c3aa0}.pill.thumb{background:#fff0d6;color:#8b4d00}.pill.risk{background:#fdecec;color:var(--bad)}
+.thumb-preview{position:relative;display:flex;align-items:center;justify-content:center;aspect-ratio:1;border-radius:18px;background:linear-gradient(135deg,#fff8ef,#fff4e3);border:1px solid var(--line);overflow:hidden;margin-bottom:10px}
+.thumb-preview img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb-preview .empty-thumb{font-size:12px;color:var(--muted);font-weight:800;display:flex;align-items:center;justify-content:center;inset:0;position:absolute}
+.thumb-preview .thumb-label{position:absolute;left:10px;bottom:10px;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);border:1px solid rgba(0,0,0,.04);padding:5px 8px;border-radius:999px;font-size:10.5px;font-weight:850;color:#6a4b14;max-width:calc(100% - 20px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card h3{font-size:16px;letter-spacing:-.03em;margin:0 0 6px}.copy{font-size:13px;line-height:1.58;color:#37332e;white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}.small{font-size:12px;color:var(--muted);line-height:1.6}.actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.actions button{font-size:12px;padding:8px 10px}.reviewbox{display:grid;gap:7px;margin-top:10px}.reviewbox textarea{min-height:58px;resize:vertical}.details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}.details summary{cursor:pointer;font-size:12px;font-weight:850;color:var(--blue)}.details .detail-copy{margin-top:8px;font-size:12px;line-height:1.6;color:#534f48;white-space:pre-wrap}
 .side{padding:16px;position:sticky;top:88px;align-self:start}.side h2{font-size:16px;margin:0 0 10px}.side p{font-size:12px;color:var(--muted);line-height:1.65}.side pre{white-space:pre-wrap;word-break:break-all;background:#171717;color:#fff;border-radius:14px;padding:12px;max-height:280px;overflow:auto;font-size:11px}.side .stack{display:grid;gap:8px}
 .empty{padding:36px;text-align:center;color:var(--muted)}.toast{position:fixed;right:18px;bottom:18px;background:#171717;color:#fff;padding:12px 15px;border-radius:14px;box-shadow:0 15px 35px rgba(0,0,0,.2);opacity:0;transform:translateY(8px);transition:.2s}.toast.on{opacity:1;transform:none}
 @media(max-width:960px){.hero,.layout{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr 1fr}.stats{grid-template-columns:repeat(2,1fr)}.side{position:static}}
@@ -132,12 +136,12 @@ function normalize(data){
     }
     for(const row of product.power_content_topics||[]){
       const text=[row.title,row.intent,row.angle,(row.sections||[]).join("\n"),row.image_brief].filter(Boolean).join("\n");
-      rows.push({id:itemId("power_content",pk,row.id,text),channel:"power_content",productKey:pk,productName:name,title:row.title,text,meta:row.serp_basis||row.source,risk:row.review_lab_feedback?.blocked_phrase_hits||[]});
+      rows.push({id:itemId("power_content",pk,row.id,text),channel:"power_content",productKey:pk,productName:name,title:row.title,text,meta:row.serp_basis||row.source,risk:row.review_lab_feedback?.blocked_phrase_hits||[],body:(row.sections||[]).join(" · "),brief:row.image_brief||row.angle||"",preview:row.image_brief||row.angle||""});
     }
     for(const row of product.image_directions||[]){
       const text=[row.role,row.scene,row.composition,row.style,row.generation_brief].filter(Boolean).join("\n");
       const risk=[row.repeated_reference_in_month&&"같은 달 원본 반복",row.reused_from_previous_month&&"전월 원본 재사용",row.review_lab_feedback?.rejected_reference&&"이전 반려 원본"].filter(Boolean);
-      rows.push({id:itemId("thumbnail",pk,row.proposal_id,text),channel:"thumbnail",productKey:pk,productName:name,title:row.role||row.scene,text,meta:row.asset,risk,asset:row.asset});
+      rows.push({id:itemId("thumbnail",pk,row.proposal_id,text),channel:"thumbnail",productKey:pk,productName:name,title:row.role||row.scene,text,meta:row.asset,risk,asset:row.asset,scene:row.scene,brief:row.generation_brief,preview:row.asset});
     }
   }
   return rows;
@@ -197,12 +201,22 @@ function renderCards(){
   const items=filtered();
   $("cards").innerHTML=items.length?items.map(item=>{
     const r=reviews.get(item.id), cls=item.channel==="search_ad"?"sa":item.channel==="power_content"?"power":"thumb";
+    const preview=item.channel==="thumbnail"&&item.asset?`<div class="thumb-preview"><img src="${esc(item.asset)}" alt="${esc(item.title)} 미리보기"><div class="thumb-label">${esc(item.scene||item.title||"썸네일")}</div></div>`:
+      item.channel==="power_content"?`<div class="thumb-preview"><div class="empty-thumb">본문용 핵심 장면</div><div class="thumb-label">${esc((item.preview||item.brief||item.meta||"").slice(0,50) || "요약 없음")}</div></div>`:
+      item.channel==="search_ad"&&item.asset?`<div class="thumb-preview"><img src="${esc(item.asset)}" alt="${esc(item.title)} 미리보기"><div class="thumb-label">${esc(item.asset.split("/").pop()||item.title)}</div></div>`:'';
+    const bodyLines = [
+      item.channel==="search_ad" ? item.text.split("\n").filter(Boolean).slice(0,3).join("\n") :
+      item.channel==="power_content" ? [item.title,item.preview||item.brief||"",""].filter(Boolean).slice(0,2).join("\n") :
+      [item.title,item.scene||"",item.brief||""].filter(Boolean).join("\n")
+    ];
     return `<article class="card ${r?"reviewed":""}">
       <div class="meta"><span class="pill">${esc(item.productName)}</span><span class="pill ${cls}">${channelLabel[item.channel]}</span>${item.risk?.map(x=>`<span class="pill risk">${esc(x)}</span>`).join("")||""}</div>
+      ${preview}
       <h3>${esc(item.title)}</h3>
-      <div class="copy">${esc(item.text)}</div>
+      <div class="copy">${esc(bodyLines.join("\n"))}</div>
       ${item.meta?`<p class="small">${esc(item.meta)}</p>`:""}
       ${r?`<p class="small">최근 검수: ${esc(ModooMaterialFeedback.reasons[r.reason_code]||r.reason_code)} · ${esc(r.action)}</p>`:""}
+      <details class="details"><summary>원문 보기</summary><div class="detail-copy">${esc(item.text)}</div></details>
       <div class="reviewbox">
         <select data-reason="${esc(item.id)}">${Object.entries(ModooMaterialFeedback.reasons).map(([k,v])=>`<option value="${esc(k)}">${esc(v)}</option>`).join("")}</select>
         <textarea data-note="${esc(item.id)}" placeholder="수정 방향 또는 반려 사유 메모"></textarea>
