@@ -57,17 +57,19 @@ input,select,textarea,button{font:inherit}input,select,textarea{width:100%;borde
     </aside>
   </section>
 
-  <section class="panel toolbar">
-    <input id="q" placeholder="문구·상품·장면 검색">
-    <select id="product"></select>
-    <select id="channel">
+<section class="panel toolbar">
+  <input id="q" placeholder="문구·상품·장면 검색">
+  <select id="product"></select>
+  <select id="channel">
       <option value="">전체 유형</option>
       <option value="search_ad">SA 소재</option>
       <option value="power_content">파워콘텐츠</option>
       <option value="thumbnail">썸네일</option>
-    </select>
-    <button class="secondary" id="downloadBackup" type="button">백업 JSON</button>
-  </section>
+  </select>
+  <button class="secondary" id="downloadBackup" type="button">백업 JSON</button>
+  <button class="secondary" id="importBackup" type="button">복원 JSON</button>
+  <input id="backupFile" type="file" accept="application/json" hidden>
+</section>
 
   <section class="stats" id="stats"></section>
   <section class="summary">
@@ -79,6 +81,10 @@ input,select,textarea,button{font:inherit}input,select,textarea{width:100%;borde
       <h2 style="margin:0 0 10px;font-size:16px">상품별 반복 실패</h2>
       <div id="productSummary" class="mini-list"></div>
     </div>
+  </section>
+  <section class="panel" style="padding:14px;margin-bottom:14px">
+    <h2 style="margin:0 0 8px;font-size:16px">로컬 저장 상태</h2>
+    <div id="localState" class="small">아직 저장된 검수 기록이 없습니다.</div>
   </section>
 
   <section class="layout">
@@ -142,6 +148,13 @@ function renderStats(){
     ["사용 불가",a.rejected||0],
     ["심의 확인",a.compliance_review||0],
   ].map(([k,v])=>`<div class="panel stat"><b>${v}</b><span>${k}</span></div>`).join("");
+  const data=ModooMaterialFeedback.load();
+  $("localState").innerHTML=[
+    `schema_version <b>${esc(data.schema_version||1)}</b>`,
+    `updated_at <b>${esc(data.updated_at||"없음")}</b>`,
+    `records <b>${s.total}</b>`,
+    `backup-safe <b>${s.total? "예":"아직"}</b>`
+  ].join(" · ");
 }
 function renderSummary(){
   const s=ModooMaterialFeedback.stats();
@@ -202,6 +215,22 @@ async function init(){
 ["q","product","channel"].forEach(id=>$(id).addEventListener("input",renderCards));
 $("cards").addEventListener("click",e=>{const b=e.target.closest("button[data-act]"); if(b)saveReview(b.dataset.act,b.dataset.id)});
 $("downloadBackup").addEventListener("click",()=>ModooMaterialFeedback.download(ModooMaterialFeedback.load(),"material-review-backup.json"));
+$("importBackup").addEventListener("click",()=>$("backupFile").click());
+$("backupFile").addEventListener("change",async e=>{
+  const file=e.target.files&&e.target.files[0];
+  if(!file)return;
+  try{
+    const text=await file.text();
+    const parsed=JSON.parse(text);
+    const result=ModooMaterialFeedback.importBackup(parsed);
+    renderStats(); renderCards(); renderSummary();
+    toast(`복원 완료 · ${result.imported||0}건 반영`);
+  }catch(err){
+    toast("복원 실패 · JSON 형식을 확인하세요");
+  }finally{
+    e.target.value="";
+  }
+});
 $("exportRules").addEventListener("click",()=>{$("rulesPreview").textContent=JSON.stringify(ModooMaterialFeedback.exportRules(rules||{}),null,2);toast("규칙 JSON을 만들었습니다")});
 $("copyRules").addEventListener("click",async()=>{await navigator.clipboard.writeText($("rulesPreview").textContent);toast("클립보드에 복사했습니다")});
 $("clearReviews").addEventListener("click",()=>{if(confirm("이 브라우저의 소재 검수 기록을 비울까요?")){ModooMaterialFeedback.clear();renderStats();renderCards();renderSummary();toast("로컬 기록을 비웠습니다")}});

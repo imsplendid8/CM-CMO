@@ -24,6 +24,26 @@
     data.reviews = Array.isArray(data.reviews) ? data.reviews : [];
     return data;
   }
+  function normalizeReview(row) {
+    if (!row || typeof row !== "object") return null;
+    var item = {
+      id: row.id || "review-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7),
+      occurred_at: row.occurred_at || new Date().toISOString(),
+      tool: row.tool || "material-admin",
+      channel: row.channel || "unknown",
+      product_key: row.product_key || "",
+      product_name: row.product_name || "",
+      recommendation_id: row.recommendation_id || "",
+      action: ACTIONS.includes(row.action) ? row.action : "edit_requested",
+      reason_code: row.reason_code || "edit_requested",
+      reason_label: row.reason_label || REASONS[row.reason_code] || row.reason_code || REASONS.edit_requested,
+      text_fingerprint: row.text_fingerprint || fingerprint(row.text_preview || row.text || ""),
+      text_preview: normalizeText(row.text_preview || row.text || "").slice(0, 120),
+      asset: row.asset || "",
+      note: normalizeText(row.note),
+    };
+    return item;
+  }
   function save(data) {
     data.updated_at = new Date().toISOString();
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -43,27 +63,54 @@
   }
   function addReview(input) {
     var text = normalizeText(input.text);
-    var item = {
-      id: input.id || "review-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7),
-      occurred_at: new Date().toISOString(),
-      tool: input.tool || "material-admin",
-      channel: input.channel || "unknown",
-      product_key: input.product_key || "",
-      product_name: input.product_name || "",
-      recommendation_id: input.recommendation_id || "",
-      action: ACTIONS.includes(input.action) ? input.action : "edit_requested",
-      reason_code: input.reason_code || "edit_requested",
-      reason_label: REASONS[input.reason_code] || input.reason_code || REASONS.edit_requested,
+    var item = normalizeReview({
+      id: input.id,
+      occurred_at: input.occurred_at,
+      tool: input.tool,
+      channel: input.channel,
+      product_key: input.product_key,
+      product_name: input.product_name,
+      recommendation_id: input.recommendation_id,
+      action: input.action,
+      reason_code: input.reason_code,
+      reason_label: input.reason_label,
       text_fingerprint: input.text_fingerprint || fingerprint(text),
       text_preview: text.slice(0, 120),
       asset: input.asset || "",
-      note: normalizeText(input.note),
-    };
+      note: input.note,
+    });
     var data = load();
     data.reviews.unshift(item);
     data.reviews = data.reviews.slice(0, 500);
     save(data);
     return item;
+  }
+  function importBackup(payload) {
+    var incoming = payload && typeof payload === "object" ? payload : null;
+    if (!incoming) return { imported: 0, merged: 0, reason: "invalid_payload" };
+    var rows = Array.isArray(incoming.reviews) ? incoming.reviews : [];
+    var current = load();
+    var map = {};
+    current.reviews.forEach(function (row) {
+      if (row && row.id) map[row.id] = row;
+    });
+    var imported = 0, merged = 0;
+    rows.forEach(function (row) {
+      var item = normalizeReview(row);
+      if (!item) return;
+      imported += 1;
+      if (map[item.id]) {
+        map[item.id] = item;
+        merged += 1;
+      } else {
+        map[item.id] = item;
+      }
+    });
+    current.reviews = Object.keys(map).map(function (key) { return map[key]; })
+      .sort(function (a, b) { return String(b.occurred_at || "").localeCompare(String(a.occurred_at || "")); })
+      .slice(0, 500);
+    save(current);
+    return { imported: imported, merged: merged, total: current.reviews.length };
   }
   function clear() {
     localStorage.removeItem(STORAGE_KEY);
@@ -110,5 +157,7 @@
   window.ModooMaterialFeedback = Object.freeze({
     storageKey: STORAGE_KEY, reasons: REASONS, load: load, save: save, clear: clear,
     addReview: addReview, fingerprint: fingerprint, stats: stats, exportRules: exportRules, download: download,
+    importBackup: importBackup,
+    normalizeReview: normalizeReview,
   });
 }());
