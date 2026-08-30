@@ -25,6 +25,8 @@ if (byKeyword.get("운전자보험 저렴한곳")?.registration !== "recommended
 if (byKeyword.get("운전자보험 청구")?.registration !== "exclude") throw new Error("기존고객 의도 제외 실패");
 if (classifySuggestion("캐롯 운전자보험").registration !== "review") throw new Error("경쟁브랜드 검토 분류 실패");
 if (classifySuggestion("한화손보 다이렉트 자동차", { excluded: ["자동차보험"] }).registration !== "exclude") throw new Error("상품 제외어 차단 실패");
+if (!rows.some(row => row.keyword === "운전자보험비교사이트")) throw new Error("운전자보험 롱테일 확장 실패");
+if (!rows.some(row => row.keyword === "다이렉트 운전자보험비교사이트")) throw new Error("운전자보험 보조 롱테일 확장 실패");
 
 const html = fs.readFileSync(new URL("../keyword-tool.html", import.meta.url), "utf8");
 for (const marker of ["data/keyword-autocomplete.json", "네이버 자동완성", "선택 키워드 등록 CSV", "isNew"]) {
