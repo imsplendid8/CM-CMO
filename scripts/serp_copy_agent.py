@@ -654,7 +654,7 @@ def power_topics(product, keyword, angle, table_stakes, basis, planning_month, s
             "pattern": pattern, "message_axis": pattern, "title": fitted,
             "target_query": query_override[0] if query_override else (keyword if index != 2 else f"{name} {focus}"),
             "intent": intent, "focus": focus,
-            "angle": f"SERP의 ‘{saturated}’ 반복에서 벗어나 {AXIS_LABELS.get(pattern, '생활 질문')}으로 전개",
+            "angle": f"SERP의 ‘{saturated}’ 반복에서 벗어나 {_josa(AXIS_LABELS.get(pattern, '생활 질문'), '으로', '로')} 전개",
             "sections": safe_sections,
             "faq": [f"{_josa(focus, '을', '를')} 볼 때 먼저 비교할 항목은 무엇인가요?", f"{name} 보험료 계산 조건은 어떻게 맞추나요?"],
             "image_brief": f"{SCENES.get(product['key'], SCENES['home'])[(index-1) % 3]}. 텍스트·숫자·로고 없이 프리미엄 3D 애니메이션으로 표현.",
