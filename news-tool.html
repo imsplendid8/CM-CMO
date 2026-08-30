@@ -370,8 +370,13 @@ function newsPanel(p){
       <div class="nm-card-t">${esc(it.t)}</div>
       ${it.gist?`<div class="nm-card-g">${esc(HUMANIZE.light(it.gist))}</div>`:""}</a>`;}).join("");
   const sig=(SIGNALS.triggers||{})[p.key];
+  const exit=SIGNALS.exit_tour||{};
+  const exitBanner=(p.key==="overseas"&&exit&&exit.outbound_count!=null)
+    ?`<div class="sig-live">🛫 <b>출입국관광통계</b> ${esc(exit.period||SIGNALS.asof||"")} · 수치 ${esc(exit.outbound_count)} <span class="src">· ${esc(exit.basis||"관광 API")}</span></div>`
+    :"";
   const sigBanner=(sig&&sig.level==="high")?`<div class="sig-live">🔴 <b>실시간 수요 신호</b> ${esc(sig.note||"")} <span class="src">· 공공데이터 ${esc(SIGNALS.asof||"")}</span></div>`:"";
   const trgBox=trg.length?`<div class="nm-box nm-trg"><span class="lb">🔥 수요 트리거 <small>이 이벤트가 뜨면 검색·가입 급증 → 검색광고·콘텐츠 선제 대응</small></span>${sigBanner}
+    ${exitBanner}
     <div class="trg-list">${trg.map(t=>`<a class="trg" href="${_naverNews(t.kw)}" target="_blank" rel="noopener"><b>${esc(t.ev)}</b><span>${esc(t.why)}</span><em>＋${esc(t.kw)} 뉴스 ↗</em></a>`).join("")}</div></div>`:"";
   const extraLinks=!trg.length?(p.extra||[]).map(k=>`<a class="more" href="${_naverNews(k)}" target="_blank" rel="noopener" title="추가 감시 키워드">＋${esc(k)} ↗</a>`).join(""):"";
   return `<div class="newsmon">
