@@ -8,7 +8,7 @@ name: Daily Brief (Telegram)
 
 on:
   schedule:
-    - cron: "0 23 * * *"   # 08:00 KST (오전) — signals 06:30·news 07:20·자동화상태 07:40 뒤
+    - cron: "30 23 * * *"   # 08:30 KST (오전) — news/자동화 수집 후 여유를 둔 발송
     - cron: "0 5 * * *"    # 14:00 KST (오후) — news 13:20·자동화상태 13:40 뒤
   workflow_dispatch:
 
@@ -18,7 +18,7 @@ permissions:
 
 # 수집 워크플로와 같은 레인 → 수집이 끝난 최신 데이터로 발송(직렬화, 취소 없음).
 concurrency:
-  group: cm-cmo-data-writers
+  group: cm-cmo-daily-brief
   cancel-in-progress: false
 
 jobs:

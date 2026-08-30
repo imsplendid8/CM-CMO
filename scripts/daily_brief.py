@@ -49,8 +49,14 @@ def latest_clip():
     return None
 
 def shared_digest(clip, products, main):
-    """저장된 공통 브리프를 우선 사용하고, 최신 클리핑과 날짜가 다르면 즉시 재계산한다."""
+    """저장된 공통 브리프를 우선 사용한다.
+
+    브리프 발송은 속도가 중요하므로, 기본값은 data/briefing/latest.json을 그대로 쓰고
+    명시적으로 재계산이 필요할 때만 BRIEF_REFRESH_DIGEST=1 로 갱신한다.
+    """
     saved = load_opt("data/briefing/latest.json", {}) or {}
+    if saved.get("stories") and os.environ.get("BRIEF_REFRESH_DIGEST") != "1":
+        return saved
     if saved.get("date") == (clip or {}).get("date") and saved.get("stories"):
         return saved
     return content_brief.build_digest(clip or {}, products, main)
