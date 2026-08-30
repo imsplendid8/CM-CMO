@@ -241,6 +241,7 @@ class TestFaqOpportunityAgent(unittest.TestCase):
         self.assertIn("site-query-feed.json", builder)
         self.assertIn("search-console.json", builder)
         self.assertIn("keyword-autocomplete.json", builder)
+        self.assertIn("site-query-feed.example.json", schema)
 
     def test_gsc_and_serp_dom_review_automation_are_wired(self):
         workflow = (ROOT / ".github/workflows/content-intelligence.yml").read_text(encoding="utf-8")

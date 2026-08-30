@@ -1,0 +1,59 @@
+{
+  "_comment": "수동 점검용 SEO 인텔 입력 예시. site: 도메인 검색 결과, Search Console 요약, 만료/종료 제외 사유를 함께 적는다.",
+  "schema_version": 2,
+  "asof": "2026-08-30",
+  "observations": [
+    {
+      "domain": "www.carrotins.com",
+      "site_query": "site:www.carrotins.com 운전자보험",
+      "query": "site:www.carrotins.com 운전자보험",
+      "url": "https://www.carrotins.com/driver",
+      "title": "운전자보험 안내",
+      "description": "운전자보험 상품 안내 페이지",
+      "status": "active",
+      "flags": ["indexed"],
+      "source": "manual_review",
+      "captured_at": "2026-08-30"
+    },
+    {
+      "domain": "hanwhadirect.com",
+      "site_query": "site:hanwhadirect.com 자동차보험",
+      "query": "site:hanwhadirect.com 자동차보험",
+      "url": "https://www.hanwhadirect.com/car",
+      "title": "자동차보험",
+      "description": "도메인 검토용 site 검색 결과",
+      "status": "review",
+      "flags": ["redirect_chain"],
+      "reason": "리다이렉트 체인 점검",
+      "source": "manual_review",
+      "captured_at": "2026-08-30"
+    },
+    {
+      "domain": "www.carrotins.com",
+      "site_query": "site:www.carrotins.com 추석 이벤트",
+      "query": "site:www.carrotins.com 추석 이벤트",
+      "url": "https://www.carrotins.com/event/chuseok",
+      "title": "종료된 추석 이벤트",
+      "description": "종료된 이벤트 랜딩",
+      "status": "ended",
+      "flags": ["ended_event"],
+      "reason": "판매 종료",
+      "source": "manual_review",
+      "captured_at": "2026-08-30"
+    }
+  ],
+  "monthly_diff": {
+    "latest": "2026-08-30",
+    "previous": "2026-07-30",
+    "new_domains": ["www.carrotins.com"],
+    "dropped_domains": [],
+    "new_queries": ["site:www.carrotins.com 운전자보험"],
+    "dropped_queries": [],
+    "rising_angles": ["운전자보험"],
+    "declining_angles": ["이벤트"]
+  },
+  "default_filters": {
+    "exclude_flags": ["ended_event", "expired_product", "sales_ended", "noindex", "redirect_chain"],
+    "exclude_status": ["ended", "expired", "closed", "sold_out", "discontinued"]
+  }
+}

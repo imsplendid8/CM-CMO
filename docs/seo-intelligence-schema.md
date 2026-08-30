@@ -55,3 +55,4 @@ This repository uses a structured SEO observation feed so technical SEO analysis
 - `flags[]` should carry review and exclusion signals.
 - The dashboard should treat screenshots as supporting evidence only; text fields are the primary input.
 - `scripts/build_seo_intel.py` merges `data/seo/site-query-feed.json`, Search Console, SERP analysis, and autocomplete snapshots into this feed when they exist.
+- `data/seo/site-query-feed.example.json` is the recommended hand-entry template for operators who want to paste site-search observations before automation is connected.
