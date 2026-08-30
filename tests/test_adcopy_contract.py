@@ -203,6 +203,16 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn('MATERIAL_SPEC.manualOnlyFields.forEach', ADCOPY)
         self.assertNotIn('MATERIAL_SPEC.manualOnlyFields.forEach', POWER)
 
+    def test_keyword_export_groups_campaign_and_adgroup_for_naver_csv(self):
+        self.assertIn("function naverCampaignName", KEYWORD)
+        self.assertIn("function naverAdGroupName", KEYWORD)
+        self.assertIn("function normalizeGroupName", KEYWORD)
+        self.assertIn('["캠페인 유형","캠페인 이름","광고그룹 이름","키워드","키워드 입찰가","연결URL(PC)","연결URL(모바일)"]', KEYWORD)
+        self.assertIn("naverCampaignName(p)", KEYWORD)
+        self.assertIn("naverAdGroupName(p,row)", KEYWORD)
+        self.assertIn("누수", KEYWORD)
+        self.assertIn("특약", KEYWORD)
+
     def test_power_content_rejects_out_of_scope_topics_and_exports_brief(self):
         for term in ("자동차보험", "공개관측", "공개 관측", "한화생명", "고객센터"):
             self.assertIn(term, POWER)

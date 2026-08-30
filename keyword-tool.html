@@ -256,6 +256,35 @@ function genKeywords(p){
 const ALL={}; PRODUCTS.forEach(p=>ALL[p.key]=genKeywords(p));
 const INTENT_COL={거래:"var(--trx)",정보:"var(--inf)",브랜드:"var(--brd)",담보:"var(--brand)"};
 
+function naverCampaignName(product){
+  return `CM_파워링크_${product?.name||"상품"}`;
+}
+function normalizeGroupName(value){
+  const text=String(value||"").replace(/\s+/g," ").trim();
+  if(!text)return "기타";
+  const compact=text.replace(/\s+/g,"");
+  if(/누수/.test(compact))return "누수";
+  if(/특약/.test(compact))return "특약";
+  if(/비교사이트|비교견적|비교/.test(compact))return "비교";
+  if(/가격|보험료|견적|계산/.test(compact))return "가격";
+  if(/가입|조건|방법/.test(compact))return "가입";
+  if(/보장|담보|범위|내용/.test(compact))return "보장";
+  if(/청구|해지|환급/.test(compact))return "관리";
+  if(/유학생|워홀|워킹홀리데이|어학연수|교환학생|장기체류|주재원|해외출장/.test(compact))return "해외체류";
+  if(/일본|미국|유럽|동남아|베트남|태국|필리핀|대만|홍콩|괌|사이판|호주|캐나다|뉴질랜드/.test(compact))return "지역";
+  if(/벌금|변호사선임|형사합의금|교통사고|12대중과실/.test(compact))return "사고";
+  if(/홀인원|배상책임|캐디|용품손해/.test(compact))return "라운딩";
+  if(/임신|출산|산후|여성암|자궁/.test(compact))return "여성";
+  if(/임플란트|스케일링|보철|크라운|충치/.test(compact))return "치아";
+  if(/유사암|진단비|소액암|표적항암|재발암/.test(compact))return "암";
+  if(/풍수재|도난|화재|스크린홀인원/.test(compact))return "주택";
+  return text.slice(0, 12);
+}
+function naverAdGroupName(product, row){
+  const base=normalizeGroupName(row?.seed_group||row?.intent||row?.kw||row?.keyword||"기타");
+  return `${product?.name||"상품"} · ${base}`;
+}
+
 let curKey="__all", pf="all", VOL={},VOL_META={asof:null,source:"none"},VOL_HISTORY={snapshots:{}},AUTOCOMPLETE={products:{}},AUTO_META=new Map(),AUTO_SELECTED=new Set();
 const NEW_MIN=100,RISING_MIN_BASE=10,RISING_MIN_DELTA=50,RISING_MIN_RATE=.5;
 const nk=s=>String(s).replace(/\s/g,"");
@@ -528,12 +557,19 @@ function exportNaverBulk(){
   list.forEach(p=>{ if(!p)return;
     const kws=filt(rowsOf(p.key)).filter(r=>{const auto=AUTO_META.get(autoSelectionKey(p.key,r.kw));return r.pf!=="구글" && r.intent!=="AI" && (!auto||auto.registration==="recommended");}); // 자동완성 검토·제외 키워드는 선택 내보내기에서만 허용
     const by={}; kws.forEach(r=>{(by[r.intent]=by[r.intent]||[]).push(r);});
-    const camp=`CM_파워링크_${p.name}`;
+    const camp=naverCampaignName(p);
     const order=INTENT_ORDER.concat(Object.keys(by).filter(i=>!INTENT_ORDER.includes(i)));
     order.forEach(intent=>{
       let g=by[intent]||[];
       if(vh) g=g.slice().sort((a,b)=>vsum(b.kw)-vsum(a.kw));   // 월간 검색량 '뜨는' 키워드 우선
-      g.forEach(r=>{rows.push(["파워링크",camp,`${p.name} · ${intent}`,r.kw,DEFAULT_BID,"",""]);n++;});
+      const grouped={};
+      g.forEach(r=>{
+        const grp=naverAdGroupName(p,r);
+        (grouped[grp]=grouped[grp]||[]).push(r);
+      });
+      Object.keys(grouped).sort((a,b)=>a.localeCompare(b,"ko")).forEach(grp=>{
+        grouped[grp].forEach(r=>{rows.push(["파워링크",camp,grp,r.kw,DEFAULT_BID,"",""]);n++;});
+      });
     });
   });
   if(!n){toast("네이버 대상 키워드가 없습니다(구글·AI 제외)");return;}
@@ -548,7 +584,7 @@ function exportSelectedAutocomplete(){
   list.forEach(p=>{if(!p)return;autocompleteRows(p.key).forEach(row=>{
     if(!AUTO_SELECTED.has(autoSelectionKey(p.key,row.keyword))||row.registration==="exclude")return;
     const label=row.source_platform==="google"?"구글형 롱테일":row.source_type==="visible_ui"?"네이버 자동완성":"네이버 보강";
-    rows.push(["파워링크",`CM_파워링크_${p.name}`,`${p.name} · ${label}`,row.keyword,DEFAULT_BID,"",""]);
+    rows.push(["파워링크",naverCampaignName(p),naverAdGroupName(p,row),row.keyword,DEFAULT_BID,"",""]);
   });});
   if(rows.length===1){toast("먼저 등록할 자동완성 키워드를 선택하세요");return;}
   const csv="﻿"+rows.map(row=>row.map(value=>`"${String(value).replace(/"/g,'""')}"`).join(",")).join("\n");
