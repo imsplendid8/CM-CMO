@@ -291,6 +291,16 @@ def _josa(value, batchim, open_value):
     return text + (batchim if has_batchim else open_value)
 
 
+def _join_josa(values, batchim, open_value, separator="·"):
+    """여러 SERP 소구를 하나의 자연스러운 조사 구로 연결한다."""
+    terms = [str(value).strip() for value in values if str(value).strip()]
+    if not terms:
+        return "미관측"
+    if len(terms) == 1:
+        return _josa(terms[0], batchim, open_value)
+    return f"{separator.join(terms[:-1])}{separator}{_josa(terms[-1], batchim, open_value)}"
+
+
 def _fingerprint(value, size=16):
     payload = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:size]
@@ -468,7 +478,7 @@ def sa_recommendations(product, keyword, angle, table_stakes, basis, season, var
         row.update({
             "message_axis": axis, "variation_key": variation["variation_key"],
             "serp_signature": variation["serp_signature"],
-            "why": f"{basis} · {AXIS_LABELS[axis]} 축 · 경쟁 공통 소구 {', '.join(table_stakes[:2]) or '미관측'}와 다른 전개",
+            "why": f"{basis} · {AXIS_LABELS[axis]} 축 · 경쟁 공통 소구 {_join_josa(table_stakes[:2], '과', '와')} 다른 전개",
             "review_lab_feedback": {
                 "applied_rules_version": (feedback_rules or {}).get("schema_version"),
                 "blocked_phrase_hits": blocked_hits,
@@ -629,7 +639,7 @@ def power_topics(product, keyword, angle, table_stakes, basis, planning_month, s
         safe_sections = [apply_feedback_rules(section, feedback_rules) for section in sections]
         blocked_hits = feedback_findings({
             "title": fitted,
-            "angle": f"SERP의 ‘{saturated}’ 반복에서 벗어나 {AXIS_LABELS.get(pattern, '생활 질문')}으로 전개",
+            "angle": f"SERP의 ‘{saturated}’ 반복에서 벗어나 {_josa(AXIS_LABELS.get(pattern, '생활 질문'), '으로', '로')} 전개",
             "sections": " ".join(safe_sections),
         }, feedback_rules, "power_content", product["key"])
         if blocked_hits:
