@@ -242,6 +242,21 @@ def _extract_molit_count(payload):
     candidates.sort(reverse=True)
     return candidates[0]
 
+def _extract_status(payload):
+    if not isinstance(payload, dict):
+        return None, None
+    status = payload.get("status_code") or payload.get("statusCode")
+    message = payload.get("message") or payload.get("msg") or payload.get("errorMessage")
+    if status or message:
+        return str(status).strip() if status is not None else None, str(message).strip() if message is not None else None
+    # XML 단일 레벨 dict가 아닐 때도 재귀적으로 한 번 더 찾는다.
+    for v in payload.values():
+        if isinstance(v, dict):
+            s, m = _extract_status(v)
+            if s or m:
+                return s, m
+    return None, None
+
 def fetch_car_newreg():
     """한국교통안전공단_자동차종합정보 신규등록정보 서비스.
 
@@ -264,7 +279,7 @@ def fetch_car_newreg():
         "pageNo": CAR_NEWREG_PAGE_NO,
         "numOfRows": CAR_NEWREG_NUM_OF_ROWS,
     }
-    start_dt = CAR_NEWREG_START_DT or _month_int(datetime.date.today().replace(day=1).isoformat().replace("-", ""))
+    start_dt = CAR_NEWREG_START_DT or datetime.date.today().strftime("%Y%m")
     end_dt = CAR_NEWREG_END_DT or _month_int(TODAY)
     if start_dt:
         params["start_dt"] = start_dt
@@ -283,6 +298,7 @@ def fetch_car_newreg():
                 payload = {elem.tag: elem.text for elem in root.iter() if elem.text}
             except Exception:
                 payload = {"raw": text[:2000]}
+        status, message = _extract_status(payload)
         count = _extract_molit_count(payload)
         if count is None:
             return {
@@ -291,6 +307,9 @@ def fetch_car_newreg():
                 "mom": None,
                 "source": "stat.molit",
                 "error": "신규등록정보 응답에서 수치 파싱 실패",
+                "status_code": status,
+                "message": message,
+                "request": {"form_id": CAR_NEWREG_FORM_ID, "style_num": CAR_NEWREG_STYLE_NUM, "start_dt": start_dt, "end_dt": end_dt},
                 "raw_hint": str(payload)[:260],
             }
         return {
@@ -299,11 +318,14 @@ def fetch_car_newreg():
             "mom": None,
             "source": "stat.molit",
             "basis": "신규등록정보 서비스",
+            "status_code": status,
+            "message": message,
+            "request": {"form_id": CAR_NEWREG_FORM_ID, "style_num": CAR_NEWREG_STYLE_NUM, "start_dt": start_dt, "end_dt": end_dt},
         }
     except urllib.error.HTTPError as e:
-        return {"count": None, "period": end_dt or TODAY, "mom": None, "source": "stat.molit", "error": f"HTTP {e.code}"}
+        return {"count": None, "period": end_dt or TODAY, "mom": None, "source": "stat.molit", "error": f"HTTP {e.code}", "request": {"form_id": CAR_NEWREG_FORM_ID, "style_num": CAR_NEWREG_STYLE_NUM, "start_dt": start_dt, "end_dt": end_dt}}
     except Exception as e:
-        return {"count": None, "period": end_dt or TODAY, "mom": None, "source": "stat.molit", "error": str(e)[:140]}
+        return {"count": None, "period": end_dt or TODAY, "mom": None, "source": "stat.molit", "error": str(e)[:140], "request": {"form_id": CAR_NEWREG_FORM_ID, "style_num": CAR_NEWREG_STYLE_NUM, "start_dt": start_dt, "end_dt": end_dt}}
 
 def build_triggers(weather, travel, exit_tour=None, newreg=None):
     """상품별 실시간 수요 신호 레벨 산출(정성 규칙). 여러 특보가 동시 발효면 사유를 누적."""
@@ -349,6 +371,12 @@ def build_triggers(weather, travel, exit_tour=None, newreg=None):
                     "note": note,
                     "basis": [newreg.get("basis", "신규등록정보 서비스")],
                 }
+    elif newreg and newreg.get("error"):
+        trg["driver_newreg_issue"] = {
+            "level": "medium",
+            "note": f"자동차 신규등록 API 확인 필요: {newreg.get('error')}",
+            "basis": newreg.get("request") or {},
+        }
     return trg
 
 def sample():
