@@ -91,13 +91,15 @@ for(const product of plan.products||[]){
   if(new Set(rows.map(row=>row.concept_id)).size!==4)errors.push(`${product.product_key}: 이미지 콘셉트 지문 중복`);
   if(rows.some(row=>row.style_family!=="premium_3d_animation_v4"))errors.push(`${product.product_key}: 3D 애니메이션 스타일 패밀리 불일치`);
   const allowedPattern=allowedProductAssetPatterns[product.product_key];
-  if(allowedPattern&&distinct.some(source=>!allowedPattern.test(path.basename(source)))){
+  // 이미지가 아직 생성되지 않은 신규 슬롯은 빈 asset으로 남긴다. 빈 슬롯을
+  // 다른 상품 파일로 채우지 않았는지만 확인하고, 실제 파일 검사는 기존 원본에만 한다.
+  if(allowedPattern&&distinct.some(source=>source&&!allowedPattern.test(path.basename(source)))){
     errors.push(`${product.product_key}: 보험종목과 무관한 이미지 원본 포함 ${distinct.map(source=>path.basename(source)).join(", ")}`);
   }
   const prior=[...priorArchives].reverse().find(archive=>(archive.products||[]).some(row=>row.product_key===product.product_key));
   const priorRow=(prior?.products||[]).find(row=>row.product_key===product.product_key),priorAssets=new Set((priorRow?.image_directions||[]).map(row=>row.asset));
   for(const row of rows)if(priorAssets.has(row.asset)&&row.generation_required!==true)errors.push(`${product.product_key}: 이전 원본을 신규 이미지처럼 재제안 ${row.asset}`);
-  for(const source of distinct)if(!fs.existsSync(path.join(ROOT,source)))errors.push(`${product.product_key}: 제안 원본 누락 ${source}`);
+  for(const source of distinct)if(source&&!fs.existsSync(path.join(ROOT,source)))errors.push(`${product.product_key}: 제안 원본 누락 ${source}`);
 }
 
 const zipSource=fs.readFileSync(path.join(ROOT,"shared","zip-store.js"),"utf8");

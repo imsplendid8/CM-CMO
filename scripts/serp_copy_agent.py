@@ -563,7 +563,8 @@ def image_directions(product, angle, patterns, basis, planning_month, season, va
         rows.append({
         "proposal_id": f"{product['key']}-{planning_month}-{variation['variation_key'][:6]}-{index + 1:02d}",
         "concept_id": _fingerprint({"product": product["key"], "month": planning_month,
-                                    "scene": scene, "serp": variation["serp_signature"]}),
+                                    "slot": index, "scene": scene,
+                                    "serp": variation["serp_signature"]}),
         "role": roles[index], "scene": scene,
         "reference_scene": asset_scene,
         "asset": f"assets/insurance/{asset}" if asset else "",
