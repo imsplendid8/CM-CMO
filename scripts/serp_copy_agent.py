@@ -124,9 +124,21 @@ def apply_feedback_rules(text, feedback_rules=None):
     return re.sub(r"\s+", " ", value).strip()
 
 
-def feedback_findings(fields, feedback_rules=None):
+def blocked_phrases_for(feedback_rules=None, channel=None, product_key=None):
+    rules = feedback_rules or {}
+    phrases = list(rules.get("blocked_phrases") or [])
+    if channel:
+        phrases.extend((rules.get("blocked_phrases_by_channel") or {}).get(channel) or [])
+    if channel and product_key:
+        key = f"{product_key}:{channel}"
+        phrases.extend((rules.get("blocked_phrases_by_product_channel") or {}).get(key) or [])
+    return sorted({str(phrase).strip() for phrase in phrases if str(phrase).strip()})
+
+
+def feedback_findings(fields, feedback_rules=None, channel=None, product_key=None):
     text = " ".join(str(value or "") for value in fields.values())
-    hits = [phrase for phrase in (feedback_rules or {}).get("blocked_phrases") or [] if phrase and phrase in text]
+    hits = [phrase for phrase in blocked_phrases_for(feedback_rules, channel, product_key)
+            if phrase in text]
     return sorted(set(hits))
 
 
@@ -431,6 +443,12 @@ def sa_recommendations(product, keyword, angle, table_stakes, basis, season, var
         row = _copy_for_axis(axis, product, keyword, angle, other, season)
         for key in ("title", "description", "additional_description", "promo"):
             row[key] = apply_feedback_rules(row.get(key), feedback_rules)
+        blocked_hits = feedback_findings({
+            "title": row.get("title"), "description": row.get("description"),
+            "additional_description": row.get("additional_description"), "promo": row.get("promo"),
+        }, feedback_rules, "search_ad", product["key"])
+        if blocked_hits:
+            continue
         ending = re.sub(r"[^가-힣]+", "", row["description"])[-6:]
         if ending in seen_endings:
             continue
@@ -441,10 +459,7 @@ def sa_recommendations(product, keyword, angle, table_stakes, basis, season, var
             "why": f"{basis} · {AXIS_LABELS[axis]} 축 · 경쟁 공통 소구 {', '.join(table_stakes[:2]) or '미관측'}와 다른 전개",
             "review_lab_feedback": {
                 "applied_rules_version": (feedback_rules or {}).get("schema_version"),
-                "blocked_phrase_hits": feedback_findings({
-                    "title": row.get("title"), "description": row.get("description"),
-                    "additional_description": row.get("additional_description"), "promo": row.get("promo"),
-                }, feedback_rules),
+                "blocked_phrase_hits": blocked_hits,
             },
         })
         rows.append(row)
@@ -589,6 +604,13 @@ def power_topics(product, keyword, angle, table_stakes, basis, planning_month, s
         pattern, title, intent, focus, sections, *query_override = spec
         fitted = apply_feedback_rules(_fit([title, f"{name} 선택 전에 질문을 정리하는 법"], 15, 34), feedback_rules)
         safe_sections = [apply_feedback_rules(section, feedback_rules) for section in sections]
+        blocked_hits = feedback_findings({
+            "title": fitted,
+            "angle": f"SERP의 ‘{saturated}’ 반복에서 벗어나 {AXIS_LABELS.get(pattern, '생활 질문')}으로 전개",
+            "sections": " ".join(safe_sections),
+        }, feedback_rules, "power_content", product["key"])
+        if blocked_hits:
+            continue
         if re.sub(r"\s+", "", fitted).lower() in used_titles:
             continue
         index = len(rows) + 1
@@ -608,10 +630,7 @@ def power_topics(product, keyword, angle, table_stakes, basis, planning_month, s
             "source": "월간 SERP 변화·시즌 캘린더 결합",
             "review_lab_feedback": {
                 "applied_rules_version": (feedback_rules or {}).get("schema_version"),
-                "blocked_phrase_hits": feedback_findings({
-                    "title": fitted, "angle": f"SERP의 ‘{saturated}’ 반복에서 벗어나 {AXIS_LABELS.get(pattern, '생활 질문')}으로 전개",
-                    "sections": " ".join(safe_sections),
-                }, feedback_rules),
+                "blocked_phrase_hits": blocked_hits,
             },
         })
         if len(rows) == 3:

@@ -44,12 +44,18 @@ def copy_file(root: Path, destination: Path, relative: str | Path) -> None:
 
 
 def build(root: Path = ROOT, destination: Path = DEST) -> list[Path]:
+    resolved_root = root.resolve()
+    resolved_destination = destination.resolve()
+    if resolved_destination == resolved_root or resolved_destination.name not in {"dist", "site", "_site"}:
+        raise ValueError(f"공개 빌드 삭제 대상이 안전한 산출물 경로가 아님: {resolved_destination}")
+    if destination.exists():
+        shutil.rmtree(destination)
     destination.mkdir(parents=True, exist_ok=True)
 
     for source in root.glob("*.html"):
         copy_file(root, destination, source.relative_to(root))
     copy_file(root, destination, "site.webmanifest")
-    for folder in ("shared", "icons"):
+    for folder in ("shared", "icons", "fonts"):
         shutil.copytree(root / folder, destination / folder, dirs_exist_ok=True)
     shutil.copytree(root / "assets/insurance", destination / "assets/insurance", dirs_exist_ok=True)
     for relative in (*PUBLIC_DATA, *PUBLIC_SERP_JSON):

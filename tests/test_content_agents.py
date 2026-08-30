@@ -15,6 +15,19 @@ def module(name):
 
 
 class TestSerpCopyAgent(unittest.TestCase):
+    def test_review_lab_rules_are_scoped_by_product_and_channel(self):
+        agent = module("serp_copy_agent")
+        rules = {"blocked_phrases_by_product_channel": {
+            "driver:search_ad": ["운영자가 반려한 문구"],
+        }}
+        fields = {"title": "운영자가 반려한 문구"}
+        self.assertEqual(
+            agent.feedback_findings(fields, rules, "search_ad", "driver"),
+            ["운영자가 반려한 문구"],
+        )
+        self.assertEqual(agent.feedback_findings(fields, rules, "power_content", "driver"), [])
+        self.assertEqual(agent.feedback_findings(fields, rules, "search_ad", "golf"), [])
+
     def test_generates_copy_and_visual_inputs_with_diff(self):
         agent = module("serp_copy_agent")
         products = {"products": [{"key": "driver", "name": "운전자보험", "serpKw": "운전자보험",

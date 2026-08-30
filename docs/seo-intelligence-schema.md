@@ -12,7 +12,7 @@ This repository uses a structured SEO observation feed so technical SEO analysis
 
 ```json
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "asof": "2026-08-30",
   "observations": [
     {
@@ -43,6 +43,13 @@ This repository uses a structured SEO observation feed so technical SEO analysis
   "default_filters": {
     "exclude_flags": ["ended_event", "expired_product", "sales_ended", "noindex", "redirect_chain"],
     "exclude_status": ["ended", "expired", "closed", "sold_out", "discontinued"]
+  },
+  "cannibalization": {
+    "summary": {
+      "risk_query_count": 0,
+      "high_risk_query_count": 0
+    },
+    "queries": []
   }
 }
 ```
@@ -53,6 +60,7 @@ This repository uses a structured SEO observation feed so technical SEO analysis
 - `site_queries[]` and `domain_queries[]` may be used if the upstream crawler groups results by query.
 - `site_query` keeps the exact `site:` search string that produced the observation.
 - `flags[]` should carry review and exclusion signals.
+- `cannibalization.queries[]` groups the same search query targeting multiple active URLs and records the overlap score, risk level, and recommended canonical page.
 - The dashboard should treat screenshots as supporting evidence only; text fields are the primary input.
 - `scripts/build_seo_intel.py` merges `data/seo/site-query-feed.json`, Search Console, SERP analysis, and autocomplete snapshots into this feed when they exist.
 - `data/seo/site-query-feed.example.json` is the recommended hand-entry template for operators who want to paste site-search observations before automation is connected.
