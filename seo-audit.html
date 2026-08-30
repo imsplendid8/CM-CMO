@@ -1172,7 +1172,7 @@ function renderIntel(){
           <label style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--ink-2)"><input id="intelHideEnded" type="checkbox" checked>종료된 이벤트·만료 상품 숨김</label>
         </div>
         <div class="intel-note">
-          <b>수집 기준</b> · `site:www.carrotins.com`, `site:hanwhadirect.com`처럼 도메인 검색 파라미터를 남기고, 이벤트 종료·판매 종료·만료 페이지는 리뷰 큐에만 남깁니다.
+          <b>수집 기준</b> · <code>site:www.carrotins.com</code>, <code>site:hanwhadirect.com</code>처럼 도메인 검색 파라미터를 남기고, 이벤트 종료·판매 종료·만료 페이지는 리뷰 큐에만 남깁니다.
         </div>
       </aside>
       <section class="intel-panel" style="padding:18px">
@@ -1278,7 +1278,7 @@ function renderIntel(){
                 <td style="font-size:11.5px;color:var(--ink-2)">${esc(row.reason||"")}</td>
                 <td><code>${esc(row.captured_at||"")}</code></td>
                 <td>${esc(row.source||"manual")}</td>
-              </tr>`).join(""):`<tr><td colspan="7"><div class="intel-empty">관측 JSON을 불러오면 도메인별 site:` 검색 결과와 종료 이벤트 제외 상태를 볼 수 있습니다.</div></td></tr>`}</tbody>
+              </tr>`).join(""):`<tr><td colspan="7"><div class="intel-empty">관측 JSON을 불러오면 도메인별 <code>site:</code> 검색 결과와 종료 이벤트 제외 상태를 볼 수 있습니다.</div></td></tr>`}</tbody>
           </table>
         </div>
       </section>
