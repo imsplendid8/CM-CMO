@@ -86,6 +86,16 @@ input,select,textarea,button{font:inherit}input,select,textarea{width:100%;borde
     <h2 style="margin:0 0 8px;font-size:16px">로컬 저장 상태</h2>
     <div id="localState" class="small">아직 저장된 검수 기록이 없습니다.</div>
   </section>
+  <section class="summary">
+    <div class="panel">
+      <h2 style="margin:0 0 10px;font-size:16px">규칙 반영 후보</h2>
+      <div id="ruleChips" class="chips"></div>
+    </div>
+    <div class="panel">
+      <h2 style="margin:0 0 10px;font-size:16px">채널별 차단 힌트</h2>
+      <div id="channelRules" class="mini-list"></div>
+    </div>
+  </section>
 
   <section class="layout">
     <div class="cards" id="cards"></div>
@@ -162,12 +172,21 @@ function renderSummary(){
   const byProduct=s.byProduct||{};
   const reasonEntries=Object.entries(byReason).sort((a,b)=>b[1]-a[1]).slice(0,8);
   const productEntries=Object.entries(byProduct).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const ruleExport=ModooMaterialFeedback.exportRules(rules||{});
   $("reasonChips").innerHTML=reasonEntries.length?reasonEntries.map(([reason,count])=>{
     const cls=/ai_template_tone|unusable_search_ad_tone|product_mismatch|image_product_mismatch|repeated_material/.test(reason)?"hot":/season_mismatch|serp_gap/.test(reason)?"warn":"good";
     const label=ModooMaterialFeedback.reasons?.[reason]||reason;
     return `<span class="chip ${cls}">${esc(label)} <b>${count}</b></span>`;
   }).join(""):'<span class="chip">아직 반려 사유가 없습니다</span>';
   $("productSummary").innerHTML=productEntries.length?productEntries.map(([product,count])=>`<div class="mini-row"><b>${esc(allItems.find(x=>x.productKey===product)?.productName||product)}</b><span>${count}건</span></div>`).join(""):'<div class="mini-row"><b>아직 검수 기록이 없습니다</b><span>0건</span></div>';
+  const topRepeated=(ruleExport.repeated_material_top||[]).slice(0,6);
+  $("ruleChips").innerHTML=topRepeated.length?topRepeated.map(row=>`<span class="chip warn">${esc(row.text)} <b>${row.count}</b></span>`).join(""):'<span class="chip">반복 반려 문구가 없습니다</span>';
+  const byChannel=ruleExport.blocked_phrases_by_channel||{};
+  $("channelRules").innerHTML=Object.keys(byChannel).length?Object.entries(byChannel).map(([channel,list])=>{
+    const head=channelLabel[channel]||channel;
+    const preview=(list||[]).slice(0,3).join(" · ") || "없음";
+    return `<div class="mini-row"><b>${esc(head)}</b><span>${esc(preview)}</span></div>`;
+  }).join(""):'<div class="mini-row"><b>채널별 규칙 없음</b><span>0건</span></div>';
 }
 function filtered(){
   const q=$("q").value.trim().toLowerCase(),p=$("product").value,c=$("channel").value;

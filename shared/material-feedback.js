@@ -134,13 +134,41 @@
     var assets = rejected.filter(function (row) {
       return row.reason_code === "image_product_mismatch" && row.asset;
     }).map(function (row) { return { product_key: row.product_key, asset: row.asset, reason_code: row.reason_code }; });
+    var byChannel = {};
+    var repeated = {};
+    rejected.forEach(function (row) {
+      if (!row.channel) return;
+      if (!byChannel[row.channel]) byChannel[row.channel] = [];
+      if (row.text_preview) byChannel[row.channel].push(row.text_preview);
+      if (row.reason_code === "repeated_material" && row.text_preview) {
+        repeated[row.text_preview] = (repeated[row.text_preview] || 0) + 1;
+      }
+    });
+    var topRepeated = Object.keys(repeated).sort(function (a, b) {
+      return repeated[b] - repeated[a] || a.localeCompare(b);
+    }).slice(0, 20).map(function (text) {
+      return { text: text, count: repeated[text] };
+    });
+    var channelBlocked = {};
+    Object.keys(byChannel).forEach(function (channel) {
+      channelBlocked[channel] = Array.from(new Set(byChannel[channel])).slice(0, 30);
+    });
     return {
       schema_version: 1,
       exported_at: new Date().toISOString(),
       source: "local_material_review_lab",
       blocked_phrases: Array.from(new Set(phrases)),
+      blocked_phrases_by_channel: channelBlocked,
       rejected_assets: assets,
       reason_counts: stats(data).byReason,
+      repeated_material_top: topRepeated,
+      channel_reason_counts: Object.entries(rejected.reduce(function (acc, row) {
+        var key = (row.channel || "unknown") + ":" + (row.reason_code || "unknown");
+        acc[key] = (acc[key] || 0) + 1;
+        return acc;
+      }, {})).map(function (pair) { return { key: pair[0], count: pair[1] }; }).sort(function (a, b) {
+        return b.count - a.count || a.key.localeCompare(b.key);
+      }).slice(0, 40),
     };
   }
   function download(data, filename) {
