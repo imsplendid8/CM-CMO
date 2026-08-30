@@ -1125,10 +1125,14 @@ function renderIntel(){
   const activeRows=rows.filter(r=>!r.ended);
   const domainFilter=($("#intelDomain")?.value||"").trim();
   const queryFilter=($("#intelQuery")?.value||"").trim().toLowerCase();
+  const stateFilter=($("#intelState")?.value||"").trim();
   const hideEnded=$("#intelHideEnded")?.checked!==false;
   const filtered=rows.filter(r=>{
     if(domainFilter&&r.domain!==domainFilter)return false;
     if(queryFilter&&![r.domain,r.query,r.url,r.title,r.description,r.reason].join(" ").toLowerCase().includes(queryFilter))return false;
+    if(stateFilter==="active"&&intelBucket(r)!=="active")return false;
+    if(stateFilter==="review"&&intelBucket(r)!=="review")return false;
+    if(stateFilter==="ended"&&!r.ended)return false;
     if(hideEnded&&r.ended)return false;
     return true;
   });
@@ -1168,6 +1172,13 @@ function renderIntel(){
           <div class="intel-kpi"><b>${stats.review}</b><small>리뷰 큐</small></div>
           <div class="intel-kpi"><b>${stats.domains}</b><small>도메인 수</small></div>
           <div class="intel-kpi"><b>${stats.queries}</b><small>site 쿼리 수</small></div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 12px">
+          <button class="intel-pill ${!stateFilter?"active":""}" data-intel-state="">전체</button>
+          <button class="intel-pill ${stateFilter==="active"?"active":""}" data-intel-state="active">활성만</button>
+          <button class="intel-pill ${stateFilter==="review"?"active":""}" data-intel-state="review">리뷰만</button>
+          <button class="intel-pill ${stateFilter==="ended"?"ended":""}" data-intel-state="ended">제외만</button>
+          <a class="intel-pill" href="data/seo/site-query-feed.example.json" download>수동 입력 예시 다운로드</a>
         </div>
         <div style="margin-bottom:10px">${summaryPills||'<span class="intel-pill warn">아직 입력된 관측이 없습니다</span>'}</div>
         <div class="intel-note" style="margin-bottom:12px">
@@ -1254,6 +1265,7 @@ function renderIntel(){
   });
   $("#intelDomain").addEventListener("change",renderIntel);
   $("#intelQuery").addEventListener("input",renderIntel);
+  $("#intelState")?.addEventListener("change",renderIntel);
   $("#intelHideEnded").addEventListener("change",renderIntel);
 }
 function parseIntelJson(raw){
@@ -1268,6 +1280,14 @@ function parseIntelJson(raw){
   base.monthly_diff=Object.assign(intelDefaultData().monthly_diff,base.monthly_diff||{});
   return base;
 }
+document.addEventListener("click",e=>{
+  const intelState=e.target.closest?.("[data-intel-state]");
+  if(intelState){
+    const v=intelState.dataset.intelState||"";
+    const el=$("#intelState");
+    if(el){ el.value=v; renderIntel(); }
+  }
+});
 
 /* ── 대시보드 ── */
 function renderDash(){
