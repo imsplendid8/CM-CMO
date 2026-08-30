@@ -576,7 +576,7 @@ const THUMB_STYLES={
   warm:{zoom:1.04,tint:"rgba(255,171,64,.07)"},
 };
 const INSURANCE_VISUALS={
-  home:{assets:["assets/insurance/calculator-animation-v3.png"],scene:"보험료 계산·온라인 가입 탐색"},
+  home:{assets:["assets/insurance/calculator-animation-v3.png","assets/insurance/home-fire-animation-v3.png","assets/insurance/home-leak-animation-v3.png","assets/insurance/home-weather-3d.png"],scene:"보험료 계산·온라인 가입 탐색"},
   hrmf:{assets:["assets/insurance/home-fire-animation-v3.png","assets/insurance/home-leak-animation-v3.png","assets/insurance/home-weather-3d.png","assets/insurance/calculator-animation-v3.png"],scene:"주택 화재·천장 누수"},
   golf:{assets:["assets/insurance/golf-hole-animation-v3.png","assets/insurance/golf-holeinone-3d.png","assets/insurance/golf-tee-bag-animation-v1.png","assets/insurance/golf-checklist-animation-v1.png","assets/insurance/calculator-animation-v3.png"],scene:"홀인원 순간과 골프 라운드"},
   cncr:{assets:["assets/insurance/cancer-consult-animation-v1.png","assets/insurance/health-check-animation-v3.png","assets/insurance/health-review-3d.png","assets/insurance/calculator-animation-v3.png"],scene:"암보험 상담과 건강자료 확인"},
@@ -610,13 +610,25 @@ const FALLBACK_ASSET_SCENES={
 };
 const safeFileName=value=>String(value).replace(/[\\/:*?"<>|]/g,"").replace(/\s+/g,"_");
 function monthlyAssetSet(p,assets,month){
-  const unique=[...new Set(assets)],parts=String(month||"").split("-").map(Number),serial=(parts[0]||new Date().getFullYear())*12+(parts[1]||new Date().getMonth()+1),offset=(serial+[...p.key].reduce((n,c)=>n+c.charCodeAt(0),0))%unique.length;
-  return [...unique.slice(offset),...unique.slice(0,offset)].slice(0,4);
+  const unique=[...new Set((assets||[]).filter(Boolean))];
+  if(!unique.length)return [];
+  const parts=String(month||"").split("-").map(Number);
+  const serial=(parts[0]||new Date().getFullYear())*12+(parts[1]||new Date().getMonth()+1);
+  const offset=(serial+[...p.key].reduce((n,c)=>n+c.charCodeAt(0),0))%unique.length;
+  const rotated=[...unique.slice(offset),...unique.slice(0,offset)];
+  if(rotated.length>=4)return rotated.slice(0,4);
+  if(p.key==="home"){
+    return [...rotated,...unique].slice(0,4);
+  }
+  return rotated;
 }
 function thumbnailVisual(p){
   const serp=serpIdeas(p),visual=INSURANCE_VISUALS[p.key]||INSURANCE_VISUALS.home,latest=serp.latest||AD_META.asof||"",age=thumbDayAge(latest);
   const directions=serp.imageDirections||[],planningMonth=serp.month||new Date().toISOString().slice(0,7),planned=[...new Set(directions.map(x=>x.asset).filter(Boolean))],assets=planned.length>=4?planned.slice(0,4):monthlyAssetSet(p,visual.assets,planningMonth),scene=directions[0]?.scene||visual.scene;
-  return {...visual,assets,scene,directions,imagePlan:serp.imagePlan,seasonContext:serp.seasonContext,variation:serp.variation,planningMonth,keyword:serp.demand,angle:serp.angle,common:serp.common,latest,age,freshness:age===null||age>14?"업데이트 필요":"최신"};
+  const uniqueAssetCount=[...new Set(assets)].length;
+  const generationRequired=uniqueAssetCount<4;
+  const normalizedAssets=assets.length>=4?assets.slice(0,4):assets;
+  return {...visual,assets:normalizedAssets,scene,directions,imagePlan:serp.imagePlan,seasonContext:serp.seasonContext,variation:serp.variation,planningMonth,keyword:serp.demand,angle:serp.angle,common:serp.common,latest,age,freshness:age===null||age>14?"업데이트 필요":"최신",generationRequired,uniqueAssetCount};
 }
 function thumbnailConcepts(p){
   const base=safeFileName(p.name),visual=thumbnailVisual(p),source=THUMB_STATE.customByProduct[p.key]?"approved_plus_monthly":"monthly_serp_animation_v4";
@@ -630,7 +642,15 @@ function thumbnailConcepts(p){
     {kind:"power",role:"파워링크 이미지",title:p.name,cropX:0,zoom:0,file:`${base}_${version}_무문자_파워링크_01.png`},
     ...subDefs.map((x,i)=>({...x,kind:"sublink",role:`이미지형 서브링크 ${i+1}`,file:`${base}_${version}_무문자_이미지서브링크_${safeFileName(x.title)}.png`})),
   ];
-  return concepts.map((concept,i)=>({...concept,asset:visual.assets[i],scene:visual.directions[i]?.scene||FALLBACK_ASSET_SCENES[visual.assets[i]]||visual.scene,referenceScene:visual.directions[i]?.reference_scene||"",generationRequired:Boolean(visual.directions[i]?.generation_required),conceptId:visual.directions[i]?.concept_id||"",proposalId:visual.directions[i]?.proposal_id||`${p.key}-${visual.planningMonth}-${i+1}`}));
+  return concepts.map((concept,i)=>({
+    ...concept,
+    asset:visual.assets[i]||visual.assets[visual.assets.length-1]||"",
+    scene:visual.directions[i]?.scene||FALLBACK_ASSET_SCENES[visual.assets[i]]||visual.scene,
+    referenceScene:visual.directions[i]?.reference_scene||"",
+    generationRequired:Boolean(visual.generationRequired||visual.directions[i]?.generation_required),
+    conceptId:visual.directions[i]?.concept_id||"",
+    proposalId:visual.directions[i]?.proposal_id||`${p.key}-${visual.planningMonth}-${i+1}`
+  }));
 }
 function renderThumbnailMaker(p){
   const concepts=thumbnailConcepts(p),visual=thumbnailVisual(p),styleButtons=[["serp","원본 구도"],["focus","근접 크롭"],["warm","따뜻한 톤"]];
