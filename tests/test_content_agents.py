@@ -231,10 +231,16 @@ class TestFaqOpportunityAgent(unittest.TestCase):
     def test_seo_intel_schema_supports_query_and_diff_fields(self):
         schema = (ROOT / "docs" / "seo-intelligence-schema.md").read_text(encoding="utf-8")
         data = json.loads((ROOT / "data" / "seo" / "site-observations.json").read_text(encoding="utf-8"))
+        workflow = (ROOT / ".github" / "workflows" / "content-intelligence.yml").read_text(encoding="utf-8")
+        builder = (ROOT / "scripts" / "build_seo_intel.py").read_text(encoding="utf-8")
         self.assertEqual(data["schema_version"], 2)
         self.assertIn("site_query", schema)
         self.assertIn("rising_angles", schema)
         self.assertIn("declining_angles", schema)
+        self.assertIn("build_seo_intel.py", workflow)
+        self.assertIn("site-query-feed.json", builder)
+        self.assertIn("search-console.json", builder)
+        self.assertIn("keyword-autocomplete.json", builder)
 
     def test_gsc_and_serp_dom_review_automation_are_wired(self):
         workflow = (ROOT / ".github/workflows/content-intelligence.yml").read_text(encoding="utf-8")

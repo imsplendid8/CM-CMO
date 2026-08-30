@@ -35,6 +35,8 @@ jobs:
           GSC_CLIENT_SECRET: ${{ secrets.GSC_CLIENT_SECRET }}
           GSC_REFRESH_TOKEN: ${{ secrets.GSC_REFRESH_TOKEN }}
         run: python scripts/fetch_search_console.py
+      - name: SEO 인텔 병합
+        run: python scripts/build_seo_intel.py
       - name: FAQ 검색 기회 생성
         run: python scripts/faq_opportunity_agent.py
       - name: SEO 근거 기반 파워컨텐츠 제목 검토 큐 생성
@@ -45,7 +47,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add serp/ad_analysis.json data/adcopy/serp-candidates.json data/adcopy/powercontent-title-opportunities.json data/adcopy/powercontent-history.json data/seo/faq-opportunities.json
+          git add serp/ad_analysis.json data/adcopy/serp-candidates.json data/adcopy/powercontent-title-opportunities.json data/adcopy/powercontent-history.json data/seo/site-observations.json data/seo/faq-opportunities.json
           git diff --cached --quiet && exit 0
           git commit -m "chore(content): SERP 소재 입력·FAQ 기회 갱신 $(date -u +%F)"
           for attempt in 1 2 3; do
