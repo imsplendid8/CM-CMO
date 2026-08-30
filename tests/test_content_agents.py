@@ -234,15 +234,28 @@ class TestFaqOpportunityAgent(unittest.TestCase):
         data = json.loads((ROOT / "data" / "seo" / "site-observations.json").read_text(encoding="utf-8"))
         workflow = (ROOT / ".github" / "workflows" / "content-intelligence.yml").read_text(encoding="utf-8")
         builder = (ROOT / "scripts" / "build_seo_intel.py").read_text(encoding="utf-8")
-        self.assertEqual(data["schema_version"], 2)
+        self.assertEqual(data["schema_version"], 3)
         self.assertIn("site_query", schema)
         self.assertIn("rising_angles", schema)
         self.assertIn("declining_angles", schema)
+        self.assertIn("cannibalization", schema)
         self.assertIn("build_seo_intel.py", workflow)
         self.assertIn("site-query-feed.json", builder)
         self.assertIn("search-console.json", builder)
         self.assertIn("keyword-autocomplete.json", builder)
         self.assertIn("site-query-feed.example.json", schema)
+
+    def test_seo_intel_builds_cannibalization_summary_from_duplicate_queries(self):
+        agent = module("build_seo_intel")
+        rows = [
+            {"domain": "a.example", "site_query": "운전자보험", "query": "운전자보험", "url": "https://a.example/one", "status": "active"},
+            {"domain": "a.example", "site_query": "운전자보험", "query": "운전자보험", "url": "https://a.example/two", "status": "review"},
+            {"domain": "b.example", "site_query": "운전자보험비교", "query": "운전자보험비교", "url": "https://b.example/x", "status": "active"},
+        ]
+        result = agent.build_cannibalization(rows)
+        self.assertEqual(result["total_conflicted_queries"], 1)
+        self.assertEqual(result["conflicted_queries"][0]["query"], "운전자보험")
+        self.assertEqual(result["conflicted_queries"][0]["url_count"], 2)
 
     def test_gsc_and_serp_dom_review_automation_are_wired(self):
         workflow = (ROOT / ".github/workflows/content-intelligence.yml").read_text(encoding="utf-8")

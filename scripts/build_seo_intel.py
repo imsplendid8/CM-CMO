@@ -43,12 +43,16 @@ def normalize_status(value: Any) -> str:
 def default_doc() -> dict[str, Any]:
     return {
         "_comment": "SEO 인텔 입력 스키마. site: 도메인 검색, 크롤링, 수동 점검 결과를 한 파일에 모으되 종료 이벤트·판매 종료 랜딩은 제외 플래그로 남긴다.",
-        "schema_version": 2,
+        "schema_version": 3,
         "asof": "",
         "sources": ["manual_review", "search_console", "serp_analysis", "autocomplete"],
         "observations": [],
         "site_queries": [],
         "domain_queries": [],
+        "cannibalization": {
+            "total_conflicted_queries": 0,
+            "conflicted_queries": [],
+        },
         "monthly_diff": {
             "latest": "",
             "previous": "",
@@ -151,6 +155,38 @@ def dedupe(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return out
 
 
+def build_cannibalization(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    grouped: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        query = text(row.get("site_query") or row.get("query"))
+        url = text(row.get("url") or row.get("page"))
+        if not query:
+            continue
+        bucket = grouped.setdefault(query, {"query": query, "urls": [], "domains": [], "sources": [], "statuses": []})
+        if url and url not in bucket["urls"]:
+            bucket["urls"].append(url)
+        domain = text(row.get("domain"))
+        if domain and domain not in bucket["domains"]:
+            bucket["domains"].append(domain)
+        source = text(row.get("source"))
+        if source and source not in bucket["sources"]:
+            bucket["sources"].append(source)
+        status = text(row.get("status"))
+        if status and status not in bucket["statuses"]:
+            bucket["statuses"].append(status)
+    conflicted = []
+    for item in grouped.values():
+        if len(item["urls"]) > 1:
+            item["url_count"] = len(item["urls"])
+            item["domain_count"] = len(item["domains"])
+            conflicted.append(item)
+    conflicted.sort(key=lambda item: (-item["url_count"], -item["domain_count"], item["query"]))
+    return {
+        "total_conflicted_queries": len(conflicted),
+        "conflicted_queries": conflicted[:20],
+    }
+
+
 def build() -> dict[str, Any]:
     doc = default_doc()
     manual = read_json(MANUAL)
@@ -170,6 +206,7 @@ def build() -> dict[str, Any]:
     doc["observations"] = dedupe(rows)
     doc["site_queries"] = [row for row in doc["observations"] if row.get("site_query")]
     doc["domain_queries"] = [row for row in doc["observations"] if row.get("domain")]
+    doc["cannibalization"] = build_cannibalization(doc["site_queries"])
     if manual and isinstance(manual, dict):
         doc["monthly_diff"] = {**doc["monthly_diff"], **(manual.get("monthly_diff") or {})}
         doc["asof"] = text(manual.get("asof"))

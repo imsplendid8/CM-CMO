@@ -999,7 +999,7 @@ function runPro(){
 /* ── SEO INTEL ── */
 const SEO_INTEL_STORE="seo_intel_import_v1";
 const SEO_INTEL_DRAFT_STORE="seo_intel_draft_v1";
-let SEO_INTEL_DATA={schema_version:2,asof:"",observations:[],site_queries:[],domain_queries:[],monthly_diff:{latest:"",previous:"",new_domains:[],dropped_domains:[],new_queries:[],dropped_queries:[],rising_angles:[],declining_angles:[]},default_filters:{exclude_flags:["ended_event","expired_product","sales_ended","noindex","redirect_chain"],exclude_status:["ended","expired","closed","sold_out","discontinued"]}};
+let SEO_INTEL_DATA={schema_version:3,asof:"",observations:[],site_queries:[],domain_queries:[],cannibalization:{total_conflicted_queries:0,conflicted_queries:[]},monthly_diff:{latest:"",previous:"",new_domains:[],dropped_domains:[],new_queries:[],dropped_queries:[],rising_angles:[],declining_angles:[]},default_filters:{exclude_flags:["ended_event","expired_product","sales_ended","noindex","redirect_chain"],exclude_status:["ended","expired","closed","sold_out","discontinued"]}};
 function intelLoadStore(){try{return JSON.parse(localStorage.getItem(SEO_INTEL_STORE)||"null")||null}catch(_){return null}}
 function intelSaveStore(data){try{localStorage.setItem(SEO_INTEL_STORE,JSON.stringify(data));}catch(_){ } }
 function intelLoadDraft(){try{return localStorage.getItem(SEO_INTEL_DRAFT_STORE)||""}catch(_){return""}}
@@ -1120,7 +1120,7 @@ function intelSuggestNextAction(row){
   return"상세 페이지 검수";
 }
 function intelDefaultData(){
-  return {schema_version:2,asof:"",observations:[],site_queries:[],domain_queries:[],monthly_diff:{latest:"",previous:"",new_domains:[],dropped_domains:[],new_queries:[],dropped_queries:[],rising_angles:[],declining_angles:[]},default_filters:{exclude_flags:["ended_event","expired_product","sales_ended","noindex","redirect_chain"],exclude_status:["ended","expired","closed","sold_out","discontinued"]}};
+  return {schema_version:3,asof:"",observations:[],site_queries:[],domain_queries:[],cannibalization:{total_conflicted_queries:0,conflicted_queries:[]},monthly_diff:{latest:"",previous:"",new_domains:[],dropped_domains:[],new_queries:[],dropped_queries:[],rising_angles:[],declining_angles:[]},default_filters:{exclude_flags:["ended_event","expired_product","sales_ended","noindex","redirect_chain"],exclude_status:["ended","expired","closed","sold_out","discontinued"]}};
 }
 function renderIntel(){
   const rows=intelRows();
@@ -1142,6 +1142,8 @@ function renderIntel(){
   const stats=intelStats(rows);
   const topReasons=rows.reduce((acc,r)=>{const k=r.ended?(r.reason||"ended"):(r.status||"active");acc[k]=(acc[k]||0)+1;return acc;},{});
   const monthlyDiff=intelMonthlyDiff(SEO_INTEL_DATA);
+  const cannibal=(SEO_INTEL_DATA.cannibalization||{});
+  const cannibalRows=(cannibal.conflicted_queries||[]).slice(0,6);
   const reviewRows=rows.filter(r=>intelBucket(r)==="review").slice(0,8);
   const queryRows=[...rows].sort((a,b)=>String(b.captured_at||"").localeCompare(String(a.captured_at||""))||String(a.domain||"").localeCompare(String(b.domain||""))).slice(0,12);
   const summaryPills=Object.entries(topReasons).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([label,count])=>`<span class="intel-pill ${/ended|expired|closed|종료|만료/i.test(label)?"ended":"active"}">${esc(label)} ${count}</span>`).join("");
@@ -1218,6 +1220,23 @@ function renderIntel(){
             </div>
           </div>
         </div>
+        <div class="intel-card" style="padding:12px;margin-bottom:12px">
+          <h3 style="margin:0 0 8px">SEO 콘텐츠 카니벌라이제이션</h3>
+          <div class="intel-note">같은 검색어가 여러 URL에 분산되면, 검색 의도가 흔들리고 내부 콘텐츠끼리 경쟁할 수 있습니다.</div>
+          <div class="intel-kpis" style="margin-top:10px">
+            <div class="intel-kpi"><b>${cannibal.total_conflicted_queries||0}</b><small>충돌 쿼리</small></div>
+            <div class="intel-kpi"><b>${cannibalRows.length}</b><small>상위 표시</small></div>
+          </div>
+          <div style="display:grid;gap:8px;margin-top:10px">
+            ${cannibalRows.length?cannibalRows.map(item=>`<div style="padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+                <b style="font-size:12px">${esc(item.query||"")}</b>
+                <span class="intel-pill ended">${item.url_count||0}개 URL</span>
+              </div>
+              <div style="margin-top:6px;font-size:11.5px;color:var(--muted);word-break:break-all">${esc((item.urls||[]).slice(0,3).join(" · "))}</div>
+            </div>`).join(""):'<span class="intel-pill warn">충돌 쿼리 없음</span>'}
+          </div>
+        </div>
         <div class="intel-note" style="margin-bottom:12px">활성 관측만 ${hideEnded?"표시":"전체 표시"} 중입니다. 현재 필터 결과: ${filtered.length}행</div>
         <div class="intel-grid" style="margin-bottom:12px">
           <div class="intel-card" style="padding:12px">
@@ -1280,7 +1299,8 @@ function renderIntel(){
   });
   $("#intelSample").addEventListener("click",()=>{
     const sample=JSON.stringify({
-      schema_version:2,asof:"2026-08-30",
+      schema_version:3,asof:"2026-08-30",
+      cannibalization:{total_conflicted_queries:1,conflicted_queries:[{query:"운전자보험",url_count:2,domain_count:1,urls:["https://www.carrotins.com/driver","https://www.carrotins.com/driver-guide"],domains:["www.carrotins.com"],sources:["manual","advertools"],statuses:["active"]}]},
       monthly_diff:{latest:"2026-08-30",previous:"2026-07-30",new_domains:["www.carrotins.com"],dropped_domains:["old.example.com"],new_queries:["site:www.carrotins.com 운전자보험"],dropped_queries:["site:old.example.com 이벤트"],rising_angles:["운전자보험"],declining_angles:["이벤트"]},
       observations:[
         {domain:"www.carrotins.com",site_query:"site:www.carrotins.com 운전자보험",query:"site:www.carrotins.com 운전자보험",title:"운전자보험 안내",url:"https://www.carrotins.com/driver",status:"active",source:"advertools",captured_at:"2026-08-30"},
@@ -1315,9 +1335,10 @@ function parseIntelJson(raw){
   if(o&&o.report)o=o.report;
   const base=Object.assign(intelDefaultData(),o||{});
   if(!base.observations&&base.rows)base.observations=base.rows;
-  base.schema_version=2;
+  base.schema_version=3;
   base.default_filters=Object.assign(intelDefaultData().default_filters,base.default_filters||{});
   base.monthly_diff=Object.assign(intelDefaultData().monthly_diff,base.monthly_diff||{});
+  base.cannibalization=Object.assign(intelDefaultData().cannibalization,base.cannibalization||{});
   return base;
 }
 document.addEventListener("click",e=>{
