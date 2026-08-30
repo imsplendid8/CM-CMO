@@ -20,6 +20,17 @@ main{max-width:1280px;margin:0 auto;padding:28px 20px 48px}
 .toolbar{display:grid;grid-template-columns:1.2fr 1fr 1fr auto;gap:10px;padding:14px;margin-bottom:14px;position:sticky;top:0;z-index:5;backdrop-filter:blur(12px)}
 input,select,textarea,button{font:inherit}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:13px;background:#fff;color:var(--ink);padding:11px 12px}button{border:0;border-radius:999px;background:#171717;color:#fff;padding:10px 14px;font-weight:850;cursor:pointer}button.secondary{background:#fff;color:#222;border:1px solid var(--line)}button.good{background:var(--good)}button.warn{background:var(--warn)}button.bad{background:var(--bad)}button.blue{background:var(--blue)}
 .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}.stat{padding:14px 15px}.stat b{display:block;font-size:24px;letter-spacing:-.04em}.stat span{font-size:12px;color:var(--muted);font-weight:800}
+.summary{display:grid;grid-template-columns:1.1fr .9fr;gap:12px;margin-bottom:14px}
+.summary .panel{padding:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;background:var(--soft);font-size:12px;font-weight:850;color:#544f49}
+.chip.hot{background:#fdecec;color:var(--bad)}
+.chip.good{background:#e6f4eb;color:var(--good)}
+.chip.warn{background:#fff5dc;color:var(--warn)}
+.mini-list{display:grid;gap:8px}
+.mini-row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.mini-row b{font-size:12px}
+.mini-row span{font-size:12px;color:var(--muted);font-weight:750}
 .layout{display:grid;grid-template-columns:1fr 360px;gap:16px}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.card{padding:16px;border-radius:20px;background:var(--paper);border:1px solid var(--line);box-shadow:0 10px 28px rgba(42,34,23,.05)}.card.reviewed{outline:2px solid rgba(24,121,78,.18)}
 .meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:9px}.pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;background:var(--soft);color:#5c5750;padding:5px 8px;font-size:11px;font-weight:850}.pill.sa{background:#eaf1ff;color:#244d9a}.pill.power{background:#f3edff;color:#5c3aa0}.pill.thumb{background:#fff0d6;color:#8b4d00}.pill.risk{background:#fdecec;color:var(--bad)}
 .card h3{font-size:17px;letter-spacing:-.03em;margin:0 0 8px}.copy{font-size:14px;line-height:1.65;color:#37332e;white-space:pre-wrap}.small{font-size:12px;color:var(--muted);line-height:1.6}.actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.actions button{font-size:12px;padding:8px 10px}.reviewbox{display:grid;gap:7px;margin-top:10px}.reviewbox textarea{min-height:58px;resize:vertical}
@@ -59,6 +70,16 @@ input,select,textarea,button{font:inherit}input,select,textarea{width:100%;borde
   </section>
 
   <section class="stats" id="stats"></section>
+  <section class="summary">
+    <div class="panel">
+      <h2 style="margin:0 0 10px;font-size:16px">반려 사유 요약</h2>
+      <div id="reasonChips" class="chips"></div>
+    </div>
+    <div class="panel">
+      <h2 style="margin:0 0 10px;font-size:16px">상품별 반복 실패</h2>
+      <div id="productSummary" class="mini-list"></div>
+    </div>
+  </section>
 
   <section class="layout">
     <div class="cards" id="cards"></div>
@@ -122,6 +143,19 @@ function renderStats(){
     ["심의 확인",a.compliance_review||0],
   ].map(([k,v])=>`<div class="panel stat"><b>${v}</b><span>${k}</span></div>`).join("");
 }
+function renderSummary(){
+  const s=ModooMaterialFeedback.stats();
+  const byReason=s.byReason||{};
+  const byProduct=s.byProduct||{};
+  const reasonEntries=Object.entries(byReason).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const productEntries=Object.entries(byProduct).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  $("reasonChips").innerHTML=reasonEntries.length?reasonEntries.map(([reason,count])=>{
+    const cls=/ai_template_tone|unusable_search_ad_tone|product_mismatch|image_product_mismatch|repeated_material/.test(reason)?"hot":/season_mismatch|serp_gap/.test(reason)?"warn":"good";
+    const label=ModooMaterialFeedback.reasons?.[reason]||reason;
+    return `<span class="chip ${cls}">${esc(label)} <b>${count}</b></span>`;
+  }).join(""):'<span class="chip">아직 반려 사유가 없습니다</span>';
+  $("productSummary").innerHTML=productEntries.length?productEntries.map(([product,count])=>`<div class="mini-row"><b>${esc(allItems.find(x=>x.productKey===product)?.productName||product)}</b><span>${count}건</span></div>`).join(""):'<div class="mini-row"><b>아직 검수 기록이 없습니다</b><span>0건</span></div>';
+}
 function filtered(){
   const q=$("q").value.trim().toLowerCase(),p=$("product").value,c=$("channel").value;
   return allItems.filter(x=>(!p||x.productKey===p)&&(!c||x.channel===c)&&(!q||`${x.productName} ${x.title} ${x.text}`.toLowerCase().includes(q)));
@@ -158,18 +192,19 @@ function saveReview(action,id){
     note:document.querySelector(`[data-note="${CSS.escape(id)}"]`)?.value,
     text:item.text, title:item.title, asset:item.asset
   });
-  renderStats(); renderCards(); toast("검수 기록을 저장했습니다");
+  renderStats(); renderSummary(); renderCards(); toast("검수 기록을 저장했습니다");
 }
 async function init(){
   const [data,r]=await Promise.all([fetch(DATA_URL).then(r=>r.json()),fetch(RULE_URL).then(r=>r.json()).catch(()=>null)]);
   rules=r; allItems=normalize(data); productOptions(); renderStats(); renderCards();
+  renderSummary();
 }
 ["q","product","channel"].forEach(id=>$(id).addEventListener("input",renderCards));
 $("cards").addEventListener("click",e=>{const b=e.target.closest("button[data-act]"); if(b)saveReview(b.dataset.act,b.dataset.id)});
 $("downloadBackup").addEventListener("click",()=>ModooMaterialFeedback.download(ModooMaterialFeedback.load(),"material-review-backup.json"));
 $("exportRules").addEventListener("click",()=>{$("rulesPreview").textContent=JSON.stringify(ModooMaterialFeedback.exportRules(rules||{}),null,2);toast("규칙 JSON을 만들었습니다")});
 $("copyRules").addEventListener("click",async()=>{await navigator.clipboard.writeText($("rulesPreview").textContent);toast("클립보드에 복사했습니다")});
-$("clearReviews").addEventListener("click",()=>{if(confirm("이 브라우저의 소재 검수 기록을 비울까요?")){ModooMaterialFeedback.clear();renderStats();renderCards();toast("로컬 기록을 비웠습니다")}});
+$("clearReviews").addEventListener("click",()=>{if(confirm("이 브라우저의 소재 검수 기록을 비울까요?")){ModooMaterialFeedback.clear();renderStats();renderCards();renderSummary();toast("로컬 기록을 비웠습니다")}});
 init().catch(err=>{$("cards").innerHTML=`<div class="panel empty">데이터를 읽지 못했습니다. ${esc(err.message)}</div>`});
 </script>
 </body>

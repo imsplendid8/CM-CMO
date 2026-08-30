@@ -36,6 +36,8 @@ class TestFeedbackContract(unittest.TestCase):
     def test_material_admin_is_local_review_lab(self):
         self.assertIn("ModooMaterialFeedback", MATERIAL_ADMIN)
         self.assertIn("data/adcopy/material-feedback-rules.json", MATERIAL_ADMIN)
+        self.assertIn("반려 사유 요약", MATERIAL_ADMIN)
+        self.assertIn("상품별 반복 실패", MATERIAL_ADMIN)
         for label in ("SA 소재", "파워콘텐츠", "썸네일"):
             self.assertIn(label, MATERIAL_ADMIN)
         for action in ("accepted", "edit_requested", "rejected", "compliance_review"):
