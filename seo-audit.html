@@ -998,9 +998,12 @@ function runPro(){
 
 /* ── SEO INTEL ── */
 const SEO_INTEL_STORE="seo_intel_import_v1";
+const SEO_INTEL_DRAFT_STORE="seo_intel_draft_v1";
 let SEO_INTEL_DATA={schema_version:2,asof:"",observations:[],site_queries:[],domain_queries:[],monthly_diff:{latest:"",previous:"",new_domains:[],dropped_domains:[],new_queries:[],dropped_queries:[],rising_angles:[],declining_angles:[]},default_filters:{exclude_flags:["ended_event","expired_product","sales_ended","noindex","redirect_chain"],exclude_status:["ended","expired","closed","sold_out","discontinued"]}};
 function intelLoadStore(){try{return JSON.parse(localStorage.getItem(SEO_INTEL_STORE)||"null")||null}catch(_){return null}}
 function intelSaveStore(data){try{localStorage.setItem(SEO_INTEL_STORE,JSON.stringify(data));}catch(_){ } }
+function intelLoadDraft(){try{return localStorage.getItem(SEO_INTEL_DRAFT_STORE)||""}catch(_){return""}}
+function intelSaveDraft(text){try{localStorage.setItem(SEO_INTEL_DRAFT_STORE,String(text||""));}catch(_){ } }
 function intelText(value){return String(value??"").trim();}
 function intelList(value){if(Array.isArray(value))return value.flatMap(intelList).map(intelText).filter(Boolean);if(value==null)return[];const text=intelText(value);return text?[text]:[];}
 function intelNormalizeStatus(value){
@@ -1155,6 +1158,7 @@ function renderIntel(){
             <button class="btn" id="intelSample">예시</button>
             <button class="btn" id="intelReset">초기화</button>
           </div>
+          <div class="intel-note" style="margin-top:-4px">붙여넣은 내용은 로컬에 자동 저장됩니다.</div>
           <div><label>도메인 필터</label><select id="intelDomain"><option value="">전체 도메인</option>${onlyDomains.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join("")}</select></div>
           <div><label>검색</label><input id="intelQuery" placeholder="query / title / url / reason 검색"></div>
           <div><label>상태 필터</label><select id="intelState">
@@ -1260,16 +1264,22 @@ function renderIntel(){
         </div>
       </section>
     </div>`;
+  const draft=$("#intelJson");
+  if(draft&&!(draft.value||"").trim()){
+    const saved=intelLoadDraft();
+    if(saved)draft.value=saved;
+  }
   $("#intelLoad").addEventListener("click",()=>{
     const parsed=parseIntelJson($("#intelJson").value);
     if(!parsed)return;
     SEO_INTEL_DATA=parsed;
     intelSaveStore(parsed);
+    intelSaveDraft($("#intelJson").value);
     renderIntel();
     toast("SEO 관측 JSON을 반영했습니다");
   });
   $("#intelSample").addEventListener("click",()=>{
-    $("#intelJson").value=JSON.stringify({
+    const sample=JSON.stringify({
       schema_version:2,asof:"2026-08-30",
       monthly_diff:{latest:"2026-08-30",previous:"2026-07-30",new_domains:["www.carrotins.com"],dropped_domains:["old.example.com"],new_queries:["site:www.carrotins.com 운전자보험"],dropped_queries:["site:old.example.com 이벤트"],rising_angles:["운전자보험"],declining_angles:["이벤트"]},
       observations:[
@@ -1278,10 +1288,13 @@ function renderIntel(){
         {domain:"hanwhadirect.com",site_query:"site:hanwhadirect.com 자동차보험",query:"site:hanwhadirect.com 자동차보험",title:"자동차보험",url:"https://www.hanwhadirect.com/car",status:"review",flags:["redirect_chain"],source:"advertools",captured_at:"2026-08-30"}
       ]
     },null,2);
+    $("#intelJson").value=sample;
+    intelSaveDraft(sample);
   });
   $("#intelReset").addEventListener("click",()=>{
     if(confirm("저장된 SEO 관측 JSON을 지울까요?")){
       localStorage.removeItem(SEO_INTEL_STORE);
+      localStorage.removeItem(SEO_INTEL_DRAFT_STORE);
       SEO_INTEL_DATA=intelDefaultData();
       renderIntel();
       toast("관측 저장소를 초기화했습니다");
@@ -1291,6 +1304,9 @@ function renderIntel(){
   $("#intelQuery").addEventListener("input",renderIntel);
   $("#intelState").addEventListener("change",renderIntel);
   $("#intelHideEnded").addEventListener("change",renderIntel);
+  $("#intelJson").addEventListener("input",()=>{
+    intelSaveDraft($("#intelJson").value);
+  });
 }
 function parseIntelJson(raw){
   let o;

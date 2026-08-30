@@ -221,6 +221,7 @@ class TestFaqOpportunityAgent(unittest.TestCase):
         self.assertNotIn("data/seo/faq-opportunities.json", seo)
         self.assertIn("SEO Intelligence", seo)
         self.assertIn("SEO_INTEL_STORE", seo)
+        self.assertIn("SEO_INTEL_DRAFT_STORE", seo)
         self.assertIn("data/seo/site-observations.json", seo)
         self.assertIn("리뷰 큐", seo)
         self.assertIn("월간 변화", seo)
