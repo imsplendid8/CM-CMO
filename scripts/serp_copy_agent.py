@@ -444,7 +444,7 @@ def _copy_for_axis(axis, product, keyword, angle, other, season):
                 "promo": _fit(["설계 순서", "공식 안내"], 2, 14),
                 "sublinks": ["보험료계산", "상품안내", "가입조건", "청약확인"]}
     return {"strategy": "SERP 공백형", "title": _fit([f"{angle} 질문부터", f"{name} 놓친 질문"], 4, 15),
-            "description": _fit([f"{_josa(angle, '을', '를')} 검색 후 놓치기 쉬운 {other} 조건까지 이어서 확인",
+            "description": _fit([f"{angle} 검색 후 놓치기 쉬운 {other} 조건까지 이어서 확인",
                                  f"{name}에서 자주 빠지는 {angle} 기준 정리"], 20, 45),
             "additional_description": _fit([f"{angle}의 적용 조건과 제외 항목을 먼저 확인",
                                              "검색 결과와 공식 안내의 차이 메모"], 2, 45),
@@ -599,11 +599,11 @@ def power_topics(product, keyword, angle, table_stakes, basis, planning_month, s
     saturated = "·".join(table_stakes[:2]) or "공통 보장 나열"
     specs = [
         ("serp_whitespace", f"{keyword} 검색 뒤 {_josa(angle, '을', '를')} 따져볼 질문", "검색 후 탐색", angle,
-         ["검색 결과에서 반복된 표현", f"{_josa(angle, '을', '를')} 기준에서 빠지기 쉬운 조건", "보험료 계산에 입력할 항목", "최종 화면에서 기록할 내용"]),
+         ["검색 결과에서 반복된 표현", f"{angle} 기준에서 빠지기 쉬운 조건", "보험료 계산에 입력할 항목", "최종 화면에서 기록할 내용"]),
         ("decision_detail", f"{name} 보험료 전에 맞춰볼 세 가지 조건", "비교·의사결정", second,
          ["가입 목적과 기간 맞추기", f"{angle}·{second} 선택 항목 맞추기", "같은 조건으로 보험료 계산하기", "청약 화면에서 차이 찾기"]),
         ("scope_compare", f"{_josa(angle, '과', '와')} {second}, 함께 볼 때 달라지는 점", "항목 비교", angle,
-         [f"{_josa(angle, '을', '를')} 찾게 되는 생활 상황", f"{_josa(second, '과', '와')} 겹치지 않는 지점", "지급사유와 제외 조건 나란히 읽기", "선택 항목 기록하기"]),
+         [f"{_josa(angle, '이', '가')} 궁금해지는 생활 상황", f"{_josa(second, '과', '와')} 겹치지 않는 지점", "지급사유와 제외 조건 나란히 읽기", "선택 항목 기록하기"]),
         ("official_path", f"{name} 설계 화면을 끝까지 읽는 순서", "가입 흐름 탐색", second,
          ["상품 안내에서 질문 만들기", "설계 화면에서 선택 항목 찾기", "보험료 결과의 조건 읽기", "최종 청약 내용 대조하기"]),
         ("terms_navigation", f"{_josa(angle, '을', '를')} 약관 목차에서 빠르게 찾는 법", "약관 정보 탐색", angle,
