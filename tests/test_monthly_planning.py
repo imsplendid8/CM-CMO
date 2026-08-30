@@ -97,6 +97,7 @@ class TestMonthlyPlanningUiContract(unittest.TestCase):
         self.assertIn("seedsPerProduct: 24", core)
         self.assertIn("비공개 API", collector)
         self.assertIn("data/keyword-autocomplete.json", pages)
+        self.assertIn("dist", pages)
 
     def test_seo_proposes_four_review_gated_faqs_without_retired_rich_result(self):
         seo = self.read("seo-audit.html")
