@@ -615,9 +615,13 @@ def power_topics(product, keyword, angle, table_stakes, basis, planning_month, s
     if season.get("name"):
         seasonal_spec = next(row for row in specs if row[0] == "seasonal_scene")
         rotated = [seasonal_spec, *[row for row in rotated if row[0] != "seasonal_scene"]]
+    # 같은 기준월의 기존 후보는 이번 일괄 갱신에서 교체 대상이다. 이를 이력 중복으로
+    # 막으면 규칙을 바꿔도 새 주제가 0~1개만 남으므로, 이전 월 이력만 카니벌라이제이션
+    # 기준으로 사용한다.
     used_titles = {re.sub(r"\s+", "", str(row.get("title") or "")).lower()
                    for row in ((content_history or {}).get("entries") or [])
-                   if row.get("product_key") == product["key"]}
+                   if row.get("product_key") == product["key"]
+                   and str(row.get("planning_month") or "") != str(planning_month)}
     rows = []
     for spec in rotated:
         pattern, title, intent, focus, sections, *query_override = spec
