@@ -1,5 +1,5 @@
 {
-  "_comment": "실제 이미지 API를 호출하지 않는 안전한 생성 큐. PNG가 확인된 항목만 계획의 asset으로 승격한다.",
+  "_comment": "실제 이미지 API는 명시적 실행에서만 호출한다. PNG가 확인된 항목만 계획의 asset으로 승격한다.",
   "schema_version": 1,
   "planning_month": "2026-08",
   "generated_at": "2026-08-31T12:34:55+00:00",

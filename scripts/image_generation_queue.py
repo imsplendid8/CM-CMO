@@ -144,16 +144,20 @@ def build_queue(root: Path = ROOT, plan_path: Path = PLAN_PATH,
         "failed": sum(row["status"] == "failed" for row in items),
     }
     payload = {
-        "_comment": "실제 이미지 API를 호출하지 않는 안전한 생성 큐. PNG가 확인된 항목만 계획의 asset으로 승격한다.",
+        "_comment": "실제 이미지 API는 명시적 실행에서만 호출한다. PNG가 확인된 항목만 계획의 asset으로 승격한다.",
         "schema_version": 1,
         "planning_month": planning_month,
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "source": "data/adcopy/serp-candidates.json",
-        "provider": "not_configured",
+        "provider": previous_payload.get("provider") or "not_configured",
         "status_contract": ["pending", "generated", "ready", "failed"],
         "summary": summary,
         "items": items,
     }
+    if previous_payload.get("provider_model"):
+        payload["provider_model"] = previous_payload["provider_model"]
+    if previous_payload.get("provider_configured_at"):
+        payload["provider_configured_at"] = previous_payload["provider_configured_at"]
     write_json(queue_path, payload)
     return payload
 

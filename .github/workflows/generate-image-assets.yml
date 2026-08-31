@@ -1,0 +1,92 @@
+name: Generate Image Assets
+
+# 유료 이미지 API 호출은 예약 실행하지 않는다. 운영자가 Run workflow에서
+# execute=true를 명시하고, limit/product 범위를 확인한 경우에만 실행한다.
+on:
+  workflow_dispatch:
+    inputs:
+      execute:
+        description: "실제 이미지 API 호출(비용 발생)을 허용"
+        required: true
+        type: boolean
+        default: false
+      limit:
+        description: "이번 실행에서 만들 최대 이미지 수"
+        required: true
+        default: "4"
+        type: string
+      product:
+        description: "상품 키(비우면 전체 pending, 예: driver)"
+        required: false
+        default: ""
+        type: string
+      retry_failed:
+        description: "이전 실패 항목도 재시도"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cm-cmo-data-writers
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+      - name: Preview image queue
+        env:
+          LIMIT: ${{ inputs.limit }}
+          PRODUCT: ${{ inputs.product }}
+          RETRY_FAILED: ${{ inputs.retry_failed }}
+        run: |
+          args=(--limit "$LIMIT")
+          if [ -n "$PRODUCT" ]; then args+=(--product "$PRODUCT"); fi
+          if [ "$RETRY_FAILED" = "true" ]; then args+=(--retry-failed); fi
+          python3 scripts/generate_image_assets.py "${args[@]}"
+      - name: Generate PNGs (explicit opt-in only)
+        if: ${{ inputs.execute == true }}
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_IMAGE_API_URL: ${{ vars.OPENAI_IMAGE_API_URL }}
+          OPENAI_IMAGE_MODEL: ${{ vars.OPENAI_IMAGE_MODEL }}
+          OPENAI_IMAGE_SIZE: ${{ vars.OPENAI_IMAGE_SIZE }}
+          OPENAI_IMAGE_QUALITY: ${{ vars.OPENAI_IMAGE_QUALITY }}
+          LIMIT: ${{ inputs.limit }}
+          PRODUCT: ${{ inputs.product }}
+          RETRY_FAILED: ${{ inputs.retry_failed }}
+        run: |
+          args=(--execute --limit "$LIMIT")
+          if [ -n "$PRODUCT" ]; then args+=(--product "$PRODUCT"); fi
+          if [ "$RETRY_FAILED" = "true" ]; then args+=(--retry-failed); fi
+          python3 scripts/generate_image_assets.py "${args[@]}"
+      - name: Validate generated assets
+        if: ${{ inputs.execute == true }}
+        run: |
+          python3 scripts/image_generation_queue.py --validate
+          node scripts/check_adcopy_images.mjs
+      - name: Commit generated PNGs
+        if: ${{ inputs.execute == true }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/insurance/generated data/adcopy/serp-candidates.json data/adcopy/image-generation-queue.json
+          if git diff --cached --quiet; then
+            echo "변경 없음"
+          else
+            git commit -m "chore(images): generate approved thumbnail assets"
+            for attempt in 1 2 3; do
+              git pull --rebase --autostash origin main && git push origin HEAD:main && exit 0
+              sleep $((attempt * 5))
+            done
+            exit 1
+          fi
