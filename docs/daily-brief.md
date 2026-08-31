@@ -20,6 +20,7 @@
 ## 구성
 - 스크립트: `scripts/daily_brief.py` (표준 라이브러리만; `products.json`·`seasonal.json`·`signals.json`·`clips/` + `check_automation_health` 를 읽음)
 - 스케줄: `.github/workflows/daily-brief.yml` (cron `0 23 * * *` = 08:00 KST, 수동 실행도 가능)
+- GitHub Actions의 `schedule`은 플랫폼 부하에 따라 늦게 시작될 수 있습니다. 워크플로 실행 요약의 **예약 표현·실제 시작 시각**으로 트리거 지연과 발송 코드 지연을 구분합니다. 10분 이내 정시성이 필요하면 런북의 외부 스케줄러(Cloudflare Worker Cron → `workflow_dispatch`) 방식을 사용합니다.
 - 미리보기: `python3 scripts/daily_brief.py --dry` (발송 없이 메시지만 출력)
 
 ## 발송 예시

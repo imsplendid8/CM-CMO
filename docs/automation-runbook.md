@@ -9,9 +9,9 @@ CM-CMO의 데이터 수집·브리프 워크플로 **실행 순서와 충돌 방
 | signals.yml | Demand Signals | schedule·dispatch | `30 21 * * *` | 매일 06:30 | `data/signals.json` | ✅ | `cm-cmo-data-writers` |
 | news-clip.yml | News Clip | schedule·dispatch | `20 22 * * *` / `20 4 * * *` | 매일 07:20 / 13:20 | `data/clips/`(최신 30일 보관) | ✅ | `cm-cmo-data-writers` |
 | event-reco.yml | Event Recommendations | schedule·dispatch | `45 22 * * *` / `45 4 * * *` | 매일 07:45 / 13:45 | `data/events/recommendations.json`·`state_history.json` | ✅ | `cm-cmo-data-writers` |
-| automation-status.yml | Automation Health | schedule·dispatch | `40 22 * * *` / `40 4 * * *` | 매일 07:40 / 13:40 | (없음·상태 점검) | ✖(read) | `cm-cmo-data-writers` |
-| daily-brief.yml | Daily Brief (Telegram) | schedule·dispatch | `0 23 * * *` / `0 5 * * *` | 매일 08:00 / 14:00 | (없음·텔레그램) | ✖(read) | `cm-cmo-data-writers` |
-| daily-email.yml | Daily Brief (Email) | schedule·dispatch | `30 23 * * *` | 매일 08:30 | (없음·이메일 SMTP) | ✖(read) | `cm-cmo-data-writers` |
+| automation-status.yml | Automation Health | schedule·dispatch | `40 22 * * *` / `40 4 * * *` | 매일 07:40 / 13:40 | (없음·상태 점검) | ✖(read) | `cm-cmo-automation-status` |
+| daily-brief.yml | Daily Brief (Telegram) | schedule·dispatch | `0 23 * * *` / `0 5 * * *` | 매일 08:00 / 14:00 | (없음·텔레그램) | ✖(read) | `cm-cmo-brief-telegram` |
+| daily-email.yml | Daily Brief (Email) | schedule·dispatch | `30 23 * * *` | 매일 08:30 | (없음·이메일 SMTP) | ✖(read) | `cm-cmo-brief-email` |
 | searchad.yml | Naver SearchAd Volume | schedule·dispatch | `0 20 * * 0` | 일 05:00 | `data/volume.json`·`data/volume-history.json` | ✅ | `cm-cmo-data-writers` |
 | serp-capture.yml | SERP Capture | schedule·dispatch | `20 21 * * 0` | 월 06:20 | `serp/` | ✅ | `cm-cmo-data-writers` |
 | content-intelligence.yml | Content Intelligence Agents | schedule·dispatch | `10 22 * * 0` | 월 07:10 | `serp/ad_analysis.json`·`data/adcopy/serp-candidates.json`·`data/seo/faq-opportunities.json` | ✅ | `cm-cmo-data-writers` |
@@ -35,13 +35,18 @@ Content Intelligence의 Search Console 입력은 `GSC_SITE_URL`, `GSC_CLIENT_ID`
 
 ## 충돌 방지
 
-1. **공유 concurrency 레인** `cm-cmo-data-writers` — 커밋/푸시하는 7개 워크플로(signals·news-clip·event-reco·searchad·serp-capture·content-intelligence·trends) + 이를 소비하는 읽기 전용 3종(automation-status·daily-brief·daily-email)이 같은 그룹을 사용해 GitHub가 **직렬화**(동시에 하나만 실행). `cancel-in-progress: false`로 어떤 실행도 버리지 않는다 → 브리프·상태점검은 **수집이 끝난 데이터**를 본다.
-2. **분(minute) 분리 cron** — 같은 UTC 분에 두 커밋 워크플로가 겹치지 않게 stagger:
+1. **커밋 워크플로 공유 concurrency 레인** `cm-cmo-data-writers` — 커밋/푸시하는 7개 워크플로(signals·news-clip·event-reco·searchad·serp-capture·content-intelligence·trends)만 같은 그룹을 사용한다. `cancel-in-progress: false`로 커밋 작업을 버리지 않고 main push 충돌을 직렬화한다.
+2. **읽기 전용 레인 분리** — `automation-status`, `daily-brief`, `daily-email`은 각각 독립 그룹을 사용한다. 읽기 작업이 길어진 수집 작업 뒤에서 대기하지 않으며, 각 실행은 `ref: main`으로 시작 시점의 최신 커밋을 읽는다. 브리프 본문에는 원천 파일이 아직 늦었는지 상태가 표시된다.
+3. **분(minute) 분리 cron** — 같은 UTC 분에 두 커밋 워크플로가 겹치지 않게 stagger:
    - signals `30 21` vs serp `20 21`(일) vs content-intelligence `10 22`(일) → 분 분리
    - searchad `0 20`(일) vs trends `10 20`(1일) → 분 분리
    - news-clip `20 22`/`20 4`, automation-status `40 22`/`40 4`, event-reco `45 22`/`45 4` → 서로·브리프와 분 분리
    - event-reco `45 22`/`45 4` → news-clip(`30 22`/`0 4`)·브리프와 분 분리(수집 뒤·브리프 전)
-3. **안전 push** — 각 커밋 스텝은 `git pull --rebase --autostash origin main` 후 push, 최대 3회 재시도, 소진 시 명확히 실패(exit 1). 각 워크플로는 **서로 겹치지 않는 경로만** 커밋하므로 rebase가 내용 충돌을 일으키지 않는다.
+4. **안전 push** — 각 커밋 스텝은 `git pull --rebase --autostash origin main` 후 push, 최대 3회 재시도, 소진 시 명확히 실패(exit 1). 각 워크플로는 **서로 겹치지 않는 경로만** 커밋하므로 rebase가 내용 충돌을 일으키지 않는다.
+
+### 예약 시각의 한계와 확인 방법
+
+GitHub Actions의 `schedule` 이벤트는 플랫폼 부하에 따라 예약 시각보다 늦게 생성될 수 있고, 정시 발송 SLA를 보장하지 않는다. 실제 지연이 코드 내부가 아닌 트리거 단계인지 구분할 수 있도록 텔레그램·이메일 실행 요약에 예약 표현과 실제 시작 시각(UTC/KST)을 기록한다. 10분 이내 정시성이 업무 요건이면 GitHub cron 대신 외부 스케줄러(예: Cloudflare Worker Cron)가 GitHub `workflow_dispatch`를 호출하는 구조가 필요하다. 수동 실행은 기존처럼 유지한다.
 
 ## workflow_run — 수집 순서엔 미사용 · 배포엔 사용
 
@@ -50,7 +55,7 @@ Content Intelligence의 Search Console 입력은 `GSC_SITE_URL`, `GSC_CLIENT_ID`
 
 ## 유지보수 주의
 
-- **`concurrency.group` 이름을 바꾸면** 직렬화가 깨진다. 커밋 7종 + 소비 3종(브리프·이메일·상태점검)은 반드시 동일 그룹(`cm-cmo-data-writers`)을 유지할 것.
+- **`concurrency.group` 이름을 바꾸면** 의도한 충돌 방지가 깨진다. 커밋 7종은 `cm-cmo-data-writers`, 텔레그램·이메일·상태점검은 각각 `cm-cmo-brief-telegram`, `cm-cmo-brief-email`, `cm-cmo-automation-status`를 유지한다.
 - cron을 조정할 때 **같은 UTC 분에 두 커밋 워크플로가 겹치지 않게** 할 것(정적 테스트 `tests/test_workflows.py`가 검사).
 - `workflow_dispatch`는 모든 워크플로에 남겨 **수동 복구**가 가능하게 유지.
 - 이 규칙은 정적 회귀 테스트로 강제: `python3 -m unittest tests.test_workflows`.

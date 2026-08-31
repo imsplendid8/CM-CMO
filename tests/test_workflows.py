@@ -7,6 +7,7 @@
   - cron 5필드 형식
   - 커밋(push)하는 워크플로끼리 같은 UTC 분에 겹치는 cron이 없음(동시 write 방지)
   - 커밋 워크플로는 모두 동일 concurrency 그룹(cm-cmo-data-writers)을 가짐
+  - 읽기 전용 알림/상태 점검은 커밋 레인과 분리해 지연을 전파하지 않음
   - 모든 워크플로에 workflow_dispatch 유지(수동 복구)
   - workflow_run 대상 워크플로 name 이 실제로 존재
 표준 라이브러리 + PyYAML.
@@ -23,6 +24,11 @@ except ImportError:          # PyYAML 없으면 정적 테스트 skip(로컬), C
 WF_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                       ".github", "workflows")
 SHARED_GROUP = "cm-cmo-data-writers"
+READ_ONLY_GROUPS = {
+    "daily-brief.yml": "cm-cmo-brief-telegram",
+    "daily-email.yml": "cm-cmo-brief-email",
+    "automation-status.yml": "cm-cmo-automation-status",
+}
 
 
 def _load_all():
@@ -97,6 +103,20 @@ class TestWorkflows(unittest.TestCase):
             self.assertIsInstance(conc, dict, f"{name}: 커밋 워크플로에 concurrency 없음")
             self.assertEqual(conc.get("group"), SHARED_GROUP,
                              f"{name}: concurrency.group 이 공유 레인({SHARED_GROUP}) 아님 → {conc.get('group')!r}")
+
+    def test_read_only_notifications_do_not_share_writer_lane(self):
+        for name, expected in READ_ONLY_GROUPS.items():
+            wf = self.wfs.get(name)
+            self.assertIsNotNone(wf, f"{name}: 읽기 전용 워크플로가 없음")
+            self.assertEqual((wf.get("concurrency") or {}).get("group"), expected,
+                             f"{name}: 알림/상태 점검이 writer 레인을 공유함")
+            self.assertNotEqual(expected, SHARED_GROUP)
+
+    def test_notification_schedule_contract(self):
+        telegram = self.wfs.get("daily-brief.yml")
+        email = self.wfs.get("daily-email.yml")
+        self.assertEqual(_crons(telegram), ["0 23 * * *", "0 5 * * *"])
+        self.assertEqual(_crons(email), ["30 23 * * *"])
 
     def test_no_two_writers_share_same_instant_cron(self):
         writers = []

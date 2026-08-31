@@ -16,12 +16,13 @@ permissions:
   issues: write
 
 concurrency:
-  group: cm-cmo-data-writers   # 커밋 워크플로 공유 레인 → 수집이 끝난 상태를 안정적으로 판정(직렬화)
+  group: cm-cmo-automation-status  # 읽기 전용 점검은 커밋 워크플로와 분리해 시작 지연 방지
   cancel-in-progress: false
 
 jobs:
   health:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5

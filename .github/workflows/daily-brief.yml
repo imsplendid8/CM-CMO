@@ -8,7 +8,7 @@ name: Daily Brief (Telegram)
 
 on:
   schedule:
-    - cron: "30 23 * * *"   # 08:30 KST (오전) — news/자동화 수집 후 여유를 둔 발송
+    - cron: "0 23 * * *"    # 08:00 KST (오전) — news/자동화 수집 후 발송
     - cron: "0 5 * * *"    # 14:00 KST (오후) — news 13:20·자동화상태 13:40 뒤
   workflow_dispatch:
 
@@ -16,16 +16,32 @@ on:
 permissions:
   contents: read
 
-# 수집 워크플로와 같은 레인 → 수집이 끝난 최신 데이터로 발송(직렬화, 취소 없음).
+# 읽기 전용 알림은 커밋 워크플로와 분리한다. 수집 지연이 알림 시작을 막지 않으며,
+# 브리프 본문에는 원천 파일의 실제 신선도를 표시한다.
 concurrency:
-  group: cm-cmo-daily-brief
+  group: cm-cmo-brief-telegram
   cancel-in-progress: false
 
 jobs:
   brief:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
+      - name: Record trigger timing
+        env:
+          SCHEDULE_EXPR: ${{ github.event.schedule || 'workflow_dispatch' }}
+        run: |
+          now_utc=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
+          now_kst=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M:%S KST')
+          {
+            echo "## 텔레그램 발송 타이밍"
+            echo "- 예약 표현: ${SCHEDULE_EXPR}"
+            echo "- 실제 시작(UTC): ${now_utc}"
+            echo "- 실제 시작(KST): ${now_kst}"
+          } >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: main
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
