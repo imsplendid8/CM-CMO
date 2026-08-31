@@ -16,6 +16,7 @@
  *   GET  /naver/v1/search/*                → openapi.naver.com (검색: 뉴스 등)
  *   POST /naver/v1/datalab/*               → openapi.naver.com (데이터랩 트렌드)
  *   GET  /searchad/keywordstool            → api.searchad.naver.com (검색량 조회 전용, HMAC 자동 서명)
+ *   POST /v1/feedback                      → 비공개 D1 검수 이벤트(Cloudflare Access 필요)
  *   GET  /usage                            → 사용량(대시보드 위젯, 허용 출처만)
  *   GET  /  ·  /health                     → 상태(공개)
  *
@@ -26,9 +27,12 @@
 const ALLOW_ORIGINS = [
   "https://imsplendid8.github.io",
 ];
-const ROUTE_DAILY_MAX = { search: 500, datalab: 100, searchad: 100 };
+const ROUTE_DAILY_MAX = { search: 500, datalab: 100, searchad: 100, feedback: 200 };
 const MAX_QUERY_LENGTH = 4096;
 const MAX_BODY_BYTES = 64 * 1024;
+const MAX_FEEDBACK_META_BYTES = 8 * 1024;
+const FEEDBACK_ACTIONS = new Set(["copied", "accepted", "edit_requested", "rejected"]);
+const SHA256_HEX = /^[0-9a-f]{64}$/i;
 
 const matchOrigin = (v) => {
   if (!v) return null;
@@ -57,6 +61,7 @@ function routeAllowed(method, p) {
   if (p.startsWith("/naver/v1/datalab/")) return method === "POST";
   // 공개 브라우저 경로는 검색량 조회만 허용한다. /ncc/* 등 광고 관리 API는 절대 전달하지 않는다.
   if (p === "/searchad/keywordstool") return method === "GET";
+  if (p === "/v1/feedback") return method === "POST";
   return false;
 }
 
@@ -68,7 +73,7 @@ async function hmacSha256B64(secret, msg) {
 
 // ── 사용량/레이트리밋 ──
 const today = () => new Date().toISOString().slice(0, 10); // UTC 기준일
-const DAILY_LIMIT = { search: 25000, datalab: 1000, searchad: null };
+const DAILY_LIMIT = { search: 25000, datalab: 1000, searchad: null, feedback: 5000 };
 async function bump(env, cat) {
   try {
     const k = `u:${cat}:${today()}`;
@@ -87,16 +92,89 @@ async function rateOk(env, req, cat) {
   } catch (e) { return false; }
 }
 const routeCategory = (p) => p.startsWith("/naver/v1/datalab/") ? "datalab"
-  : p.startsWith("/naver/v1/search/") ? "search" : "searchad";
+  : p.startsWith("/naver/v1/search/") ? "search"
+  : p === "/searchad/keywordstool" ? "searchad" : "feedback";
 async function usageReport(env) {
   const date = today();
-  const out = { date, tracked: !!(env && env.USAGE), limits: DAILY_LIMIT, usage: { search: 0, datalab: 0, searchad: 0 } };
+  const out = { date, tracked: !!(env && env.USAGE), limits: DAILY_LIMIT, usage: { search: 0, datalab: 0, searchad: 0, feedback: 0 } };
   if (env && env.USAGE) {
-    for (const cat of ["search", "datalab", "searchad"]) {
+    for (const cat of ["search", "datalab", "searchad", "feedback"]) {
       out.usage[cat] = parseInt((await env.USAGE.get(`u:${cat}:${date}`)) || "0", 10);
     }
   }
   return out;
+}
+
+// ── 비공개 피드백 저장 ──
+// Access가 붙은 경로에서만 전달되는 두 헤더를 모두 요구한다. 이메일 원문은
+// 저장하지 않고, ACTOR_HASH_SALT와 결합한 SHA-256 지문만 D1에 기록한다.
+function accessIdentity(req) {
+  const email = (req.headers.get("Cf-Access-Authenticated-User-Email")
+    || req.headers.get("CF-Access-Authenticated-User-Email") || "").trim().toLowerCase();
+  const jwt = (req.headers.get("Cf-Access-Jwt-Assertion")
+    || req.headers.get("CF-Access-Jwt-Assertion") || "").trim();
+  return email && jwt ? email : "";
+}
+async function sha256Hex(value) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest), (n) => n.toString(16).padStart(2, "0")).join("");
+}
+function limitedString(value, max) {
+  if (value == null || typeof value === "object") return null;
+  const text = String(value ?? "").trim();
+  return text ? text.slice(0, max) : null;
+}
+async function saveFeedback(req, env, origin) {
+  if (!env || !env.FEEDBACK_DB) return jsonFor(origin, { error: "feedback storage not configured: FEEDBACK_DB" }, 503);
+  const email = accessIdentity(req);
+  if (!email) return jsonFor(origin, { error: "feedback authentication required" }, 401);
+  if (!env.ACTOR_HASH_SALT) return jsonFor(origin, { error: "feedback storage not configured: ACTOR_HASH_SALT" }, 503);
+  let payload, raw;
+  try { raw = await req.text(); } catch (e) { return jsonFor(origin, { error: "invalid body" }, 400); }
+  if (new TextEncoder().encode(raw).byteLength > MAX_BODY_BYTES) return jsonFor(origin, { error: "request body too large" }, 413);
+  try { payload = JSON.parse(raw); } catch (e) { return jsonFor(origin, { error: "invalid JSON" }, 400); }
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) return jsonFor(origin, { error: "feedback payload must be an object" }, 400);
+  // 원문 카피는 어떤 형태로도 저장하지 않는다. 클라이언트는 textFingerprint만 보낸다.
+  if (Object.prototype.hasOwnProperty.call(payload, "text")) return jsonFor(origin, { error: "raw text is not accepted" }, 400);
+  const action = limitedString(payload.action, 32);
+  const tool = limitedString(payload.tool, 80);
+  if (!action || !FEEDBACK_ACTIONS.has(action)) return jsonFor(origin, { error: "invalid feedback action" }, 400);
+  if (!tool) return jsonFor(origin, { error: "tool is required" }, 400);
+  const textFingerprint = limitedString(payload.textFingerprint || payload.text_fingerprint, 64);
+  if (textFingerprint && !SHA256_HEX.test(textFingerprint)) return jsonFor(origin, { error: "textFingerprint must be sha256 hex" }, 400);
+  if (payload.metadata != null && (typeof payload.metadata !== "object" || Array.isArray(payload.metadata))) return jsonFor(origin, { error: "metadata must be an object" }, 400);
+  const metadata = payload.metadata && typeof payload.metadata === "object" && !Array.isArray(payload.metadata) ? payload.metadata : {};
+  if (Object.prototype.hasOwnProperty.call(metadata, "text")) return jsonFor(origin, { error: "raw text is not accepted" }, 400);
+  const metadataJson = JSON.stringify(metadata);
+  if (new TextEncoder().encode(metadataJson).byteLength > MAX_FEEDBACK_META_BYTES) return jsonFor(origin, { error: "metadata too large" }, 413);
+  const editDistance = payload.editDistance == null || payload.edit_distance == null ? null : Number(payload.editDistance ?? payload.edit_distance);
+  if (editDistance != null && (!Number.isFinite(editDistance) || editDistance < 0 || editDistance > 1e6)) return jsonFor(origin, { error: "invalid editDistance" }, 400);
+  const occurredAt = limitedString(payload.occurredAt || payload.occurred_at, 40) || new Date().toISOString();
+  if (Number.isNaN(Date.parse(occurredAt))) return jsonFor(origin, { error: "invalid occurredAt" }, 400);
+  const actorHash = await sha256Hex(`${env.ACTOR_HASH_SALT}:${email}`);
+  try {
+    const result = await env.FEEDBACK_DB.prepare(`INSERT INTO copy_feedback
+      (occurred_at, tool, product_key, recommendation_id, action, source_version,
+       text_fingerprint, edit_distance, review_status, actor_hash, metadata_json)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+      .bind(
+        occurredAt,
+        tool,
+        limitedString(payload.productKey || payload.product_key, 80),
+        limitedString(payload.recommendationId || payload.recommendation_id, 160),
+        action,
+        limitedString(payload.sourceVersion || payload.source_version, 80),
+        textFingerprint,
+        editDistance,
+        limitedString(payload.reviewStatus || payload.review_status, 80),
+        actorHash,
+        metadataJson,
+      ).run();
+    await bump(env, "feedback");
+    return jsonFor(origin, { ok: true, id: result?.meta?.last_row_id ?? null });
+  } catch (e) {
+    return jsonFor(origin, { error: "feedback storage failed" }, 502);
+  }
 }
 
 export default {
@@ -135,6 +213,10 @@ export default {
     if (!(await rateOk(env, req, category))) return jsonFor(origin, { error: "rate limit exceeded" }, 429);
 
     try {
+      // ── 비공개 검수 피드백 ──
+      // Access + D1이 구성된 경우에만 저장한다. 원문 카피는 받지 않는다.
+      if (p === "/v1/feedback") return saveFeedback(req, env, origin);
+
       // ── 네이버 검색·데이터랩 (키=워커 시크릿만) ──
       if (p.startsWith("/naver/")) {
         const id = env.NAVER_ID, secret = env.NAVER_SECRET;

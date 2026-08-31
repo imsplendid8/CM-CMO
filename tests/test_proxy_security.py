@@ -26,6 +26,14 @@ class TestProxySecurity(unittest.TestCase):
         self.assertIn("ROUTE_DAILY_MAX", WORKER)
         self.assertIn("server not configured: USAGE rate limit binding", WORKER)
 
+    def test_feedback_route_is_private_and_does_not_accept_raw_copy(self):
+        self.assertIn('p === "/v1/feedback"', WORKER)
+        self.assertIn('FEEDBACK_DB', WORKER)
+        self.assertIn('ACTOR_HASH_SALT', WORKER)
+        self.assertIn('Cf-Access-Jwt-Assertion', WORKER)
+        self.assertIn('raw text is not accepted', WORKER)
+        self.assertIn('textFingerprint must be sha256 hex', WORKER)
+
     def test_public_pages_ship_no_client_admin_gate(self):
         public_html = HUB + OVERVIEW
         for marker in ("DEFAULT_ADMIN_HASH", "mf_admin_hash", "mf_admin", "brief-setup.html"):

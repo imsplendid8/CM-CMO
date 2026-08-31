@@ -22,7 +22,10 @@ Cloudflare 대시보드에서 **폼 입력만** 하면 됩니다:
    - `NAVER_ID`, `NAVER_SECRET` (검색·데이터랩 · developers.naver.com)
    - (검색량도 쓰면) `AD_KEY`, `AD_SECRET`, `AD_CUSTOMER` (searchad.naver.com)
 3. **Bindings → Add → KV namespace**에서 변수명 `USAGE`를 연결합니다. 이 바인딩이 없으면 API는 비용 보호를 위해 503으로 실패합니다.
-4. 저장 → **Deploy**
+4. (검수 피드백을 서버에 남길 때만) D1 `FEEDBACK_DB` 바인딩을 추가하고
+   `docs/feedback-schema.sql`을 적용합니다. `ACTOR_HASH_SALT` 시크릿도 등록한 뒤
+   Cloudflare Access에서 `/v1/feedback` 경로를 사내 계정으로 제한합니다.
+5. 저장 → **Deploy**
 
 이제 **팀원 누구든** `imsplendid8.github.io/CM-CMO/` 를 열고 툴의 **실시간 갱신**을 누르면, 아무 키 입력 없이 데이터가 들어옵니다.
 
@@ -40,6 +43,7 @@ Cloudflare 대시보드에서 **폼 입력만** 하면 됩니다:
 | `GET /naver/v1/search/news.json?query=` | openapi.naver.com | 뉴스 |
 | `POST /naver/v1/datalab/search` | openapi.naver.com | 데이터랩 트렌드 |
 | `GET /searchad/keywordstool` | api.searchad.naver.com | 검색량(자동 HMAC 서명·읽기 전용) |
+| `POST /v1/feedback` | 비공개 D1 | 소재 검수 이벤트(Access·D1 구성 시에만) |
 
 ## 기존 자동화(Action)와의 관계
 - **데일리 브리프·주간 검색량·트렌드**는 계속 **GitHub Actions + Secrets**로 무인 실행됩니다(변경 없음).

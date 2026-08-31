@@ -11,10 +11,23 @@ compatibility_date = "2024-11-01"
 # binding = "USAGE"
 # id = "여기에_네임스페이스_id"
 
+# 비공개 소재 검수 이벤트는 D1에만 저장한다. 아래 바인딩을 만든 뒤 주석을
+# 해제하고 database_id를 실제 값으로 교체한다.
+#   wrangler d1 create modooflow-feedback
+#   wrangler d1 execute modooflow-feedback --remote --file ../docs/feedback-schema.sql
+# [[d1_databases]]
+# binding = "FEEDBACK_DB"
+# database_name = "modooflow-feedback"
+# database_id = "여기에_D1_database_id"
+
 # 키를 워커에 직접 넣는 방식(B, 더 안전)을 쓰려면 아래를 wrangler secret 으로 등록:
 #   wrangler secret put NAVER_ID
 #   wrangler secret put NAVER_SECRET
 #   wrangler secret put AD_KEY
 #   wrangler secret put AD_SECRET
 #   wrangler secret put AD_CUSTOMER
+#   wrangler secret put ACTOR_HASH_SALT
+# ACTOR_HASH_SALT는 32바이트 이상 무작위 값으로 생성하고 저장소에 커밋하지 않는다.
+# /v1/feedback 경로는 Cloudflare Access 정책으로 보호해
+# Cf-Access-Authenticated-User-Email과 Cf-Access-Jwt-Assertion을 함께 전달한다.
 # (설정창 헤더 방식(A)만 쓸 거면 시크릿 등록 불필요)

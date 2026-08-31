@@ -27,6 +27,36 @@
 3. 보존 기간과 삭제 정책
 4. 성과 데이터 반출·집계 기준
 
+### Cloudflare Worker 연결 순서
+
+Worker 코드는 `/v1/feedback` 경로를 포함하지만, D1과 Access가 연결되기 전에는
+저장을 시도하지 않고 `503`으로 닫힌다. 따라서 공개 Pages에 실수로 검수 이력이
+노출되지 않는다.
+
+1. `wrangler d1 create modooflow-feedback`으로 D1을 만든다.
+2. `docs/feedback-schema.sql`을 원격 D1에 적용한다.
+   `wrangler d1 execute modooflow-feedback --remote --file docs/feedback-schema.sql`
+3. `proxy/wrangler.toml`의 `[[d1_databases]]`에서 `FEEDBACK_DB` 바인딩과
+   `database_id`를 설정한다.
+4. `wrangler secret put ACTOR_HASH_SALT`로 32바이트 이상 무작위 salt를
+   등록한다. 이메일은 저장하지 않고 이 salt와 결합한 SHA-256 `actor_hash`만
+   기록한다.
+5. Cloudflare Access에서 `/v1/feedback`을 사내 계정으로 제한한다. Worker는
+   `Cf-Access-Authenticated-User-Email`과 `Cf-Access-Jwt-Assertion`이 모두
+   있을 때만 이벤트를 저장한다.
+6. Worker를 배포한 뒤 브라우저에서 `shared/feedback-client.js`의 저장 상태를
+   확인한다. D1 바인딩 누락은 `503`, Access 헤더 누락은 `401`, 원문 `text`를
+   전송한 요청은 `400`이어야 한다.
+
+### 전송 계약
+
+피드백 요청은 `action`, `tool`, `productKey`, `recommendationId`와 같은 식별자,
+선택적인 `sourceVersion`, `reviewStatus`, `editDistance`, `metadata`만 보낸다.
+카피 원문이나 `metadata.text`는 허용하지 않으며, 원문을 대조해야 할 때는
+클라이언트에서 계산한 64자리 SHA-256 `textFingerprint`만 사용한다. Worker는
+필드 길이와 메타데이터 8KB 상한을 검사하고, IP별 일일 피드백 요청도 200건으로
+제한한다.
+
 ## 평가
 
 - 채택률 = `accepted / 노출된 추천`

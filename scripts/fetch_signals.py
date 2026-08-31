@@ -15,11 +15,13 @@
 - 이 샌드박스는 외부망 차단 → 실제 호출은 GitHub Actions(signals.yml)에서. 로컬 미리보기는 --sample.
 - 키: 환경변수 DATA_GO_KR_KEY (data.go.kr 마이페이지 > 인증키. 하나로 여러 서비스 사용).
 - 관광 출입국 통계는 환경변수 TOUR_API_URL / TOUR_API_KEY 로 연결한다.
-- 자동차 신규등록정보는 환경변수 CAR_NEWREG_API_URL / CAR_NEWREG_KEY / CAR_NEWREG_FORM_ID / CAR_NEWREG_STYLE_NUM 로 연결한다.
+- 자동차 신규등록정보는 통계누리 URL이면 CAR_NEWREG_FORM_ID / CAR_NEWREG_STYLE_NUM까지,
+  data.go.kr REST URL이면 CAR_NEWREG_API_URL / CAR_NEWREG_KEY만으로 연결한다.
+  서비스별 고유 파라미터가 필요하면 CAR_NEWREG_EXTRA_PARAMS(JSON 객체)를 추가한다.
 
 엔드포인트는 상수로 분리 — 첫 실행에서 응답 스키마에 맞춰 PARSE 부분만 조정하면 됩니다.
 """
-import os, sys, json, datetime, urllib.parse, urllib.request, urllib.error, xml.etree.ElementTree as ET
+import os, sys, json, re, datetime, urllib.parse, urllib.request, urllib.error, xml.etree.ElementTree as ET
 
 try:
     from scripts.io_utils import atomic_json_write
@@ -44,6 +46,7 @@ CAR_NEWREG_START_DT = os.environ.get("CAR_NEWREG_START_DT", "").strip()
 CAR_NEWREG_END_DT = os.environ.get("CAR_NEWREG_END_DT", "").strip()
 CAR_NEWREG_PAGE_NO = os.environ.get("CAR_NEWREG_PAGE_NO", "1").strip()
 CAR_NEWREG_NUM_OF_ROWS = os.environ.get("CAR_NEWREG_NUM_OF_ROWS", "100").strip()
+CAR_NEWREG_EXTRA_PARAMS = os.environ.get("CAR_NEWREG_EXTRA_PARAMS", "").strip()
 TODAY = datetime.date.today().isoformat()
 
 # ── 엔드포인트 ─────────────────────────────
@@ -242,6 +245,57 @@ def _extract_molit_count(payload):
     candidates.sort(reverse=True)
     return candidates[0]
 
+def _extract_molit_series(payload):
+    """월별 응답 행에서 기간·등록대수를 함께 찾는다(필드명은 기관별 변형 허용)."""
+    rows = []
+    period_tokens = ("ym", "yyyymm", "registym", "month", "date", "period", "stdde")
+    count_tokens = ("count", "cnt", "total", "regist", "register", "newreg", "value", "num")
+
+    def period_value(node):
+        if not isinstance(node, dict):
+            return ""
+        for key, value in node.items():
+            normalized = re.sub(r"[^a-z0-9]", "", str(key).lower())
+            if any(token in normalized for token in period_tokens):
+                text = str(value or "").strip()
+                digits = re.sub(r"[^0-9]", "", text)
+                if len(digits) >= 6:
+                    return digits[:8] if len(digits) >= 8 else digits[:6]
+        return ""
+
+    def count_value(node):
+        if not isinstance(node, dict):
+            return None
+        candidates = []
+        for key, value in node.items():
+            normalized = re.sub(r"[^a-z0-9]", "", str(key).lower())
+            if not any(token in normalized for token in count_tokens):
+                continue
+            if any(token in normalized for token in ("code", "date", "month", "year", "period", "page", "size", "ym", "yyyymm", "registym", "stdde")):
+                continue
+            number = _coerce_float(value)
+            if number is not None:
+                candidates.append(number)
+        return max(candidates) if candidates else None
+
+    def walk(node):
+        if isinstance(node, dict):
+            period = period_value(node)
+            count = count_value(node)
+            if period and count is not None:
+                rows.append({"period": period, "count": count})
+            for value in node.values():
+                walk(value)
+        elif isinstance(node, list):
+            for value in node:
+                walk(value)
+
+    walk(payload)
+    unique = {}
+    for row in rows:
+        unique[(row["period"], row["count"])] = row
+    return sorted(unique.values(), key=lambda row: row["period"])
+
 def _extract_status(payload):
     if not isinstance(payload, dict):
         return None, None
@@ -257,34 +311,77 @@ def _extract_status(payload):
                 return s, m
     return None, None
 
+def _is_data_go_url(url):
+    host = urllib.parse.urlparse(str(url or "")).netloc.lower()
+    return host.endswith("data.go.kr") or host.endswith("data.go.kr:443") or host.endswith("data.go.kr:80")
+
+def _extra_params(raw):
+    """서비스별 파라미터를 Secret(JSON)으로 받되 키·값을 평탄화한다."""
+    if not raw:
+        return {}, None
+    try:
+        value = json.loads(raw)
+    except (TypeError, ValueError):
+        return {}, "CAR_NEWREG_EXTRA_PARAMS는 JSON 객체여야 합니다"
+    if not isinstance(value, dict):
+        return {}, "CAR_NEWREG_EXTRA_PARAMS는 JSON 객체여야 합니다"
+    out = {}
+    for key, item in value.items():
+        key = str(key).strip()
+        if not key or item is None:
+            continue
+        if isinstance(item, (dict, list)):
+            return {}, "CAR_NEWREG_EXTRA_PARAMS의 값은 문자열·숫자만 허용합니다"
+        out[key] = str(item)
+    return out, None
+
 def fetch_car_newreg():
     """한국교통안전공단_자동차종합정보 신규등록정보 서비스.
 
     승인된 통계누리 API를 바로 붙여서 운전자보험 수요 분석용 신호로 사용한다.
     전체 등록대수/누적 통계는 나중에 같은 패턴으로 추가 가능하도록 구조를 맞춘다.
     """
-    if not (CAR_NEWREG_API_URL and CAR_NEWREG_KEY and CAR_NEWREG_FORM_ID and CAR_NEWREG_STYLE_NUM):
+    if not (CAR_NEWREG_API_URL and CAR_NEWREG_KEY):
         return {
             "count": None,
             "period": None,
             "mom": None,
             "source": "stat.molit",
-            "error": "CAR_NEWREG_API_URL/CAR_NEWREG_KEY/CAR_NEWREG_FORM_ID/CAR_NEWREG_STYLE_NUM 필요",
+            "error": "CAR_NEWREG_API_URL/CAR_NEWREG_KEY 필요",
+        }
+
+    data_go = _is_data_go_url(CAR_NEWREG_API_URL)
+    if not data_go and not (CAR_NEWREG_FORM_ID and CAR_NEWREG_STYLE_NUM):
+        return {
+            "count": None,
+            "period": None,
+            "mom": None,
+            "source": "stat.molit",
+            "error": "통계누리 URL은 CAR_NEWREG_FORM_ID/CAR_NEWREG_STYLE_NUM 필요 (data.go.kr REST URL은 두 값 불필요)",
         }
 
     params = {
-        "key": CAR_NEWREG_KEY,
-        "form_id": CAR_NEWREG_FORM_ID,
-        "style_num": CAR_NEWREG_STYLE_NUM,
+        ("serviceKey" if data_go else "key"): CAR_NEWREG_KEY,
         "pageNo": CAR_NEWREG_PAGE_NO,
         "numOfRows": CAR_NEWREG_NUM_OF_ROWS,
     }
-    start_dt = CAR_NEWREG_START_DT or datetime.date.today().strftime("%Y%m")
-    end_dt = CAR_NEWREG_END_DT or _month_int(TODAY)
+    if not data_go:
+        params.update({"form_id": CAR_NEWREG_FORM_ID, "style_num": CAR_NEWREG_STYLE_NUM})
+    else:
+        params["dataType"] = "JSON"
+    extras, extra_error = _extra_params(CAR_NEWREG_EXTRA_PARAMS)
+    if extra_error:
+        return {"count": None, "period": None, "mom": None, "source": "stat.molit" if not data_go else "data.go.kr", "error": extra_error}
+    params.update(extras)
+    # data.go.kr 서비스는 기관마다 기간 필드명이 달라 기본 startDt/endDt를
+    # 억지로 붙이지 않는다. 필요할 때 Secret으로 명시하거나 EXTRA_PARAMS로
+    # 서비스 문서의 정확한 필드명을 전달한다.
+    start_dt = CAR_NEWREG_START_DT or (datetime.date.today().strftime("%Y%m") if not data_go else "")
+    end_dt = CAR_NEWREG_END_DT or (_month_int(TODAY) if not data_go else "")
     if start_dt:
-        params["start_dt"] = start_dt
+        params["startDt" if data_go else "start_dt"] = start_dt
     if end_dt:
-        params["end_dt"] = end_dt
+        params["endDt" if data_go else "end_dt"] = end_dt
     url = CAR_NEWREG_API_URL + "?" + urllib.parse.urlencode(params, safe="%")
     try:
         with urllib.request.urlopen(url, timeout=20) as r:
@@ -299,33 +396,41 @@ def fetch_car_newreg():
             except Exception:
                 payload = {"raw": text[:2000]}
         status, message = _extract_status(payload)
-        count = _extract_molit_count(payload)
+        series = _extract_molit_series(payload)
+        latest = series[-1] if series else None
+        count = latest["count"] if latest else _extract_molit_count(payload)
+        period = latest["period"] if latest else (end_dt or TODAY)
+        mom = None
+        if len(series) >= 2 and series[-2]["count"]:
+            mom = round((series[-1]["count"] - series[-2]["count"]) / series[-2]["count"] * 100, 2)
         if count is None:
             return {
                 "count": None,
-                "period": end_dt or TODAY,
-                "mom": None,
-                "source": "stat.molit",
+                "period": period,
+                "mom": mom,
+                "source": "data.go.kr" if data_go else "stat.molit",
                 "error": "신규등록정보 응답에서 수치 파싱 실패",
                 "status_code": status,
                 "message": message,
-                "request": {"form_id": CAR_NEWREG_FORM_ID, "style_num": CAR_NEWREG_STYLE_NUM, "start_dt": start_dt, "end_dt": end_dt},
+                "request": {"protocol": "data.go.kr" if data_go else "stat.molit", "form_id": CAR_NEWREG_FORM_ID or None, "style_num": CAR_NEWREG_STYLE_NUM or None, "start_dt": start_dt, "end_dt": end_dt},
+                "series": series[-24:],
                 "raw_hint": str(payload)[:260],
             }
         return {
             "count": round(count, 1) if isinstance(count, float) else count,
-            "period": end_dt or TODAY,
-            "mom": None,
-            "source": "stat.molit",
+            "period": period,
+            "mom": mom,
+            "source": "data.go.kr" if data_go else "stat.molit",
             "basis": "신규등록정보 서비스",
             "status_code": status,
             "message": message,
-            "request": {"form_id": CAR_NEWREG_FORM_ID, "style_num": CAR_NEWREG_STYLE_NUM, "start_dt": start_dt, "end_dt": end_dt},
+            "request": {"protocol": "data.go.kr" if data_go else "stat.molit", "form_id": CAR_NEWREG_FORM_ID or None, "style_num": CAR_NEWREG_STYLE_NUM or None, "start_dt": start_dt, "end_dt": end_dt},
+            "series": series[-24:],
         }
     except urllib.error.HTTPError as e:
-        return {"count": None, "period": end_dt or TODAY, "mom": None, "source": "stat.molit", "error": f"HTTP {e.code}", "request": {"form_id": CAR_NEWREG_FORM_ID, "style_num": CAR_NEWREG_STYLE_NUM, "start_dt": start_dt, "end_dt": end_dt}}
+        return {"count": None, "period": end_dt or TODAY, "mom": None, "source": "data.go.kr" if data_go else "stat.molit", "error": f"HTTP {e.code}", "request": {"protocol": "data.go.kr" if data_go else "stat.molit", "form_id": CAR_NEWREG_FORM_ID or None, "style_num": CAR_NEWREG_STYLE_NUM or None, "start_dt": start_dt, "end_dt": end_dt}}
     except Exception as e:
-        return {"count": None, "period": end_dt or TODAY, "mom": None, "source": "stat.molit", "error": str(e)[:140], "request": {"form_id": CAR_NEWREG_FORM_ID, "style_num": CAR_NEWREG_STYLE_NUM, "start_dt": start_dt, "end_dt": end_dt}}
+        return {"count": None, "period": end_dt or TODAY, "mom": None, "source": "data.go.kr" if data_go else "stat.molit", "error": str(e)[:140], "request": {"protocol": "data.go.kr" if data_go else "stat.molit", "form_id": CAR_NEWREG_FORM_ID or None, "style_num": CAR_NEWREG_STYLE_NUM or None, "start_dt": start_dt, "end_dt": end_dt}}
 
 def build_triggers(weather, travel, exit_tour=None, newreg=None):
     """상품별 실시간 수요 신호 레벨 산출(정성 규칙). 여러 특보가 동시 발효면 사유를 누적."""

@@ -41,6 +41,7 @@ python -m http.server 8765
 - `docs/automation-runbook.md` — Actions 순서와 충돌 방지
 - `docs/daily-brief.md` — Telegram·이메일 브리프
 - `docs/feedback-loop.md` — 채택/수정/반려 이벤트와 저장소 결정
+- `docs/signal-api-setup.md` — 자동차 신규등록·출입국 통계 Secret과 호출 방식
 - `NEXT.md` — 구현·검증·배포 상태 및 남은 의사결정
 
 ## 보안 경계
@@ -48,7 +49,9 @@ python -m http.server 8765
 - Secret, Telegram 토큰, 광고계정 원본, 개인정보를 정적 HTML·`localStorage`·커밋에 넣지 않습니다.
 - `/searchad/keywordstool`은 Worker의 읽기 전용 GET만 허용합니다.
 - 공개 화면의 숨김 메뉴나 클라이언트 비밀번호는 인증 수단이 아닙니다.
-- 관리자·피드백 저장 기능은 서버 인증과 보존 정책을 정한 뒤 연결합니다.
+- 소재 검수 피드백은 UI에서 원문을 저장하지 않고 해시만 준비합니다. Worker의
+  `POST /v1/feedback`은 D1·Cloudflare Access·`ACTOR_HASH_SALT`를 연결한 경우에만
+  저장하며, 미구성 상태에서는 fail-closed(503/401)로 동작합니다.
 
 ## 검증
 
@@ -71,5 +74,6 @@ CI는 루트의 모든 HTML 인라인 JavaScript도 문법 검사합니다.
 
 - 여러 독립 HTML을 허브에서 여는 구조라 완전한 단일 App Shell과 공통 사용자 상태는 아직 없습니다.
 - 사용자 인증, 역할 기반 권한, 감사 이력, 서버 데이터베이스는 미구현입니다.
-- 피드백 UI와 D1 스키마는 있으나 저장 API는 연결하지 않았습니다.
+- 피드백 UI·D1 스키마·Worker 저장 경로는 구현되어 있습니다. 실제 저장은
+  `docs/feedback-loop.md` 순서대로 D1 바인딩과 Access 정책을 설정해야 합니다.
 - 키워드 도구의 대량등록 파일은 실제 광고주센터 샘플로 최종 검증해야 합니다. SA 소재 도구는 공식 템플릿 열 매핑을 제공하지 않습니다.
