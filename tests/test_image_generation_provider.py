@@ -22,6 +22,8 @@ class TestImageGenerationProvider(unittest.TestCase):
     def test_provider_does_not_call_api_without_execute(self):
         self.assertIn("if not args.execute", SCRIPT)
         self.assertIn("--retry-failed", SCRIPT)
+        self.assertIn("MAX_BATCH = 20", SCRIPT)
+        self.assertIn("HTTPS 주소여야 함", SCRIPT)
         self.assertIn("OPENAI_API_KEY Secret이 없습니다", SCRIPT)
         self.assertIn("DEFAULT_API_URL = \"https://api.openai.com/v1/images/generations\"", SCRIPT)
         self.assertIn("DEFAULT_MODEL = \"gpt-image-1\"", SCRIPT)
@@ -45,6 +47,12 @@ class TestImageGenerationProvider(unittest.TestCase):
     def test_existing_failures_do_not_block_a_new_batch(self):
         self.assertIn("run_failures = 0", SCRIPT)
         self.assertIn("return 1 if run_failures else 0", SCRIPT)
+        self.assertIn('if not items:\n        print("[OK] 처리할 pending 항목이 없습니다.", flush=True)', SCRIPT)
+
+    def test_workflow_commits_failure_statuses_after_warning(self):
+        self.assertIn("continue-on-error: true", WORKFLOW)
+        self.assertIn("steps.validate.outcome == 'success'", WORKFLOW)
+        self.assertIn("Report generation warnings", WORKFLOW)
 
     def test_asset_target_is_scoped_to_product_generated_folder(self):
         target = provider.asset_target("assets/insurance/generated/driver-2026-08-01.png", "driver")

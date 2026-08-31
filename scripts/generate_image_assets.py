@@ -14,6 +14,7 @@ import json
 import os
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
@@ -25,6 +26,7 @@ DEFAULT_API_URL = "https://api.openai.com/v1/images/generations"
 DEFAULT_MODEL = "gpt-image-1"
 MAX_ERROR_LENGTH = 240
 MAX_PNG_BYTES = 5 * 1024 * 1024
+MAX_BATCH = 20
 
 
 def read_json(path: Path, default: Any) -> Any:
@@ -80,8 +82,9 @@ def png_dimensions(data: bytes) -> tuple[int, int]:
 
 
 def validate_png(data: bytes, spec: dict[str, Any] | None = None) -> tuple[int, int]:
-    if len(data) > MAX_PNG_BYTES:
-        raise ValueError("PNG가 5MB를 초과함")
+    max_bytes = min(MAX_PNG_BYTES, int((spec or {}).get("max_bytes") or MAX_PNG_BYTES))
+    if len(data) > max_bytes:
+        raise ValueError(f"PNG가 {max_bytes // (1024 * 1024)}MB를 초과함")
     width, height = png_dimensions(data)
     minimum = int((spec or {}).get("width") or 214)
     if width != height or width < minimum:
@@ -112,6 +115,9 @@ def response_image_bytes(payload: dict[str, Any], opener=urllib.request.urlopen)
 def openai_generate(item: dict[str, Any], api_key: str, api_url: str = DEFAULT_API_URL,
                     model: str = DEFAULT_MODEL, size: str = "1024x1024",
                     quality: str = "medium", opener=urllib.request.urlopen) -> bytes:
+    parsed_url = urllib.parse.urlparse(api_url)
+    if parsed_url.scheme != "https" or not parsed_url.netloc:
+        raise ValueError("이미지 API URL은 HTTPS 주소여야 함")
     prompt = str(item.get("prompt") or item.get("scene") or "").strip()
     if not prompt:
         raise ValueError("이미지 prompt가 없음")
@@ -168,6 +174,9 @@ def sync_plan() -> int:
 
 
 def run(args: argparse.Namespace) -> int:
+    if args.limit < 1 or args.limit > MAX_BATCH:
+        print(f"[ERROR] --limit은 1~{MAX_BATCH} 사이여야 합니다.", flush=True)
+        return 2
     queue = read_json(QUEUE_PATH, {})
     if not isinstance(queue, dict) or not isinstance(queue.get("items"), list):
         print("[ERROR] 이미지 생성 큐를 읽지 못했습니다", flush=True)
@@ -182,18 +191,21 @@ def run(args: argparse.Namespace) -> int:
         for item in items:
             print(f"  - {item.get('product_name', item.get('product_key'))} · {item.get('role')} · {item.get('asset_path')}", flush=True)
         return 0
+    if not items:
+        print("[OK] 처리할 pending 항목이 없습니다.", flush=True)
+        return 0
     api_key = os.environ.get("OPENAI_API_KEY", "").strip()
     if not api_key:
         print("[ERROR] OPENAI_API_KEY Secret이 없습니다. API를 호출하지 않았습니다.", flush=True)
         return 2
     api_url = os.environ.get("OPENAI_IMAGE_API_URL", DEFAULT_API_URL).strip() or DEFAULT_API_URL
+    parsed_api_url = urllib.parse.urlparse(api_url)
+    if parsed_api_url.scheme != "https" or not parsed_api_url.netloc:
+        print("[ERROR] OPENAI_IMAGE_API_URL은 HTTPS 주소여야 합니다. API 키 전송을 중단했습니다.", flush=True)
+        return 2
     model = os.environ.get("OPENAI_IMAGE_MODEL", DEFAULT_MODEL).strip() or DEFAULT_MODEL
     size = os.environ.get("OPENAI_IMAGE_SIZE", "1024x1024").strip() or "1024x1024"
     quality = os.environ.get("OPENAI_IMAGE_QUALITY", "medium").strip() or "medium"
-    if not items:
-        print("[OK] 처리할 pending 항목이 없습니다.", flush=True)
-        return 0
-
     queue["provider"] = "openai"
     queue["provider_model"] = model
     queue["provider_configured_at"] = utc_now()

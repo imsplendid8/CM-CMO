@@ -54,6 +54,8 @@ jobs:
           if [ "$RETRY_FAILED" = "true" ]; then args+=(--retry-failed); fi
           python3 scripts/generate_image_assets.py "${args[@]}"
       - name: Generate PNGs (explicit opt-in only)
+        id: generate
+        continue-on-error: true
         if: ${{ inputs.execute == true }}
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -70,12 +72,13 @@ jobs:
           if [ "$RETRY_FAILED" = "true" ]; then args+=(--retry-failed); fi
           python3 scripts/generate_image_assets.py "${args[@]}"
       - name: Validate generated assets
-        if: ${{ inputs.execute == true }}
+        id: validate
+        if: ${{ always() && inputs.execute == true }}
         run: |
           python3 scripts/image_generation_queue.py --validate
           node scripts/check_adcopy_images.mjs
       - name: Commit generated PNGs
-        if: ${{ inputs.execute == true }}
+        if: ${{ always() && inputs.execute == true && steps.validate.outcome == 'success' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -89,4 +92,14 @@ jobs:
               sleep $((attempt * 5))
             done
             exit 1
+          fi
+      - name: Report generation warnings
+        if: ${{ always() && inputs.execute == true && steps.generate.outcome == 'failure' }}
+        run: |
+          echo "::warning::일부 이미지 생성에 실패했습니다. 실패 항목과 오류 요약을 큐에 기록했습니다. retry_failed=true로 재시도하세요."
+          if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+            {
+              echo "## 이미지 생성 경고"
+              echo "일부 항목이 실패했습니다. 큐의 \`failed\` 상태를 확인하고 \`retry_failed=true\`로 재시도하세요."
+            } >> "$GITHUB_STEP_SUMMARY"
           fi
