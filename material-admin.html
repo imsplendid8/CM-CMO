@@ -131,17 +131,19 @@ dialog{width:min(760px,calc(100vw - 30px));max-height:90vh;border:1px solid var(
 <script>
 const DATA_URL="data/adcopy/serp-candidates.json";
 const RULE_URL="data/adcopy/material-feedback-rules.json";
+const IMAGE_QUEUE_URL="data/adcopy/image-generation-queue.json";
 const channelLabel={search_ad:"SA 소재",power_content:"파워콘텐츠",thumbnail:"썸네일"};
 const sourceLabel={operator_upload:"직접 등록",monthly_agent:"월간 생성"};
 const FIELD_LABELS={headline:"제목",description:"설명",additional_description:"추가설명",promo:"홍보문구",sublinks:"서브링크",summary:"요약",body:"본문",cta:"CTA",scene:"장면",brief:"제작 브리프",negative_prompt:"제외 요소"};
 const PAGE_SIZE=24;
-let allItems=[],generatedItems=[],rules=null,visibleCount=PAGE_SIZE,selectedAsset="";
+let allItems=[],generatedItems=[],rules=null,generationQueue={},visibleCount=PAGE_SIZE,selectedAsset="";
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 function toast(msg){$("toast").textContent=msg;$("toast").classList.add("on");setTimeout(()=>$("toast").classList.remove("on"),1900)}
 function itemId(channel,productKey,id,text){return `${channel}:${productKey}:${id||ModooMaterialFeedback.fingerprint(text)}`}
-function normalizeGenerated(data){
+function normalizeGenerated(data,queue={}){
   const rows=[];
+  const queueByProposal=new Map((queue.items||[]).map(row=>[String(row.proposal_id||""),row]));
   for(const product of data.products||[]){
     const pk=product.product_key||product.key||"unknown";
     const name=product.keyword||product.product_name||pk;
@@ -157,10 +159,13 @@ function normalizeGenerated(data){
       rows.push({id:itemId("power_content",pk,row.id,text),source:"monthly_agent",channel:"power_content",productKey:pk,productName:name,planningMonth:month,title:row.title,text,fields,meta:row.serp_basis||row.source,risk:row.review_lab_feedback?.blocked_phrase_hits||[],brief:row.image_brief||""});
     }
     for(const row of product.image_directions||[]){
+      const q=queueByProposal.get(String(row.proposal_id||""));
+      const generationStatus=q?.status||((row.generation_required||row.reference_only)?"pending":"ready");
+      const generatedAsset=generationStatus==="generated"&&q?.asset_path?q.asset_path:"";
       const fields={scene:row.scene||"",brief:row.generation_brief||"",negative_prompt:"텍스트·숫자·로고·타 보험종목 오브젝트 제외"};
       const text=[row.role,row.scene,row.composition,row.style,row.generation_brief].filter(Boolean).join("\n");
-      const risk=[row.repeated_reference_in_month&&"같은 달 원본 반복",row.reused_from_previous_month&&"전월 원본 재사용",row.review_lab_feedback?.rejected_reference&&"이전 반려 원본",!row.asset&&"이미지 파일 없음"].filter(Boolean);
-      rows.push({id:itemId("thumbnail",pk,row.proposal_id,text),source:"monthly_agent",channel:"thumbnail",productKey:pk,productName:name,planningMonth:month,title:row.role||row.scene,text,fields,meta:row.why||row.asset,risk,asset:row.asset||"",scene:row.scene,brief:row.generation_brief});
+      const risk=[row.repeated_reference_in_month&&"같은 달 원본 반복",row.reused_from_previous_month&&"전월 원본 재사용",row.review_lab_feedback?.rejected_reference&&"이전 반려 원본",generationStatus==="failed"&&"이미지 생성 실패",generationStatus==="pending"&&"이미지 생성 대기",!row.asset&&!generatedAsset&&"이미지 파일 없음"].filter(Boolean);
+      rows.push({id:itemId("thumbnail",pk,row.proposal_id,text),source:"monthly_agent",channel:"thumbnail",productKey:pk,productName:q?.product_name||name,planningMonth:month,title:row.role||row.scene,text,fields,meta:q?.reason||row.why||row.asset,risk,asset:generatedAsset||row.asset||"",scene:row.scene,brief:row.generation_brief,generationStatus,generationReason:q?.reason||""});
     }
   }
   return rows;
@@ -220,7 +225,7 @@ function powerPreview(item){
   return `<div class="article-preview">${summary?`<div class="field-row"><b>기획</b><span>${esc(summary)}</span></div>`:""}<div class="body">${esc(body)}</div><div class="article-stat">본문 ${count.toLocaleString("ko-KR")}자 · ${count>=1500?"발행 초안 분량":"본문 보강 필요"}</div></div>`;
 }
 function thumbPreview(item){
-  if(!item.asset)return '<div class="thumb-preview"><div class="empty-thumb">이미지 미제작<br>브리프만 등록됨</div></div>';
+  if(!item.asset){const title=item.generationStatus==="failed"?"이미지 생성 실패": "이미지 생성 대기";const reason=item.generationReason||"실제 이미지 생성기를 연결하면 파일이 채워집니다.";return `<div class="thumb-preview"><div class="empty-thumb"><b>${title}</b><br>${esc(reason)}</div></div>`;}
   return `<div class="thumb-preview"><img loading="lazy" decoding="async" src="${esc(item.asset)}" alt="${esc(item.title)} 미리보기" onerror="this.parentElement.classList.add('image-error')"><div class="empty-thumb" style="display:none">이미지 파일을 불러오지 못했습니다</div><div class="thumb-label">${esc(item.scene||item.assetName||item.title||"썸네일")}</div></div>`;
 }
 function compliance(item){
@@ -236,7 +241,7 @@ function renderCards(){
     const reasonOptions=Object.entries(ModooMaterialFeedback.reasons).map(([k,v])=>`<option value="${esc(k)}" ${r?.reason_code===k?"selected":""}>${esc(v)}</option>`).join("");
     return `<article class="card ${r?"reviewed":""}">
       <div class="card-media">
-        <div class="meta"><span class="pill">${esc(item.productName)}</span><span class="pill ${cls}">${channelLabel[item.channel]}</span><span class="pill ${item.source==="operator_upload"?"operator":""}">${sourceLabel[item.source]||item.source}</span>${item.planningMonth?`<span class="pill">${esc(item.planningMonth)}</span>`:""}${item.risk?.map(x=>`<span class="pill risk">${esc(x)}</span>`).join("")||""}</div>
+        <div class="meta"><span class="pill">${esc(item.productName)}</span><span class="pill ${cls}">${channelLabel[item.channel]}</span><span class="pill ${item.source==="operator_upload"?"operator":""}">${sourceLabel[item.source]||item.source}</span>${item.planningMonth?`<span class="pill">${esc(item.planningMonth)}</span>`:""}${item.generationStatus?`<span class="pill ${item.generationStatus==="failed"?"risk":item.generationStatus==="pending"?"risk":""}">${item.generationStatus==="generated"?"생성 완료":item.generationStatus==="ready"?"승인 원본":"생성 대기"}</span>`:""}${item.risk?.map(x=>`<span class="pill risk">${esc(x)}</span>`).join("")||""}</div>
         <h3>${esc(item.title)}</h3>${preview}
         ${item.meta?`<p class="why">${esc(item.meta)}</p>`:""}
         <details class="details"><summary>원문 보기 · 생성 근거</summary><div class="detail-copy">${esc(item.text)}</div></details>
@@ -319,11 +324,13 @@ function formFields(form){
   return fields;
 }
 async function init(){
-  const [data,r]=await Promise.all([fetch(DATA_URL).then(res=>res.json()),fetch(RULE_URL).then(res=>res.json()).catch(()=>({}))]);
-  rules=r||{};generatedItems=normalizeGenerated(data);refreshItems();productOptions();
+  const [data,r,q]=await Promise.all([fetch(DATA_URL).then(res=>res.json()),fetch(RULE_URL).then(res=>res.json()).catch(()=>({})),fetch(IMAGE_QUEUE_URL).then(res=>res.ok?res.json():{}).catch(()=>({}))]);
+  rules=r||{};generationQueue=q||{};generatedItems=normalizeGenerated(data,generationQueue);refreshItems();productOptions();
   const version=data.material_rules_version;
   const refreshScope=data.refresh_scope||"기존 생성 규칙";
-  $("refreshBadge").innerHTML=version?`현재 규칙 <strong>v${esc(version)}</strong> · ${esc(data.refresh_note||"SA·파워콘텐츠·썸네일 일괄 갱신")}`:`기존 산출물은 <strong>현재 규칙으로 재생성되지 않았습니다.</strong> 최신 워크플로 실행 후 검수하세요.`;
+  const qs=generationQueue.summary||{};
+  const queueNote=Object.keys(generationQueue).length?` · 이미지 큐 대기 <strong>${Number(qs.pending||0).toLocaleString("ko-KR")}</strong>건` : " · 이미지 큐는 다음 월간 실행에서 생성됩니다";
+  $("refreshBadge").innerHTML=(version?`현재 규칙 <strong>v${esc(version)}</strong> · ${esc(data.refresh_note||"SA·파워콘텐츠·썸네일 일괄 갱신")}`:`기존 산출물은 <strong>현재 규칙으로 재생성되지 않았습니다.</strong> 최신 워크플로 실행 후 검수하세요.`)+queueNote;
   $("materialMonth").value=data.planning_month||new Date().toISOString().slice(0,7);
   renderStats();renderSummary();renderCards();updateMaterialFields();
 }

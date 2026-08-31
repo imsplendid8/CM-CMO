@@ -54,6 +54,8 @@ jobs:
         run: node scripts/check_adcopy_export.mjs
       - name: SERP 이미지 소재 연결 검증
         run: node scripts/check_adcopy_images.mjs
+      - name: 이미지 생성 대기열 계약 검증
+        run: python3 scripts/image_generation_queue.py --validate
       - name: 보험광고 법령 기반 사전검수 검증
         run: node scripts/check_insurance_ad_review.mjs
       - name: 파워컨텐츠 12상품 소재 품질 검증

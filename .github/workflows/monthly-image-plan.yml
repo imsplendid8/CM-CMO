@@ -28,6 +28,8 @@ jobs:
         run: |
           PLAN_MONTH="$(date -u +%Y-%m)"
           python scripts/serp_copy_agent.py --planning-month "$PLAN_MONTH" --archive-images
+      - name: 실제 이미지 생성 대기열 생성
+        run: python scripts/image_generation_queue.py --validate
       - name: 중복 이미지와 소재 연결 회귀 테스트
         run: |
           python -m unittest tests.test_content_agents -v
@@ -36,7 +38,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/adcopy/serp-candidates.json data/adcopy/powercontent-history.json data/adcopy/image-plans/
+          git add data/adcopy/serp-candidates.json data/adcopy/powercontent-history.json data/adcopy/image-plans/ data/adcopy/image-generation-queue.json
           git diff --cached --quiet && exit 0
           git commit -m "chore(images): 월간 SERP 썸네일 제안 $(date -u +%Y-%m)"
           for attempt in 1 2 3; do

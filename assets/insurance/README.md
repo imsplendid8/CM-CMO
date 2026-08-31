@@ -34,3 +34,10 @@
 - 각 상품의 후보 원본 5장 중 서로 다른 4장을 순환 선정하므로 한 세트 안에서 같은 원본을 반복하지 않는다.
 - 월별 결과는 `data/adcopy/image-plans/YYYY-MM.json`에 보존한다.
 - 이 자동화는 승인된 이미지 라이브러리에서 새 세트를 제안하는 방식이다. 외부 이미지 API 호출이나 유료 이미지 생성은 자동 실행하지 않는다.
+
+## 생성 대기열과 완료 처리
+
+- `scripts/image_generation_queue.py`가 `data/adcopy/image-generation-queue.json`에 상품별 슬롯·프롬프트·참고 원본·예상 파일 경로를 저장한다.
+- `pending`은 이미지가 덜 만들어진 실패 상태가 아니라, 실제 생성기가 아직 연결되지 않은 상태다. 전월 원본은 스타일 참고용으로만 남긴다.
+- 외부 생성기 또는 운영자가 `assets/insurance/generated/<상품>-<월>-<슬롯>.png`를 저장한 뒤 `python scripts/image_generation_queue.py --sync`를 실행하면, 파일이 확인된 슬롯만 계획의 실제 asset으로 승격된다.
+- 파일이 없는 상태에서 다른 보험종목 이미지를 끼워 넣지 않는다. 이 규칙이 썸네일 혼입을 막는다.

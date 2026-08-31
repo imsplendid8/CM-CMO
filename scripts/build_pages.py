@@ -17,6 +17,7 @@ PUBLIC_DATA = (
     "data/trends.json",
     "data/briefing/latest.json",
     "data/adcopy/serp-candidates.json",
+    "data/adcopy/image-generation-queue.json",
     "data/adcopy/material-feedback-rules.json",
     "data/seo/site-observations.json",
     "data/events/recommendations.json",
@@ -30,6 +31,9 @@ PUBLIC_SERP_JSON = (
     "serp/ad_observations.json",
     "serp/brand/manifest.json",
 )
+# 최초 배포본처럼 월간 생성 큐가 아직 없는 커밋도 Pages를 배포할 수 있게 한다.
+# 큐가 생성되면 일반 공개 데이터와 동일하게 dist/data에 포함된다.
+OPTIONAL_PUBLIC_DATA = {"data/adcopy/image-generation-queue.json"}
 FORBIDDEN_PARTS = {".github", "scripts", "docs", "handoff", "evidence"}
 FORBIDDEN_NAMES = {"search-console.json", "search-console.example.json", "copy_history.json", "state_history.json"}
 
@@ -59,6 +63,8 @@ def build(root: Path = ROOT, destination: Path = DEST) -> list[Path]:
         shutil.copytree(root / folder, destination / folder, dirs_exist_ok=True)
     shutil.copytree(root / "assets/insurance", destination / "assets/insurance", dirs_exist_ok=True)
     for relative in (*PUBLIC_DATA, *PUBLIC_SERP_JSON):
+        if relative in OPTIONAL_PUBLIC_DATA and not (root / relative).exists():
+            continue
         copy_file(root, destination, relative)
     for source in (root / "data/clips").glob("*.json"):
         copy_file(root, destination, source.relative_to(root))
