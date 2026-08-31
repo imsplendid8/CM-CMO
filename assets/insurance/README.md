@@ -41,3 +41,9 @@
 - `pending`은 이미지가 덜 만들어진 실패 상태가 아니라, 실제 생성기가 아직 연결되지 않은 상태다. 전월 원본은 스타일 참고용으로만 남긴다.
 - 외부 생성기 또는 운영자가 `assets/insurance/generated/<상품>-<월>-<슬롯>.png`를 저장한 뒤 `python scripts/image_generation_queue.py --sync`를 실행하면, 파일이 확인된 슬롯만 계획의 실제 asset으로 승격된다.
 - 파일이 없는 상태에서 다른 보험종목 이미지를 끼워 넣지 않는다. 이 규칙이 썸네일 혼입을 막는다.
+
+### 2026-08 실제 생성 파일
+
+- 내장 ImageGen으로 생성·시각 검수한 신규 슬롯 8개를 `assets/insurance/generated/`에 저장했다.
+- 현재 계획과 큐에서 `hrmf`, `cncr`, `dntl`, `woman`, `overseas`, `overseaslong`, `event`, `chronic`의 4번 슬롯은 `generated`로 표시된다.
+- 월간 워크플로는 여전히 유료 이미지 API를 자동 호출하지 않는다. 나머지 `pending` 슬롯은 브리프·참고 원본만 유지하며, 승인된 파일을 추가한 뒤 `--sync`로 승격한다.

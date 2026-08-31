@@ -67,6 +67,20 @@ class TestImageGenerationQueue(unittest.TestCase):
             self.assertFalse(row["generation_required"])
             self.assertFalse(row["reference_only"])
 
+    def test_committed_generated_asset_remains_generated_in_queue(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, plan_path, queue_path = self.make_root(tmp)
+            generated = root / "assets/insurance/generated/driver-2026-08-01.png"
+            generated.write_bytes(b"png placeholder")
+            plan = json.loads(plan_path.read_text(encoding="utf-8"))
+            row = plan["products"][0]["image_directions"][0]
+            row["asset"] = "assets/insurance/generated/driver-2026-08-01.png"
+            row["generation_required"] = False
+            row["reference_only"] = False
+            plan_path.write_text(json.dumps(plan, ensure_ascii=False), encoding="utf-8")
+            payload = queue.build_queue(root, plan_path, queue_path)
+            self.assertEqual(payload["items"][0]["status"], "generated")
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

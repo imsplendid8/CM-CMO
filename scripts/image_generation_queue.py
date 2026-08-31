@@ -99,7 +99,12 @@ def build_queue(root: Path = ROOT, plan_path: Path = PLAN_PATH,
             expected_asset = f"assets/insurance/generated/{expected_name}"
             expected_exists = relative_exists(expected_asset, root)
             status = status_for(row, {**prior, "asset_path_exists": expected_exists}, root)
-            if expected_exists and status == "pending":
+            # 계획에 이미 생성 경로가 커밋된 경우도 '승인 원본'이 아니라
+            # 실제 생성 완료로 표시한다. 그래야 Admin에서 운영자가 새 파일을
+            # 즉시 식별하고, 월간 큐 재실행에도 상태가 되돌아가지 않는다.
+            if expected_exists and reference_asset == expected_asset:
+                status = "generated"
+            elif expected_exists and status == "pending":
                 status = "generated"
             items.append({
                 "queue_id": queue_id,

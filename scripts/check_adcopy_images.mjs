@@ -91,9 +91,14 @@ for(const product of plan.products||[]){
   if(new Set(rows.map(row=>row.concept_id)).size!==4)errors.push(`${product.product_key}: 이미지 콘셉트 지문 중복`);
   if(rows.some(row=>row.style_family!=="premium_3d_animation_v4"))errors.push(`${product.product_key}: 3D 애니메이션 스타일 패밀리 불일치`);
   const allowedPattern=allowedProductAssetPatterns[product.product_key];
-  // 이미지가 아직 생성되지 않은 신규 슬롯은 빈 asset으로 남긴다. 빈 슬롯을
-  // 다른 상품 파일로 채우지 않았는지만 확인하고, 실제 파일 검사는 기존 원본에만 한다.
-  if(allowedPattern&&distinct.some(source=>source&&!allowedPattern.test(path.basename(source)))){
+  // 이미지가 아직 생성되지 않은 신규 슬롯은 빈 asset으로 남길 수 있다.
+  // 생성 완료 경로는 assets/insurance/generated/<상품키>-... 규칙으로만 허용한다.
+  if(allowedPattern&&distinct.some(source=>{
+    if(!source)return false;
+    const normalized=source.replaceAll("\\", "/");
+    const generatedForProduct=normalized.startsWith("assets/insurance/generated/") && path.basename(normalized).startsWith(`${product.product_key}-`);
+    return !generatedForProduct && !allowedPattern.test(path.basename(normalized));
+  })){
     errors.push(`${product.product_key}: 보험종목과 무관한 이미지 원본 포함 ${distinct.map(source=>path.basename(source)).join(", ")}`);
   }
   const prior=[...priorArchives].reverse().find(archive=>(archive.products||[]).some(row=>row.product_key===product.product_key));
