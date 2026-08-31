@@ -48,6 +48,11 @@ Worker 코드는 `/v1/feedback` 경로를 포함하지만, D1과 Access가 연�
    확인한다. D1 바인딩 누락은 `503`, Access 헤더 누락은 `401`, 원문 `text`를
    전송한 요청은 `400`이어야 한다.
 
+현재 공개 Pages의 `modoo-feedback-endpoint` 메타 값은 비워 둔다. Worker 배포와
+Access 정책을 확인하기 전에 브라우저 요청을 활성화하면 사용자는 저장 실패를
+반복해서 보게 되기 때문이다. 외부 설정 검증이 끝난 뒤에만 해당 메타 값에 Worker
+URL을 넣고 `Access-Control-Allow-Credentials` 동작을 확인한다.
+
 ### 전송 계약
 
 피드백 요청은 `action`, `tool`, `productKey`, `recommendationId`와 같은 식별자,

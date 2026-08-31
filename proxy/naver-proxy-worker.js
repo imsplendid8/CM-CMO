@@ -44,6 +44,7 @@ const allowedOrigin = (req) => matchOrigin(req.headers.get("Origin")) || matchOr
 
 const corsFor = (origin, extra = {}) => ({
   "Access-Control-Allow-Origin": origin || ALLOW_ORIGINS[0],
+  "Access-Control-Allow-Credentials": "true",
   "Vary": "Origin",
   "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
   "Access-Control-Allow-Headers": "content-type",
