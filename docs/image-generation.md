@@ -11,6 +11,22 @@ OpenAI Images API를 기본 어댑터로 연결했다. API 응답의 `b64_json` 
 브라우저나 저장소에 넣지 않고 GitHub Secret으로만 사용한다. 이미지 API는 생성된
 이미지를 base64로 반환할 수 있다([공식 API 참고](https://platform.openai.com/docs/api-reference/images-streaming/image_generation/partial_image)).
 
+### 로컬 ima2-gen GPT OAuth
+
+개인 OAuth 세션으로 생성하려면 `ima2-gen`을 로컬 서버로 실행하고 기존 생성기를
+`--provider ima2-oauth`로 호출한다. OAuth 토큰은 ima2 프로세스에만 남고, Pages·Actions·저장소로
+전달되지 않는다. 자세한 설치·실행 순서는 [`docs/ima2-oauth-image-generation.md`](ima2-oauth-image-generation.md)를 참고한다.
+
+```powershell
+npx -y "@openai/codex" login
+npx -y ima2-gen setup
+npx -y ima2-gen serve
+py -3 scripts/generate_image_assets.py --execute --provider ima2-oauth --limit 1
+```
+
+로컬 OAuth provider는 GitHub Actions에서 실행하지 않는다. Actions는 개인 PC의 OAuth 세션을
+볼 수 없으므로 기존 `openai` 경로를 사용한다.
+
 ## GitHub 설정
 
 1. OpenAI API 키를 발급하고 결제·사용 한도를 확인한다.

@@ -26,6 +26,7 @@ main{max-width:1440px;margin:0 auto;padding:18px 24px 52px}.toolbar{display:grid
 .thumb-preview{position:relative;display:flex;align-items:center;justify-content:center;aspect-ratio:1;border:1px solid var(--line2);background:#f3f1ed;overflow:hidden}.thumb-preview img{width:100%;height:100%;object-fit:cover;display:block}.thumb-preview .empty-thumb{font-size:12px;color:var(--muted);font-weight:750;text-align:center;padding:20px}.thumb-preview .thumb-label{position:absolute;left:8px;bottom:8px;max-width:calc(100% - 16px);padding:5px 7px;border-radius:4px;background:rgba(255,255,255,.92);font-size:10px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.image-error img{display:none}.image-error .empty-thumb{display:block!important}
 .review-summary{font-size:11px;color:var(--good);padding:8px;background:#edf7f1;margin-bottom:8px}.refresh-banner{margin-top:10px;padding:9px 11px;border:1px solid #d9e1e8;background:#f6f9fb;color:#3e4c58;font-size:11px;line-height:1.5}.refresh-banner strong{color:#163e5c}.reviewbox{display:grid;grid-template-columns:1fr 1fr;gap:7px}.reviewbox .wide{grid-column:1/-1}.reviewbox textarea{min-height:58px}.actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:10px}.actions button{font-size:11px;padding:8px 9px}.details{margin:9px 0 0;border-top:1px solid var(--line2);padding-top:8px}.details summary{cursor:pointer;font-size:11px;font-weight:780;color:var(--blue)}.detail-copy{font-size:11px;line-height:1.6;color:#504e49;white-space:pre-wrap;max-height:230px;overflow:auto;margin-top:7px}
 .side{padding:14px;position:sticky;top:78px;align-self:start}.side p{font-size:11px;color:var(--muted);line-height:1.6}.side .stack{display:grid;gap:7px}.side pre{white-space:pre-wrap;word-break:break-all;background:#1c1c1c;color:#fff;padding:10px;max-height:250px;overflow:auto;font-size:10px}.callout{padding:10px;border-left:3px solid var(--brand);background:#fff8f2;font-size:11px;line-height:1.6;margin-bottom:12px}.load-more{width:100%;margin-top:10px}
+.ima2-card{border:1px solid #cbd8ed;background:#f7faff;padding:11px;margin-bottom:14px}.ima2-card h2{margin:0 0 7px;color:#244d8f}.ima2-card p{margin:5px 0;font-size:11px;line-height:1.55}.ima2-card pre{margin:8px 0;background:#182131;color:#eef5ff;max-height:190px}.ima2-card .stack{margin-top:8px}
 .empty{padding:42px;text-align:center;color:var(--muted);background:#fff;border:1px solid var(--line)}
 dialog{width:min(760px,calc(100vw - 30px));max-height:90vh;border:1px solid var(--line);padding:0;box-shadow:0 30px 90px rgba(0,0,0,.24)}dialog::backdrop{background:rgba(20,20,20,.48)}.dialog-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line)}.dialog-head h2{font-size:18px;margin:0}.dialog-body{padding:18px 20px;overflow:auto;max-height:calc(90vh - 65px)}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.form-grid .wide{grid-column:1/-1}.form-grid label{display:grid;gap:5px;font-size:11px;font-weight:780;color:#4e4b46}.form-help{font-size:11px;color:var(--muted);line-height:1.55}.form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}.file-preview{display:none;grid-template-columns:100px 1fr;gap:10px;align-items:center;border:1px solid var(--line2);padding:9px}.file-preview.on{display:grid}.file-preview img{width:100px;height:100px;object-fit:cover}.file-preview span{font-size:11px;color:var(--muted)}.toast{position:fixed;right:18px;bottom:18px;z-index:20;background:#171717;color:#fff;padding:11px 14px;border-radius:5px;opacity:0;transform:translateY(7px);transition:.2s}.toast.on{opacity:1;transform:none}
 @media(max-width:1000px){.top-inner{align-items:flex-start;flex-direction:column}.top-actions{justify-content:flex-start}.toolbar{grid-template-columns:1fr 1fr 1fr}.stats{grid-template-columns:repeat(3,1fr)}.layout{grid-template-columns:1fr}.side{position:static}.card{grid-template-columns:1fr}.card-media{border-right:0;border-bottom:1px solid var(--line2)}}
@@ -91,6 +92,19 @@ dialog{width:min(760px,calc(100vw - 30px));max-height:90vh;border:1px solid var(
       <button id="loadMore" class="secondary load-more" type="button" hidden>더 보기</button>
     </div>
     <aside class="panel side">
+      <section class="ima2-card" aria-labelledby="ima2Title">
+        <h2 id="ima2Title">이미지 생성 연결 · ima2 OAuth</h2>
+        <p>GitHub Pages가 OAuth 토큰을 읽지 않도록, 이미지는 내 PC의 ima2-gen 로컬 서버에서 생성합니다.</p>
+        <p><b>연결 상태는 자동 조회하지 않습니다.</b> HTTPS 페이지에서 localhost를 호출하지 않아 브라우저 혼합 콘텐츠·CORS 문제를 피합니다.</p>
+        <pre id="ima2Command">npx -y "@openai/codex" login
+npx -y ima2-gen setup
+npx -y ima2-gen serve
+$env:IMAGE_PROVIDER="ima2-oauth"
+py -3 scripts/generate_image_assets.py --execute --provider ima2-oauth --limit 4</pre>
+        <div class="stack">
+          <button id="copyIma2Command" class="secondary" type="button">로컬 연결 명령 복사</button>
+        </div>
+      </section>
       <h2>다음 생성에 넘기기</h2>
       <div class="callout">에이전트는 소재를 저장하는 기능이 아니라, SERP·과거 이력·반려 규칙을 읽고 새 후보를 만드는 생성 단계입니다. 이 화면은 그 입력과 결과를 정리합니다.</div>
       <p>현재 필터의 업로드 소재와 검수 이력, 상품·채널별 차단 규칙을 재생성 요청 JSON으로 묶습니다.</p>
@@ -367,6 +381,10 @@ $("backupFile").addEventListener("change",async e=>{
   try{const result=ModooMaterialFeedback.importBackup(JSON.parse(await file.text()));renderAll();toast(`가져오기 완료 · ${result.imported||0}건`)}catch(_){toast("가져오기 실패 · JSON 형식을 확인하세요")}finally{e.target.value=""}
 });
 $("exportRules").addEventListener("click",()=>{$("rulesPreview").textContent=JSON.stringify(ModooMaterialFeedback.exportRules(rules),null,2);toast("반려 규칙을 만들었습니다")});
+$("copyIma2Command").addEventListener("click",async()=>{
+  try{await navigator.clipboard.writeText($("ima2Command").textContent);toast("ima2 OAuth 연결 명령을 복사했습니다")}
+  catch(_){toast("클립보드 권한이 없어 명령을 직접 선택해 복사하세요")}
+});
 $("copyRules").addEventListener("click",async()=>{const value=$("rulesPreview").textContent;if(value.startsWith("반려 규칙"))$("exportRules").click();await navigator.clipboard.writeText($("rulesPreview").textContent);toast("규칙을 복사했습니다")});
 $("downloadAgentRequest").addEventListener("click",()=>{
   const request=ModooMaterialFeedback.exportAgentRequest(rules,{product_key:$("product").value,channel:$("channel").value});
