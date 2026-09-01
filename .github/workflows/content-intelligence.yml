@@ -43,6 +43,8 @@ jobs:
         run: python scripts/seo_title_agent.py
       - name: 회귀 테스트
         run: python -m unittest tests.test_content_agents tests.test_seo_title_ops -v
+      - name: 첨부 소재생성가이드 적용 검사
+        run: python scripts/check_material_generation_guide.py
       - name: 산출물 커밋
         run: |
           git config user.name "github-actions[bot]"

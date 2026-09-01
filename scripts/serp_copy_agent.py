@@ -22,6 +22,7 @@ except ModuleNotFoundError:  # python scripts/serp_copy_agent.py
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data/adcopy/serp-candidates.json"
 FEEDBACK_RULES = "data/adcopy/material-feedback-rules.json"
+GUIDE_RULES = "data/adcopy/material-generation-guide.json"
 WINDOW_DAYS = 35
 
 SCENES = {
@@ -107,6 +108,7 @@ AXIS_LABELS = {
 MOVING_HOLIDAY_TERMS = ("추석", "설 연휴", "명절")
 STYLE_FAMILY = "premium_3d_animation_v4"
 MATERIAL_RULES_VERSION = 2
+GUIDE_VERSION = "2026-09-01-derived-1"
 
 
 def read(rel, default, root=ROOT):
@@ -114,6 +116,58 @@ def read(rel, default, root=ROOT):
         return json.loads((root / rel).read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return default
+
+
+def guide_pattern_for(axis, guide=None):
+    """첨부 가이드에서 도출한 문구 구조를 생성 결과에 남긴다.
+
+    가이드의 실제 문구를 복사하지 않고, 운영자가 재사용할 수 있는 구조만
+    전달한다. 저장된 가이드가 없거나 축이 새로 추가되어도 안전한 기본값을
+    반환해 기존 호출부와 테스트를 깨뜨리지 않는다.
+    """
+    mapping = {
+        "search_action": "question_plus_next_step",
+        "decision_detail": "split_conditions",
+        "scope_compare": "split_conditions",
+        "official_path": "question_plus_next_step",
+        "serp_whitespace": "scene_plus_term",
+        "seasonal_scene": "segment_context",
+    }
+    pattern_id = mapping.get(axis, "question_plus_next_step")
+    for row in (guide or {}).get("sa", {}).get("pattern_library", []):
+        if row.get("id") == pattern_id:
+            return {
+                "id": pattern_id,
+                "label": row.get("label") or pattern_id,
+                "description": row.get("description") or "검색 의도와 확인 행동을 연결",
+                "review": row.get("review") or "최신 상품자료·약관 확인",
+            }
+    return {
+        "id": pattern_id,
+        "label": pattern_id,
+        "description": "검색 의도와 확인 행동을 연결",
+        "review": "최신 상품자료·약관 확인",
+    }
+
+
+def guide_basis(guide=None):
+    sa = (guide or {}).get("sa") or {}
+    power = (guide or {}).get("power_content") or {}
+    return {
+        "guide_version": (guide or {}).get("guide_version") or GUIDE_VERSION,
+        "source": "첨부 소재생성가이드에서 도출한 구조화 규칙",
+        "sa": {
+            "title_max_length": sa.get("title_max_length", 15),
+            "description_range": [sa.get("description_min_length", 20), sa.get("description_max_length", 45)],
+            "group_limits": sa.get("extension_limits_per_ad_group") or {},
+        },
+        "power_content": {
+            "title_range": [power.get("title_min_length", 7), power.get("title_max_length", 28)],
+            "description_range": [power.get("description_min_length", 80), power.get("description_max_length", 110)],
+            "body_min_length": power.get("body_min_length", 700),
+            "editorial_structure": power.get("editorial_structure") or [],
+        },
+    }
 
 
 def apply_feedback_rules(text, feedback_rules=None):
@@ -403,56 +457,56 @@ def _copy_for_axis(axis, product, keyword, angle, other, season):
     if axis == "seasonal_scene" and event:
         return {
             "strategy": "시즌 장면형",
-            "title": _fit([f"{event} 전 {name} 체크", f"{event} {name} 선택 기준", f"{name} 시즌 항목"], 4, 15),
-            "description": _fit([f"{event} 전 {angle}·{other}의 적용 장면과 선택 기준 정리",
-                                  f"{_josa(event, '을', '를')} 앞두고 {name}의 {angle} 항목을 읽는 순서"], 20, 45),
-            "additional_description": _fit([f"{event} 전 {angle} 선택 여부와 보험기간 조건 비교",
-                                             f"{name} 설계 화면의 {angle} 항목 확인"], 2, 45),
-            "promo": _fit([f"{event} 전 점검", "시즌 기준 보기", "항목 비교"], 2, 14),
+            "title": _fit([f"{event} 전 {angle} 확인", f"{event} {angle} 선택", f"{name} 시즌 항목"], 4, 15),
+            "description": _fit([f"{event} 전 {angle} 적용 장면과 {other} 선택 조건을 함께 비교",
+                                  f"{_josa(event, '을', '를')} 앞두고 {name}의 {angle} 확인 순서 정리"], 20, 45),
+            "additional_description": _fit([f"{event} 일정·{angle} 적용기간·제외 조건을 비교",
+                                             f"{name} 설계 화면에서 {angle} 선택 항목 확인"], 2, 45),
+            "promo": _fit([f"{event} 기준 보기", f"{angle} 조건 보기", "항목 비교"], 2, 14),
             "sublinks": ["보험료계산", "선택항목", "가입조건", "상품안내"],
         }
     if axis == "search_action":
-        return {"strategy": "검색 행동형", "title": _fit([f"{keyword} 보험료 계산", f"{name} 보험료 보기"], 4, 15),
-                "description": _fit([f"{name} 보험료 계산 전 {angle}·{other} 선택 기준 정리",
-                                     f"{name} 계산 화면의 {angle} 항목 비교"], 20, 45),
-                "additional_description": _fit([f"{angle} 포함 여부와 보험기간을 한 화면에서 확인",
-                                                 f"{angle} 선택 기준 먼저 기록"], 2, 45),
-                "promo": _fit(["보험료 계산", "선택 기준 보기"], 2, 14),
+        return {"strategy": "검색 행동형", "title": _fit([f"{angle} 보험료 계산", f"{name} 선택 항목"], 4, 15),
+                "description": _fit([f"{name} 계산 전 {angle} 적용 상황과 {other} 선택 조건 비교",
+                                     f"{name} 계산 화면에서 {angle} 항목과 보험기간을 함께 확인"], 20, 45),
+                "additional_description": _fit([f"{angle} 포함 여부와 보험기간을 한 화면에서 비교",
+                                                 f"{angle} 선택 기준을 계산 전에 먼저 기록"], 2, 45),
+                "promo": _fit(["보험료 계산", f"{angle} 조건 보기"], 2, 14),
                 "sublinks": ["보험료계산", "선택항목", "가입조건", "상품안내"]}
     if axis == "decision_detail":
-        return {"strategy": "선택 기준형", "title": _fit([f"{angle} 조건 읽기", f"{name} 선택 기준"], 4, 15),
-                "description": _fit([f"{angle} 적용 대상과 제외 조건을 한 번에 읽는 기준",
-                                     f"{angle} 선택 전 확인할 기간·한도 항목"], 20, 45),
-                "additional_description": _fit([f"{angle} 관련 조건과 적용 시점을 함께 비교",
-                                                 f"{angle} 항목의 제외 조건부터 확인"], 2, 45),
+        return {"strategy": "선택 기준형", "title": _fit([f"{angle} 지급 조건", f"{angle} 조건 읽기", f"{name} 선택 기준"], 4, 15),
+                "description": _fit([f"{angle} 적용 대상과 지급사유·제외 조건을 나누어 읽는 기준",
+                                     f"{angle} 선택 전 확인할 기간·한도 항목을 정리"], 20, 45),
+                "additional_description": _fit([f"{angle} 적용 시점과 보장하지 않는 경우를 비교",
+                                                 f"{angle} 항목의 제외 조건부터 읽는 순서"], 2, 45),
                 "promo": _fit(["조건 비교", "제외 조건 보기"], 2, 14),
                 "sublinks": ["보장내용", "제외조건", "가입조건", "상품안내"]}
     if axis == "scope_compare":
-        return {"strategy": "항목 비교형", "title": _fit([f"{angle}·{other} 비교", f"{name} 항목 비교"], 4, 15),
-                "description": _fit([f"{_josa(angle, '과', '와')} {other} 적용 장면을 나누어 비교",
-                                     f"{_josa(angle, '과', '와')} {other}가 달라지는 조건 정리"], 20, 45),
-                "additional_description": _fit(["두 항목의 기간·제외 조건을 나란히 비교",
+        return {"strategy": "항목 비교형", "title": _fit([f"{angle}·{other} 차이", f"{name} 항목 비교"], 4, 15),
+                "description": _fit([f"{_josa(angle, '과', '와')} {other} 적용 장면과 지급 조건을 나누어 비교",
+                                     f"{_josa(angle, '과', '와')} {other}가 달라지는 기간·제외 조건 정리"], 20, 45),
+                "additional_description": _fit(["두 항목의 적용기간·제외 조건을 나란히 비교",
                                                  "지급사유와 보장하지 않는 경우를 구분"], 2, 45),
                 "promo": _fit(["항목 비교", "조건 나누기"], 2, 14),
                 "sublinks": ["항목비교", "보장내용", "보험료계산", "가입안내"]}
     if axis == "official_path":
-        return {"strategy": "공식 화면형", "title": _fit([f"한화손보 {name}", f"{name} 공식 설계"], 4, 15),
-                "description": _fit([f"{name} 상품 안내에서 선택 항목과 보험기간을 순서대로 확인",
-                                     f"설계 화면에 표시된 {angle} 조건을 기록"], 20, 45),
+        return {"strategy": "공식 화면형", "title": _fit([f"{name} 설계 순서", f"한화손보 {name}", f"{name} 공식 설계"], 4, 15),
+                "description": _fit([f"{name} 안내에서 {angle} 선택 항목과 보험기간을 순서대로 확인",
+                                     f"설계 화면에 표시된 {angle} 조건과 납입기간을 기록"], 20, 45),
                 "additional_description": _fit(["선택 항목·납입 조건·보험기간을 한 번에 기록",
-                                                 f"최종 청약 전 {angle} 조건 다시 읽기"], 2, 45),
+                                                 f"최종 청약 전 {angle} 조건을 다시 읽는 순서"], 2, 45),
                 "promo": _fit(["설계 순서", "공식 안내"], 2, 14),
                 "sublinks": ["보험료계산", "상품안내", "가입조건", "청약확인"]}
-    return {"strategy": "SERP 공백형", "title": _fit([f"{angle} 질문부터", f"{name} 놓친 질문"], 4, 15),
-            "description": _fit([f"{angle} 검색 후 놓치기 쉬운 {other} 조건까지 이어서 확인",
-                                 f"{name}에서 자주 빠지는 {angle} 기준 정리"], 20, 45),
-            "additional_description": _fit([f"{angle}의 적용 조건과 제외 항목을 먼저 확인",
-                                             "검색 결과와 공식 안내의 차이 메모"], 2, 45),
+    return {"strategy": "SERP 공백형", "title": _fit([f"{angle} 먼저 볼 질문", f"{name} 놓친 질문"], 4, 15),
+            "description": _fit([f"{angle} 검색 후 놓치기 쉬운 {other} 적용 조건까지 이어서 확인",
+                                 f"{name}에서 빠지기 쉬운 {angle} 지급 기준을 질문으로 정리"], 20, 45),
+            "additional_description": _fit([f"{angle} 적용 조건과 보장하지 않는 경우를 먼저 확인",
+                                             "검색 결과와 공식 안내의 차이를 메모"], 2, 45),
             "promo": _fit(["질문 정리", "놓친 조건 보기"], 2, 14),
             "sublinks": ["핵심질문", "보장내용", "보험료계산", "가입안내"]}
 
 
-def sa_recommendations(product, keyword, angle, table_stakes, basis, season, variation, feedback_rules=None):
+def sa_recommendations(product, keyword, angle, table_stakes, basis, season, variation, feedback_rules=None, guide=None):
     name = product.get("serpKw") or product["name"]
     own_terms = [term for term in product.get("special") or [] if term != angle]
     season_keywords = [str(term).replace(" ", "") for term in season.get("keywords") or []]
@@ -475,10 +529,15 @@ def sa_recommendations(product, keyword, angle, table_stakes, basis, season, var
         if ending in seen_endings:
             continue
         seen_endings.add(ending)
+        pattern = guide_pattern_for(axis, guide)
         row.update({
             "message_axis": axis, "variation_key": variation["variation_key"],
             "serp_signature": variation["serp_signature"],
             "why": f"{basis} · {AXIS_LABELS[axis]} 축 · 경쟁 공통 소구 {_join_josa(table_stakes[:2], '과', '와')} 다른 전개",
+            "guide_pattern_id": pattern["id"],
+            "guide_pattern_label": pattern["label"],
+            "guide_pattern": pattern["description"],
+            "review_basis": pattern["review"],
             "review_lab_feedback": {
                 "applied_rules_version": (feedback_rules or {}).get("schema_version"),
                 "blocked_phrase_hits": blocked_hits,
@@ -579,6 +638,13 @@ def image_directions(product, angle, patterns, basis, planning_month, season, va
         "refresh_action": "new_image_generation_required" if (not asset or reused_previous or repeated_this_set or rejected_reference) else "reuse_approved_asset",
         "generation_brief": f"{product['name']} 검색 맥락을 ‘{scene}’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
         "why": f"{basis} · {AXIS_LABELS[variation['primary_axis']]} · SERP {patterns[0][0] if patterns else '검색 행동'} 변화에서 장면 역할을 도출",
+        "guide_quality": {
+            "guide_version": (feedback_rules or {}).get("guide_version") or GUIDE_VERSION,
+            "product_fit_required": True,
+            "text_overlay": False,
+            "duplicate_source_in_set": False,
+            "variation_required": True,
+        },
         "review_lab_feedback": {
             "applied_rules_version": (feedback_rules or {}).get("schema_version"),
             "rejected_reference": bool(rejected_reference),
@@ -588,7 +654,7 @@ def image_directions(product, angle, patterns, basis, planning_month, season, va
     return rows
 
 
-def power_topics(product, keyword, angle, table_stakes, basis, planning_month, season, variation, content_history=None, feedback_rules=None):
+def power_topics(product, keyword, angle, table_stakes, basis, planning_month, season, variation, content_history=None, feedback_rules=None, guide=None):
     name = product.get("serpKw") or product["name"]
     own_terms = [term for term in product.get("special") or [] if term != angle]
     season_keywords = [str(term).replace(" ", "") for term in season.get("keywords") or []]
@@ -661,6 +727,15 @@ def power_topics(product, keyword, angle, table_stakes, basis, planning_month, s
             "image_brief": f"{SCENES.get(product['key'], SCENES['home'])[(index-1) % 3]}. 텍스트·숫자·로고 없이 프리미엄 3D 애니메이션으로 표현.",
             "serp_basis": basis, "serp_signature": variation["serp_signature"],
             "variation_key": variation["variation_key"], "season_context": season,
+            "guide_pattern_id": guide_pattern_for(pattern, guide)["id"],
+            "guide_quality": {
+                "guide_version": (guide or {}).get("guide_version") or GUIDE_VERSION,
+                "requires_concrete_reader_question": True,
+                "requires_comparison_or_checklist": True,
+                "requires_official_cta": True,
+                "body_min_char_count": ((guide or {}).get("power_content") or {}).get("body_min_length", 700),
+                "insurance_price_claim_requires_conditions": True,
+            },
             "source": "월간 SERP 변화·시즌 캘린더 결합",
             "review_lab_feedback": {
                 "applied_rules_version": (feedback_rules or {}).get("schema_version"),
@@ -669,11 +744,45 @@ def power_topics(product, keyword, angle, table_stakes, basis, planning_month, s
         })
         if len(rows) == 3:
             break
+    if len(rows) < 3:
+        # 과거 이력에 6개 기본 제목이 모두 남아 있어도 다음 달 주제가 0개가
+        # 되지 않도록, 같은 판단 기준을 유지한 채 문장 구조만 변주한다.
+        fallback_specs = [
+            ("question_plus_next_step", f"{name} {angle} 확인 질문", "검색 후 탐색", angle),
+            ("split_conditions", f"{name} {angle} 적용 조건 비교", "비교·의사결정", angle),
+            ("scene_plus_term", f"{name}에서 {_josa(angle, '을', '를')} 보는 장면", "상황 정보 탐색", angle),
+        ]
+        for fallback_pattern, fallback_title, fallback_intent, fallback_focus in fallback_specs:
+            fitted = apply_feedback_rules(_fit([fallback_title], 7, 34), feedback_rules)
+            key = re.sub(r"\s+", "", fitted).lower()
+            if key in used_titles or any(re.sub(r"\s+", "", row["title"]).lower() == key for row in rows):
+                continue
+            blocked_hits = feedback_findings({"title": fitted, "focus": fallback_focus}, feedback_rules, "power_content", product["key"])
+            if blocked_hits:
+                continue
+            index = len(rows) + 1
+            rows.append({
+                "id": f"{product['key']}-serp-topic-{variation['variation_key'][:6]}-{index}",
+                "fingerprint": _fingerprint({"product": product["key"], "title": fitted, "season": variation["season_key"], "serp": variation["serp_signature"]}),
+                "pattern": fallback_pattern, "message_axis": fallback_pattern, "title": fitted,
+                "target_query": f"{name} {fallback_focus}", "intent": fallback_intent, "focus": fallback_focus,
+                "angle": f"SERP의 ‘{saturated}’ 반복에서 벗어나 {fallback_focus} 확인 행동으로 전개",
+                "sections": [f"{fallback_focus} 검색자가 먼저 묻는 질문", "적용 대상과 제외 조건 비교", "보험료 계산 전에 맞출 조건", "최종 안내에서 기록할 내용"],
+                "faq": [f"{_josa(fallback_focus, '을', '를')} 볼 때 먼저 비교할 항목은 무엇인가요?", f"{name} 보험료 계산 조건은 어떻게 맞추나요?"],
+                "image_brief": f"{SCENES.get(product['key'], SCENES['home'])[(index - 1) % 3]}. 텍스트·숫자·로고 없이 프리미엄 3D 애니메이션으로 표현.",
+                "serp_basis": basis, "serp_signature": variation["serp_signature"], "variation_key": variation["variation_key"],
+                "season_context": season, "guide_pattern_id": guide_pattern_for(fallback_pattern, guide)["id"],
+                "guide_quality": {"guide_version": (guide or {}).get("guide_version") or GUIDE_VERSION, "requires_concrete_reader_question": True, "requires_comparison_or_checklist": True, "requires_official_cta": True, "body_min_char_count": ((guide or {}).get("power_content") or {}).get("body_min_length", 700)},
+                "source": "월간 SERP 변화·시즌 캘린더 결합 · 이력 중복 회피 변주",
+                "review_lab_feedback": {"applied_rules_version": (feedback_rules or {}).get("schema_version"), "blocked_phrase_hits": blocked_hits},
+            })
+            if len(rows) == 3:
+                break
     return rows
 
 
 def generate(products, analysis, volume, manifest=None, dom=None, planning_month=None,
-             seasonal=None, calendar=None, content_history=None, image_history=None, feedback_rules=None):
+             seasonal=None, calendar=None, content_history=None, image_history=None, feedback_rules=None, guide=None):
     manifest, dom = manifest or {}, dom or {}
     output = []
     for product in products.get("products") or []:
@@ -706,9 +815,19 @@ def generate(products, analysis, volume, manifest=None, dom=None, planning_month
             angle = seasonal_angle
         signature = serp_signature(patterns, diff, table_stakes, ads)
         variation = variation_context(product, plan_month, season, signature)
-        sa = sa_recommendations(product, keyword, angle, table_stakes, basis, season, variation, feedback_rules)
+        sa = sa_recommendations(product, keyword, angle, table_stakes, basis, season, variation, feedback_rules, guide)
         images = image_directions(product, angle, patterns, basis, plan_month, season, variation, image_history, feedback_rules)
-        topics = power_topics(product, keyword, angle, table_stakes, basis, plan_month, season, variation, content_history, feedback_rules)
+        topics = power_topics(product, keyword, angle, table_stakes, basis, plan_month, season, variation, content_history, feedback_rules, guide)
+        basis_info = guide_basis(guide)
+        qa = {
+            "guide_version": basis_info["guide_version"],
+            "sa_candidate_count": len(sa),
+            "power_content_topic_count": len(topics),
+            "thumbnail_slot_count": len(images),
+            "required_checks": (guide or {}).get("quality_gate", {}).get("required_for_every_material") or [],
+            "hard_fail_rules": (guide or {}).get("quality_gate", {}).get("hard_fail") or [],
+            "status": "ready_for_human_review" if sa and topics and len(images) == 4 else "needs_generation_review",
+        }
         output.append({
             "product_key": product["key"],
             "month": plan_month,
@@ -757,6 +876,8 @@ def generate(products, analysis, volume, manifest=None, dom=None, planning_month
                 "source": (feedback_rules or {}).get("source"),
                 "updated_at": (feedback_rules or {}).get("updated_at"),
             },
+            "guide_basis": basis_info,
+            "quality_assurance": qa,
             "material_refresh": {
                 "rules_version": MATERIAL_RULES_VERSION,
                 "scope": "sa_powercontent_thumbnail",
@@ -775,6 +896,7 @@ def generate(products, analysis, volume, manifest=None, dom=None, planning_month
         "planning_month": planning_month or asof[:7],
         "cadence": "weekly_capture_monthly_material_plan",
         "image_refresh_cadence": "monthly",
+        "guide_basis": guide_basis(guide),
         "products": output,
     }
 
@@ -819,6 +941,7 @@ def main(root=ROOT, planning_month=None, archive_images=False):
         read("data/adcopy/powercontent-history.json", {}, root),
         _read_image_history(root),
         read(FEEDBACK_RULES, {}, root),
+        read(GUIDE_RULES, {}, root),
     )
     output = root / "data/adcopy/serp-candidates.json"
     atomic_json_write(output, result)

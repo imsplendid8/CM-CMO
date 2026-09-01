@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "guide_version": "2026-09-01-derived-1",
+  "_comment": "첨부 소재생성가이드에서 운영에 필요한 규칙만 구조화한 내부 기준. 원문 심의안·성과표·이미지는 복제하지 않으며, 최신 네이버 가이드와 상품자료를 다시 확인한다.",
+  "source_files": [
+    "네이버 SA 등록 현황 스프레드시트",
+    "네이버 파워콘텐츠 등록 가이드 PDF",
+    "보험종목별 심의안 예시 스프레드시트",
+    "보험 파워콘텐츠 예시 이미지·문서"
+  ],
+  "sa": {
+    "title_max_length": 15,
+    "description_min_length": 20,
+    "description_max_length": 45,
+    "extension_limits_per_ad_group": {
+      "base_material": 5,
+      "additional_title": 15,
+      "additional_description": 4,
+      "promotion": 2,
+      "sitelink_sets": 2,
+      "powerlink_image": 2,
+      "image_sitelink_sets": 2
+    },
+    "image": {
+      "recommended_min_size": "500x500",
+      "upload_size": "214x214",
+      "max_bytes": 5242880,
+      "formats": ["jpg", "jpeg", "png"],
+      "text_overlay": "avoid",
+      "product_fit": "required",
+      "duplicate_in_set": "do_not_use"
+    },
+    "writing_rules": [
+      "제목은 상품명만 반복하지 말고 검색자가 다음에 할 행동 또는 확인할 항목을 한 가지 붙인다.",
+      "설명은 제목을 재진술하지 않고 적용 상황·기간·제외 조건 중 하나를 보완한다.",
+      "추가설명은 설명의 축약본이 아니라 두 번째 확인 포인트로 만든다.",
+      "홍보문구는 혜택·가격 단정 대신 보험료 계산·상품 조건·약관 탐색 같은 이동 경로를 쓴다.",
+      "실제 운영 시트에서 성과가 확인된 장소·상황·사용자 세그먼트 표현은 구조만 참고하고 수치·특약·혜택은 최신 승인자료가 있을 때만 쓴다."
+    ],
+    "pattern_library": [
+      {"id": "scene_plus_term", "label": "장면+핵심항목", "description": "사용 장소나 상황을 먼저 제시하고 핵심 항목을 뒤에 둔다.", "review": "장소·횟수·특약·한도는 상품자료 확인"},
+      {"id": "question_plus_next_step", "label": "질문+다음 행동", "description": "검색자의 질문을 제목으로 만들고 계산·조건·약관 중 다음 행동을 연결한다.", "review": "가입 가능성·처리 속도 단정 금지"},
+      {"id": "split_conditions", "label": "조건 분해", "description": "비슷한 항목을 지급사유·적용기간·제외조건으로 나누어 비교한다.", "review": "보장 범위와 금액은 최신 약관 대조"},
+      {"id": "segment_context", "label": "사용자 세그먼트", "description": "유학·워홀·가족여행처럼 실제 준비 맥락을 넣되 대상 조건을 명확히 한다.", "review": "대상·기간·지역 조건 확인"}
+    ]
+  },
+  "power_content": {
+    "title_min_length": 7,
+    "title_max_length": 28,
+    "description_min_length": 80,
+    "description_max_length": 110,
+    "body_min_length": 700,
+    "body_target_length": 1500,
+    "content_publish_window_months": 6,
+    "image": {"min_pixels": 400, "max_pixels": 2000, "text_only": "reject", "text_ratio_over_40_percent": "restrict"},
+    "landing": {"owner_blog_or_cafe_only_for_insurance": true, "must_be_public_without_login": true, "one_content_per_ad": true},
+    "editorial_structure": [
+      "구체적인 독자 질문으로 시작",
+      "SERP에서 반복되는 말과 빠진 정보를 분리",
+      "상품 용어를 생활 장면과 판단 기준으로 번역",
+      "비교표 또는 단계별 체크리스트로 선택 기준을 고정",
+      "시즌은 선택 월과 실제 이벤트 기간이 겹칠 때만 사용",
+      "공식 상품 안내·보험료 계산·약관 확인으로 마무리"
+    ],
+    "review_rules": [
+      "보험료를 쓰면 성별·연령·담보·특약 등 산출 조건, 산출일자, 변경 가능성을 함께 표시한다.",
+      "일부 회사만 비교한 최저·저렴·평균 표현은 사용하지 않는다.",
+      "사고 뉴스는 검색 맥락으로만 사용하고 공포나 지급 결과를 단정하지 않는다.",
+      "심의필 번호·유효기간·랜딩 URL은 빈칸 또는 사람 입력란으로 남긴다."
+    ]
+  },
+  "quality_gate": {
+    "required_for_every_material": [
+      "product_key",
+      "planning_month",
+      "primary_query",
+      "message_axis",
+      "guide_pattern_id",
+      "serp_basis",
+      "review_flags",
+      "cannibalization_check"
+    ],
+    "hard_fail": [
+      "different_product_scene",
+      "out_of_month_season",
+      "unsupported_price_or_benefit_claim",
+      "duplicate_material_within_group",
+      "image_text_or_logo",
+      "missing_power_content_body"
+    ],
+    "review_labels": ["자동 차단", "근거 필요", "필수 고지 필요", "사람 심의 필요", "자동 위험표현 없음"]
+  }
+}

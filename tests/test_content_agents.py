@@ -15,6 +15,31 @@ def module(name):
 
 
 class TestSerpCopyAgent(unittest.TestCase):
+    def test_attached_material_guide_is_applied_without_copying_claim_text(self):
+        agent = module("serp_copy_agent")
+        guide = json.loads((ROOT / "data/adcopy/material-generation-guide.json").read_text(encoding="utf-8"))
+        products = {"products": [{"key": "driver", "name": "운전자보험", "serpKw": "운전자보험",
+                    "core": ["운전자보험"], "special": ["벌금", "변호사선임", "교통사고"]}]}
+        analysis = {"products": {"driver": {"common_soju": ["벌금"], "observed_ads": [
+            {"date": "2026-08-24", "brand": "A", "title": "운전자보험 보험료", "desc": "선택 조건"}]}}}
+        result = agent.generate(products, analysis, {}, planning_month="2026-09", guide=guide)["products"][0]
+        self.assertEqual(result["guide_basis"]["guide_version"], guide["guide_version"])
+        self.assertEqual(result["quality_assurance"]["status"], "ready_for_human_review")
+        self.assertTrue(all(row.get("guide_pattern_id") for row in result["sa_recommendations"]))
+        self.assertTrue(all(row.get("guide_quality", {}).get("product_fit_required") for row in result["image_directions"]))
+        self.assertTrue(all(row.get("guide_quality", {}).get("requires_comparison_or_checklist") for row in result["power_content_topics"]))
+        serialized = json.dumps(result, ensure_ascii=False)
+        self.assertNotIn("월 1만원대로 가입", serialized)
+        self.assertNotIn("최대 3만포인트 지급", serialized)
+
+    def test_guide_pattern_axes_are_distinct(self):
+        agent = module("serp_copy_agent")
+        guide = json.loads((ROOT / "data/adcopy/material-generation-guide.json").read_text(encoding="utf-8"))
+        ids = {agent.guide_pattern_for(axis, guide)["id"] for axis in agent.COPY_AXES}
+        self.assertGreaterEqual(len(ids), 4)
+        self.assertIn("scene_plus_term", ids)
+        self.assertIn("split_conditions", ids)
+
     def test_review_lab_rules_are_scoped_by_product_and_channel(self):
         agent = module("serp_copy_agent")
         rules = {"blocked_phrases_by_product_channel": {
@@ -296,6 +321,13 @@ class TestFaqOpportunityAgent(unittest.TestCase):
         self.assertIn("GSC_REFRESH_TOKEN", workflow)
         self.assertIn("dom_observations.json", capture)
         self.assertIn('confidence:"needs_review"', capture)
+
+    def test_material_generation_guide_gate_runs_before_data_commit(self):
+        workflow = (ROOT / ".github/workflows/content-intelligence.yml").read_text(encoding="utf-8")
+        checker = (ROOT / "scripts/check_material_generation_guide.py").read_text(encoding="utf-8")
+        self.assertIn("scripts/check_material_generation_guide.py", workflow)
+        self.assertIn("material-generation-guide.json", checker)
+        self.assertIn("ready_for_human_review", checker)
 
 
 if __name__ == "__main__":

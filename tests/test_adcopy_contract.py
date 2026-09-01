@@ -55,6 +55,18 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertNotIn("data-copy", ADCOPY)
         self.assertNotIn("navigator.clipboard", ADCOPY)
 
+    def test_attached_material_generation_guide_is_connected_to_sa_and_power_content(self):
+        guide = (ROOT / "data" / "adcopy" / "material-generation-guide.json").read_text(encoding="utf-8")
+        docs = (ROOT / "docs" / "material-generation-guide.md").read_text(encoding="utf-8")
+        self.assertIn("pattern_library", guide)
+        self.assertIn("extension_limits_per_ad_group", guide)
+        self.assertIn("editorial_structure", guide)
+        self.assertIn("guide_pattern_id", (ROOT / "scripts" / "serp_copy_agent.py").read_text(encoding="utf-8"))
+        self.assertIn("quality_assurance", (ROOT / "scripts" / "serp_copy_agent.py").read_text(encoding="utf-8"))
+        self.assertIn("material-generation-guide.json", ADCOPY)
+        self.assertIn("material-generation-guide.json", POWER)
+        self.assertIn("소재생성가이드", docs)
+
     def test_sa_uses_attached_review_draft_structure_without_manual_editor(self):
         self.assertIn("const REVIEW_REFERENCE", ADCOPY)
         self.assertIn("20260730 한화CM 검색광고 운전자보험 심의안", ADCOPY)
