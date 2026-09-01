@@ -553,7 +553,10 @@ def _image_history_for_product(image_history, product_key, planning_month):
     rows = []
     for archive in image_history or []:
         archive_month = str(archive.get("planning_month") or "")
-        if not archive_month or archive_month > str(planning_month):
+        # 현재 생성 중인 월의 archive는 직전 달 이력이 아니다. 같은 달 파일을
+        # 다시 읽으면 재실행할 때마다 자기 자신을 최근 사용 원본으로 판단해
+        # 월간 회전 결과가 흔들리고, 이전 원본 여부 플래그도 어긋난다.
+        if not archive_month or archive_month >= str(planning_month):
             continue
         for product in archive.get("products") or []:
             if product.get("product_key") != product_key:
