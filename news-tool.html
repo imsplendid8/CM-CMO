@@ -394,15 +394,8 @@ function newsPanel(p){
   const exitBanner=(p.key==="overseas"&&exit&&exit.outbound_count!=null)
     ?`<div class="sig-live">🛫 <b>출입국관광통계</b> ${esc(exit.period||SIGNALS.asof||"")} · 수치 ${esc(exit.outbound_count)}${_trendText(exit.trend)}<span class="src">· ${esc(exit.basis||"관광 API")}</span></div>`
     :"";
-  const _regionText=(regions)=>{
-    if(!regions||typeof regions!=="object")return"";
-    const entries=Object.entries(regions).slice(0,3);
-    if(!entries.length)return"";
-    const regionStrs=entries.map(([name,data])=>`${name} ${data.count||0}대`);
-    return ` · 지역: ${regionStrs.join(" / ")}`;
-  };
   const newregBanner=(p.key==="driver"&&newreg&&newreg.count!=null)
-    ?`<div class="sig-live">🚘 <b>자동차 신규등록</b> ${esc(newreg.period||SIGNALS.asof||"")} · ${Number(newreg.count).toLocaleString("ko-KR")}대${newreg.mom!=null?` <span class="src">· 전월 대비 ${newreg.mom>0?"+":""}${esc(newreg.mom)}%</span>`:""} ${_trendText(newreg.trend)}${_regionText(newreg.by_region)}<span class="src">· ${esc(newreg.source||"공공데이터")}</span></div>`
+    ?`<div class="sig-live">🚘 <b>자동차 신규등록</b> ${esc(newreg.period||SIGNALS.asof||"")} · ${Number(newreg.count).toLocaleString("ko-KR")}대${newreg.mom!=null?` <span class="src">· 전월 대비 ${newreg.mom>0?"+":""}${esc(newreg.mom)}%</span>`:""} ${_trendText(newreg.trend)}<span class="src">· ${esc(newreg.source||"공공데이터")}</span></div>`
     :"";
   const signalIssue=(p.key==="driver"&&newreg&&newreg.error)
     ?`<div class="sig-live">⚠ <b>자동차 등록 신호 확인 필요</b> ${esc(newreg.error)} <span class="src">· Actions Secret/응답 필드 확인</span></div>`

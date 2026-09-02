@@ -513,7 +513,7 @@ def fetch_car_newreg():
     # 억지로 붙이지 않는다. 필요할 때 Secret으로 명시하거나 EXTRA_PARAMS로
     # 서비스 문서의 정확한 필드명을 전달한다.
     start_dt = CAR_NEWREG_START_DT or (datetime.date.today().strftime("%Y%m") if not data_go else "")
-    end_dt = CAR_NEWREG_END_DT or (_month_int(TODAY) if not data_go else "")
+    end_dt = CAR_NEWREG_END_DT or (datetime.date.today().strftime("%Y%m") if not data_go else "")
     if start_dt:
         params["startDt" if data_go else "start_dt"] = start_dt
     if end_dt:
@@ -533,7 +533,6 @@ def fetch_car_newreg():
                 payload = {"raw": text[:2000]}
         status, message = _extract_status(payload)
         series = _extract_molit_series(payload)
-        regions = _extract_molit_regions(payload)
         latest = series[-1] if series else None
         count = latest["count"] if latest else _extract_molit_count(payload)
         period = latest["period"] if latest else (end_dt or TODAY)
@@ -541,21 +540,12 @@ def fetch_car_newreg():
         if len(series) >= 2 and series[-2]["count"]:
             mom = round((series[-1]["count"] - series[-2]["count"]) / series[-2]["count"] * 100, 2)
         trend = _calculate_trend(series) if series else {}
-
-        # 시도별 상위 5개 지역 추출 (전체 합계로 비율 계산)
-        by_region = {}
-        if regions and count and count > 0:
-            sorted_regions = sorted(regions.items(), key=lambda x: x[1], reverse=True)
-            for region_name, region_count in sorted_regions[:5]:
-                ratio = round(region_count / count * 100, 1)
-                by_region[region_name] = {"count": region_count, "ratio": ratio}
         if count is None:
             return {
                 "count": None,
                 "period": period,
                 "mom": mom,
                 "trend": trend,
-                "by_region": by_region,
                 "source": "data.go.kr" if data_go else "stat.molit",
                 "error": "신규등록정보 응답에서 수치 파싱 실패",
                 "status_code": status,
@@ -569,7 +559,6 @@ def fetch_car_newreg():
             "period": period,
             "mom": mom,
             "trend": trend,
-            "by_region": by_region,
             "source": "data.go.kr" if data_go else "stat.molit",
             "basis": "신규등록정보 서비스",
             "status_code": status,
