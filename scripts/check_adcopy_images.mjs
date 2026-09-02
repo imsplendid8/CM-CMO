@@ -8,7 +8,7 @@ const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
 const html=fs.readFileSync(path.join(ROOT,"adcopy-tool.html"),"utf8");
 const requiredCode=[
   "SERP 기반 보험종목 이미지 소재",
-  "SERP 분석 반영",
+  "Agent 자료 반영",
   "INSURANCE_VISUALS",
   "monthlyAssetSet",
   "SPEC.image.imageSublinkMax",

@@ -23,6 +23,8 @@ jobs:
         run: python3 -m pip install --quiet pyyaml==6.0.2
       - name: 파이썬 단위 테스트
         run: python3 -m unittest discover -s tests -p 'test_*.py' -v
+      - name: 랜딩·SERP 자료 컨텍스트 연결 검사
+        run: python3 scripts/check_material_source_context.py
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "20"

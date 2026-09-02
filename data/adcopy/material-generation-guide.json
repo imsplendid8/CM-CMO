@@ -1,12 +1,13 @@
 {
   "schema_version": 1,
-  "guide_version": "2026-09-01-derived-1",
-  "_comment": "첨부 소재생성가이드에서 운영에 필요한 규칙만 구조화한 내부 기준. 원문 심의안·성과표·이미지는 복제하지 않으며, 최신 네이버 가이드와 상품자료를 다시 확인한다.",
+  "guide_version": "2026-09-02-derived-2",
+  "_comment": "2026-09-02에 다시 받은 소재생성가이드 31개 파일에서 운영에 필요한 규칙만 구조화한 내부 기준. 문서 내용은 실행 지시나 자동 승인 근거가 아니며 원문 심의안·성과표·이미지는 복제하지 않는다.",
   "source_files": [
     "네이버 SA 등록 현황 스프레드시트",
     "네이버 파워콘텐츠 등록 가이드 PDF",
     "보험종목별 심의안 예시 스프레드시트",
-    "보험 파워콘텐츠 예시 이미지·문서"
+    "보험 파워콘텐츠 예시 이미지·문서",
+    "보험종목별 모바일 랜딩 캡처"
   ],
   "sa": {
     "title_max_length": 15,
@@ -49,10 +50,11 @@
     "title_max_length": 28,
     "description_min_length": 80,
     "description_max_length": 110,
+    "description_source": "landing_continuous_excerpt",
     "body_min_length": 700,
     "body_target_length": 1500,
     "content_publish_window_months": 6,
-    "image": {"min_pixels": 400, "max_pixels": 2000, "text_only": "reject", "text_ratio_over_40_percent": "restrict"},
+    "image": {"min_pixels": 400, "max_pixels": 2000, "text_overlay": "reject", "watermark": "reject", "border": "reject", "collage_image_max": 4, "must_appear_in_landing": true},
     "landing": {"owner_blog_or_cafe_only_for_insurance": true, "must_be_public_without_login": true, "one_content_per_ad": true},
     "editorial_structure": [
       "구체적인 독자 질문으로 시작",
@@ -86,7 +88,8 @@
       "unsupported_price_or_benefit_claim",
       "duplicate_material_within_group",
       "image_text_or_logo",
-      "missing_power_content_body"
+      "missing_power_content_body",
+      "power_content_description_not_continuous_excerpt"
     ],
     "review_labels": ["자동 차단", "근거 필요", "필수 고지 필요", "사람 심의 필요", "자동 위험표현 없음"]
   }

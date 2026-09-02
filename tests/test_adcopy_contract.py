@@ -50,7 +50,7 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn('const OUT_OF_SCOPE_VOLUME=["자동차보험","자동차 보험","한화생명","TM","텔레마케팅"]', ADCOPY)
         self.assertNotIn("공개 광고 관측", ADCOPY)
         self.assertNotIn("공개 SERP 관측", ADCOPY)
-        self.assertIn("SERP 분석 반영", ADCOPY)
+        self.assertIn("Agent 자료 반영", ADCOPY)
         self.assertNotIn("generated=agent.candidates", ADCOPY)
         self.assertNotIn("data-copy", ADCOPY)
         self.assertNotIn("navigator.clipboard", ADCOPY)
@@ -67,9 +67,12 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn("material-generation-guide.json", POWER)
         self.assertIn("소재생성가이드", docs)
 
-    def test_sa_uses_attached_review_draft_structure_without_manual_editor(self):
-        self.assertIn("const REVIEW_REFERENCE", ADCOPY)
-        self.assertIn("20260730 한화CM 검색광고 운전자보험 심의안", ADCOPY)
+    def test_sa_uses_agent_output_instead_of_embedded_review_copy(self):
+        self.assertNotIn("const REVIEW_REFERENCE", ADCOPY)
+        self.assertNotIn("20260730 한화CM 검색광고 운전자보험 심의안", ADCOPY)
+        self.assertIn("const authoritative=serp.candidates.length>=5", ADCOPY)
+        self.assertIn("authoritative?serp.titles", ADCOPY)
+        self.assertIn("구조화 랜딩·심의 초안·운영 자료 + 월간 SERP", ADCOPY)
         self.assertIn("심의안 + 추가소재 초안", ADCOPY)
         for label in ("1. 썸네일 이미지", "2. 광고 제목", "3. 추가제목 (롤링)",
                       "4. 설명 (롤링)", "5. 홍보문구 (택 1)", "6. 서브링크 (택 4)",

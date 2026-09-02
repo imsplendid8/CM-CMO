@@ -65,7 +65,7 @@ class TestSerpCopyAgent(unittest.TestCase):
         self.assertEqual(result["analysis_status"], "ready")
         self.assertIn("변호사선임", result["copy_direction"])
         self.assertIn("보험종목 장면", result["visual_direction"])
-        self.assertEqual(len(result["sa_recommendations"]), 3)
+        self.assertEqual(len(result["sa_recommendations"]), 5)
         self.assertTrue(all(row.get("additional_description") for row in result["sa_recommendations"]))
         self.assertEqual(len(result["image_directions"]), 4)
         self.assertEqual(len({row["asset"] for row in result["image_directions"]}), 4)
@@ -167,11 +167,11 @@ class TestSerpCopyAgent(unittest.TestCase):
             {"date": "2026-08-24", "brand": "A", "title": "보험료 계산", "desc": "간편 가입"}]}}}
         result = agent.generate(products, analysis, {}, planning_month="2026-08")["products"][0]
         rows = result["sa_recommendations"]
-        self.assertEqual(len({row["message_axis"] for row in rows}), 3)
+        self.assertEqual(len({row["message_axis"] for row in rows}), 5)
         text = json.dumps(rows, ensure_ascii=False)
         for stale in ("갑작스러운", "미리 대비하세요", "든든하게 대비"):
             self.assertNotIn(stale, text)
-        self.assertEqual(len({row["description"][-8:] for row in rows}), 3)
+        self.assertEqual(len({row["description"][-8:] for row in rows}), 5)
 
     def test_refresh_version_removes_old_operator_tone(self):
         agent = module("serp_copy_agent")
@@ -180,7 +180,7 @@ class TestSerpCopyAgent(unittest.TestCase):
         analysis = {"products": {"driver": {"observed_ads": [
             {"date": "2026-08-24", "brand": "A", "title": "운전자보험 보험료", "desc": "보험료 계산"}]}}}
         result = agent.generate(products, analysis, {}, planning_month="2026-08")
-        self.assertEqual(result["material_rules_version"], 2)
+        self.assertEqual(result["material_rules_version"], 3)
         self.assertEqual(result["refresh_scope"], "all_generated_materials")
         serialized = json.dumps(result, ensure_ascii=False)
         for stale in ("살펴보세요", "대조해 보세요", "확인해 보세요", "보장하세요", "풍수재을", "홀인원와"):

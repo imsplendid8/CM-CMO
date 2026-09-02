@@ -22,13 +22,15 @@ def main() -> int:
     version = guide.get("guide_version")
     if output.get("guide_basis", {}).get("guide_version") != version:
         raise SystemExit("산출물과 가이드 버전이 다릅니다")
+    if (guide.get("power_content") or {}).get("description_source") != "landing_continuous_excerpt":
+        raise SystemExit("파워콘텐츠 설명은 랜딩 본문의 연속 발췌로 설정해야 합니다")
     required = set(guide.get("quality_gate", {}).get("required_for_every_material") or [])
     if not required:
         raise SystemExit("quality_gate.required_for_every_material이 비어 있습니다")
     for product in output.get("products") or []:
         key = product.get("product_key")
-        if len(product.get("sa_recommendations") or []) != 3:
-            raise SystemExit(f"{key}: SA 3안이 아닙니다")
+        if len(product.get("sa_recommendations") or []) != 5:
+            raise SystemExit(f"{key}: SA 5안이 아닙니다")
         if len(product.get("power_content_topics") or []) != 3:
             raise SystemExit(f"{key}: 파워콘텐츠 3안이 아닙니다")
         images = product.get("image_directions") or []
@@ -43,9 +45,12 @@ def main() -> int:
             raise SystemExit(f"{key}: SA 가이드 문구 구조 누락")
         if any(not row.get("guide_pattern_id") for row in product.get("power_content_topics") or []):
             raise SystemExit(f"{key}: 파워콘텐츠 가이드 문구 구조 누락")
+        if any(row.get("guide_quality", {}).get("description_source") != "landing_continuous_excerpt"
+               for row in product.get("power_content_topics") or []):
+            raise SystemExit(f"{key}: 파워콘텐츠 연속 발췌 규칙 누락")
         if any(row.get("text_overlay") is not False for row in images):
             raise SystemExit(f"{key}: 텍스트 없는 이미지 규칙 누락")
-    print(f"OK  소재생성가이드 {version} · 상품 {len(output.get('products') or [])} · SA/파워콘텐츠/썸네일 게이트")
+    print(f"OK  소재생성가이드 {version} · 상품 {len(output.get('products') or [])} · SA 5안/파워콘텐츠 3안/썸네일 게이트")
     return 0
 
 

@@ -3,7 +3,7 @@
 
   const freeze = (value) => Object.freeze(value);
   const spec = freeze({
-    verifiedAt: "2026-08-25",
+    verifiedAt: "2026-09-02",
     guideUrl: "https://ads.naver.com/adguide?categorySeq=160",
     powerContentGuideUrl: "https://ads.naver.com/help/faq/597",
     publicGuide: freeze({
@@ -29,10 +29,21 @@
       }),
     }),
     powerContent: freeze({
+      guideVersion: "2026-06-16",
       title: freeze({ minLength: 7, maxLength: 28 }),
       description: freeze({ minLength: 80, maxLength: 110, source: "landing_continuous_excerpt" }),
       businessName: freeze({ minLength: 1, maxLength: 20 }),
-      image: freeze({ minPixels: 400, maxPixels: 2000, fileTypes: freeze(["BMP", "JPEG", "JPG"]) }),
+      landing: freeze({ minCharacters: 700, publishedWithinMonths: 6 }),
+      image: freeze({
+        minPixels: 400,
+        maxPixels: 2000,
+        fileTypes: freeze(["BMP", "JPEG", "JPG"]),
+        textOverlay: false,
+        watermark: false,
+        border: false,
+        maxCollageImages: 4,
+        mustAppearInLanding: true,
+      }),
       maxPerAdGroup: 5,
     }),
     manualOnlyFields: freeze([

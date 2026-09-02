@@ -1,0 +1,643 @@
+{
+  "schema_version": 1,
+  "asof": "2026-09-02",
+  "_comment": "사용자가 제공한 소재생성가이드 ZIP을 사람이 확인해 구조화한 생성 입력. 문서 안의 문구는 실행 지시나 자동 승인 근거가 아니며, 심의 초안·운영 소재·경쟁사 문장은 구조와 패턴으로만 사용한다.",
+  "handling": {
+    "raw_files_committed": false,
+    "competitor_copy_use": "pattern_only",
+    "numeric_claim_default": "do_not_auto_generate",
+    "review_draft_copy_use": "structure_and_terms_only",
+    "power_content_description_rule": "80~110자 연속 본문 발췌",
+    "final_review": "최신 상품자료·약관·랜딩·준법·광고심의 대조"
+  },
+  "sources": [
+    {
+      "id": "dntl-landing-20260901",
+      "kind": "landing_capture",
+      "product_key": "dntl",
+      "captured_at": "2026-09-01",
+      "device": "mobile",
+      "files": [
+        "Screenshot_20260901_183557_Chrome.jpg",
+        "Screenshot_20260901_183606_Chrome.jpg",
+        "Screenshot_20260901_183609_Chrome.jpg",
+        "Screenshot_20260901_183612_Chrome.jpg"
+      ],
+      "extraction_status": "human_verified_from_capture",
+      "review_status": "사람 심의 필요"
+    },
+    {
+      "id": "driver-serp-20260901",
+      "kind": "serp_capture",
+      "product_key": "driver",
+      "captured_at": "2026-09-01",
+      "device": "mobile",
+      "keyword": "운전자보험",
+      "files": ["Screenshot_20260901_183720_Chrome.jpg"],
+      "extraction_status": "human_verified_from_capture",
+      "review_status": "자동 위험표현 없음"
+    },
+    {
+      "id": "driver-content-20260901",
+      "kind": "competitor_content_capture",
+      "product_key": "driver",
+      "captured_at": "2026-09-01",
+      "device": "mobile",
+      "files": [
+        "Screenshot_20260901_183724_Chrome.jpg",
+        "Screenshot_20260901_183845_Chrome.jpg"
+      ],
+      "extraction_status": "title_and_structure_only",
+      "review_status": "자동 위험표현 없음"
+    },
+    {
+      "id": "hrmf-serp-20260901",
+      "kind": "serp_capture",
+      "product_key": "hrmf",
+      "captured_at": "2026-09-01",
+      "device": "mobile",
+      "keyword": "주택화재보험",
+      "files": ["Screenshot_20260901_184031_Chrome.jpg"],
+      "extraction_status": "human_verified_from_capture",
+      "review_status": "자동 위험표현 없음"
+    },
+    {
+      "id": "hrmf-content-20260901",
+      "kind": "competitor_content_capture",
+      "product_key": "hrmf",
+      "captured_at": "2026-09-01",
+      "device": "mobile",
+      "files": ["Screenshot_20260901_183948_Chrome.jpg"],
+      "extraction_status": "title_and_structure_only",
+      "review_status": "자동 위험표현 없음"
+    },
+    {
+      "id": "naver-material-operation-20260822",
+      "kind": "registered_material_export",
+      "captured_at": "2026-08-22",
+      "files": ["(mad) 한화손보 장기_네이버SA 소재 등록 현황_260822.xlsx"],
+      "extraction_status": "structure_and_registered_status_only",
+      "review_status": "사람 심의 필요"
+    },
+    {
+      "id": "naver-power-guide-20260616",
+      "kind": "platform_guide",
+      "captured_at": "2026-06-16",
+      "files": ["파워컨텐츠 가이드라인.pdf"],
+      "extraction_status": "human_verified_rules",
+      "review_status": "자동 위험표현 없음"
+    },
+    {
+      "id": "woman-review-20260825",
+      "kind": "review_draft",
+      "product_key": "woman",
+      "captured_at": "2026-08-25",
+      "files": ["20260825_한화CM_검색광고_여성건강보험.xlsx"],
+      "extraction_status": "terms_and_structure_only",
+      "review_status": "사람 심의 필요"
+    },
+    {
+      "id": "golf-review-20260901",
+      "kind": "review_draft",
+      "product_key": "golf",
+      "captured_at": "2026-09-01",
+      "files": ["20260901_한화CM_검색광고_골프보험.xlsx"],
+      "extraction_status": "terms_structure_and_stale_performance_signal",
+      "review_status": "사람 심의 필요"
+    },
+    {
+      "id": "driver-review-20260901",
+      "kind": "review_draft",
+      "product_key": "driver",
+      "captured_at": "2026-09-01",
+      "files": ["20260901_한화CM_검색광고_운전자보험.xlsx"],
+      "extraction_status": "terms_and_structure_only",
+      "review_status": "사람 심의 필요"
+    },
+    {
+      "id": "hrmf-review-20260901",
+      "kind": "review_draft",
+      "product_key": "hrmf",
+      "captured_at": "2026-09-01",
+      "files": ["20260901_한화CM_검색광고_화재보험.xlsx"],
+      "extraction_status": "terms_and_structure_only",
+      "review_status": "사람 심의 필요"
+    },
+    {
+      "id": "overseaslong-review-20260827",
+      "kind": "review_draft",
+      "product_key": "overseaslong",
+      "captured_at": "2026-08-27",
+      "files": ["260827_SA_장기체류보험_8월.xlsx"],
+      "extraction_status": "review_number_and_structure_only",
+      "review_status": "사람 심의 필요"
+    },
+    {
+      "id": "overseas-review-20260827",
+      "kind": "review_draft",
+      "product_key": "overseas",
+      "captured_at": "2026-08-27",
+      "files": ["260827_SA_해외여행보험_8월.xlsx"],
+      "extraction_status": "as_is_to_be_structure_only",
+      "review_status": "사람 심의 필요"
+    },
+    {
+      "id": "driver-power-reference-20260902",
+      "kind": "power_content_reference_draft",
+      "product_key": "driver",
+      "captured_at": "2026-09-02",
+      "files": ["파워컨텐츠 운전자보험 소재A.docx", "파워컨텐츠 운전자보험 소재B.docx"],
+      "extraction_status": "editorial_structure_only_unverified_claims_suppressed",
+      "review_status": "사람 심의 필요"
+    },
+    {
+      "id": "woman-power-reference-20260902",
+      "kind": "power_content_reference_draft",
+      "product_key": "woman",
+      "captured_at": "2026-09-02",
+      "files": ["2026년 한화손보다이렉트 장기CM 여성건강보험파워컨텐츠소재.pptx"],
+      "extraction_status": "editorial_structure_only_unverified_claims_suppressed",
+      "review_status": "사람 심의 필요"
+    },
+    {
+      "id": "landing-pack-20260902",
+      "kind": "landing_capture_pack",
+      "captured_at": "2026-09-02",
+      "files": ["골프보험.jpg", "암보험_메인.jpg", "여성건강보험.jpg", "운전자보험.jpg", "주택화재보험.jpg", "치아안심보험.jpg", "해외여행보험.jpg", "해외장기체류보험.jpg", "홀인원보험.jpg"],
+      "extraction_status": "human_verified_product_terms_and_actions",
+      "review_status": "사람 심의 필요"
+    }
+  ],
+  "products": {
+    "dntl": {
+      "source_ids": ["dntl-landing-20260901", "landing-pack-20260902"],
+      "landing": {
+        "verified": true,
+        "channel": "direct",
+        "product_label": "한화 다이렉트 치아안심보험 무배당 2604",
+        "official_actions": ["보험료 알아보기", "상품안내 자세히 보기", "약관 다운로드"],
+        "eligibility": {
+          "captured_text": "만 19세~50세 가입 가능",
+          "auto_copy_allowed": false,
+          "review_status": "근거 필요"
+        },
+        "terms": [
+          {
+            "term": "특정치석제거(스케일링)치료비(급여)",
+            "safe_short": "스케일링",
+            "captured_conditions": ["연간 2회 한도", "가입 후 90일간 보장 제외"],
+            "auto_copy_allowed": false,
+            "review_status": "필수 고지 필요"
+          },
+          {
+            "term": "영구치보철치료비Ⅲ",
+            "safe_short": "임플란트·틀니",
+            "captured_conditions": ["임플란트 연간 개수 한도", "틀니 연간 횟수 한도"],
+            "auto_copy_allowed": false,
+            "review_status": "필수 고지 필요"
+          },
+          {
+            "term": "영구치보존치료비",
+            "safe_short": "크라운",
+            "captured_conditions": ["크라운 횟수 조건", "최대 지급금액 표시"],
+            "auto_copy_allowed": false,
+            "review_status": "필수 고지 필요"
+          }
+        ]
+      },
+      "preferred_focus": ["스케일링", "크라운", "임플란트·틀니"],
+      "comparison_terms": ["스케일링", "크라운"],
+      "reader_question": "치아보험에서 스케일링·크라운·임플란트 조건을 왜 따로 읽어야 할까?",
+      "editorial_thesis": "치료 항목을 정기 관리·보존치료·보철치료로 나누고 지급사유, 보장개시일, 횟수·한도를 같은 표에서 비교한다.",
+      "whitespace_angles": ["치료 항목별 보장개시일", "보존치료와 보철치료 구분", "횟수·한도 조건 분리"],
+      "sa_blueprints": [
+        {
+          "message_axis": "decision_detail",
+          "title": "스케일링 기준 읽기",
+          "description": "급여 스케일링은 보장개시일과 연간 횟수 조건을 나눠 읽기",
+          "additional_description": "크라운 치료비는 지급사유와 제외 조건을 함께 비교",
+          "promo": "치료 항목 보기",
+          "sublinks": ["보험료계산", "치료항목", "가입조건", "상품안내"],
+          "review_status": "필수 고지 필요"
+        },
+        {
+          "message_axis": "scope_compare",
+          "title": "크라운·임플란트 비교",
+          "description": "보존치료와 보철치료를 구분해 치아별 지급 기준을 비교",
+          "additional_description": "틀니·임플란트는 보장개시일과 연간 한도를 별도 확인",
+          "promo": "항목 차이 보기",
+          "sublinks": ["치료비교", "보장내용", "보험료계산", "약관안내"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "search_action",
+          "title": "치아보험료 계산 전",
+          "description": "생년월일·성별 입력 뒤 필요한 치료 항목과 보험기간을 대조",
+          "additional_description": "설계 결과의 선택 항목을 최종 청약 내용과 다시 비교",
+          "promo": "보험료 계산",
+          "sublinks": ["보험료계산", "선택항목", "가입조건", "상품안내"],
+          "review_status": "자동 위험표현 없음"
+        },
+        {
+          "message_axis": "terms_navigation",
+          "title": "치아보험 약관 찾기",
+          "description": "치료비 항목의 지급사유와 보장하지 않는 경우를 함께 읽기",
+          "additional_description": "보장개시일과 치료 횟수·한도는 항목별로 구분",
+          "promo": "약관 항목 보기",
+          "sublinks": ["약관안내", "지급사유", "제외조건", "가입안내"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "serp_whitespace",
+          "title": "치과치료 항목 나누기",
+          "description": "정기 관리·보존치료·보철치료를 한 표로 나누는 기준",
+          "additional_description": "치료 원인과 진단 시점도 가입 전 확인 항목으로 기록",
+          "promo": "선택 기준 보기",
+          "sublinks": ["핵심질문", "치료항목", "보험료계산", "가입안내"],
+          "review_status": "자동 위험표현 없음"
+        }
+      ],
+      "power_content_blueprints": [
+        {
+          "message_axis": "scope_compare",
+          "title": "치아보험, 스케일링과 크라운을 따로 보는 이유",
+          "target_query": "치아보험 스케일링 크라운",
+          "intent": "항목 비교",
+          "focus": "스케일링·크라운",
+          "sections": ["같은 치과치료라도 항목이 달라지는 이유", "스케일링의 보장개시일과 횟수 조건", "크라운·임플란트 지급 기준 구분", "보험료 계산 전 치료 항목 체크리스트"],
+          "faq": ["스케일링과 크라운은 어떤 기준으로 나눠 봐야 하나요?", "치료 횟수와 보장개시일은 어디에서 확인하나요?"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "terms_navigation",
+          "title": "크라운·임플란트 상담 전 약관에서 찾을 항목",
+          "target_query": "치아보험 크라운 임플란트",
+          "intent": "약관 정보 탐색",
+          "focus": "크라운·임플란트",
+          "sections": ["보존치료와 보철치료부터 구분하기", "지급사유와 치아별 기준 찾기", "보장개시일·횟수·한도 함께 읽기", "최종 설계와 약관을 대조하는 순서"],
+          "faq": ["크라운과 임플란트는 약관에서 어디를 찾아야 하나요?", "횟수와 한도 조건은 왜 따로 봐야 하나요?"],
+          "review_status": "필수 고지 필요"
+        },
+        {
+          "message_axis": "search_action",
+          "title": "치아보험료 계산 전 치료 항목을 나누는 법",
+          "target_query": "치아보험 보험료 계산",
+          "intent": "비교·의사결정",
+          "focus": "치료 항목",
+          "sections": ["최근 치과 기록과 예상 치료 나누기", "정기 관리·보존·보철치료 체크", "같은 조건으로 보험료 계산하기", "최종 청약의 선택 항목 대조하기"],
+          "faq": ["보험료 계산 전에 어떤 치료 항목을 정리해야 하나요?", "최종 청약에서 무엇을 다시 대조해야 하나요?"],
+          "review_status": "자동 위험표현 없음"
+        }
+      ]
+    },
+    "driver": {
+      "source_ids": ["driver-serp-20260901", "driver-content-20260901", "naver-material-operation-20260822", "driver-review-20260901", "driver-power-reference-20260902", "landing-pack-20260902"],
+      "landing": {
+        "verified": true,
+        "product_label": "캐롯 운전자보험 무배당2604",
+        "official_actions": ["보험료 확인하기", "보장 자세히 보기", "상품안내·약관 확인"],
+        "terms": [
+          {"term": "자동차사고 변호사선임비용", "safe_short": "변호사선임비용", "auto_copy_allowed": false, "review_status": "필수 고지 필요"},
+          {"term": "교통사고처리지원금", "safe_short": "교통사고처리지원금", "auto_copy_allowed": false, "review_status": "필수 고지 필요"},
+          {"term": "자동차사고 부상등급 관련 보험료 납입면제", "safe_short": "보험료 납입면제", "auto_copy_allowed": false, "review_status": "필수 고지 필요"}
+        ]
+      },
+      "serp": {
+        "keyword": "운전자보험",
+        "captured_at": "2026-09-01",
+        "device": "mobile",
+        "competitor_observations": [
+          {
+            "brand": "삼성화재 다이렉트",
+            "title": "혼자서 다이렉트로 쉽게! 운전자보험 가입하는 방법",
+            "detected_angles": ["다이렉트", "가입 방법", "간편함"],
+            "copy_use": "pattern_only"
+          },
+          {
+            "brand": "Showm",
+            "title": "운전자보험 비교견적 및 보험료 계산 노하우",
+            "detected_angles": ["비교견적", "보험료 계산", "노하우"],
+            "copy_use": "pattern_only"
+          }
+        ],
+        "table_stakes": ["가입 과정", "보험료 계산", "비교 방법"],
+        "saturated_patterns": ["혼자서 쉽게", "가입하는 방법", "비교견적", "보험료 계산 노하우"],
+        "whitespace_angles": ["사고 뒤 비용 항목 구분", "지급 시점과 제외 조건", "최종 청약 조건 대조"]
+      },
+      "preferred_focus": ["비용 항목", "벌금·변호사선임", "약관 순서"],
+      "comparison_terms": ["벌금", "변호사선임"],
+      "reader_question": "가입 방법을 보기 전에 사고 뒤 비용 항목을 어떻게 나눠 읽어야 할까?",
+      "editorial_thesis": "가입 편의보다 벌금·변호사선임 등 비용 항목의 지급사유, 적용 시점, 제외 조건을 사고 뒤 절차에 맞춰 정리한다.",
+      "sa_blueprints": [
+        {
+          "message_axis": "serp_whitespace",
+          "title": "운전자보험 비용 항목",
+          "description": "가입 방법보다 벌금·변호사선임 관련 지급 조건을 먼저 구분",
+          "additional_description": "사고 뒤 절차별 비용 항목은 적용 시점과 제외 조건까지 확인",
+          "promo": "비용 항목 보기",
+          "sublinks": ["비용항목", "약관확인", "보험료", "가입안내"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "scope_compare",
+          "title": "벌금·변호사선임 비교",
+          "description": "두 항목의 지급사유와 사고 시점별 적용 조건을 나눠 읽기",
+          "additional_description": "비탑승 상황 등 세부 적용 범위는 최신 약관에서 대조",
+          "promo": "항목 차이 보기",
+          "sublinks": ["지급사유", "제외조건", "보험료", "상품안내"],
+          "review_status": "필수 고지 필요"
+        },
+        {
+          "message_axis": "search_action",
+          "title": "운전자보험료 계산 전",
+          "description": "운전 빈도보다 필요한 비용 항목과 보험기간을 먼저 맞추기",
+          "additional_description": "같은 선택 조건으로 계산한 결과인지 최종 화면에서 비교",
+          "promo": "보험료 계산",
+          "sublinks": ["보험료계산", "선택항목", "가입조건", "상품안내"],
+          "review_status": "자동 위험표현 없음"
+        },
+        {
+          "message_axis": "terms_navigation",
+          "title": "운전자보험 약관 순서",
+          "description": "비용 항목의 지급사유·적용 시점·제외 조건을 차례로 읽기",
+          "additional_description": "광고의 짧은 표현은 약관 용어와 같은 뜻인지 다시 대조",
+          "promo": "약관 항목 보기",
+          "sublinks": ["약관확인", "지급사유", "제외조건", "가입안내"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "official_path",
+          "title": "최종 청약 조건 대조",
+          "description": "상품 안내·보험료 계산·최종 청약에서 선택 조건이 같은지 비교",
+          "additional_description": "보험기간과 납입 조건도 처음 설계한 내용과 함께 기록",
+          "promo": "청약 조건 보기",
+          "sublinks": ["상품안내", "보험료계산", "가입조건", "청약확인"],
+          "review_status": "자동 위험표현 없음"
+        }
+      ],
+      "power_content_blueprints": [
+        {
+          "message_axis": "serp_whitespace",
+          "title": "운전자보험 가입 방법보다 먼저 볼 비용 항목",
+          "target_query": "운전자보험 비용 항목",
+          "intent": "비교·의사결정",
+          "focus": "비용 항목",
+          "sections": ["가입 편의 표현이 많은 검색 결과", "사고 뒤 절차를 비용 항목으로 나누기", "지급사유·적용 시점·제외 조건 읽기", "보험료 계산과 최종 청약 대조"],
+          "faq": ["운전자보험에서 비용 항목은 어떤 순서로 봐야 하나요?", "가입 방법보다 먼저 확인할 조건은 무엇인가요?"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "scope_compare",
+          "title": "벌금·변호사선임을 사고 절차별로 보는 법",
+          "target_query": "운전자보험 벌금 변호사선임",
+          "intent": "항목 비교",
+          "focus": "벌금·변호사선임",
+          "sections": ["두 비용 항목이 궁금해지는 순간", "지급사유와 적용 시점 구분", "보장하지 않는 경우 함께 읽기", "내 설계에 필요한 질문 기록"],
+          "faq": ["벌금과 변호사선임 항목은 무엇이 다른가요?", "사고 시점에 따라 무엇을 확인해야 하나요?"],
+          "review_status": "필수 고지 필요"
+        },
+        {
+          "message_axis": "official_path",
+          "title": "운전자보험료 계산 뒤 최종 청약을 대조하는 순서",
+          "target_query": "운전자보험 보험료 계산",
+          "intent": "가입 전 준비",
+          "focus": "최종 청약",
+          "sections": ["필요한 비용 항목 먼저 적기", "같은 조건으로 보험료 계산하기", "보험기간·납입 조건 확인하기", "최종 청약 내용과 처음 설계 대조"],
+          "faq": ["보험료 계산 결과에서 무엇을 기록해야 하나요?", "최종 청약에서 다시 볼 항목은 무엇인가요?"],
+          "review_status": "자동 위험표현 없음"
+        }
+      ]
+    },
+    "hrmf": {
+      "source_ids": ["hrmf-serp-20260901", "hrmf-content-20260901", "naver-material-operation-20260822", "hrmf-review-20260901", "landing-pack-20260902"],
+      "landing": {
+        "verified": true,
+        "product_label": "한화 다이렉트 119주택화재보험 무배당2607",
+        "official_actions": ["보험료 알아보기", "상품안내 자세히 보기", "약관 다운로드"],
+        "terms": [
+          {"term": "우리집 화재손해", "safe_short": "화재손해", "auto_copy_allowed": false, "review_status": "필수 고지 필요"},
+          {"term": "이웃집 배상책임", "safe_short": "이웃집 배상책임", "auto_copy_allowed": false, "review_status": "필수 고지 필요"},
+          {"term": "급배수시설 누수로 인한 손해", "safe_short": "누수 손해", "auto_copy_allowed": false, "review_status": "필수 고지 필요"}
+        ]
+      },
+      "serp": {
+        "keyword": "주택화재보험",
+        "captured_at": "2026-09-01",
+        "device": "mobile",
+        "competitor_observations": [
+          {
+            "brand": "현대해상 다이렉트",
+            "title": "장마철 누수 피해, 주택화재보험으로 대비하세요!",
+            "detected_angles": ["장마철", "누수 피해", "대비"],
+            "copy_use": "pattern_only"
+          },
+          {
+            "brand": "KB손해보험 다이렉트",
+            "title": "KB손해보험이 주택화재보험 쉽게 알려드릴게요",
+            "detected_angles": ["쉽게 설명", "주택화재보험 필요성"],
+            "copy_use": "pattern_only"
+          }
+        ],
+        "table_stakes": ["누수 피해", "주택화재보험 필요성", "쉬운 설명"],
+        "saturated_patterns": ["장마철 누수 대비", "쉽게 알려드릴게요", "필요성 강조"],
+        "whitespace_angles": ["누수와 풍수재의 원인 구분", "소유·임차 조건", "사고 뒤 거주 가능 여부"]
+      },
+      "preferred_focus": ["누수·풍수재", "임시거주비", "소유·임차 조건"],
+      "comparison_terms": ["누수", "풍수재"],
+      "reader_question": "주택화재보험에서 누수와 풍수재는 피해 원인을 어떻게 나눠 읽어야 할까?",
+      "editorial_thesis": "계절 공포 대신 피해 원인, 손상 부위, 거주 가능 여부를 기준으로 누수·풍수재·임시거주 관련 질문을 분리한다.",
+      "sa_blueprints": [
+        {
+          "message_axis": "scope_compare",
+          "title": "누수·풍수재 차이",
+          "description": "피해 원인과 손상 부위를 나눠 두 항목의 적용 조건을 읽기",
+          "additional_description": "같은 물 피해라도 사고 원인과 제외 조건부터 따로 비교",
+          "promo": "항목 차이 보기",
+          "sublinks": ["누수항목", "풍수재", "보험료", "상품안내"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "serp_whitespace",
+          "title": "누수 원인부터 구분",
+          "description": "장마철 문구보다 발생 원인·손상 부위·제외 조건을 먼저 정리",
+          "additional_description": "집 안 누수 흔적은 원인과 수리 범위를 함께 기록",
+          "promo": "누수 기준 보기",
+          "sublinks": ["핵심질문", "누수항목", "제외조건", "가입안내"],
+          "review_status": "자동 위험표현 없음"
+        },
+        {
+          "message_axis": "search_action",
+          "title": "주택화재보험료 전",
+          "description": "집 형태와 소유·임차 여부, 필요한 항목과 기간을 먼저 맞추기",
+          "additional_description": "같은 조건으로 계산한 보험료인지 최종 설계에서 비교",
+          "promo": "보험료 계산",
+          "sublinks": ["보험료계산", "집조건", "가입조건", "상품안내"],
+          "review_status": "자동 위험표현 없음"
+        },
+        {
+          "message_axis": "decision_detail",
+          "title": "임시거주비 기준 읽기",
+          "description": "사고 뒤 거주 가능 여부와 지급사유·제외 조건을 함께 읽기",
+          "additional_description": "적용 기간과 필요한 증빙은 최신 상품자료에서 대조",
+          "promo": "지급 기준 보기",
+          "sublinks": ["지급사유", "제외조건", "보험료", "상품안내"],
+          "review_status": "필수 고지 필요"
+        },
+        {
+          "message_axis": "terms_navigation",
+          "title": "주택화재 약관 순서",
+          "description": "누수·풍수재·임시거주 관련 조항을 생활 장면별로 나눠 보기",
+          "additional_description": "보장 내용 옆에 보장하지 않는 경우도 함께 기록",
+          "promo": "약관 항목 보기",
+          "sublinks": ["약관확인", "보장내용", "제외조건", "가입안내"],
+          "review_status": "사람 심의 필요"
+        }
+      ],
+      "power_content_blueprints": [
+        {
+          "message_axis": "scope_compare",
+          "title": "주택화재보험에서 누수와 풍수재를 따로 읽는 이유",
+          "target_query": "주택화재보험 누수 풍수재",
+          "intent": "항목 비교",
+          "focus": "누수·풍수재",
+          "sections": ["장마철 대비 문구에서 빠지기 쉬운 질문", "피해 원인과 손상 부위 나누기", "지급사유와 제외 조건 함께 읽기", "집 조건을 넣어 보험료 계산하기"],
+          "faq": ["누수와 풍수재는 어떤 기준으로 나눠 봐야 하나요?", "물 피해가 생기면 먼저 기록할 것은 무엇인가요?"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "serp_whitespace",
+          "title": "누수 피해, 원인과 손상 부위를 먼저 적는 법",
+          "target_query": "주택화재보험 누수",
+          "intent": "상황 정보 탐색",
+          "focus": "누수 원인",
+          "sections": ["누수 흔적을 발견한 첫 장면", "발생 원인과 손상 부위 기록", "수리 범위와 제외 조건 확인", "상품 안내와 약관을 대조하는 순서"],
+          "faq": ["누수 흔적을 발견하면 무엇부터 기록해야 하나요?", "수리 범위와 보장 범위는 어떻게 구분하나요?"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "search_action",
+          "title": "주택화재보험료 전에 집 조건을 맞추는 순서",
+          "target_query": "주택화재보험 보험료",
+          "intent": "비교·의사결정",
+          "focus": "집 조건",
+          "sections": ["사는 집의 형태부터 적기", "소유·임차와 필요한 대상 구분", "같은 조건으로 보험료 계산", "최종 설계와 청약 내용 대조"],
+          "faq": ["보험료 계산 전에 어떤 집 조건을 맞춰야 하나요?", "소유·임차 여부는 어디에서 확인하나요?"],
+          "review_status": "자동 위험표현 없음"
+        }
+      ]
+    },
+    "golf": {
+      "source_ids": ["naver-material-operation-20260822", "golf-review-20260901", "landing-pack-20260902"],
+      "landing": {
+        "verified": true,
+        "product_label": "한화 다이렉트 홀인원보험 무배당2604",
+        "official_actions": ["보험료 알아보기", "상품안내 자세히 보기", "약관 다운로드"],
+        "terms": [
+          {"term": "홀인원비용", "safe_short": "필드 홀인원", "auto_copy_allowed": false, "review_status": "필수 고지 필요"},
+          {"term": "골프존스크린골프장홀인원비용", "safe_short": "스크린 홀인원", "auto_copy_allowed": false, "review_status": "필수 고지 필요"},
+          {"term": "골프활동중배상책임", "safe_short": "골프 배상책임", "auto_copy_allowed": false, "review_status": "필수 고지 필요"}
+        ]
+      },
+      "review_draft": {"copy_use": "structure_and_terms_only", "suppressed_claims": ["보장금액", "연간 횟수", "할인", "24시간", "빠른 가입"]},
+      "serp": {"table_stakes": ["홀인원 비용", "스크린 골프", "보험료 계산"], "whitespace_angles": ["필드와 스크린 조건 구분", "첫 홀인원과 추가 홀인원 조건", "배상책임 적용 장면"]},
+      "preferred_focus": ["필드 홀인원", "스크린 홀인원", "골프 배상책임"],
+      "comparison_terms": ["필드 홀인원", "스크린 홀인원"],
+      "reader_question": "필드와 스크린의 홀인원 비용은 같은 조건으로 읽어도 될까?",
+      "editorial_thesis": "홀인원 장소와 횟수, 비용의 범위를 먼저 나누고 배상책임은 별도 지급사유와 제외 조건으로 읽는다."
+    },
+    "holeinone": {
+      "source_ids": ["naver-material-operation-20260822", "golf-review-20260901", "landing-pack-20260902"],
+      "landing": {
+        "verified": true,
+        "product_label": "캐롯 홀인원보험",
+        "official_actions": ["보장내용 자세히 보기", "선물하기", "가입하기", "약관 보기"],
+        "terms": [
+          {"term": "골프 경기 중 홀인원 비용", "safe_short": "홀인원 비용", "auto_copy_allowed": false, "review_status": "필수 고지 필요"},
+          {"term": "동반 플레이어 보장", "safe_short": "동반 플레이어", "auto_copy_allowed": false, "review_status": "필수 고지 필요"},
+          {"term": "선물하기", "safe_short": "선물하기", "auto_copy_allowed": false, "review_status": "사람 심의 필요"}
+        ]
+      },
+      "review_draft": {"copy_use": "structure_and_terms_only", "suppressed_claims": ["보험료 예시", "가입 인원", "지급금액"]},
+      "serp": {"table_stakes": ["홀인원 축하비용", "선물하기", "보험료"], "whitespace_angles": ["본인과 동반자 조건", "청구 서류", "골프장 확인 조건"]},
+      "preferred_focus": ["홀인원 비용", "동반 플레이어", "청구 서류"],
+      "comparison_terms": ["본인", "동반 플레이어"],
+      "reader_question": "동반자와 함께 가입할 때 누구의 홀인원 비용을 어떤 서류로 확인할까?",
+      "editorial_thesis": "본인·동반자와 가입 단위를 먼저 구분하고 홀인원 인정 조건, 비용 범위, 청구 서류를 같은 순서로 정리한다."
+    },
+    "cncr": {
+      "source_ids": ["landing-pack-20260902"],
+      "landing": {
+        "verified": true,
+        "product_label": "한화 다이렉트 내가고른 암보험 무배당2604",
+        "official_actions": ["보험료 알아보기", "상품안내 자세히 보기", "약관 다운로드"],
+        "terms": [
+          {"term": "암 진단비", "safe_short": "암 진단비", "auto_copy_allowed": false, "review_status": "필수 고지 필요"},
+          {"term": "4대유사암 진단비", "safe_short": "유사암 진단비", "auto_copy_allowed": false, "review_status": "필수 고지 필요"},
+          {"term": "표적항암약물허가치료비", "safe_short": "표적항암약물치료", "auto_copy_allowed": false, "review_status": "필수 고지 필요"}
+        ]
+      },
+      "serp": {"table_stakes": ["진단비", "유사암", "치료비"], "whitespace_angles": ["진단과 치료 항목 분리", "보장개시일", "갱신형 조건"]},
+      "preferred_focus": ["진단비", "유사암", "항암치료"],
+      "comparison_terms": ["진단비", "치료비"],
+      "reader_question": "암 진단비와 치료비 항목은 어떤 시점과 지급사유로 나눠 읽어야 할까?",
+      "editorial_thesis": "진단 확정과 치료 시행을 구분하고 보장개시일, 경과기간, 갱신 여부를 항목별로 대조한다."
+    },
+    "woman": {
+      "source_ids": ["naver-material-operation-20260822", "woman-review-20260825", "woman-power-reference-20260902", "landing-pack-20260902"],
+      "landing": {
+        "verified": true,
+        "product_label": "한화 다이렉트 시그니처 여성건강보험",
+        "official_actions": ["보험료 알아보기", "보장 자세히 보기", "약관 확인"],
+        "terms": [
+          {"term": "임신·출산 단계별 보장", "safe_short": "임신·출산", "auto_copy_allowed": false, "review_status": "필수 고지 필요"},
+          {"term": "여성 질환 케어", "safe_short": "여성 질환", "auto_copy_allowed": false, "review_status": "필수 고지 필요"},
+          {"term": "여성 통합암", "safe_short": "여성암", "auto_copy_allowed": false, "review_status": "필수 고지 필요"}
+        ]
+      },
+      "review_draft": {"copy_use": "structure_and_terms_only", "suppressed_claims": ["출산지원금", "산후조리원 보상금액", "포인트 혜택", "업계최초", "24시간"]},
+      "serp": {"table_stakes": ["여성암", "임신·출산", "보험료"], "whitespace_angles": ["생애 단계별 질문", "임신 전후 조건", "여성질환 항목 구분"]},
+      "preferred_focus": ["임신·출산", "여성 질환", "여성암"],
+      "comparison_terms": ["임신·출산", "여성 질환"],
+      "reader_question": "임신·출산 계획과 여성 질환 보장을 한 화면에서 어떻게 나눠 봐야 할까?",
+      "editorial_thesis": "임신 전·출산·산후와 여성 질환을 생애 단계로 나누고 각 특약의 지급사유와 제외 조건을 분리한다."
+    },
+    "overseas": {
+      "source_ids": ["overseas-review-20260827", "landing-pack-20260902"],
+      "landing": {
+        "verified": true,
+        "product_label": "캐롯 해외여행보험",
+        "official_actions": ["보장내용 자세히 보기", "약관 보기", "보험료 확인하기"],
+        "terms": [
+          {"term": "항공편 지연", "safe_short": "항공 지연", "auto_copy_allowed": false, "review_status": "필수 고지 필요"},
+          {"term": "수하물 지연", "safe_short": "수하물 지연", "auto_copy_allowed": false, "review_status": "필수 고지 필요"},
+          {"term": "해외여행 중 휴대품 손해", "safe_short": "휴대품 손해", "auto_copy_allowed": false, "review_status": "필수 고지 필요"}
+        ]
+      },
+      "review_draft": {"copy_use": "to_be_structure_only", "suppressed_claims": ["할인율", "포인트", "보험료 예시", "24시간 서비스"]},
+      "serp": {"table_stakes": ["여행자보험", "할인", "보험료"], "whitespace_angles": ["항공편과 수하물 지연 구분", "휴대품 사고 기록", "여행 일정 입력 조건"]},
+      "preferred_focus": ["항공 지연", "수하물 지연", "휴대품 손해"],
+      "comparison_terms": ["항공 지연", "수하물 지연"],
+      "reader_question": "항공편 지연과 수하물 지연은 어떤 시간 기준과 비용 항목으로 나눠 볼까?",
+      "editorial_thesis": "여행 일정과 이동 구간을 먼저 적고 항공편·수하물·휴대품 사고의 인정 조건과 필요 서류를 나란히 정리한다."
+    },
+    "overseaslong": {
+      "source_ids": ["overseaslong-review-20260827", "landing-pack-20260902"],
+      "landing": {
+        "verified": true,
+        "product_label": "캐롯 해외장기체류보험",
+        "official_actions": ["보장내용 자세히 보기", "약관 보기", "맞춤 플랜 시작하기"],
+        "terms": [
+          {"term": "해외유학 중 치료비", "safe_short": "해외 치료비", "auto_copy_allowed": false, "review_status": "필수 고지 필요"},
+          {"term": "귀국 후 국내 치료비", "safe_short": "국내 치료비", "auto_copy_allowed": false, "review_status": "필수 고지 필요"},
+          {"term": "중대사고 구조송환", "safe_short": "구조송환", "auto_copy_allowed": false, "review_status": "필수 고지 필요"}
+        ]
+      },
+      "review_draft": {"copy_use": "structure_and_review_number_only", "suppressed_claims": ["치료비 한도", "배상책임 한도", "서비스 시간", "보험료 예시"]},
+      "serp": {"table_stakes": ["유학생보험", "해외 치료비", "24시간 서비스"], "whitespace_angles": ["체류 목적과 기간", "해외와 귀국 후 치료", "구조송환 조건"]},
+      "preferred_focus": ["체류 목적", "해외 치료비", "구조송환"],
+      "comparison_terms": ["해외 치료비", "국내 치료비"],
+      "reader_question": "유학·워홀·출장 기간에 해외 치료와 귀국 후 치료를 어떻게 구분할까?",
+      "editorial_thesis": "체류 목적과 기간을 먼저 맞추고 해외 치료, 귀국 후 치료, 구조송환의 적용 지역과 지급 조건을 분리한다."
+    }
+  }
+}

@@ -23,7 +23,7 @@ vm.runInContext(insuranceAdReview, context, { filename: "shared/insurance-ad-rev
 vm.runInContext(
   `${pureSection}
   ;globalThis.__POWER_CHECK__={
-    PRODUCTS,titleCandidates,candidateCannibalization,sameCurrentTopic,reviewPowerMaterial,volumeRows,inScope,clen,keywordPlan,introFor,
+    PRODUCTS,titlePool,titleCandidates,candidateCannibalization,sameCurrentTopic,reviewPowerMaterial,volumeRows,inScope,clen,keywordPlan,introFor,
     contentBriefFor,contentKeywordSet,visualPlanFor,
     setData:(volume,seasonal,titles,serp,history)=>{DATA={volume,seasonal,titles,serp,history};}
   };`,
@@ -53,7 +53,17 @@ const bodyFingerprints = new Set();
 
 for (const product of check.PRODUCTS) {
   const candidates = check.titleCandidates(product);
-  if (candidates.length !== 3) throw new Error(`${product.name}: 콘텐츠 소재 ${candidates.length}개 (기대 3개)`);
+  if (candidates.length !== 3) {
+    const diagnostic = check.titlePool(product).slice(0, 8).map((candidate) => ({
+      title: candidate.title,
+      target: candidate.target_query,
+      length: check.clen(candidate.title),
+      inScope: check.inScope(product, candidate.target_query || candidate.title),
+      review: check.reviewPowerMaterial(product, candidate).statusLabel,
+      history: check.candidateCannibalization(product, candidate),
+    }));
+    throw new Error(`${product.name}: 콘텐츠 소재 ${candidates.length}개 (기대 3개) ${JSON.stringify(diagnostic)}`);
+  }
   if (candidates.some((candidate) => check.candidateCannibalization(product, candidate))) {
     throw new Error(`${product.name}: 과거 제안과 카니벌라이제이션 발생`);
   }
@@ -77,6 +87,12 @@ for (const product of check.PRODUCTS) {
     }
     const introLength = check.clen(brief.intro);
     if (introLength < 80 || introLength > 110) throw new Error(`${product.name}: 도입부·광고 설명 ${introLength}자`);
+    if (brief.article.descriptionSource !== "landing_continuous_excerpt" || !brief.article.bodyText.startsWith(brief.intro)) {
+      throw new Error(`${product.name}: 광고 설명이 발행 랜딩 본문의 연속 발췌문이 아님`);
+    }
+    if (brief.article.bodyText.indexOf(brief.intro) !== 0) {
+      throw new Error(`${product.name}: 광고 설명 조각 이어붙이기 가능성`);
+    }
     if (brief.draft.length !== 5) throw new Error(`${product.name}: 본문 초안 ${brief.draft.length}개 섹션`);
     if (brief.faq.length !== 4) throw new Error(`${product.name}: FAQ ${brief.faq.length}개`);
     if (brief.article.bodyCharCount < 1500) throw new Error(`${product.name}: 발행형 본문 ${brief.article.bodyCharCount}자`);
