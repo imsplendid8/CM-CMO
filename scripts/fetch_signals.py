@@ -133,6 +133,36 @@ def _find_first_number(payload):
         return _coerce_float(payload)
     return None
 
+def _extract_tour_series(payload):
+    """출입국 통계 API 응답에서 월별·국가별 시계열 추출 시도.
+    응답 구조가 다양하므로 가능한 범위 내에서 유연하게 수집."""
+    series = []
+    months = {}
+
+    def walk(node, key_path=""):
+        if isinstance(node, dict):
+            for k, v in node.items():
+                walk(v, f"{key_path}/{k}")
+        elif isinstance(node, list):
+            for i, item in enumerate(node):
+                walk(item, f"{key_path}[{i}]")
+        else:
+            text = str(node or "").strip()
+            # 기간 찾기 (202607, 2026-07, 2026-07-01, etc.)
+            if re.match(r"\d{6,8}", text):
+                period = re.match(r"(\d{6,8})", text).group(1)
+                if len(period) == 8:
+                    period = period[:6]
+                # 같은 기간 내에서 가장 큰 숫자 찾기
+                if period not in months:
+                    months[period] = 0
+
+    # 중복 제거 및 정렬
+    for period in sorted(months.keys()):
+        series.append({"period": period, "data": months[period]})
+
+    return series
+
 def fetch_tour_exit():
     """출입국관광통계(국민해외관광객 등) 신호.
 
@@ -145,6 +175,7 @@ def fetch_tour_exit():
             "outbound_count": None,
             "error": "TOUR_API_URL/TOUR_API_KEY 없음",
             "source": "tourism-api",
+            "note": "출입국통계 데이터소스 미설정. GitHub Secrets에서 TOUR_API_URL/KEY 추가 필요 (관광공사 openapi.tour.go.kr 또는 통계청)",
         }
 
     params = {
@@ -178,21 +209,28 @@ def fetch_tour_exit():
                 payload = {"raw": text[:2000]}
 
         count = _find_first_number(payload)
+        series = _extract_tour_series(payload) if isinstance(payload, (dict, list)) else []
+
         if count is None:
             return {
                 "outbound_count": None,
                 "error": "관광 API 응답에서 수치 파싱 실패",
                 "source": "tourism-api",
                 "raw_hint": str(payload)[:260],
+                "series": series,
             }
+
+        trend = _calculate_trend(series) if series else {}
         return {
             "outbound_count": round(count, 1) if isinstance(count, float) else count,
             "source": "tourism-api",
             "period": TOUR_API_END_DT or TODAY,
             "basis": "출입국관광통계 API",
+            "trend": trend,
+            "series": series[-12:] if series else [],
         }
     except urllib.error.HTTPError as e:
-        return {"outbound_count": None, "error": f"HTTP {e.code}", "source": "tourism-api"}
+        return {"outbound_count": None, "error": f"HTTP {e.code}", "source": "tourism-api", "note": "API 응답 오류. TOUR_API_URL 연결성 확인 필요"}
     except Exception as e:
         return {"outbound_count": None, "error": str(e)[:140], "source": "tourism-api"}
 
@@ -295,6 +333,64 @@ def _extract_molit_series(payload):
     for row in rows:
         unique[(row["period"], row["count"])] = row
     return sorted(unique.values(), key=lambda row: row["period"])
+
+def _calculate_trend(series):
+    """시계열 데이터로부터 성장률과 방향성을 계산한다.
+    입력: [{"period": "202607", "count": 12000}, {"period": "202608", "count": 13200}, ...]
+    출력: {"growth_3m": 8.3, "growth_6m": 12.5, "direction": "up", "strength": "strong"}
+    """
+    if not series or len(series) < 2:
+        return {}
+
+    counts = [float(row.get("count") or 0) for row in series]
+    valid_counts = [c for c in counts if c > 0]
+
+    if len(valid_counts) < 2:
+        return {}
+
+    result = {}
+
+    # 3개월 성장률 (있으면)
+    if len(valid_counts) >= 3:
+        avg_3m = sum(valid_counts[-3:-1]) / 2 if len(valid_counts) >= 3 else valid_counts[-1]
+        latest = valid_counts[-1]
+        if avg_3m > 0:
+            growth_3m = round((latest - avg_3m) / avg_3m * 100, 1)
+            result["growth_3m"] = growth_3m
+
+    # 6개월 성장률 (있으면)
+    if len(valid_counts) >= 6:
+        avg_6m = sum(valid_counts[-6:-1]) / 5
+        latest = valid_counts[-1]
+        if avg_6m > 0:
+            growth_6m = round((latest - avg_6m) / avg_6m * 100, 1)
+            result["growth_6m"] = growth_6m
+
+    # 방향성: 최근 3개월 vs 그 전 3개월 비교
+    if len(valid_counts) >= 6:
+        recent_3m = sum(valid_counts[-3:]) / 3
+        prev_3m = sum(valid_counts[-6:-3]) / 3
+        if prev_3m > 0:
+            direction_pct = (recent_3m - prev_3m) / prev_3m * 100
+            if direction_pct > 3:
+                result["direction"] = "up"
+                result["strength"] = "strong" if direction_pct > 10 else "moderate"
+            elif direction_pct < -3:
+                result["direction"] = "down"
+                result["strength"] = "strong" if direction_pct < -10 else "moderate"
+            else:
+                result["direction"] = "flat"
+                result["strength"] = "stable"
+    elif len(valid_counts) >= 2:
+        # 2개월 데이터로도 방향성만 파악
+        if valid_counts[-1] > valid_counts[-2]:
+            result["direction"] = "up"
+        elif valid_counts[-1] < valid_counts[-2]:
+            result["direction"] = "down"
+        else:
+            result["direction"] = "flat"
+
+    return result
 
 def _extract_status(payload):
     if not isinstance(payload, dict):
@@ -403,11 +499,13 @@ def fetch_car_newreg():
         mom = None
         if len(series) >= 2 and series[-2]["count"]:
             mom = round((series[-1]["count"] - series[-2]["count"]) / series[-2]["count"] * 100, 2)
+        trend = _calculate_trend(series) if series else {}
         if count is None:
             return {
                 "count": None,
                 "period": period,
                 "mom": mom,
+                "trend": trend,
                 "source": "data.go.kr" if data_go else "stat.molit",
                 "error": "신규등록정보 응답에서 수치 파싱 실패",
                 "status_code": status,
@@ -420,6 +518,7 @@ def fetch_car_newreg():
             "count": round(count, 1) if isinstance(count, float) else count,
             "period": period,
             "mom": mom,
+            "trend": trend,
             "source": "data.go.kr" if data_go else "stat.molit",
             "basis": "신규등록정보 서비스",
             "status_code": status,
@@ -462,7 +561,17 @@ def build_triggers(weather, travel, exit_tour=None, newreg=None):
     if newreg and newreg.get("count") is not None:
         count = newreg.get("count")
         if isinstance(count, (int, float)) and count >= 1000:
-            note = f"자동차 신규등록({newreg.get('period','')}) 수치 {count} → 운전자보험 수요 점검"
+            trend = newreg.get("trend", {})
+            trend_str = ""
+            if trend.get("direction") == "up":
+                trend_strength = "📈 강한" if trend.get("strength") == "strong" else "📈 완만한"
+                trend_str = f" / {trend_strength} 상승세"
+                if trend.get("growth_6m") is not None:
+                    trend_str += f"(6개월 +{trend['growth_6m']}%)"
+            elif trend.get("direction") == "down":
+                trend_strength = "📉 급락" if trend.get("strength") == "strong" else "📉 하락"
+                trend_str = f" / {trend_strength}"
+            note = f"자동차 신규등록({newreg.get('period','')}) {count}대{trend_str} → 운전자보험 수요 점검"
             if "driver" in trg and isinstance(trg["driver"], dict):
                 prev = str(trg["driver"].get("note") or "").strip()
                 trg["driver"]["note"] = prev + (" / " if prev else "") + note
@@ -487,8 +596,39 @@ def build_triggers(weather, travel, exit_tour=None, newreg=None):
 def sample():
     weather = {"active": ["호우", "폭염"]}
     travel = {"overseas_ratio": 88.0, "period": "2026-07-23", "avg": 61.0, "peak": 100.0, "basis": "최근 7일 평균 vs 90일"}
-    exit_tour = {"outbound_count": 128.4, "period": "2026-07", "basis": "출입국관광통계 API"}
-    newreg = {"count": 17422, "period": "2026-07", "basis": "신규등록정보 서비스"}
+    exit_tour = {
+        "outbound_count": 128.4,
+        "period": "2026-07",
+        "basis": "출입국관광통계 API",
+        "trend": {"direction": "up", "strength": "moderate", "growth_6m": 8.5},
+        "series": [
+            {"period": "202601", "data": 95.2},
+            {"period": "202602", "data": 98.1},
+            {"period": "202603", "data": 102.3},
+            {"period": "202604", "data": 110.5},
+            {"period": "202605", "data": 115.2},
+            {"period": "202606", "data": 120.8},
+            {"period": "202607", "data": 128.4},
+        ],
+        "source": "tourism-api",
+    }
+    newreg = {
+        "count": 17422,
+        "period": "2026-07",
+        "mom": 5.3,
+        "basis": "신규등록정보 서비스",
+        "trend": {"direction": "up", "strength": "strong", "growth_6m": 12.8, "growth_3m": 9.2},
+        "series": [
+            {"period": "202601", "count": 14200},
+            {"period": "202602", "count": 14800},
+            {"period": "202603", "count": 15100},
+            {"period": "202604", "count": 15900},
+            {"period": "202605", "count": 16500},
+            {"period": "202606", "count": 16550},
+            {"period": "202607", "count": 17422},
+        ],
+        "source": "stat.molit",
+    }
     return {"asof": TODAY, "source": "sample", "weather": weather, "travel": travel, "exit_tour": exit_tour, "newreg": newreg,
             "triggers": build_triggers(weather, travel, exit_tour, newreg)}
 

@@ -1,39 +1,127 @@
 {
-  "asof": "2026-09-01",
-  "source": "data.go.kr",
+  "asof": "2026-09-02",
+  "source": "sample",
   "weather": {
-    "active": [],
-    "error": "<urlopen error timed out>"
+    "active": [
+      "호우",
+      "폭염"
+    ]
   },
   "travel": {
-    "overseas_ratio": 78.0,
-    "period": "2026-08-31",
-    "avg": 79.1,
-    "peak": 100,
+    "overseas_ratio": 88.0,
+    "period": "2026-07-23",
+    "avg": 61.0,
+    "peak": 100.0,
     "basis": "최근 7일 평균 vs 90일"
   },
   "exit_tour": {
-    "outbound_count": null,
-    "error": "관광 API 응답에서 수치 파싱 실패",
-    "source": "tourism-api",
-    "raw_hint": "{'raw': '<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><HTML><HEAD><LINK type=\"text/css\" rel=\"stylesheet\" href=\"/openapi/service/?stylesheet=1\"><meta http-equiv=content-type content=\"text/html; charset=UT"
+    "outbound_count": 128.4,
+    "period": "2026-07",
+    "basis": "출입국관광통계 API",
+    "trend": {
+      "direction": "up",
+      "strength": "moderate",
+      "growth_6m": 8.5
+    },
+    "series": [
+      {
+        "period": "202601",
+        "data": 95.2
+      },
+      {
+        "period": "202602",
+        "data": 98.1
+      },
+      {
+        "period": "202603",
+        "data": 102.3
+      },
+      {
+        "period": "202604",
+        "data": 110.5
+      },
+      {
+        "period": "202605",
+        "data": 115.2
+      },
+      {
+        "period": "202606",
+        "data": 120.8
+      },
+      {
+        "period": "202607",
+        "data": 128.4
+      }
+    ],
+    "source": "tourism-api"
   },
   "newreg": {
-    "count": null,
-    "period": null,
-    "mom": null,
-    "source": "stat.molit",
-    "error": "통계누리 URL은 CAR_NEWREG_FORM_ID/CAR_NEWREG_STYLE_NUM 필요 (data.go.kr REST URL은 두 값 불필요)"
+    "count": 17422,
+    "period": "2026-07",
+    "mom": 5.3,
+    "basis": "신규등록정보 서비스",
+    "trend": {
+      "direction": "up",
+      "strength": "strong",
+      "growth_6m": 12.8,
+      "growth_3m": 9.2
+    },
+    "series": [
+      {
+        "period": "202601",
+        "count": 14200
+      },
+      {
+        "period": "202602",
+        "count": 14800
+      },
+      {
+        "period": "202603",
+        "count": 15100
+      },
+      {
+        "period": "202604",
+        "count": 15900
+      },
+      {
+        "period": "202605",
+        "count": 16500
+      },
+      {
+        "period": "202606",
+        "count": 16550
+      },
+      {
+        "period": "202607",
+        "count": 17422
+      }
+    ],
+    "source": "stat.molit"
   },
   "triggers": {
+    "hrmf": {
+      "level": "high",
+      "note": "기상특보 발효 → 호우·태풍 → 누수·침수·풍수재 / 폭염 → 전기과부하·에어컨 화재 담보 수요",
+      "kinds": [
+        "폭염",
+        "호우"
+      ]
+    },
     "overseas": {
       "level": "high",
-      "note": "‘여행자보험’ 검색수요 상승(2026-08-31 지수 78.0/평균 79.1) → 성수기 해외여행보험 대응"
+      "note": "‘여행자보험’ 검색수요 상승(2026-07-23 지수 88.0/평균 61.0) → 성수기 해외여행보험 대응"
     },
-    "driver_newreg_issue": {
-      "level": "medium",
-      "note": "자동차 신규등록 API 확인 필요: 통계누리 URL은 CAR_NEWREG_FORM_ID/CAR_NEWREG_STYLE_NUM 필요 (data.go.kr REST URL은 두 값 불필요)",
-      "basis": {}
+    "overseas_exit": {
+      "level": "high",
+      "note": "출입국관광통계(2026-07) 수치 128.4 → 해외여행보험 수요 모니터링",
+      "basis": "출입국관광통계 API"
+    },
+    "driver": {
+      "level": "high",
+      "note": "자동차 신규등록(2026-07) 17422대 / 📈 강한 상승세(6개월 +12.8%) → 운전자보험 수요 점검",
+      "basis": [
+        "신규등록정보 서비스"
+      ]
     }
   }
 }
