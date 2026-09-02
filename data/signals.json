@@ -2,7 +2,8 @@
   "asof": "2026-09-02",
   "source": "data.go.kr",
   "weather": {
-    "active": []
+    "active": [],
+    "error": "<urlopen error timed out>"
   },
   "travel": {
     "overseas_ratio": 78.7,
@@ -22,18 +23,14 @@
     "period": "2026-09-02",
     "mom": null,
     "source": "stat.molit",
-    "error": "신규등록정보 응답에서 수치 파싱 실패",
-    "status_code": null,
-    "message": null,
+    "error": "unknown url type: 'stat.molit.go.kr?key=4dd80f8a823c4a11b1367b6cc0d9145c&pageNo=&numOfRows=&form_id=5498&style_num=2&start_dt=202609'",
     "request": {
       "protocol": "stat.molit",
       "form_id": "5498",
       "style_num": "2",
       "start_dt": "202609",
       "end_dt": ""
-    },
-    "series": [],
-    "raw_hint": "{'raw': '<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><HTML><HEAD><LINK type=\"text/css\" rel=\"stylesheet\" href=\"/openapi/service/?stylesheet=1\"><meta http-equiv=content-type content=\"text/html; charset=UT"
+    }
   },
   "triggers": {
     "overseas": {
@@ -42,7 +39,7 @@
     },
     "driver_newreg_issue": {
       "level": "medium",
-      "note": "자동차 신규등록 API 확인 필요: 신규등록정보 응답에서 수치 파싱 실패",
+      "note": "자동차 신규등록 API 확인 필요: unknown url type: 'stat.molit.go.kr?key=4dd80f8a823c4a11b1367b6cc0d9145c&pageNo=&numOfRows=&form_id=5498&style_num=2&start_dt=202609'",
       "basis": {
         "protocol": "stat.molit",
         "form_id": "5498",
