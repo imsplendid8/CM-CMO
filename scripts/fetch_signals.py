@@ -283,6 +283,46 @@ def _extract_molit_count(payload):
     candidates.sort(reverse=True)
     return candidates[0]
 
+def _extract_molit_regions(payload):
+    """시도별 자동차 신규등록 데이터 추출. 응답에서 지역명·등록대수 쌍을 찾는다."""
+    regions = {}
+    region_tokens = ("지역", "지명", "시도", "광역시", "도", "province", "region", "area", "sido")
+    count_tokens = ("count", "cnt", "total", "regist", "register", "newreg", "value", "num")
+
+    def walk(node, path=""):
+        if isinstance(node, dict):
+            # 현재 노드에서 지역명·개수 쌍 찾기
+            region_key = None
+            count_key = None
+            region_val = None
+            count_val = None
+
+            for key, value in node.items():
+                normalized_key = re.sub(r"[^a-z0-9]", "", str(key).lower())
+                if any(tok in normalized_key for tok in region_tokens):
+                    region_key = key
+                    region_val = str(value).strip() if value else None
+                if any(tok in normalized_key for tok in count_tokens):
+                    if not any(skip in normalized_key for skip in ("code", "date", "month", "year", "period", "ym")):
+                        count_key = key
+                        count_val = _coerce_float(value)
+
+            if region_val and count_val is not None and region_val and len(region_val) <= 20:
+                # 지역명 정규화 (동일 지역의 다양한 표기 통합)
+                normalized_region = region_val.replace(" ", "").replace("시", "").replace("도", "").strip()
+                if normalized_region:
+                    regions[region_val] = count_val
+
+            # 재귀 탐색
+            for value in node.values():
+                walk(value, f"{path}/{key}" if key else path)
+        elif isinstance(node, list):
+            for i, item in enumerate(node):
+                walk(item, f"{path}[{i}]")
+
+    walk(payload)
+    return regions if regions else {}
+
 def _extract_molit_series(payload):
     """월별 응답 행에서 기간·등록대수를 함께 찾는다(필드명은 기관별 변형 허용)."""
     rows = []
@@ -493,6 +533,7 @@ def fetch_car_newreg():
                 payload = {"raw": text[:2000]}
         status, message = _extract_status(payload)
         series = _extract_molit_series(payload)
+        regions = _extract_molit_regions(payload)
         latest = series[-1] if series else None
         count = latest["count"] if latest else _extract_molit_count(payload)
         period = latest["period"] if latest else (end_dt or TODAY)
@@ -500,12 +541,21 @@ def fetch_car_newreg():
         if len(series) >= 2 and series[-2]["count"]:
             mom = round((series[-1]["count"] - series[-2]["count"]) / series[-2]["count"] * 100, 2)
         trend = _calculate_trend(series) if series else {}
+
+        # 시도별 상위 5개 지역 추출 (전체 합계로 비율 계산)
+        by_region = {}
+        if regions and count and count > 0:
+            sorted_regions = sorted(regions.items(), key=lambda x: x[1], reverse=True)
+            for region_name, region_count in sorted_regions[:5]:
+                ratio = round(region_count / count * 100, 1)
+                by_region[region_name] = {"count": region_count, "ratio": ratio}
         if count is None:
             return {
                 "count": None,
                 "period": period,
                 "mom": mom,
                 "trend": trend,
+                "by_region": by_region,
                 "source": "data.go.kr" if data_go else "stat.molit",
                 "error": "신규등록정보 응답에서 수치 파싱 실패",
                 "status_code": status,
@@ -519,6 +569,7 @@ def fetch_car_newreg():
             "period": period,
             "mom": mom,
             "trend": trend,
+            "by_region": by_region,
             "source": "data.go.kr" if data_go else "stat.molit",
             "basis": "신규등록정보 서비스",
             "status_code": status,
@@ -571,7 +622,16 @@ def build_triggers(weather, travel, exit_tour=None, newreg=None):
             elif trend.get("direction") == "down":
                 trend_strength = "📉 급락" if trend.get("strength") == "strong" else "📉 하락"
                 trend_str = f" / {trend_strength}"
-            note = f"자동차 신규등록({newreg.get('period','')}) {count}대{trend_str} → 운전자보험 수요 점검"
+
+            # 시도별 상위 지역 정보 추가
+            region_str = ""
+            by_region = newreg.get("by_region", {})
+            if by_region:
+                top_regions = sorted(by_region.items(), key=lambda x: x[1].get("count", 0), reverse=True)[:3]
+                region_notes = [f"{region} +{data.get('ratio', 0)}%" for region, data in top_regions]
+                region_str = f" · 지역: {' / '.join(region_notes)}"
+
+            note = f"자동차 신규등록({newreg.get('period','')}) {count}대{trend_str}{region_str} → 운전자보험 수요 점검"
             if "driver" in trg and isinstance(trg["driver"], dict):
                 prev = str(trg["driver"].get("note") or "").strip()
                 trg["driver"]["note"] = prev + (" / " if prev else "") + note
@@ -618,6 +678,13 @@ def sample():
         "mom": 5.3,
         "basis": "신규등록정보 서비스",
         "trend": {"direction": "up", "strength": "strong", "growth_6m": 12.8, "growth_3m": 9.2},
+        "by_region": {
+            "경기": {"count": 3200, "ratio": 18.4},
+            "서울": {"count": 2100, "ratio": 12.1},
+            "부산": {"count": 1500, "ratio": 8.6},
+            "인천": {"count": 1200, "ratio": 6.9},
+            "대구": {"count": 1050, "ratio": 6.0},
+        },
         "series": [
             {"period": "202601", "count": 14200},
             {"period": "202602", "count": 14800},
