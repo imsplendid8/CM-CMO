@@ -372,11 +372,30 @@ function newsPanel(p){
   const sig=(SIGNALS.triggers||{})[p.key];
   const exit=SIGNALS.exit_tour||{};
   const newreg=SIGNALS.newreg||{};
+  const _trendIcon=(trend)=>{
+    if(!trend)return"";
+    const dir=trend.direction;
+    const str=trend.strength;
+    if(dir==="up")return str==="strong"?"📈":"📈";
+    if(dir==="down")return str==="strong"?"📉":"📉";
+    return"➡️";
+  };
+  const _trendText=(trend)=>{
+    if(!trend)return"";
+    const dir=trend.direction;
+    if(dir==="up"){
+      const growth=trend.growth_6m||trend.growth_3m;
+      if(growth)return ` · 추이 ${_trendIcon(trend)} +${growth}% (6개월)`;
+      return ` · 추이 상승 추세`;
+    }
+    if(dir==="down")return ` · 추이 ${_trendIcon(trend)} 하락`;
+    return"";
+  };
   const exitBanner=(p.key==="overseas"&&exit&&exit.outbound_count!=null)
-    ?`<div class="sig-live">🛫 <b>출입국관광통계</b> ${esc(exit.period||SIGNALS.asof||"")} · 수치 ${esc(exit.outbound_count)} <span class="src">· ${esc(exit.basis||"관광 API")}</span></div>`
+    ?`<div class="sig-live">🛫 <b>출입국관광통계</b> ${esc(exit.period||SIGNALS.asof||"")} · 수치 ${esc(exit.outbound_count)}${_trendText(exit.trend)}<span class="src">· ${esc(exit.basis||"관광 API")}</span></div>`
     :"";
   const newregBanner=(p.key==="driver"&&newreg&&newreg.count!=null)
-    ?`<div class="sig-live">🚘 <b>자동차 신규등록</b> ${esc(newreg.period||SIGNALS.asof||"")} · ${Number(newreg.count).toLocaleString("ko-KR")}대${newreg.mom!=null?` <span class="src">· 전월 대비 ${newreg.mom>0?"+":""}${esc(newreg.mom)}%</span>`:""}<span class="src">· ${esc(newreg.source||"공공데이터")}</span></div>`
+    ?`<div class="sig-live">🚘 <b>자동차 신규등록</b> ${esc(newreg.period||SIGNALS.asof||"")} · ${Number(newreg.count).toLocaleString("ko-KR")}대${newreg.mom!=null?` <span class="src">· 전월 대비 ${newreg.mom>0?"+":""}${esc(newreg.mom)}%</span>`:""} ${_trendText(newreg.trend)}<span class="src">· ${esc(newreg.source||"공공데이터")}</span></div>`
     :"";
   const signalIssue=(p.key==="driver"&&newreg&&newreg.error)
     ?`<div class="sig-live">⚠ <b>자동차 등록 신호 확인 필요</b> ${esc(newreg.error)} <span class="src">· Actions Secret/응답 필드 확인</span></div>`

@@ -171,6 +171,18 @@ table.sheet .cp:hover{border-color:var(--brand);color:var(--brand-600);}
 .serp-ad{padding:8px 0;border-top:1px solid var(--line-2);}.serp-ad:first-of-type{border-top:0;}.serp-ad b{font-size:11px}.serp-ad small{display:block;color:var(--muted);margin-top:2px;}
 .source-pill{display:inline-block;font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:99px;background:var(--brand-50);color:var(--brand-600);margin-left:5px;}
 .stale{color:var(--bad);font-weight:800}.fresh{color:var(--good);font-weight:800}
+.strategy-section{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:16px;overflow:hidden;}
+.strategy-intro{padding:16px 20px;border-bottom:1px solid var(--line-2);background:var(--surface-2);}
+.strategy-intro h2{font-size:14px;font-weight:800;letter-spacing:-.02em;margin-bottom:6px;}
+.strategy-intro p{font-size:11.5px;color:var(--ink-2);line-height:1.6;}
+.strategy-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;padding:14px 15px;}
+@media(max-width:1080px){.strategy-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:720px){.strategy-grid{grid-template-columns:1fr;}}
+.strategy-card{background:var(--surface-2);border:1px solid var(--line-2);border-radius:10px;padding:11px 12px;display:flex;flex-direction:column;gap:8px;}
+.strategy-label{font-size:12px;font-weight:800;color:var(--brand-600);letter-spacing:-.01em;}
+.strategy-guide{font-size:10.5px;color:var(--ink-2);line-height:1.5;}
+.strategy-example{font-size:10px;color:var(--muted);background:var(--surface);border-radius:6px;padding:6px 8px;border-left:2px solid var(--brand);}
+.strategy-example b{color:var(--ink);font-weight:700;}
 .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:12.5px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:60;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .sb-cap.top{padding-top:6px;}
@@ -649,6 +661,19 @@ function thumbnailConcepts(p){
     proposalId:visual.directions[i]?.proposal_id||`${p.key}-${visual.planningMonth}-${i+1}`
   }));
 }
+function renderStrategyGuide(){
+  const cards=STRATEGIES.map(s=>`<div class="strategy-card">
+    <div class="strategy-label">${esc(s.label)}</div>
+    <div class="strategy-guide">${esc(s.guide)}</div>
+    <div class="strategy-example">예: <b>${esc(s.example)}</b></div>
+  </div>`).join("");
+  return `<section class="strategy-section">
+    <div class="strategy-intro">
+      <div><h2>5가지 구매여정별 전략</h2><p>SERP 비교분석·뉴스 동향·시즌 이슈를 반영해 검색 의도별로 50행을 전략적으로 배분합니다.</p></div>
+    </div>
+    <div class="strategy-grid">${cards}</div>
+  </section>`;
+}
 function renderThumbnailMaker(p){
   const concepts=thumbnailConcepts(p),visual=thumbnailVisual(p),styleButtons=[["serp","원본 구도"],["focus","근접 크롭"],["warm","따뜻한 톤"]];
   return `<section class="thumb-maker" id="thumbMaker">
@@ -781,9 +806,22 @@ function buildNaverRows(p,target=50){
   if(!titles.length||!descs.length||!subt.length||!additionalDescs.length||!promos.length||!extraSubs.length)return [];
   const rows=[],seen=new Set();
   const perStrategy=Math.floor(target/STRATEGIES.length),extra=target%STRATEGIES.length;
+
+  // 각 전략별로 문구를 미리 필터링해서 다양성 확보
+  const strategyPools={
+    brand:{titles,descs:descs.filter(d=>{const t=d.tx.toLowerCase();return t.includes("한화")||t.includes("신뢰")||t.includes("공식");}),subt,additionalDescs,promos},
+    coverage:{titles,descs:descs.filter(d=>{const t=d.tx.toLowerCase();return t.includes("보장")||t.includes("보험")||t.match(/\d+[만천]/);}),subt,additionalDescs,promos},
+    situation:{titles,descs:descs.filter(d=>{const t=d.tx.toLowerCase();return t.includes("보호")||t.includes("대비")||t.includes("상황")||t.includes("조건");}),subt,additionalDescs,promos},
+    season:{titles,descs:descs.filter(d=>{const t=d.tx.toLowerCase();return t.includes("여름")||t.includes("겨울")||t.includes("봄")||t.includes("가을")||t.includes("날씨");}),subt,additionalDescs,promos},
+    action:{titles,descs:descs.filter(d=>{const t=d.tx.toLowerCase();return t.includes("가입")||t.includes("신청")||t.includes("계산")||t.includes("상담");}),subt,additionalDescs,promos}
+  };
+
   STRATEGIES.forEach((strategy,si)=>{
     const need=perStrategy+(si<extra?1:0);let made=0;
-    const variantGroups=generateStrategyVariants(strategy.key,{titles,descs,subt,additionalDescs,promos,extraSubs});
+    const pool=strategyPools[strategy.key]||{titles,descs,subt,additionalDescs,promos};
+    // 문구가 부족하면 전체 풀 사용
+    const safeDescs=pool.descs.length>2?pool.descs:descs;
+    const variantGroups=generateStrategyVariants(strategy.key,{titles:pool.titles,descs:safeDescs,subt:pool.subt,additionalDescs:pool.additionalDescs,promos:pool.promos,extraSubs});
     for(let vi=0;vi<variantGroups.length&&made<need;vi++){
       const variant=variantGroups[vi];
       if(!variant)continue;
@@ -813,8 +851,26 @@ function buildNaverRows(p,target=50){
 }
 function generateStrategyVariants(strategyKey,{titles,descs,subt,additionalDescs,promos,extraSubs}){
   const variants=[];
-  const combos=Math.min(50,titles.length*descs.length*subt.length);
-  for(let i=0;i<combos;i++){
+  // 전략별 핵심 키워드로 문구를 정렬해서 다양성 확보
+  const strategyKeywords={
+    brand:["한화","신뢰","공신력","공식"],
+    coverage:["보장","한도","원","만원","보험금"],
+    situation:["보호","대비","점검","확인","준비","상황","조건"],
+    season:["여름","겨울","봄","가을","날씨","휴가","기간"],
+    action:["가입","신청","계산","상담","지금","할인","받으세요"]
+  };
+
+  const keywords=strategyKeywords[strategyKey]||[];
+  const scoreVariant=(v)=>{
+    const text=[v.title,v.description,v.extraTitle,v.additionalDescription,v.promo].join(" ").toLowerCase();
+    const matches=keywords.filter(k=>text.includes(k)).length;
+    return matches;
+  };
+
+  // 조합 수 제한
+  const maxCombos=Math.min(100,titles.length*descs.length*subt.length);
+  const allVariants=[];
+  for(let i=0;i<maxCombos;i++){
     const ti=i%titles.length,di=Math.floor(i/titles.length)%descs.length,ai=Math.floor(i/(titles.length*descs.length))%subt.length;
     const adi=i%additionalDescs.length,pi=i%promos.length;
     const variant={
@@ -823,11 +879,17 @@ function generateStrategyVariants(strategyKey,{titles,descs,subt,additionalDescs
       extraTitle:subt[ai].tx,
       additionalDescription:additionalDescs[adi].tx,
       promo:promos[pi].tx,
-      sublink:extraSubs[i%extraSubs.length]
+      sublink:extraSubs[i%extraSubs.length],
+      score:0
     };
-    if(filterByStrategy(strategyKey,variant))variants.push(variant);
+    if(filterByStrategy(strategyKey,variant)){
+      variant.score=scoreVariant(variant);
+      allVariants.push(variant);
+    }
   }
-  return variants;
+
+  // 점수 높은 순으로 정렬해서 반환
+  return allVariants.sort((a,b)=>b.score-a.score).map(v=>{delete v.score;return v;});
 }
 function filterByStrategy(strategyKey,variant){
   const t=variant.title.toLowerCase(),d=variant.description.toLowerCase();
@@ -1103,6 +1165,8 @@ function render(){
     ${volPanel}
     ${evPanel}
     ${p.cat==="사이트"?"":serpMonitorPanel(p)}
+
+    ${renderStrategyGuide()}
 
     ${renderThumbnailMaker(p)}
     ${block("2. 광고 제목",s.brand,SPEC.titleMax)}
