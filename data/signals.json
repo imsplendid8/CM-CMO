@@ -19,34 +19,34 @@
     "series": []
   },
   "newreg": {
-    "count": null,
-    "period": "202609",
+    "count": 6777673.0,
+    "period": "202607",
     "mom": null,
+    "trend": {},
     "source": "stat.molit",
-    "error": "HTTP 500",
+    "basis": "신규등록정보 서비스",
+    "status_code": "INFO-000",
+    "message": "정상 처리되었습니다.",
     "request": {
       "protocol": "stat.molit",
       "form_id": "5498",
       "style_num": "2",
-      "start_dt": "202609",
-      "end_dt": "202609"
-    }
+      "start_dt": "202602",
+      "end_dt": "202607"
+    },
+    "series": []
   },
   "triggers": {
     "overseas": {
       "level": "high",
       "note": "‘여행자보험’ 검색수요 상승(2026-09-01 지수 78.7/평균 79.2) → 성수기 해외여행보험 대응"
     },
-    "driver_newreg_issue": {
-      "level": "medium",
-      "note": "자동차 신규등록 API 확인 필요: HTTP 500",
-      "basis": {
-        "protocol": "stat.molit",
-        "form_id": "5498",
-        "style_num": "2",
-        "start_dt": "202609",
-        "end_dt": "202609"
-      }
+    "driver": {
+      "level": "high",
+      "note": "자동차 신규등록(202607) 6777673.0대 → 운전자보험 수요 점검",
+      "basis": [
+        "신규등록정보 서비스"
+      ]
     }
   }
 }
