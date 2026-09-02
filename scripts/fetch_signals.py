@@ -252,6 +252,22 @@ def _month_int(ym):
         return text[:6]
     return ""
 
+def _subtract_months(yyyymm_str, months):
+    """YYYYMM 형식의 월에서 N개월 뺀다."""
+    if not yyyymm_str or len(str(yyyymm_str)) < 6:
+        return None
+    try:
+        year = int(str(yyyymm_str)[:4])
+        month = int(str(yyyymm_str)[4:6])
+        total_months = year * 12 + month - months
+        if total_months < 1:
+            return None
+        new_year = (total_months - 1) // 12
+        new_month = (total_months - 1) % 12 + 1
+        return f"{new_year:04d}{new_month:02d}"
+    except (ValueError, IndexError):
+        return None
+
 def _extract_molit_count(payload):
     """stat.molit 공통 응답에서 카운트성 숫자를 가능한 한 보수적으로 추출한다."""
     candidates = []
@@ -511,8 +527,23 @@ def fetch_car_newreg():
     params.update(extras)
     # 통계누리는 start_dt/end_dt 필수, data.go.kr은 서비스별로 필드명이 다름
     current_month = datetime.date.today().strftime("%Y%m")
-    start_dt = CAR_NEWREG_START_DT if CAR_NEWREG_START_DT else (current_month if not data_go else "")
-    end_dt = CAR_NEWREG_END_DT if CAR_NEWREG_END_DT else (current_month if not data_go else "")
+    if CAR_NEWREG_START_DT and CAR_NEWREG_END_DT:
+        start_dt = CAR_NEWREG_START_DT
+        end_dt = CAR_NEWREG_END_DT
+    elif not data_go:
+        # 통계누리: 데이터 지연(보통 1-2개월) 고려해서 자동 계산
+        # 최신 가용 월 = 현월 - 2개월
+        latest_month = _subtract_months(current_month, 2)
+        if latest_month:
+            start_dt = _subtract_months(latest_month, 5)  # 6개월 데이터
+            end_dt = latest_month
+        else:
+            start_dt = ""
+            end_dt = ""
+    else:
+        # data.go.kr: 필드명이 서비스별로 다르므로 미설정
+        start_dt = ""
+        end_dt = ""
     if start_dt:
         params["startDt" if data_go else "start_dt"] = start_dt
     if end_dt:
