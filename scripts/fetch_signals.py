@@ -509,11 +509,10 @@ def fetch_car_newreg():
     if extra_error:
         return {"count": None, "period": None, "mom": None, "source": "stat.molit" if not data_go else "data.go.kr", "error": extra_error}
     params.update(extras)
-    # data.go.kr 서비스는 기관마다 기간 필드명이 달라 기본 startDt/endDt를
-    # 억지로 붙이지 않는다. 필요할 때 Secret으로 명시하거나 EXTRA_PARAMS로
-    # 서비스 문서의 정확한 필드명을 전달한다.
-    start_dt = CAR_NEWREG_START_DT or (datetime.date.today().strftime("%Y%m") if not data_go else "")
-    end_dt = CAR_NEWREG_END_DT or (datetime.date.today().strftime("%Y%m") if not data_go else "")
+    # 통계누리는 start_dt/end_dt 필수, data.go.kr은 서비스별로 필드명이 다름
+    current_month = datetime.date.today().strftime("%Y%m")
+    start_dt = CAR_NEWREG_START_DT if CAR_NEWREG_START_DT else (current_month if not data_go else "")
+    end_dt = CAR_NEWREG_END_DT if CAR_NEWREG_END_DT else (current_month if not data_go else "")
     if start_dt:
         params["startDt" if data_go else "start_dt"] = start_dt
     if end_dt:
