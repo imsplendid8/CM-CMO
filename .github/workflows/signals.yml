@@ -37,10 +37,6 @@ jobs:
           CAR_NEWREG_KEY: ${{ secrets.CAR_NEWREG_KEY }}
           CAR_NEWREG_FORM_ID: ${{ secrets.CAR_NEWREG_FORM_ID }}
           CAR_NEWREG_STYLE_NUM: ${{ secrets.CAR_NEWREG_STYLE_NUM }}
-          CAR_NEWREG_START_DT: ${{ secrets.CAR_NEWREG_START_DT }}
-          CAR_NEWREG_END_DT: ${{ secrets.CAR_NEWREG_END_DT }}
-          CAR_NEWREG_PAGE_NO: ${{ secrets.CAR_NEWREG_PAGE_NO }}
-          CAR_NEWREG_NUM_OF_ROWS: ${{ secrets.CAR_NEWREG_NUM_OF_ROWS }}
           CAR_NEWREG_EXTRA_PARAMS: ${{ secrets.CAR_NEWREG_EXTRA_PARAMS }}
         run: python3 scripts/fetch_signals.py
       - name: Commit signals
