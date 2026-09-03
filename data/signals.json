@@ -1,22 +1,22 @@
 {
-  "asof": "2026-09-02",
+  "asof": "2026-09-03",
   "source": "data.go.kr",
   "weather": {
-    "active": []
+    "active": [
+      "폭염"
+    ]
   },
   "travel": {
-    "overseas_ratio": 78.7,
-    "period": "2026-09-01",
-    "avg": 79.2,
+    "overseas_ratio": 78.4,
+    "period": "2026-09-02",
+    "avg": 79.3,
     "peak": 100,
     "basis": "최근 7일 평균 vs 90일"
   },
   "exit_tour": {
     "outbound_count": null,
-    "error": "관광 API 응답에서 수치 파싱 실패",
-    "source": "tourism-api",
-    "raw_hint": "{'raw': '<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><HTML><HEAD><LINK type=\"text/css\" rel=\"stylesheet\" href=\"/openapi/service/?stylesheet=1\"><meta http-equiv=content-type content=\"text/html; charset=UT",
-    "series": []
+    "error": "<urlopen error timed out>",
+    "source": "tourism-api"
   },
   "newreg": {
     "count": 6777673.0,
@@ -37,9 +37,16 @@
     "series": []
   },
   "triggers": {
+    "hrmf": {
+      "level": "high",
+      "note": "기상특보 발효 → 폭염 → 전기과부하·에어컨 화재 담보 수요",
+      "kinds": [
+        "폭염"
+      ]
+    },
     "overseas": {
       "level": "high",
-      "note": "‘여행자보험’ 검색수요 상승(2026-09-01 지수 78.7/평균 79.2) → 성수기 해외여행보험 대응"
+      "note": "‘여행자보험’ 검색수요 상승(2026-09-02 지수 78.4/평균 79.3) → 성수기 해외여행보험 대응"
     },
     "driver": {
       "level": "high",
