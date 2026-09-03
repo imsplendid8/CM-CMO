@@ -50,6 +50,11 @@ CAR_NEWREG_EXTRA_PARAMS = os.environ.get("CAR_NEWREG_EXTRA_PARAMS", "").strip()
 MOJ_EXIT_API_KEY = os.environ.get("MOJ_EXIT_API_KEY", "").strip()
 TODAY = datetime.date.today().isoformat()
 
+# DEBUG
+if not MOJ_EXIT_API_KEY:
+    print(f"[WARN] MOJ_EXIT_API_KEY not set")
+    print(f"[DEBUG] All env keys: {', '.join(sorted([k for k in os.environ.keys() if 'MOJ' in k or 'TOUR' in k or 'API' in k]))}")
+
 # ── 엔드포인트 ─────────────────────────────
 KMA_WARN = "http://apis.data.go.kr/1360000/WthrWrnInfoService/getWthrWrnList"   # 기상청 기상특보 (JSON · data.go.kr)
 # 해외여행 수요 = 네이버 데이터랩 '여행자보험' 검색수요(openapi.naver.com · NAVER_CLIENT 키)
