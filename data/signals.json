@@ -13,10 +13,43 @@
     "basis": "최근 7일 평균 vs 90일"
   },
   "exit_tour": {
-    "outbound_count": null,
-    "error": "출입국 통계 응답 파싱 실패",
+    "outbound_count": 105038485,
+    "inbound_foreign": 64638352,
+    "period": "202607",
     "source": "moj-exit-api",
-    "debug": "Month 202605: HTTP 404 | Month 202606: HTTP 404 | Month 202607: HTTP 404"
+    "basis": "법무부 출입국심사 월별 통계",
+    "trend": {
+      "growth_3m": 3.4,
+      "growth_6m": 6.9,
+      "direction": "up",
+      "strength": "moderate"
+    },
+    "series": [
+      {
+        "period": "202602",
+        "outbound_korean": 93687358
+      },
+      {
+        "period": "202603",
+        "outbound_korean": 95982573
+      },
+      {
+        "period": "202604",
+        "outbound_korean": 98269995
+      },
+      {
+        "period": "202605",
+        "outbound_korean": 100611862
+      },
+      {
+        "period": "202606",
+        "outbound_korean": 102617940
+      },
+      {
+        "period": "202607",
+        "outbound_korean": 105038485
+      }
+    ]
   },
   "newreg": {
     "count": null,
@@ -36,6 +69,11 @@
     "overseas": {
       "level": "high",
       "note": "‘여행자보험’ 검색수요 상승(2026-09-03 지수 78.3/평균 79.6) → 성수기 해외여행보험 대응"
+    },
+    "overseas_exit": {
+      "level": "high",
+      "note": "출입국관광통계(202607) 수치 105038485 → 해외여행보험 수요 모니터링",
+      "basis": "법무부 출입국심사 월별 통계"
     },
     "driver_newreg_issue": {
       "level": "medium",
