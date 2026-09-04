@@ -47,7 +47,13 @@ CAR_NEWREG_END_DT = os.environ.get("CAR_NEWREG_END_DT", "").strip()
 CAR_NEWREG_PAGE_NO = os.environ.get("CAR_NEWREG_PAGE_NO", "1").strip()
 CAR_NEWREG_NUM_OF_ROWS = os.environ.get("CAR_NEWREG_NUM_OF_ROWS", "100").strip()
 CAR_NEWREG_EXTRA_PARAMS = os.environ.get("CAR_NEWREG_EXTRA_PARAMS", "").strip()
+MOJ_EXIT_API_KEY = os.environ.get("MOJ_EXIT_API_KEY", "").strip()
 TODAY = datetime.date.today().isoformat()
+
+# DEBUG
+if not MOJ_EXIT_API_KEY:
+    print(f"[WARN] MOJ_EXIT_API_KEY not set")
+    print(f"[DEBUG] All env keys: {', '.join(sorted([k for k in os.environ.keys() if 'MOJ' in k or 'TOUR' in k or 'API' in k]))}")
 
 # ── 엔드포인트 ─────────────────────────────
 KMA_WARN = "http://apis.data.go.kr/1360000/WthrWrnInfoService/getWthrWrnList"   # 기상청 기상특보 (JSON · data.go.kr)
@@ -163,19 +169,131 @@ def _extract_tour_series(payload):
 
     return series
 
-def fetch_tour_exit():
-    """출입국관광통계(국민해외관광객 등) 신호.
+def fetch_exit_entry_stats():
+    """법무부 출입국심사월별 통계(data.go.kr).
 
-    정확한 API 요청 URL과 파라미터는 기관별로 조금씩 다를 수 있으므로,
-    TOUR_API_URL / TOUR_API_KEY 를 환경변수로 받아서 유연하게 연결한다.
-    응답이 JSON/ XML 어느 쪽이든 숫자 값을 최대한 찾아낸다.
+    해외여행보험·해외장기체류보험의 수요를 파악하기 위해 월별 출국자 통계를 수집한다.
+    - 출국 국민(국민외국인구분=국민, 출입국구분=출국) → 해외여행보험 수요
+    - 입국 외국인(국민외국인구분=외국인, 출입국구분=입국) → 외래관광 증가 신호
+
+    API: data.go.kr의 월별 엔드포인트 (MofJustice_2_YYYYMM)
+    응답: {page, perPage, totalCount, data: [{년, 월, 국민외국인구분, 출입국구분, 출입국자수}, ...]}
     """
+    if not MOJ_EXIT_API_KEY:
+        return {
+            "outbound_count": None,
+            "error": "MOJ_EXIT_API_KEY 없음",
+            "source": "moj-exit-api",
+            "note": "GitHub Secrets에서 MOJ_EXIT_API_KEY 설정 필요 (data.go.kr 마이페이지 > 인증키)",
+        }
+
+    # 데이터 지연(보통 1-2개월) 고려해서 최신 가용 월 계산
+    current_month = datetime.date.today().strftime("%Y%m")
+    latest_month = _subtract_months(current_month, 2)
+    if not latest_month:
+        latest_month = current_month
+
+    # 6개월 데이터 수집 (월별 엔드포인트에서)
+    months_to_fetch = [_subtract_months(latest_month, i) for i in range(6)]
+    months_to_fetch = [m for m in months_to_fetch if m]
+    months_to_fetch.reverse()  # 오래된 순서로 정렬
+
+    series = {}
+    all_errors = []
+
+    for month in months_to_fetch:
+        # data.go.kr API: /api/15091275/v1/odataservice/MofJustice_2_YYYYMM
+        endpoint = f"https://api.odcloud.kr/api/15091275/v1/odataservice/MofJustice_2_{month}"
+        params = {"serviceKey": MOJ_EXIT_API_KEY, "$top": "1000"}
+        url = endpoint + "?" + urllib.parse.urlencode(params, safe="%")
+
+        try:
+            with urllib.request.urlopen(url, timeout=20) as r:
+                payload = json.loads(r.read().decode("utf-8"))
+
+            # 응답 구조: {page, perPage, totalCount, data: [...]}
+            data_list = payload.get("data") or []
+            if isinstance(data_list, dict):
+                data_list = [data_list]
+
+            period_key = month  # YYYYMM
+            if period_key not in series:
+                series[period_key] = {"outbound_korean": 0, "inbound_foreign": 0}
+
+            for record in data_list:
+                # 필드 추출 (한글 키)
+                year = record.get("년")
+                month_val = record.get("월")
+                nationality = record.get("국민외국인구분", "")
+                direction = record.get("출입국구분", "")
+                count = _coerce_float(record.get("출입국자수"))
+
+                if not (year and month_val and count):
+                    continue
+
+                # 출국 국민 (해외여행보험 수요 신호)
+                if nationality == "국민" and direction == "출국":
+                    series[period_key]["outbound_korean"] += int(count)
+
+                # 입국 외국인 (외래관광 증가 신호)
+                if nationality == "외국인" and direction == "입국":
+                    series[period_key]["inbound_foreign"] += int(count)
+
+        except urllib.error.HTTPError as e:
+            all_errors.append(f"Month {month}: HTTP {e.code}")
+        except Exception as e:
+            all_errors.append(f"Month {month}: {str(e)[:60]}")
+
+    if not series:
+        return {
+            "outbound_count": None,
+            "error": "출입국 통계 응답 파싱 실패",
+            "source": "moj-exit-api",
+            "debug": " | ".join(all_errors[-3:]) if all_errors else "No data",
+        }
+
+    # 최신 월 데이터
+    latest_data = series.get(latest_month)
+    if not latest_data:
+        latest_month = sorted(series.keys())[-1] if series else None
+        latest_data = series.get(latest_month) if latest_month else {}
+
+    outbound = latest_data.get("outbound_korean", 0)
+    inbound_foreign = latest_data.get("inbound_foreign", 0)
+
+    # 트렌드 계산 (출국 국민 기준)
+    trend_series = [
+        {"period": m, "count": series[m].get("outbound_korean", 0)}
+        for m in sorted(series.keys())
+    ]
+    trend = _calculate_trend(trend_series) if trend_series else {}
+
+    return {
+        "outbound_count": outbound,
+        "inbound_foreign": inbound_foreign,
+        "period": latest_month,
+        "source": "moj-exit-api",
+        "basis": "법무부 출입국심사 월별 통계",
+        "trend": trend,
+        "series": [
+            {"period": m, "outbound_korean": series[m].get("outbound_korean", 0)}
+            for m in sorted(series.keys())
+        ],
+    }
+
+def fetch_tour_exit():
+    """출입국관광통계 통합 진입점. 법무부 API 우선 사용, 없으면 기존 TOUR_API_URL 폴백."""
+    # 법무부 출입국심사 API 우선 시도
+    if MOJ_EXIT_API_KEY:
+        return fetch_exit_entry_stats()
+
+    # 폴백: 기존 TOUR_API_URL 기반 API (유지보수용)
     if not (TOUR_API_URL and TOUR_API_KEY):
         return {
             "outbound_count": None,
-            "error": "TOUR_API_URL/TOUR_API_KEY 없음",
+            "error": "MOJ_EXIT_API_KEY / TOUR_API_URL 모두 없음",
             "source": "tourism-api",
-            "note": "출입국통계 데이터소스 미설정. GitHub Secrets에서 TOUR_API_URL/KEY 추가 필요 (관광공사 openapi.tour.go.kr 또는 통계청)",
+            "note": "GitHub Secrets에서 MOJ_EXIT_API_KEY 추가 필요",
         }
 
     params = {
@@ -201,7 +319,6 @@ def fetch_tour_exit():
         if text.startswith("{") or text.startswith("["):
             payload = json.loads(text)
         else:
-            # XML/HTML 응답도 숫자 추출 시도
             try:
                 root = ET.fromstring(text)
                 payload = {elem.tag: elem.text for elem in root.iter() if elem.text}
@@ -676,20 +793,20 @@ def sample():
     weather = {"active": ["호우", "폭염"]}
     travel = {"overseas_ratio": 88.0, "period": "2026-07-23", "avg": 61.0, "peak": 100.0, "basis": "최근 7일 평균 vs 90일"}
     exit_tour = {
-        "outbound_count": 128.4,
-        "period": "2026-07",
-        "basis": "출입국관광통계 API",
+        "outbound_count": 128400,
+        "inbound_foreign": 215700,
+        "period": "202607",
+        "basis": "법무부 출입국심사 월별 통계",
         "trend": {"direction": "up", "strength": "moderate", "growth_6m": 8.5},
         "series": [
-            {"period": "202601", "data": 95.2},
-            {"period": "202602", "data": 98.1},
-            {"period": "202603", "data": 102.3},
-            {"period": "202604", "data": 110.5},
-            {"period": "202605", "data": 115.2},
-            {"period": "202606", "data": 120.8},
-            {"period": "202607", "data": 128.4},
+            {"period": "202602", "outbound_korean": 95200},
+            {"period": "202603", "outbound_korean": 98100},
+            {"period": "202604", "outbound_korean": 102300},
+            {"period": "202605", "outbound_korean": 110500},
+            {"period": "202606", "outbound_korean": 115200},
+            {"period": "202607", "outbound_korean": 128400},
         ],
-        "source": "tourism-api",
+        "source": "moj-exit-api",
     }
     newreg = {
         "count": 17422,

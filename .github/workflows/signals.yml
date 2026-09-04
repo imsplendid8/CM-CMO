@@ -26,6 +26,7 @@ jobs:
           DATA_GO_KR_KEY: ${{ secrets.DATA_GO_KR_KEY }}
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+          MOJ_EXIT_API_KEY: ${{ secrets.MOJ_EXIT_API_KEY }}
           TOUR_API_URL: ${{ secrets.TOUR_API_URL }}
           TOUR_API_KEY: ${{ secrets.TOUR_API_KEY }}
           TOUR_API_FORMAT: ${{ secrets.TOUR_API_FORMAT }}
