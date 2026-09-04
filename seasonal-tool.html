@@ -480,12 +480,15 @@ function signalTimeSeries(){
     <div style="flex:1;min-width:300px">
       <div style="font-size:13px;font-weight:800;margin-bottom:10px;color:var(--ink)">📊 자동차 신규등록</div>
       <div style="display:flex;align-items:flex-end;gap:2px;height:120px;padding:10px 0">
-        ${newregSeries.slice(-12).map((v,i)=>{
-          const max=Math.max(...newregSeries.slice(-12),1);
-          const pct=(v/max)*100;
-          const isNow=newregSeries.length-12+i===newregSeries.length-1;
-          return `<div title="${v.toLocaleString('ko-KR')}" style="flex:1;background:${isNow?'#ef7a9c':'#d6c2cc'};height:${pct}%;border-radius:3px 3px 0 0;opacity:${isNow?1:0.7}"></div>`;
-        }).join('')}
+        ${(()=>{
+          const lastN=newregSeries.slice(-12).map(x=>x.count||0);
+          const max=Math.max(...lastN,1);
+          return lastN.map((count,i)=>{
+            const pct=(count/max)*100;
+            const isNow=i===lastN.length-1;
+            return `<div title="${count.toLocaleString('ko-KR')}" style="flex:1;background:${isNow?'#ef7a9c':'#d6c2cc'};height:${pct}%;border-radius:3px 3px 0 0;opacity:${isNow?1:0.7}"></div>`;
+          }).join('');
+        })()}
       </div>
       <div style="font-size:10px;color:var(--muted);text-align:center">최근 12개월</div>
     </div>
@@ -496,12 +499,15 @@ function signalTimeSeries(){
     <div style="flex:1;min-width:300px">
       <div style="font-size:13px;font-weight:800;margin-bottom:10px;color:var(--ink)">🌍 월별 출국통계</div>
       <div style="display:flex;align-items:flex-end;gap:2px;height:120px;padding:10px 0">
-        ${exitSeries.map((v,i)=>{
-          const max=Math.max(...exitSeries,1);
-          const pct=(v/max)*100;
-          const isNow=i===exitSeries.length-1;
-          return `<div title="${v.toLocaleString('ko-KR')}" style="flex:1;background:${isNow?'#5bb96a':'#c2cc2c'};height:${pct}%;border-radius:3px 3px 0 0;opacity:${isNow?1:0.7}"></div>`;
-        }).join('')}
+        ${(()=>{
+          const outbounds=exitSeries.map(x=>x.outbound_korean||x.outbound_count||0);
+          const max=Math.max(...outbounds,1);
+          return outbounds.map((count,i)=>{
+            const pct=(count/max)*100;
+            const isNow=i===outbounds.length-1;
+            return `<div title="${count.toLocaleString('ko-KR')}" style="flex:1;background:${isNow?'#5bb96a':'#cdd2db'};height:${pct}%;border-radius:3px 3px 0 0;opacity:${isNow?1:0.7}"></div>`;
+          }).join('');
+        })()}
       </div>
       <div style="font-size:10px;color:var(--muted);text-align:center">최근 12개월</div>
     </div>
