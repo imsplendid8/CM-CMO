@@ -813,11 +813,14 @@ def build_triggers(weather, travel, exit_tour=None, newreg=None):
                     "basis": [newreg.get("basis", "신규등록정보 서비스")],
                 }
     elif newreg and newreg.get("error"):
-        trg["driver_newreg_issue"] = {
-            "level": "medium",
-            "note": f"자동차 신규등록 API 확인 필요: {newreg.get('error')}",
-            "basis": newreg.get("request") or {},
-        }
+        # timeout 에러는 트리거 생성 안함 (signals.json에는 유지, 대시보드에서 파악)
+        error = newreg.get("error", "").lower()
+        if not any(x in error for x in ["timeout", "timed out", "connection", "읽기 초과"]):
+            trg["driver_newreg_issue"] = {
+                "level": "medium",
+                "note": f"자동차 신규등록 API 확인 필요: {newreg.get('error')}",
+                "basis": newreg.get("request") or {},
+            }
     return trg
 
 def sample():
