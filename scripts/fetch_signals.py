@@ -169,6 +169,32 @@ def _extract_tour_series(payload):
 
     return series
 
+def _get_moj_uuid(yyyymm):
+    """월별 UUID 맵핑. data.go.kr의 각 월별 엔드포인트는 고유한 UUID를 사용한다."""
+    uuid_map = {
+        "202304": "f4ad1bd4-bd38-46f4-a94e-9589a9771990", "202305": "43ce02ef-2cac-4d2f-b30b-a20fea3d8f64",
+        "202306": "c4d30ef5-5964-4f9c-953c-f836b2d54238", "202307": "7415c099-7035-4433-b219-ccbadce7bccc",
+        "202308": "a211f5ec-def3-4638-9256-a5ed75571efe", "202309": "617ddb47-0897-487f-bfeb-c288bab8554f",
+        "202310": "fb0c08d2-be42-4592-8d34-ddfc2db6862a", "202311": "992acb75-f83f-472d-b5d5-a152bac7143d",
+        "202312": "5d62fb78-fbbd-4b5c-a705-d416377ee767", "202401": "d76bf29d-ff4b-4da2-85b5-93f02b7269e1",
+        "202402": "f5d6e39c-fc54-4e5e-a162-da753e004b49", "202403": "13d7f7a6-f242-4a32-8d39-dec2f77e26e0",
+        "202404": "1d2f9916-3e02-4b06-a7e3-9126267b1cca", "202405": "92c8297f-a8e4-4dde-8c2a-e47f92df26b6",
+        "202406": "816574ac-548c-4cec-b7cb-b3aaff6a1320", "202407": "ccda1f08-1217-4805-89a1-db1a60d051b1",
+        "202408": "9c3f6914-300d-46a7-a936-eccc99b17124", "202409": "f9422a3a-80d4-4d2c-b64f-9fe0659a1718",
+        "202410": "a2bd2d64-f623-4837-a583-c7ecf73efa40", "202411": "8c4a5791-0486-42d4-a121-f5e786a08dba",
+        "202412": "d318aa12-ea7e-41cc-83cd-c5be454e5fce", "202501": "5086d071-cced-4381-9495-9c44afbd03a6",
+        "202502": "9a38713e-6c23-4c71-bc96-e2ff8961a412", "202503": "0787caf6-c637-4f2d-baeb-bb4b52b92486",
+        "202504": "eb8e85bc-77b8-46e7-8d47-8ba87077a1b4", "202505": "1942753b-6126-4287-ac7d-b5215d271921",
+        "202506": "86805130-1184-4703-8c35-db1a1df2f548", "202507": "bb086a1e-b9b1-4be0-afec-d5bc38641eb8",
+        "202508": "8307758d-0dac-49e5-902b-f5892dbc7b4d", "202509": "ab0dae4c-603e-4747-b655-feccbeef212f",
+        "202510": "f7e669fd-c747-4447-a201-bba4fda65c5f", "202511": "c8d2d973-a96f-4f0e-92cc-df55a3ddd686",
+        "202512": "0c983c09-0a50-4c72-adee-f55b31e029a6", "202601": "8bacfe1a-4270-4b3d-9347-e26e93771bda",
+        "202602": "7d4fe470-583b-4267-aa34-fb0c59815173", "202603": "f455e751-c6e5-4f36-8f98-d382777fcb74",
+        "202604": "c11e9dd2-70ff-4536-9985-c2303cbfe139", "202605": "b48544c9-6bde-4dbe-b5cb-f876b9944da8",
+        "202606": "a801d1da-69b8-42db-b277-d18a4c1d3a17", "202607": "ba5ccde7-6417-41e7-9364-faddb188d213",
+    }
+    return uuid_map.get(yyyymm)
+
 def fetch_exit_entry_stats():
     """법무부 출입국심사월별 통계(data.go.kr).
 
@@ -176,7 +202,7 @@ def fetch_exit_entry_stats():
     - 출국 국민(국민외국인구분=국민, 출입국구분=출국) → 해외여행보험 수요
     - 입국 외국인(국민외국인구분=외국인, 출입국구분=입국) → 외래관광 증가 신호
 
-    API: data.go.kr의 월별 엔드포인트 (MofJustice_2_YYYYMM)
+    API: data.go.kr의 월별 엔드포인트 (각 월별 고유 UUID 사용)
     응답: {page, perPage, totalCount, data: [{년, 월, 국민외국인구분, 출입국구분, 출입국자수}, ...]}
     """
     if not MOJ_EXIT_API_KEY:
@@ -202,9 +228,14 @@ def fetch_exit_entry_stats():
     all_errors = []
 
     for month in months_to_fetch:
-        # data.go.kr API: /api/15099985/v1/odataservice/법무부_2_YYYYMM
-        endpoint = f"https://api.odcloud.kr/api/15099985/v1/odataservice/법무부_2_{month}"
-        params = {"serviceKey": MOJ_EXIT_API_KEY, "$top": "1000"}
+        uuid = _get_moj_uuid(month)
+        if not uuid:
+            all_errors.append(f"Month {month}: UUID not in map")
+            continue
+
+        # data.go.kr API: /api/15099985/v1/uddi:{uuid}
+        endpoint = f"https://api.odcloud.kr/api/15099985/v1/uddi:{uuid}"
+        params = {"serviceKey": MOJ_EXIT_API_KEY, "page": 1, "perPage": 1000}
         url = endpoint + "?" + urllib.parse.urlencode(params, safe="%")
 
         try:
@@ -221,12 +252,12 @@ def fetch_exit_entry_stats():
                 series[period_key] = {"outbound_korean": 0, "inbound_foreign": 0}
 
             for record in data_list:
-                # 필드 추출 (한글 키)
+                # 필드 추출 (한글 키 - 스페이스 있음/없음 모두 지원)
                 year = record.get("년")
                 month_val = record.get("월")
-                nationality = record.get("국민외국인구분", "")
-                direction = record.get("출입국구분", "")
-                count = _coerce_float(record.get("출입국자수"))
+                nationality = record.get("국민외국인구분") or record.get("국민 외국인 구분", "")
+                direction = record.get("출입국구분") or record.get("출입국 구분", "")
+                count = _coerce_float(record.get("출입국자수") or record.get("출입국자 수"))
 
                 if not (year and month_val and count):
                     continue
