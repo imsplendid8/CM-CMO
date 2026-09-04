@@ -74,17 +74,6 @@
       "level": "high",
       "note": "출입국관광통계(202607) 수치 105038485 → 해외여행보험 수요 모니터링",
       "basis": "법무부 출입국심사 월별 통계"
-    },
-    "driver_newreg_issue": {
-      "level": "medium",
-      "note": "자동차 신규등록 API 확인 필요: <urlopen error timed out>",
-      "basis": {
-        "protocol": "stat.molit",
-        "form_id": "5498",
-        "style_num": "2",
-        "start_dt": "202602",
-        "end_dt": "202607"
-      }
     }
   }
 }
