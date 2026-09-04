@@ -202,8 +202,8 @@ def fetch_exit_entry_stats():
     all_errors = []
 
     for month in months_to_fetch:
-        # data.go.kr API: /api/15091275/v1/odataservice/MofJustice_2_YYYYMM
-        endpoint = f"https://api.odcloud.kr/api/15091275/v1/odataservice/MofJustice_2_{month}"
+        # data.go.kr API: /api/15099985/v1/odataservice/법무부_2_YYYYMM
+        endpoint = f"https://api.odcloud.kr/api/15099985/v1/odataservice/법무부_2_{month}"
         params = {"serviceKey": MOJ_EXIT_API_KEY, "$top": "1000"}
         url = endpoint + "?" + urllib.parse.urlencode(params, safe="%")
 
