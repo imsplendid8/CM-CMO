@@ -350,6 +350,7 @@ let curKey="__all";
 const TRENDS_FALLBACK={"asof":"2026-07-23","source":"sample","products":{"home":{"months":[100,57.7,15.5,15.5,15.5,15.5,15.5,15.5,15.5,15.5,57.7,57.7],"peakMonths":[1]},"hrmf":{"months":[100,100,100,100,26.8,100,100,100,26.8,26.8,100,100],"peakMonths":[1,2,3,4,6,7,8,11,12]},"golf":{"months":[100,100,100,100,100,26.8,26.8,26.8,100,100,100,100],"peakMonths":[1,2,3,4,5,9,10,11,12]},"cncr":{"months":[100,26.8,100,26.8,26.8,26.8,26.8,26.8,26.8,26.8,100,100],"peakMonths":[1,3,11,12]},"dntl":{"months":[100,100,26.8,26.8,26.8,100,100,100,26.8,26.8,26.8,26.8],"peakMonths":[1,2,6,7,8]},"driver":{"months":[100,100,100,26.8,26.8,26.8,100,100,100,100,26.8,100],"peakMonths":[1,2,3,7,8,9,10,12]},"woman":{"months":[26.8,26.8,100,26.8,26.8,26.8,26.8,26.8,26.8,100,100,100],"peakMonths":[3,10,11,12]},"birth":{"months":[100,26.8,100,100,100,26.8,26.8,26.8,26.8,26.8,26.8,26.8],"peakMonths":[1,3,4,5]},"overseas":{"months":[100,100,26.8,26.8,100,26.8,100,100,100,100,26.8,26.8],"peakMonths":[1,2,5,7,8,9,10]},"overseaslong":{"months":[26.8,100,100,26.8,26.8,26.8,26.8,100,100,26.8,26.8,26.8],"peakMonths":[2,3,8,9]},"holeinone":{"months":[26.8,26.8,100,100,100,26.8,26.8,26.8,100,100,100,26.8],"peakMonths":[3,4,5,9,10,11]},"event":{"months":[26.8,26.8,26.8,100,100,26.8,26.8,26.8,100,100,26.8,100],"peakMonths":[4,5,9,10,12]},"chronic":{"months":[100,26.8,26.8,26.8,26.8,26.8,26.8,26.8,26.8,26.8,100,100],"peakMonths":[1,11,12]}}};
 let TRENDS=TRENDS_FALLBACK;   // data/trends.json 로드 시 실측으로 교체(Pages/서버)
 let VOL={asof:null,source:"none",products:{}}; // 네이버 검색광고 키워드도구 월검색량
+let SIGNALS={asof:null,source:"none",weather:{},travel:{},exit_tour:{},newreg:{},triggers:{}}; // 수요 신호
 const MONTHS_SHORT=["1","2","3","4","5","6","7","8","9","10","11","12"];
 const normKw=s=>String(s||"").replace(/\s/g,"").toLowerCase();
 const fmtVolume=n=>(+n||0).toLocaleString("ko-KR");
@@ -445,8 +446,20 @@ function renderOverview(){
   now.sort(sorter);next.sort(sorter);
   const totalWins=PRODUCTS.reduce((s,p)=>s+winsOf(p.key).length,0);
   const kpi=(n,l)=>`<div class="kpi"><div class="n">${n}</div><div class="l">${l}</div></div>`;
+  // 수요 신호 KPI
+  const signalKpis=()=>{
+    let kpis=`${kpi(now.length,MONTHS[CURM-1]+" 실행 이슈")}${kpi(next.length,MONTHS[nextM-1]+" 선제 이슈")}${kpi(now.filter(x=>MAIN.has(x.p.key)).length,"선택월 메인상품")}${kpi(totalWins,"연간 시즈널 이슈")}`;
+    if(SIGNALS.asof){
+      const nc=(SIGNALS.newreg&&SIGNALS.newreg.count)?Math.round(SIGNALS.newreg.count).toLocaleString("ko-KR"):"—";
+      const oc=(SIGNALS.exit_tour&&SIGNALS.exit_tour.outbound_count)?Math.round(SIGNALS.exit_tour.outbound_count).toLocaleString("ko-KR"):"—";
+      const tr=(SIGNALS.travel&&SIGNALS.travel.overseas_ratio)?Math.round(SIGNALS.travel.overseas_ratio):null;
+      const tr_txt=tr!==null?tr+" 지수":"—";
+      kpis+=`${kpi(nc,"차량등록(운전자)")}${kpi(oc,"월별출국통계")}${kpi(tr_txt,"해외여행수요")}`;
+    }
+    return kpis;
+  };
   $("#content").innerHTML=`
-    <div class="kpi-row">${kpi(now.length,MONTHS[CURM-1]+" 실행 이슈")}${kpi(next.length,MONTHS[nextM-1]+" 선제 이슈")}${kpi(now.filter(x=>MAIN.has(x.p.key)).length,"선택월 메인상품")}${kpi(totalWins,"연간 시즈널 이슈")}</div>
+    <div class="kpi-row">${signalKpis()}</div>
     <div class="sec-lbl">📌 선택월·익월 실행 플랜 <span class="now">${MONTHS[CURM-1]} → ${MONTHS[nextM-1]}</span> <span style="font-weight:600;color:var(--muted);text-transform:none">· 검색량은 네이버 검색광고 키워드도구 PC+모바일 실측</span></div>
     <div class="plan-cols">
       <section class="plan-col"><div class="plan-col-h"><span>당월 실행 · ${MONTHS[CURM-1]}</span><small>지금 노출·운영</small></div>${now.length?`<div class="now-grid">${planCards(now)}</div>`:`<div class="note" style="margin-top:0">선택월의 고정 시즌 이슈가 없습니다.</div>`}</section>
@@ -455,7 +468,48 @@ function renderOverview(){
     <div class="sec-lbl" style="margin-top:24px">🗓️ 연간 마케팅 이슈 캘린더 <span style="font-weight:600;color:var(--muted);text-transform:none">· 한 장에 총체적으로 · 상품행 클릭 시 세부 탭(월별 이슈)으로</span></div>
     ${annualMatrix()}
     <div class="lg">${Object.keys(SEASON).map(s=>`<span><i style="background:${SEASON[s][1]}"></i>${SEASON[s][0]}</span>`).join("")}<span style="color:var(--brand);font-weight:700">▮ ${MONTHS[CURM-1]} (선택월)</span></div>
+    ${signalHeatmap()}
     ${repKwCards()}`;
+}
+function signalHeatmap(){
+  if(!SIGNALS.asof)return "";
+  const hasTriggers=Object.keys(SIGNALS.triggers||{}).length>0;
+  const signalRow=(label,key,data)=>{
+    if(!data)return "";
+    let html=`<tr><td class="pname">${esc(label)}</td>`;
+    const triggers=SIGNALS.triggers||{};
+    for(let i=1;i<=12;i++){
+      const isActive=(data.trigger||[]).includes(i);
+      const trg=Object.values(triggers).find(t=>t.basis&&typeof t.basis==="string"&&t.basis.includes(MONTHS[i-1]));
+      const hasError=data.error?1:0;
+      const badge=isActive?`<span style="color:#10b981;font-weight:800">●</span>`:hasError?`<span style="color:#f97316;font-weight:800">⚠</span>`:"";
+      html+=`<td class="mc${i===CURM?" cnow":""}"><div style="padding:6px;text-align:center;min-height:30px;display:flex;align-items:center;justify-content:center">${badge}</div></td>`;
+    }
+    return html+`</tr>`;
+  };
+  const rows=[
+    signalRow("📊 차량등록",                 "newreg", {trigger:[],error:SIGNALS.newreg?.error}),
+    signalRow("🌍 출국통계(overseas_exit)",   "exit_tour", {trigger:[],error:SIGNALS.exit_tour?.error}),
+    signalRow("✈️ 해외여행수요",            "travel", {trigger:[],error:SIGNALS.travel?.error})
+  ];
+  const triggerLabels={
+    "hrmf":"🏠 주택화재",
+    "driver":"🚗 운전자",
+    "golf":"⛳ 골프",
+    "overseas":"🌴 해외여행",
+    "overseas_exit":"📍 출국통계",
+    "driver_newreg_issue":"⚠️ 차량API오류"
+  };
+  const triggerRows=Object.entries(SIGNALS.triggers||{}).map(([key,trig])=>{
+    const label=triggerLabels[key]||esc(key);
+    return `<tr><td class="pname">${label}</td>`+
+      MONTHS.map((m,i)=>`<td class="mc${i+1===CURM?" cnow":""}" style="padding:0"><div style="padding:6px;text-align:center;min-height:30px;background:${trig.level==="high"?"#fef3c7":"#dbeafe"};color:${trig.level==="high"?"#b45309":"#1e40af"};font-weight:800">●</div></td>`).join("")+
+      `</tr>`;
+  });
+  return rows.concat(triggerRows).filter(Boolean).length?`
+    <div class="sec-lbl" style="margin-top:18px">⚡ 수요 신호 · 트리거 <span style="font-weight:600;color:var(--muted);text-transform:none">· API 상태(⚠) + 활성 트리거(●) · 기준 ${esc(SIGNALS.asof)}</span></div>
+    <div class="hm-wrap"><table class="hm"><thead><tr><th class="pname">지표</th>${MONTHS.map((m,i)=>`<th class="${i+1===CURM?"mnow":""}">${m}</th>`).join("")}</tr></thead><tbody>${rows.concat(triggerRows).filter(Boolean).join("")}</tbody></table></div>
+  `:"";
 }
 function annualMatrix(){
   const monthHead=`<tr><th class="rl">구분 \\ 월</th>`+MONTHS.map((m,i)=>`<th class="${i+1===CURM?"mnow":""}">${m}</th>`).join("")+`</tr>`;
@@ -522,6 +576,8 @@ fetch("data/trends.json").then(r=>r.ok?r.json():null).then(d=>{if(d&&d.products)
 fetch("data/seasonal.json").then(r=>r.ok?r.json():null).then(d=>{if(d&&d.seasonal){SEASONAL=d.seasonal;render();}}).catch(()=>{});
 // 네이버 검색광고 키워드도구 실측 월검색량. 시즌 키워드와 일치하는 값만 카드에 노출.
 fetch("data/volume.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.source==="searchad"&&d.products){VOL=d;render();}}).catch(()=>{});
+// 수요 신호 실시간 데이터 로드
+fetch("data/signals.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.asof){SIGNALS=d;render();}}).catch(()=>{});
 </script>
 </body>
 </html>
