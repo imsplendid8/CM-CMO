@@ -649,10 +649,10 @@ const euckrLen=s=>{let n=0;for(const c of s)n+=(c.codePointAt(0)>127?2:1);return
 const gScore=p=>Math.round(AXES.reduce((s,k)=>s+p.ax[k]*W.google[k],0));
 const nScore=p=>Math.round(AXES.reduce((s,k)=>s+p.ax[k]*W.naver[k],0));
 const grade=n=>n>=80?["A","good"]:n>=65?["B","good"]:n>=50?["C","mid"]:n>=40?["D","mid"]:["F","bad"];
-const sevWord=v=>v==="good"?"양호":v==="mid"?"보통":"수정필요";
+const sevWord=v=>v==="good"?"양호":v==="mid"?"보통":"수정 필요";
 const bgOf=g=>g==="good"?"var(--good-bg)":g==="mid"?"var(--mid-bg)":"var(--bad-bg)";
 const inkOf=g=>g==="good"?"var(--good-ink)":g==="mid"?"var(--mid-ink)":"var(--bad-ink)";
-const delWord=d=>d==="direct"?"한화 다이렉트 직접":d==="bridge"?"캐롯 분기(브릿지)":"메인 사이트";
+const delWord=d=>d==="direct"?"한화 직접":d==="bridge"?"캐롯 분기":"메인 페이지";
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1500);}
 function hlAfter(s){return esc(s).replace(/(&lt;\/?[a-z0-9]+)/gi,'<span class="tag">$1</span>').replace(/(&lt;!--[\s\S]*?--&gt;)/g,'<span class="cm">$1</span>').replace(/content=(&quot;.*?&quot;)/g,'content=<span class="str">$1</span>');}
 
@@ -742,7 +742,7 @@ function readForm(){return{url:$("#f_url").value.trim(),brand:$("#f_brand").valu
   keyword:$("#f_keyword").value.trim(),benefits:$("#f_benefits").value.trim(),title:$("#f_title").value.trim(),
   desc:$("#f_desc").value.trim(),og:$("#f_og").value,h1:$("#f_h1").value,alt:$("#f_alt").value,target:$("#f_target").value};}
 function parseCrawlJson(raw){
-  let o;try{o=JSON.parse(raw);}catch(e){toast("JSON 파싱 실패");return null;}
+  let o;try{o=JSON.parse(raw);}catch(e){toast("데이터를 불러올 수 없습니다");return null;}
   if(Array.isArray(o))o=o[0]||{}; if(o.report)o=o.report;
   const out={};
   out.url=o.url||o.finalUrl||o.requestedUrl||(o.route&&o.route.url)||"";
@@ -795,20 +795,20 @@ function stripEnt(s){return String(s).replace(/&lt;/g,"<").replace(/&gt;/g,">").
 function guideRows(p){return todosFor(p,COPY[p.key]).slice().sort((a,b)=>PRIO[a.pri]-PRIO[b.pri])
   .map(t=>({pri:t.pri,item:stripEnt(t.what),before:t.before,after:t.after,count:t.meterText?charLen(t.meterText)+"자":""}));}
 function dl(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();}
-function delText(d){return d==="bridge"?"캐롯 분기":d==="home"?"메인":"한화손보다이렉트 직접";}
+function delText(d){return d==="bridge"?"캐롯 분기":d==="home"?"메인":"한화 직접";}
 function exportXls(key){
   const list=key==="__all"?PRODUCTS:[PRODUCTS.find(p=>p.key===key)];
   let rows="";
   list.forEach(p=>guideRows(p).forEach(r=>{rows+=`<tr><td>${esc(p.name)}</td><td>${esc(p.brand)}</td><td>${esc(delText(p.delivery))}</td><td>${esc(p.url)}</td><td>${r.pri}</td><td>${esc(r.item)}</td><td>${esc(r.before).replace(/\n/g,"&#10;")}</td><td>${esc(r.after).replace(/\n/g,"&#10;")}</td><td>${r.count}</td></tr>`;}));
   const html=`﻿<html><head><meta charset="utf-8"><style>table{border-collapse:collapse;} td,th{border:1px solid #ccc;padding:5px 7px;vertical-align:top;font-family:'Malgun Gothic',sans-serif;font-size:12px;mso-number-format:'\\@';} th{background:#fbe7d2;font-weight:bold;} td:nth-child(7),td:nth-child(8){font-family:Consolas,monospace;white-space:pre-wrap;}</style></head><body><h3>한화손보 장기CM · 테크니컬 SEO 태깅 가이드 (개발자 전달용)</h3><table><tr><th>상품</th><th>브랜드</th><th>전달경로</th><th>URL</th><th>우선순위</th><th>태그 항목</th><th>현행(Before)</th><th>권장(After)</th><th>글자수</th></tr>${rows}</table><p>※ 권장(After)은 광고심의 검수 전 초안. H1·alt·OG 원본은 실제 DOM 확인 후 반영.</p></body></html>`;
   dl(new Blob([html],{type:"application/vnd.ms-excel;charset=utf-8"}), key==="__all"?"한화손보_장기CM_태깅가이드_전체.xls":`태깅가이드_${(list[0].name).replace(/\s/g,"")}.xls`);
-  toast("Excel(.xls) 내려받기");
+  toast("✓ Excel 파일을 내려받고 있습니다");
 }
 function exportText(key){
   const p=PRODUCTS.find(x=>x.key===key);
   let s=`[테크니컬 SEO 태깅 가이드 · 개발자 전달용]\n상품: ${p.name} (${p.brand} · ${delText(p.delivery)})\nURL: ${p.url}${p.destUrl?`\n실제 이동(목적지): ${p.destUrl}`:""}\n담당: 한화손보 CM사업부 · 배포 전 광고심의 검수 필요\n────────────────────────`;
   guideRows(p).forEach((r,i)=>{s+=`\n\n${i+1}. [${r.pri}] ${r.item}${r.count?`  (${r.count})`:""}\n   ▸ 현행: ${r.before.replace(/\n/g,"\n           ")}\n   ▸ 권장: ${r.after.replace(/\n/g,"\n           ")}`;});
-  navigator.clipboard?.writeText(s).then(()=>toast("태깅 가이드 복사됨 — 개발자에게 붙여넣기"),()=>toast("복사 실패"));
+  navigator.clipboard?.writeText(s).then(()=>toast("✓ 태깅 가이드를 복사했습니다"),()=>toast("복사 실패"));
 }
 
 /* ── 서브내비 + 화면 ── */
@@ -992,7 +992,7 @@ function runPro(){
     ts.forEach(t=>rows.push([p.url,t.pri,t.what.replace(/&lt;/g,"<").replace(/&gt;/g,">"),t.before.replace(/\n/g," "),t.after.replace(/\n/g," ")]));
     const csv="﻿"+rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(",")).join("\n");
     const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
-    a.download=`seo-todo-${(p.name||"page").replace(/\s/g,"_")}.csv`;a.click();toast("CSV 내려받기 시작");});
+    a.download=`seo-todo-${(p.name||"page").replace(/\s/g,"_")}.csv`;a.click();toast("✓ CSV 파일을 내려받고 있습니다");});
   R.scrollIntoView({behavior:"smooth",block:"start"});
 }
 
@@ -1295,7 +1295,7 @@ function renderIntel(){
     intelSaveStore(parsed);
     intelSaveDraft($("#intelJson").value);
     renderIntel();
-    toast("SEO 관측 JSON을 반영했습니다");
+    toast("✓ SEO 관측 데이터를 불러왔습니다");
   });
   $("#intelSample").addEventListener("click",()=>{
     const sample=JSON.stringify({
@@ -1312,12 +1312,12 @@ function renderIntel(){
     intelSaveDraft(sample);
   });
   $("#intelReset").addEventListener("click",()=>{
-    if(confirm("저장된 SEO 관측 JSON을 지울까요?")){
+    if(confirm("저장된 SEO 관측 데이터를 지울까요?")){
       localStorage.removeItem(SEO_INTEL_STORE);
       localStorage.removeItem(SEO_INTEL_DRAFT_STORE);
       SEO_INTEL_DATA=intelDefaultData();
       renderIntel();
-      toast("관측 저장소를 초기화했습니다");
+      toast("✓ 관측 데이터를 초기화했습니다");
     }
   });
   $("#intelDomain").addEventListener("change",renderIntel);
@@ -1330,7 +1330,7 @@ function renderIntel(){
 }
 function parseIntelJson(raw){
   let o;
-  try{o=JSON.parse(raw);}catch(e){toast("SEO 관측 JSON 파싱 실패");return null;}
+  try{o=JSON.parse(raw);}catch(e){toast("SEO 관측 데이터를 불러올 수 없습니다");return null;}
   if(Array.isArray(o))o={observations:o};
   if(o&&o.report)o=o.report;
   const base=Object.assign(intelDefaultData(),o||{});
@@ -1428,7 +1428,7 @@ document.addEventListener("click",e=>{
   const gt=e.target.closest("[data-goto]"); if(gt){selectProduct(gt.dataset.goto);return;}
   const xls=e.target.closest("[data-xls]"); if(xls){exportXls(xls.dataset.xls);return;}
   const txt=e.target.closest("[data-txt]"); if(txt){exportText(txt.dataset.txt);return;}
-  const cp=e.target.closest(".cp,[data-copy]"); if(cp&&cp.dataset.copy!=null){navigator.clipboard?.writeText(cp.dataset.copy).then(()=>toast("복사됨"),()=>toast("복사 실패"));return;}
+  const cp=e.target.closest(".cp,[data-copy]"); if(cp&&cp.dataset.copy!=null){navigator.clipboard?.writeText(cp.dataset.copy).then(()=>toast("✓ 복사했습니다"),()=>toast("복사 실패"));return;}
   const tg=e.target.closest("[data-toggle]"); if(tg){const id=tg.getAttribute("data-toggle");setDone(id,!isDone(id));
     if($("#v-product").classList.contains("on"))renderScreen();
     else{const el=document.querySelector(`.todo[data-id="${CSS.escape(id)}"]`);if(el)el.classList.toggle("done",isDone(id));}
