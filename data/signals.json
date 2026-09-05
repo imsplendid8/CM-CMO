@@ -1,14 +1,14 @@
 {
-  "asof": "2026-09-04",
+  "asof": "2026-09-05",
   "source": "data.go.kr",
   "weather": {
     "active": [],
-    "error": "<urlopen error timed out>"
+    "error": "HTTP Error 403: Forbidden"
   },
   "travel": {
-    "overseas_ratio": 78.3,
-    "period": "2026-09-03",
-    "avg": 79.6,
+    "overseas_ratio": 79.9,
+    "period": "2026-09-04",
+    "avg": 79.8,
     "peak": 100,
     "basis": "최근 7일 평균 vs 90일"
   },
@@ -52,28 +52,39 @@
     ]
   },
   "newreg": {
-    "count": null,
+    "count": 6777673.0,
     "period": "202607",
     "mom": null,
+    "trend": {},
     "source": "stat.molit",
-    "error": "<urlopen error timed out>",
+    "basis": "신규등록정보 서비스",
+    "status_code": "INFO-000",
+    "message": "정상 처리되었습니다.",
     "request": {
       "protocol": "stat.molit",
       "form_id": "5498",
       "style_num": "2",
       "start_dt": "202602",
       "end_dt": "202607"
-    }
+    },
+    "series": []
   },
   "triggers": {
     "overseas": {
       "level": "high",
-      "note": "‘여행자보험’ 검색수요 상승(2026-09-03 지수 78.3/평균 79.6) → 성수기 해외여행보험 대응"
+      "note": "‘여행자보험’ 검색수요 상승(2026-09-04 지수 79.9/평균 79.8) → 성수기 해외여행보험 대응"
     },
     "overseas_exit": {
       "level": "high",
       "note": "출입국관광통계(202607) 수치 105038485 → 해외여행보험 수요 모니터링",
       "basis": "법무부 출입국심사 월별 통계"
+    },
+    "driver": {
+      "level": "high",
+      "note": "자동차 신규등록(202607) 6777673.0대 → 운전자보험 수요 점검",
+      "basis": [
+        "신규등록정보 서비스"
+      ]
     }
   }
 }
