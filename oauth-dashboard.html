@@ -359,6 +359,22 @@
           ⚫ GitHub으로 로그인
         </button>
       </div>
+      <button class="btn-oauth" onclick="toggleSettings()" style="margin-top: 12px; font-size: 12px; padding: 8px 12px;">
+        ⚙️ OAuth 설정
+      </button>
+      <div id="settings-panel" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--line); text-align: left;">
+        <label style="display: block; margin-bottom: 12px; font-size: 12px; font-weight: 600;">
+          Google Client ID
+          <input type="text" id="google-client-id" placeholder="YOUR_GOOGLE_CLIENT_ID" style="width: 100%; padding: 8px; margin-top: 4px; border: 1px solid var(--line); border-radius: 4px; font-size: 12px;">
+        </label>
+        <label style="display: block; margin-bottom: 12px; font-size: 12px; font-weight: 600;">
+          GitHub Client ID
+          <input type="text" id="github-client-id" placeholder="YOUR_GITHUB_CLIENT_ID" style="width: 100%; padding: 8px; margin-top: 4px; border: 1px solid var(--line); border-radius: 4px; font-size: 12px;">
+        </label>
+        <button class="btn-oauth" onclick="saveSettings()" style="width: 100%; margin-top: 8px;">
+          💾 저장
+        </button>
+      </div>
       <p style="margin-top: 20px; font-size: 12px; color: var(--muted);">
         © 2026 한화손해보험 CM-CMO
       </p>
@@ -444,9 +460,41 @@
       showDashboard(randomUser);
     }
 
-    // Google OAuth 로그인 (예시)
+    // 설정 토글
+    function toggleSettings() {
+      const panel = document.getElementById("settings-panel");
+      panel.style.display = panel.style.display === "none" ? "block" : "none";
+
+      // 저장된 설정 로드
+      const googleId = localStorage.getItem("oauth_google_client_id") || "";
+      const githubId = localStorage.getItem("oauth_github_client_id") || "";
+
+      document.getElementById("google-client-id").value = googleId;
+      document.getElementById("github-client-id").value = githubId;
+    }
+
+    // 설정 저장
+    function saveSettings() {
+      const googleId = document.getElementById("google-client-id").value.trim();
+      const githubId = document.getElementById("github-client-id").value.trim();
+
+      if (googleId) localStorage.setItem("oauth_google_client_id", googleId);
+      if (githubId) localStorage.setItem("oauth_github_client_id", githubId);
+
+      alert("✅ OAuth 설정이 저장되었습니다.");
+      toggleSettings();
+    }
+
+    // Google OAuth 로그인
     function loginWithGoogle() {
-      const clientId = "YOUR_GOOGLE_CLIENT_ID";
+      const clientId = localStorage.getItem("oauth_google_client_id") || "YOUR_GOOGLE_CLIENT_ID";
+
+      if (clientId === "YOUR_GOOGLE_CLIENT_ID") {
+        alert("⚙️ Google Client ID를 먼저 설정해주세요.\n(⚙️ OAuth 설정 버튼 클릭)");
+        toggleSettings();
+        return;
+      }
+
       const redirectUri = window.location.origin + "/oauth/google/callback";
       const scope = "openid profile email";
 
@@ -457,9 +505,16 @@
         `scope=${scope}`;
     }
 
-    // GitHub OAuth 로그인 (예시)
+    // GitHub OAuth 로그인
     function loginWithGithub() {
-      const clientId = "YOUR_GITHUB_CLIENT_ID";
+      const clientId = localStorage.getItem("oauth_github_client_id") || "YOUR_GITHUB_CLIENT_ID";
+
+      if (clientId === "YOUR_GITHUB_CLIENT_ID") {
+        alert("⚙️ GitHub Client ID를 먼저 설정해주세요.\n(⚙️ OAuth 설정 버튼 클릭)");
+        toggleSettings();
+        return;
+      }
+
       const redirectUri = window.location.origin + "/oauth/github/callback";
 
       window.location.href = `https://github.com/login/oauth/authorize?` +

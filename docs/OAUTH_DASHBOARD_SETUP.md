@@ -170,44 +170,87 @@ wrangler deploy --env production
 
 ---
 
-### C) OAuth 제공자 설정
+### C) OAuth 제공자 설정 (실제 구성)
 
-#### Google OAuth
+#### Google OAuth 설정
 
-**Google Cloud Console**에서:
-1. 프로젝트 생성
-2. OAuth 2.0 클라이언트 ID 생성 (웹 애플리케이션)
-3. 승인된 리다이렉트 URI 추가:
+**1️⃣ Google Cloud Console에서:**
+
+1. [Google Cloud Console](https://console.cloud.google.com) 접속
+2. 새 프로젝트 생성:
+   - Project name: `CM-CMO`
+   - Organization: Hanwha (선택사항)
+3. **APIs & Services > OAuth consent screen** 클릭
+   - User Type: "외부" 선택 → CREATE
+   - App name: `Modooflow 팀 대시보드`
+   - User support email: team@hanwha.com
+   - Developer contact: team@hanwha.com
+   - SAVE AND CONTINUE
+4. **Credentials > Create Credentials > OAuth client ID** 클릭
+   - Application type: **웹 애플리케이션**
+   - Name: `Modooflow Dashboard`
+   - Authorized redirect URIs 추가:
+     ```
+     https://imsplendid8.github.io/CM-CMO/oauth/google/callback
+     https://yourdomain.com/oauth/google/callback
+     ```
+   - CREATE
+5. **Client ID 복사** (형식: `xxx-yyy-zzz.apps.googleusercontent.com`)
+
+**2️⃣ 대시보드에 입력:**
+
+1. https://imsplendid8.github.io/CM-CMO/oauth-dashboard.html 열기
+2. **⚙️ OAuth 설정** 클릭
+3. Google Client ID 입력 → **💾 저장**
+
+#### GitHub OAuth 설정
+
+**1️⃣ GitHub에서:**
+
+1. [GitHub Settings > Developer settings > OAuth Apps](https://github.com/settings/developers) 접속
+2. **New OAuth App** 클릭
+3. 설정 입력:
    ```
-   https://yourdomain.com/oauth/google/callback
+   Application name: Modooflow
+   Homepage URL: https://imsplendid8.github.io/CM-CMO/
+   Authorization callback URL: https://imsplendid8.github.io/CM-CMO/oauth/github/callback
    ```
+4. **Register application** 클릭
+5. **Client ID 복사** (Settings에 표시됨)
 
-**oauth-dashboard.html 수정**:
+**2️⃣ 대시보드에 입력:**
+
+1. https://imsplendid8.github.io/CM-CMO/oauth-dashboard.html 열기
+2. **⚙️ OAuth 설정** 클릭
+3. GitHub Client ID 입력 → **💾 저장**
+
+---
+
+### OAuth 콜백 핸들러 (백엔드 필수)
+
+OAuth 로그인 후 콜백 처리를 위해 **백엔드 서버** 필요:
+
+**Express.js 예시** (`/oauth/google/callback`):
 ```javascript
-function loginWithGoogle() {
-  const clientId = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
-  const redirectUri = window.location.origin + "/oauth/google/callback";
-  // ... (기존 코드)
-}
+app.get("/oauth/google/callback", async (req, res) => {
+  const { code } = req.query;
+  
+  // 1. code를 액세스 토큰으로 교환
+  const token = await exchangeCodeForToken(code, "google");
+  
+  // 2. 토큰 검증 & 사용자 정보 조회
+  const user = await verifyToken(token, "google");
+  
+  // 3. localStorage 토큰 설정 후 대시보드로 리다이렉트
+  res.redirect(`/oauth-dashboard.html?token=${token}&user=${user.id}`);
+});
 ```
 
-#### GitHub OAuth
-
-**GitHub Settings > Developer settings > OAuth Apps**에서:
-1. New OAuth App 생성
-2. Authorization callback URL:
-   ```
-   https://yourdomain.com/oauth/github/callback
-   ```
-
-**oauth-dashboard.html 수정**:
-```javascript
-function loginWithGithub() {
-  const clientId = "YOUR_GITHUB_CLIENT_ID";
-  const redirectUri = window.location.origin + "/oauth/github/callback";
-  // ... (기존 코드)
-}
-```
+**프로덕션 배포 필수 사항:**
+- ✅ HTTPS (OAuth 필수)
+- ✅ 콜백 핸들러 구현 (Express/Cloudflare/AWS Lambda)
+- ✅ 토큰 교환 엔드포인트
+- ✅ 사용자 정보 조회 엔드포인트
 
 ---
 
