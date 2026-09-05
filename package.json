@@ -1,7 +1,25 @@
 {
-  "name": "cm-cmo-dashboard-automation",
+  "name": "modooflow-oauth-dashboard",
+  "version": "1.0.0",
+  "description": "한화손해보험 CM-CMO 팀 마케팅 대시보드 (OAuth + Claude API)",
+  "main": "server.js",
+  "type": "commonjs",
   "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node api/personalized-dashboard.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "@anthropic-ai/sdk": "^0.9.1"
+  },
   "devDependencies": {
     "playwright": "1.62.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

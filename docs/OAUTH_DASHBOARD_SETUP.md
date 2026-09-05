@@ -74,52 +74,62 @@ Claude API
 
 ## 구현 방법별 가이드
 
-### A) 로컬 개발 (Express.js)
+### A) 로컬 개발 (Express.js) ⭐ 추천
 
-**설치**:
+**1️⃣ 설치**:
 ```bash
-npm install express cors dotenv @anthropic-ai/sdk
+npm install
 ```
+(package.json에 필요한 의존성이 이미 정의되어 있습니다)
 
-**server.js 작성**:
-```javascript
-const express = require("express");
-const cors = require("cors");
-require("dotenv").config();
-
-const { createDashboardHandler } = require("./api/personalized-dashboard.js");
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-// 대시보드 엔드포인트
-app.post("/api/personalized-dashboard", createDashboardHandler());
-
-// 정적 파일 제공
-app.use(express.static("."));
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`서버 시작: http://localhost:${PORT}`);
-});
-```
-
-**환경 변수 (.env)**:
-```
-ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxx
-```
-
-**실행**:
+**2️⃣ 환경 설정**:
 ```bash
+cp .env.example .env
+# .env 파일 편집: ANTHROPIC_API_KEY 입력 (선택사항)
+```
+
+**3️⃣ 서버 시작**:
+```bash
+npm start
+# 또는
 node server.js
 ```
 
-**테스트**:
+**4️⃣ 확인**:
+- API: http://localhost:3000/api/health ✅
+- 대시보드: http://localhost:3000/oauth-dashboard.html
+- 사용자 목록: http://localhost:3000/api/users
+
+**테스트 (API)**:
 ```bash
+# 헬스 체크
+curl http://localhost:3000/api/health
+
+# 사용자 목록 조회
+curl http://localhost:3000/api/users
+
+# 개인화 대시보드 (demo_token_user_001로 테스트)
 curl -X POST http://localhost:3000/api/personalized-dashboard \
   -H "Authorization: Bearer demo_token_user_001" \
   -H "Content-Type: application/json"
+```
+
+**응답 예시**:
+```json
+{
+  "success": true,
+  "user": {
+    "id": "user_001",
+    "name": "김마케팅",
+    "role": "검색광고 전담",
+    "email": "kim.marketing@hanwha.com"
+  },
+  "dashboard": {
+    "kpis": [...],
+    "recommendations": [...],
+    "alerts": [...]
+  }
+}
 ```
 
 ---
