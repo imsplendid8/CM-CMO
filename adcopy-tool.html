@@ -702,12 +702,12 @@ function refreshThumbnailMeta(canvas,index){
 }
 function redrawThumbnails(p){
   const token=++THUMB_STATE.renderToken,concepts=thumbnailConcepts(p),canvases=[...document.querySelectorAll("canvas[data-thumb-index]")],custom=THUMB_STATE.customByProduct[p.key];
-  if(THUMB_STATE.packUrl){URL.revokeObjectURL(THUMB_STATE.packUrl);THUMB_STATE.packUrl="";}const pack=$("#thumbAll");if(pack){pack.href="#";pack.dataset.ready="0";pack.setAttribute("aria-disabled","true");pack.textContent="ZIP 준비 중";}
+  if(THUMB_STATE.packUrl){URL.revokeObjectURL(THUMB_STATE.packUrl);THUMB_STATE.packUrl="";}const pack=$("#thumbAll");if(pack){pack.href="#";pack.dataset.ready="0";pack.setAttribute("aria-disabled","true");pack.textContent="준비 중";}}
   concepts.forEach((concept,i)=>{const file=$("#thumbFile"+i);if(file){file.textContent=concept.file;file.title=concept.file;}});
   const drawAll=images=>{if(token!==THUMB_STATE.renderToken||curKey!==p.key)return;canvases.forEach(canvas=>{const i=Number(canvas.dataset.thumbIndex);drawThumbnail(canvas,concepts[i],images[i]);refreshThumbnailMeta(canvas,i);});prepareThumbnailPack(p,token);};
   const loadImage=src=>new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src=src;});
   const sources=concepts.map(concept=>custom&&concept.kind==="power"?custom.url:concept.asset);
-  Promise.all(sources.map(loadImage)).then(images=>{drawAll(images);if(images.some(x=>!x))toast(custom?"승인 이미지를 읽지 못했습니다":"일부 애니메이션 이미지를 읽지 못했습니다");});
+  Promise.all(sources.map(loadImage)).then(images=>{drawAll(images);if(images.some(x=>!x))toast(custom?"승인 이미지를 읽을 수 없습니다":"일부 이미지를 불러올 수 없습니다");});
 }
 function saveCanvasPng(canvas,file){
   return new Promise(resolve=>canvas.toBlob(blob=>{if(!blob){resolve(false);return;}const a=document.createElement("a");a.hidden=true;a.href=URL.createObjectURL(blob);a.download=file;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1200);resolve(true);},"image/png"));
@@ -722,15 +722,15 @@ async function downloadThumbnailPack(p){
 }
 async function prepareThumbnailPack(p,token){
   const button=$("#thumbAll");if(!button)return;
-  try{const pack=await downloadThumbnailPack(p);if(token!==THUMB_STATE.renderToken||curKey!==p.key){return;}if(THUMB_STATE.packUrl)URL.revokeObjectURL(THUMB_STATE.packUrl);THUMB_STATE.packUrl=URL.createObjectURL(pack.blob);button.href=THUMB_STATE.packUrl;button.download=pack.fileName;button.dataset.ready="1";button.setAttribute("aria-disabled","false");button.textContent="ZIP 1개 받기";}catch(_){if(token===THUMB_STATE.renderToken){button.textContent="ZIP 준비 실패";}}
+  try{const pack=await downloadThumbnailPack(p);if(token!==THUMB_STATE.renderToken||curKey!==p.key){return;}if(THUMB_STATE.packUrl)URL.revokeObjectURL(THUMB_STATE.packUrl);THUMB_STATE.packUrl=URL.createObjectURL(pack.blob);button.href=THUMB_STATE.packUrl;button.download=pack.fileName;button.dataset.ready="1";button.setAttribute("aria-disabled","false");button.textContent="받기";}catch(_){if(token===THUMB_STATE.renderToken){button.textContent="준비 실패";}}
 }
 function bindThumbnailMaker(p){
   redrawThumbnails(p);
   document.querySelectorAll("[data-thumb-style]").forEach(btn=>btn.addEventListener("click",()=>{THUMB_STATE.style=btn.dataset.thumbStyle;document.querySelectorAll("[data-thumb-style]").forEach(x=>x.classList.toggle("on",x===btn));redrawThumbnails(p);}));
-  $("#thumbUpload").addEventListener("change",event=>{const file=event.target.files?.[0];if(!file)return;if(!SPEC.image.fileTypes.includes(file.type)){toast("PNG 또는 JPEG 이미지만 사용할 수 있습니다");event.target.value="";return;}if(file.size>SPEC.image.maxBytes){toast("승인 이미지는 5MB 이하여야 합니다");event.target.value="";return;}const key=p.key,url=URL.createObjectURL(file),img=new Image();img.onload=()=>{if(img.width*img.height>24000000){URL.revokeObjectURL(url);toast("이미지 해상도가 너무 큽니다(최대 2,400만 픽셀)");event.target.value="";return;}if(curKey!==key){URL.revokeObjectURL(url);return;}const old=THUMB_STATE.customByProduct[key];if(old?.url)URL.revokeObjectURL(old.url);THUMB_STATE.customByProduct[key]={url,name:file.name,width:img.width,height:img.height};redrawThumbnails(p);toast("대표 이미지 1장만 승인 이미지로 교체했습니다");};img.onerror=()=>{URL.revokeObjectURL(url);event.target.value="";toast("이미지를 읽지 못했습니다");};img.src=url;});
-  $("#thumbReset").addEventListener("click",()=>{const old=THUMB_STATE.customByProduct[p.key];if(old?.url)URL.revokeObjectURL(old.url);delete THUMB_STATE.customByProduct[p.key];$("#thumbUpload").value="";redrawThumbnails(p);toast("이번 달 서로 다른 이미지 4장으로 되돌렸습니다");});
-  document.querySelectorAll("[data-thumb-download]").forEach(btn=>btn.addEventListener("click",async()=>{const i=Number(btn.dataset.thumbDownload),canvas=$(`canvas[data-thumb-index="${i}"]`),concept=thumbnailConcepts(p)[i];if(!canvas){toast("이미지를 찾을 수 없습니다");return;}await saveCanvasPng(canvas,concept.file);toast(`${concept.role} PNG를 내려받았습니다`);}));
-  $("#thumbAll").addEventListener("click",event=>{const btn=$("#thumbAll");if(btn.dataset.ready!=="1"){event.preventDefault();toast("이미지 ZIP을 준비 중입니다");return;}toast(`PNG ${thumbnailConcepts(p).length}장과 SERP 메타데이터 ZIP을 내려받았습니다`);});
+  $("#thumbUpload").addEventListener("change",event=>{const file=event.target.files?.[0];if(!file)return;if(!SPEC.image.fileTypes.includes(file.type)){toast("PNG 또는 JPEG 이미지만 사용할 수 있습니다");event.target.value="";return;}if(file.size>SPEC.image.maxBytes){toast("이미지는 5MB 이하여야 합니다");event.target.value="";return;}const key=p.key,url=URL.createObjectURL(file),img=new Image();img.onload=()=>{if(img.width*img.height>24000000){URL.revokeObjectURL(url);toast("이미지 해상도가 너무 큽니다");event.target.value="";return;}if(curKey!==key){URL.revokeObjectURL(url);return;}const old=THUMB_STATE.customByProduct[key];if(old?.url)URL.revokeObjectURL(old.url);THUMB_STATE.customByProduct[key]={url,name:file.name,width:img.width,height:img.height};redrawThumbnails(p);toast("✓ 승인 이미지로 변경했습니다");};img.onerror=()=>{URL.revokeObjectURL(url);event.target.value="";toast("이미지를 불러올 수 없습니다");};img.src=url;});
+  $("#thumbReset").addEventListener("click",()=>{const old=THUMB_STATE.customByProduct[p.key];if(old?.url)URL.revokeObjectURL(old.url);delete THUMB_STATE.customByProduct[p.key];$("#thumbUpload").value="";redrawThumbnails(p);toast("✓ 월간 이미지 세트로 되돌렸습니다");});
+  document.querySelectorAll("[data-thumb-download]").forEach(btn=>btn.addEventListener("click",async()=>{const i=Number(btn.dataset.thumbDownload),canvas=$(`canvas[data-thumb-index="${i}"]`),concept=thumbnailConcepts(p)[i];if(!canvas){toast("이미지를 찾을 수 없습니다");return;}await saveCanvasPng(canvas,concept.file);toast(`✓ ${concept.role} PNG를 내려받았습니다`);}));
+  $("#thumbAll").addEventListener("click",event=>{const btn=$("#thumbAll");if(btn.dataset.ready!=="1"){event.preventDefault();toast("이미지 ZIP을 준비 중입니다");return;}toast(`✓ 이미지팩 ZIP을 내려받았습니다`);});
 }
 /* 첨부 심의안의 2~7번 블록에 네이버 확장소재 추가설명 제안을 보완한다. */
 function sheetCols(p){const s=buildSheet(p);return [
@@ -754,7 +754,7 @@ function exportXls(p){
   const blob=new Blob(["﻿"+html],{type:"application/vnd.ms-excel;charset=utf-8"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`${p.name}_SA_심의안초안_${todayStr()}.xls`;a.click();
   setTimeout(()=>URL.revokeObjectURL(a.href),1500);
-  toast("심의안과 추가설명 제안을 Excel 초안으로 내보냈습니다");
+  toast("✓ Excel 파일을 내려받고 있습니다");
 }
 /* 내부 검토용 소재 배치. 공식 네이버 템플릿을 확인하기 전에는 업로드 가능 파일로 부르지 않는다. */
 const REVIEW_STATUS="자동 위험표현 없음 · 상품자료·사람 심의 필요";
@@ -901,11 +901,11 @@ function downloadCsv(rows,name){
 function exportReviewAds(products,label){
   const batches=products.map(p=>({p,rows:buildNaverRows(p,50)}));
   const bad=batches.filter(x=>x.rows.length!==50);
-  if(bad.length){toast(`50행 생성 실패 · ${bad.map(x=>x.p.name+" "+x.rows.length+"행").join(", ")}`);return;}
+  if(bad.length){toast(`생성 실패 · ${bad.map(x=>x.p.name+" "+x.rows.length+"행").join(", ")}`);return;}
   const rows=[REVIEW_COLUMNS.map(x=>x[0])];
   batches.forEach(x=>x.rows.forEach(r=>rows.push(REVIEW_COLUMNS.map(([,key])=>r[key]))));
   downloadCsv(rows,`${label}_내부검토용_소재_${todayStr()}.csv`);
-  toast(`내부 검토용 CSV · ${rows.length-1}행 · 광고주센터 업로드 파일 아님`);
+  toast(`✓ CSV 파일을 내려받고 있습니다`);
 }
 /* ── 날씨 대응(기상특보 data/signals.json 연동) ── */
 let SIG={weather:{active:[]},triggers:{}};
@@ -1169,7 +1169,7 @@ document.addEventListener("click",e=>{
   const nav=e.target.closest("[data-key]"); if(nav){curKey=nav.dataset.key;render();window.scrollTo({top:0});return;}
   const fb=e.target.closest("[data-feedback-action]");if(fb){
     window.ModooFeedback?.record({action:fb.dataset.feedbackAction,tool:"adcopy",productKey:fb.dataset.product||curKey,recommendationId:fb.dataset.recommendationId||"",sourceVersion:RECO.asof||"",reviewStatus:"사람 검토 전 운영 후보"})
-      .then(result=>toast(result&&result.sent?"피드백 기록 완료":"피드백 저장소 미연결 · docs/feedback-loop.md 확인"))
+      .then(result=>toast(result&&result.sent?"✓ 피드백을 기록했습니다":"피드백 저장소 연결 필요 · docs/feedback-loop.md 확인"))
       .catch(()=>toast("피드백 기록 실패"));return;
   }
 });
