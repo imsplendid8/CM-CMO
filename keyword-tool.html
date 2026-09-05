@@ -172,16 +172,16 @@ td.kw{font-weight:700;color:var(--ink);white-space:normal;} td.c{text-align:cent
           <button data-pf="구글">구글</button>
           <button data-pf="AI">AI검색</button>
         </div>
-        <button class="btn primary" id="expNaver" title="네이버 검색광고 구조를 참고한 내부 검토용 CSV · 공식 대량등록 템플릿 확인 전 업로드 금지">네이버 내부검토 CSV(70원)</button>
+        <button class="btn primary" id="expNaver" title="네이버 검색광고 구조 참고 내부용 CSV · 공식 템플릿 확인 후 업로드">네이버 내부검토 CSV(70원)</button>
         <button class="btn" id="exp" title="전체 키워드 CSV(플랫폼·매치타입 포함)">CSV 내보내기</button>
         <button class="icon-btn" id="themeBtn" type="button" aria-label="테마 전환"></button>
       </div>
     </header>
-    <details class="imp" id="livePanel" style="border-color:var(--nav-ink)"><summary style="color:var(--nav-ink)">🔌 네이버 실시간 검색량 <span style="color:var(--muted);font-weight:600">(팀 프록시 연결됨 · 키 입력 없이 바로)</span></summary>
+    <details class="imp" id="livePanel" style="border-color:var(--nav-ink)"><summary style="color:var(--nav-ink)">🔌 네이버 실시간 검색량 <span style="color:var(--muted);font-weight:600">(팀 프록시 연결됨 · API 키 불필요)</span></summary>
       <div class="ib">
         <div class="pform" style="margin-top:0">
-          <div class="pfrow"><button class="btn primary" id="nvGo" style="background:linear-gradient(135deg,#03C75A,#37d97e)">네이버 연동 & 검색량 가져오기</button>
-            <span class="hint" id="nvStatus"><b>팀 공유 프록시 연결됨</b> — 상품 선택 후 위 버튼만 누르면 실검색량이 병합됩니다(키 입력 불필요). 워커에 AD_KEY/AD_SECRET/AD_CUSTOMER 시크릿 필요.</span></div>
+          <div class="pfrow"><button class="btn primary" id="nvGo" style="background:linear-gradient(135deg,#03C75A,#37d97e)">네이버 연동 · 검색량 조회</button>
+            <span class="hint" id="nvStatus"><b>팀 공유 프록시 연결됨</b> — 상품 선택 후 버튼 클릭 시 실검색량이 자동 병합됩니다. 워커에 AD_KEY/AD_SECRET/AD_CUSTOMER 시크릿 필요.</span></div>
         </div>
       </div>
     </details>
@@ -307,7 +307,7 @@ function classifyImported(kw){
   return {intent,pf,mt,gram};
 }
 function importMap(map,target){
-  if(!target||target==="__all"){toast("왼쪽에서 상품(또는 범용 키워드 생성)을 먼저 선택하세요");return;}
+  if(!target||target==="__all"){toast("왼쪽에서 상품을 먼저 선택하세요");return;}
   const existing=new Set(rowsOf(target).map(r=>nk(r.kw)));
   const add=[];
   Object.keys(map).forEach(k=>{const key=nk(k);const v=map[k]||{};
@@ -387,17 +387,17 @@ function combinedMovers(key){
 }
 function moverPanel(key){
   const report=combinedMovers(key),scope=key==="__all"?"전체 상품":"현재 상품";
-  if(!report.previous)return `<div class="mover-panel"><div class="mover-head"><b>📈 월간 신규·급상승 키워드</b><span>네이버 검색광고 키워드도구 실측</span></div><div style="font-size:11.5px;color:var(--ink-2);line-height:1.65">${report.current?`${esc(report.current)} 스냅샷 수집 완료. 전월 스냅샷이 생기면 자동 비교합니다.`:"월별 검색량 이력 수집 전입니다."} 신규는 전월 0·당월 ${NEW_MIN}회 이상, 급상승은 전월 ${RISING_MIN_BASE}회 이상이면서 +${RISING_MIN_DELTA}회·+${RISING_MIN_RATE*100}% 이상일 때 표시합니다.</div></div>`;
+  if(!report.previous)return `<div class="mover-panel"><div class="mover-head"><b>📈 월간 신규·급상승 키워드</b><span>네이버 검색광고 키워드도구 기반</span></div><div style="font-size:11.5px;color:var(--ink-2);line-height:1.65">${report.current?`${esc(report.current)} 수집 완료. 전월 스냅샷 추가 시 자동 비교합니다.`:"월별 검색량 기록 수집 중입니다."} 신규는 전월 0·당월 ${NEW_MIN}회 이상, 급상승은 전월 ${RISING_MIN_BASE}회 이상이면서 +${RISING_MIN_DELTA}회·+${RISING_MIN_RATE*100}% 이상일 때 표시합니다.</div></div>`;
   const rows=report.rows.slice(0,key==="__all"?16:12);
-  return `<div class="mover-panel"><div class="mover-head"><b>📈 ${report.previous}→${report.current} 신규·급상승 · ${scope}</b><span>${rows.length}개 후보 · 현재 키워드셋에 자동 반영됨</span></div>
+  return `<div class="mover-panel"><div class="mover-head"><b>📈 ${report.previous}→${report.current} 신규·급상승 · ${scope}</b><span>${rows.length}개 후보 · 현재 키워드셋에 자동 포함</span></div>
     ${rows.length?`<div class="mover-list">${rows.map(row=>`<div class="mover ${row.kind}"><span class="kind">${row.kind==="new"?"신규":"급상승"}</span><b>${esc(row.keyword)}</b>${key==="__all"?`<span>${esc(row.productName)}</span>`:""}<span class="delta">${fmtVol(row.previous)}→${fmtVol(row.total)} · +${row.rate==null?"신규":Math.round(row.rate*100)+"%"}</span></div>`).join("")}</div>`:`<div style="font-size:11.5px;color:var(--muted)">설정한 기준을 충족한 후보가 없습니다.</div>`}</div>`;
 }
 function autocompleteOverviewPanel(){
   const products=Object.values(AUTOCOMPLETE.products||{}),rows=products.flatMap(product=>product.suggestions||[]);
   const newCount=rows.filter(row=>row.isNew).length,recommended=rows.filter(row=>row.registration==="recommended").length;
   const naver=rows.filter(row=>(row.source_platform||"naver")==="naver").length,google=rows.filter(row=>row.source_platform==="google").length,observed=rows.filter(row=>(row.source_type||"visible_ui")==="visible_ui").length;
-  if(!AUTOCOMPLETE.asof)return `<div class="auto-panel"><div class="auto-head"><div><h3>자동완성·검색 제안 롱테일</h3><p>월간 수집 전입니다. 매월 1일 네이버 공개 검색 화면과 구글형 질문·비교 후보를 함께 갱신합니다.</p></div></div></div>`;
-  return `<div class="auto-panel"><div class="auto-head"><div><h3>자동완성·검색 제안 롱테일 · ${esc(AUTOCOMPLETE.month||"")}</h3><p>${esc(AUTOCOMPLETE.asof)} 기준 · 네이버 실측 ${observed}개, 네이버 보강/구글 질문형 후보를 함께 보여줍니다.</p></div></div>
+  if(!AUTOCOMPLETE.asof)return `<div class="auto-panel"><div class="auto-head"><div><h3>자동완성·검색 제안 롱테일</h3><p>월간 수집 대기 중입니다. 매월 1일 네이버 검색 화면·구글형 질문을 함께 갱신합니다.</p></div></div></div>`;
+  return `<div class="auto-panel"><div class="auto-head"><div><h3>자동완성·검색 제안 롱테일 · ${esc(AUTOCOMPLETE.month||"")}</h3><p>${esc(AUTOCOMPLETE.asof)} 기준 · 네이버 실측 ${observed}개, 네이버 보강 및 구글 질문형을 함께 표시합니다.</p></div></div>
     <div class="auto-summary"><div><b>${rows.length}</b><span>전체 후보</span></div><div><b>${naver}</b><span>네이버 계열</span></div><div><b>${google}</b><span>구글 질문형</span></div><div><b>${newCount}</b><span>직전월 대비 신규</span></div><div><b>${recommended}</b><span>등록 추천 후보</span></div></div></div>`;
 }
 function autocompletePanel(p){
@@ -412,7 +412,7 @@ function autocompletePanel(p){
       <td class="c gram">${esc(row.intent||"")}</td><td class="c gram">${vol==null?"—":fmtVol(vol)}</td><td class="c gram">${v?esc(v.comp||"—"):"—"}</td><td class="gram">${esc(row.reason||"")}</td></tr>`;}).join("");
   const naver=rows.filter(row=>(row.source_platform||"naver")==="naver").length,google=rows.filter(row=>row.source_platform==="google").length;
   return `<div class="auto-panel"><div class="auto-head"><div><h3>자동완성·검색 제안 롱테일 · ${esc(month)}</h3><p>${previous?`${esc(previous)} 대비 새로 등장한 검색어를 신규로 표시합니다.`:"이번 달은 최초 기준선입니다. 다음 달부터 신규를 구분합니다."} 네이버 실측/보강 후보와 구글형 질문 후보를 분리해 보여주며, 검색량·경쟁도 확인 후 등록합니다.</p></div>
-    <div class="auto-actions"><button class="btn" type="button" id="autoSelectNew">신규 추천 선택</button><button class="btn primary" type="button" id="autoExport">선택 키워드 등록 CSV</button></div></div>
+    <div class="auto-actions"><button class="btn" type="button" id="autoSelectNew">신규 추천 선택</button><button class="btn primary" type="button" id="autoExport">선택 키워드 내보내기</button></div></div>
     <div class="auto-summary"><div><b>${rows.length}</b><span>전체 후보</span></div><div><b>${naver}</b><span>네이버</span></div><div><b>${google}</b><span>구글형</span></div><div><b>${newCount}</b><span>신규</span></div><div><b>${recommended}</b><span>등록 추천</span></div></div>
     <div class="tbl-wrap" style="margin-top:10px"><table><thead><tr><th class="c">선택</th><th>키워드</th><th class="c">플랫폼</th><th class="c">유형</th><th class="c">축</th><th class="c">월 상태</th><th class="c">등록 판정</th><th class="c">의도</th><th class="c">월검색량</th><th class="c">경쟁도</th><th>판정 이유</th></tr></thead><tbody>${trows}</tbody></table></div></div>`;
 }
@@ -425,7 +425,7 @@ function importKeywords(text){
     if(/[,\t]/.test(text)&&/(검색수|volume|경쟁|keyword|키워드|competition)/i.test(first)){map=parseVolCsv(text);}
     else{map={};text.split(/\r?\n|,/).map(s=>s.trim()).filter(Boolean).forEach(k=>{map[k]={};});}
   }
-  if(!map||!Object.keys(map).length){toast("인식 실패 — 연관키워드 목록 또는 헤더 포함 CSV를 넣어주세요");return;}
+  if(!map||!Object.keys(map).length){toast("인식 실패 — 키워드 목록 또는 헤더 있는 CSV 파일을 업로드하세요");return;}
   importMap(map,target);
 }
 
@@ -469,7 +469,7 @@ function renderOverview(){
     </div>
     ${autocompleteOverviewPanel()}
     ${moverPanel("__all")}
-    <div class="sec-lbl">상품별 키워드 집합 <span style="font-weight:600;color:var(--muted);text-transform:none">· 카드를 클릭하면 상세</span></div>
+    <div class="sec-lbl">상품별 키워드 집합 <span style="font-weight:600;color:var(--muted);text-transform:none">· 카드 클릭으로 상세보기</span></div>
     <div class="ov-grid">${cards}</div>
     <div class="legend">
       <span><i class="lg" style="background:var(--trx)"></i>거래형</span>
@@ -500,17 +500,17 @@ function renderProduct(){
   $("#pt").textContent=p.name; $("#pts").textContent=`· ${rows.length} 키워드`;
   $("#content").innerHTML=`
     <div class="seedbar"><div class="st"><h2>${esc(p.name)}</h2><span class="tier ${p.tier}">검색수요 ${p.tier}</span>
-      <span style="margin-left:auto;font-size:11.5px;color:var(--muted)">광고그룹 = 이 상품</span></div>
+      <span style="margin-left:auto;font-size:11.5px;color:var(--muted)">광고그룹 = 상품 단위</span></div>
       <div class="seeds">${p.core.map(c=>`<span class="seed">${esc(c)}</span>`).join("")}${p.special.map(s=>`<span class="seed" style="background:var(--surface-2);color:var(--ink-2)">+${esc(s)}</span>`).join("")}</div></div>
     ${productBody(p)}
     <div class="note">내보낸 CSV는 내부 검토용입니다. 등록 전 입찰가와 필수 열을 확인하세요.</div>`;
 }
 function renderPro(){
-  $("#pt").textContent="범용 키워드 생성"; $("#pts").textContent="· 모든 업종 재사용";
+  $("#pt").textContent="범용 키워드 생성"; $("#pts").textContent="· 모든 업종에 활용";
   const f=PROSEED||{};
   $("#content").innerHTML=`
     <div class="seedbar"><div class="st"><h2>범용 키워드 생성</h2><span class="tier 중형">any</span>
-      <span style="margin-left:auto;font-size:11.5px;color:var(--muted)">한화 전용 X · 아무 상품/브랜드</span></div>
+      <span style="margin-left:auto;font-size:11.5px;color:var(--muted)">한화 전용 아님 · 모든 상품/브랜드</span></div>
       <div class="pform">
         <input id="pb" placeholder="브랜드 (예: 한화손보 다이렉트) — 선택" value="${f._brand?esc(f._brand):""}">
         <input id="pn" placeholder="대표 키워드 (예: 암보험)" value="${f._name?esc(f._name):""}">
@@ -520,7 +520,7 @@ function renderPro(){
           <button class="btn primary" id="pgen">키워드 생성 →</button>
           <span class="hint">입력값은 브라우저에서만 처리 · 거래·정보·브랜드·담보·AI검색 키워드를 한 번에 생성</span></div>
       </div></div>
-    ${PROSEED?productBody(PROSEED)+`<div class="note"><b>바로 활용</b> · CSV 내보내기로 업로드용 파일 저장 · 검색량 불러오기(상단)로 실수요 붙이기.</div>`:`<div class="note">브랜드·대표 키워드를 입력하고 <b>키워드 생성</b>을 누르면 네이버·구글·AI검색 키워드가 한 번에 나옵니다.</div>`}`;
+    ${PROSEED?productBody(PROSEED)+`<div class="note"><b>다음 단계</b> · CSV 내보내기로 업로드 파일 저장 · 검색량 불러오기(상단)로 실검색수요 확인.</div>`:`<div class="note">브랜드·상품명을 입력하고 <b>키워드 생성</b> 버튼 클릭 시 네이버·구글·AI검색 키워드가 자동 생성됩니다.</div>`}`;
   $("#pgen").addEventListener("click",()=>{
     const brand=$("#pb").value.trim(),name=$("#pn").value.trim()||"키워드";
     let core=($("#pcore").value.trim()||name).split(/[,，]/).map(s=>s.trim()).filter(Boolean);
@@ -533,7 +533,7 @@ function renderPro(){
 function render(){ curKey==="__all"?renderOverview():curKey==="__pro"?renderPro():renderProduct(); renderSidebar(); window.scrollTo({top:0}); }
 
 function exportCsv(){
-  if(curKey==="__pro"&&!PROSEED){toast("먼저 범용 키워드를 생성하세요");return;}
+  if(curKey==="__pro"&&!PROSEED){toast("범용 키워드를 먼저 생성하세요");return;}
   const list = curKey==="__all" ? PRODUCTS : [getP(curKey)];
   const vh=hasVol();
   const rows=[["광고그룹","키워드","출처","구성(단어수)","인텐트","추천플랫폼","매치타입"].concat(vh?["월PC검색량","월모바일검색량","경쟁도"]:[])];
@@ -544,10 +544,10 @@ function exportCsv(){
   toast(`CSV 내보내기 (${rows.length-1}개 키워드)`);
 }
 
-/* 네이버 검색광고 구조 참고용 내부 검토 CSV — 공식 대량등록 템플릿 검증 전 업로드 금지. */
-const DEFAULT_BID=70;   // 실등록 시작 입찰가(원) — 등록 후 성과 보며 조정
+/* 네이버 검색광고 구조 참고 내부용 CSV — 공식 템플릿 확인 후 업로드 */
+const DEFAULT_BID=70;   // 초기 입찰가(원) — 등록 후 성과 확인 후 조정
 function exportNaverBulk(){
-  if(curKey==="__pro"&&!PROSEED){toast("먼저 범용 키워드를 생성하세요");return;}
+  if(curKey==="__pro"&&!PROSEED){toast("범용 키워드를 먼저 생성하세요");return;}
   const list = curKey==="__all" ? PRODUCTS : [getP(curKey)];
   const vh=hasVol();
   const header=["캠페인 유형","캠페인 이름","광고그룹 이름","키워드","키워드 입찰가","연결URL(PC)","연결URL(모바일)"];
@@ -577,7 +577,7 @@ function exportNaverBulk(){
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
   const nm=curKey==="__all"?"전체":(getP(curKey)?.name||"상품");
   a.download=`네이버_내부검토_${nm}_${new Date().toISOString().slice(0,10)}.csv`;a.click();
-  toast(`네이버 내부 검토용 · ${n}키워드 · 시작 입찰가 ${DEFAULT_BID}원`+(vh?" · 광고그룹 내 검색량순":"")+" · 공식 템플릿 확인 전 업로드 금지");
+  toast(`네이버 내부용 · ${n}개 키워드 · 초기 입찰가 ${DEFAULT_BID}원`+(vh?" · 광고그룹 내 검색량순":"")+" · 공식 템플릿 확인 후 업로드");
 }
 function exportSelectedAutocomplete(){
   const list=curKey==="__all"?PRODUCTS:[getP(curKey)],rows=[["캠페인 유형","캠페인 이름","광고그룹 이름","키워드","키워드 입찰가","연결URL(PC)","연결URL(모바일)"]];
@@ -586,16 +586,16 @@ function exportSelectedAutocomplete(){
     const label=row.source_platform==="google"?"구글형 롱테일":row.source_type==="visible_ui"?"네이버 자동완성":"네이버 보강";
     rows.push(["파워링크",naverCampaignName(p),naverAdGroupName(p,row),row.keyword,DEFAULT_BID,"",""]);
   });});
-  if(rows.length===1){toast("먼저 등록할 자동완성 키워드를 선택하세요");return;}
+  if(rows.length===1){toast("등록할 자동완성 키워드를 선택하세요");return;}
   const csv="﻿"+rows.map(row=>row.map(value=>`"${String(value).replace(/"/g,'""')}"`).join(",")).join("\n");
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
   const nm=curKey==="__all"?"전체":(getP(curKey)?.name||"상품");a.download=`네이버_자동완성_선택키워드_${nm}_${new Date().toISOString().slice(0,10)}.csv`;a.click();
-  toast(`선택 키워드 ${rows.length-1}개 · 등록 전 상품 관련성과 입찰가를 확인하세요`);
+  toast(`선택 키워드 ${rows.length-1}개 · 등록 전 상품 관련성·입찰가 확인`);
 }
 
 document.addEventListener("click",e=>{
   const autoInput=e.target.closest("[data-auto-key]");if(autoInput){autoInput.checked?AUTO_SELECTED.add(autoInput.dataset.autoKey):AUTO_SELECTED.delete(autoInput.dataset.autoKey);return;}
-  if(e.target.closest("#autoSelectNew")){const p=getP(curKey);if(!p)return;autocompleteRows(p.key).forEach(row=>{const key=autoSelectionKey(p.key,row.keyword);if(row.isNew&&row.registration==="recommended")AUTO_SELECTED.add(key);});render();toast("신규 등록 추천 키워드를 선택했습니다");return;}
+  if(e.target.closest("#autoSelectNew")){const p=getP(curKey);if(!p)return;autocompleteRows(p.key).forEach(row=>{const key=autoSelectionKey(p.key,row.keyword);if(row.isNew&&row.registration==="recommended")AUTO_SELECTED.add(key);});render();toast("신규 추천 키워드를 모두 선택했습니다");return;}
   if(e.target.closest("#autoExport")){exportSelectedAutocomplete();return;}
   const si=e.target.closest(".sb-item,[data-key]"); if(si&&si.dataset.key){curKey=si.dataset.key;render();return;}
   const sg=e.target.closest("#pfSeg button"); if(sg){pf=sg.dataset.pf;document.querySelectorAll("#pfSeg button").forEach(b=>b.classList.toggle("on",b===sg));render();return;}
@@ -657,7 +657,7 @@ async function applyVolFile(f){
   const target=(curKey==="__pro"&&PROSEED)?"__pro":curKey;
   if(/\.xlsx$/i.test(f.name)){                                                                        // 네이버 키워드도구 다운로드 = 엑셀(.xlsx)
     try{const R=await readXlsx(await f.arrayBuffer());const map=rowsToVolMap(R);
-      if(!Object.keys(map).length){toast("엑셀에서 키워드를 못 읽었습니다 — 키워드도구 다운로드 파일인지 확인");return;}
+      if(!Object.keys(map).length){toast("엑셀에서 키워드를 찾을 수 없습니다 — 키워드도구 다운로드 파일인지 확인");return;}
       importMap(map,target);}
     catch(e){toast("엑셀 읽기 실패: "+e.message);}
     return;
@@ -674,7 +674,7 @@ const DEFAULT_PROXY="https://modooflow-naver-proxy.angle0102.workers.dev";
 const PROXY=(DEFAULT_PROXY||"").replace(/\/+$/,"");
 function adNum(v){if(v==null)return 0;const s=String(v);if(s.indexOf("<")>=0)return 5;const n=parseInt(s.replace(/[^0-9]/g,""),10);return isNaN(n)?0:n;}
 $("#nvGo").addEventListener("click",()=>{
-  if(!PROXY){$("#nvStatus").textContent="프록시가 설정되지 않았습니다";return;}
+  if(!PROXY){$("#nvStatus").textContent="프록시 설정 필요";return;}
   const prods = curKey==="__pro"&&PROSEED?[PROSEED] : (curKey==="__all"||curKey==="__pro")?PRODUCTS : [getP(curKey)];
   const seeds=[...new Set(prods.flatMap(p=>p.core.slice(0,2)))];
   const target=(curKey==="__pro"&&PROSEED)?"__pro":curKey;
@@ -686,8 +686,8 @@ $("#nvGo").addEventListener("click",()=>{
         ((r&&r.keywordList)||[]).forEach(it=>{const k=(it.relKeyword||"").trim();if(!k)return;map[k]={pc:adNum(it.monthlyPcQcCnt),mobile:adNum(it.monthlyMobileQcCnt),comp:it.compIdx||""};});});
       if(!Object.keys(map).length){$("#nvStatus").textContent="검색광고 오류: "+(err||"결과 없음");return;}
       importMap(map,target);
-      $("#nvStatus").textContent="✔ 검색광고 실검색량 "+Object.keys(map).length+"개 병합됨(프록시)";
-    }).catch(()=>{$("#nvStatus").textContent="실시간 연동 실패 — 팀 프록시 응답 없음(잠시 후 다시 시도)";});
+      $("#nvStatus").textContent="✔ 검색광고 실검색량 "+Object.keys(map).length+"개 병합됨";
+    }).catch(()=>{$("#nvStatus").textContent="연동 실패 — 팀 프록시 응답 없음 (잠시 후 다시 시도)"});
 });
 $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");try{localStorage.setItem("mf_theme",d?"light":"dark")}catch(_){};});
 render();
