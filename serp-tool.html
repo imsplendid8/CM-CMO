@@ -313,7 +313,7 @@ let curKey="__all";
 /* 아카이브 저장소 (localStorage · 이 브라우저에만) */
 const LS="mf_serp";
 function loadArc(){try{return JSON.parse(localStorage.getItem(LS)||"{}")||{};}catch(e){return {};}}
-function saveArc(a){try{localStorage.setItem(LS,JSON.stringify(a));}catch(e){toast("저장공간 초과 — 오래된 캡처를 지워 정리하세요");}}
+function saveArc(a){try{localStorage.setItem(LS,JSON.stringify(a));}catch(e){toast("저장공간 초과 — 오래된 캡처 삭제하여 정리하세요");}}
 let ARC=loadArc();
 /* 리포 자동 캡쳐(serp/manifest.json) — Playwright 주간 워크플로우가 채움. 읽기전용 */
 let REPO={};
@@ -392,7 +392,7 @@ function archiveSection(p){
     <div class="diffbar"><button class="btn sm primary" id="diffGo">🔍 전/후 변화 감지</button>
       <label class="sens">민감도 <input type="range" id="diffSens" min="1" max="30" value="10"></label>
       <span class="swatch"><i></i>붉은 영역 = 바뀐 부분(신규 광고·순위·문구)</span>
-      <span class="diffmeta" id="diffMeta">두 주차를 고른 뒤 변화 감지를 누르세요.</span></div>
+      <span class="diffmeta" id="diffMeta">두 주차를 선택한 뒤 변화 감지를 누르세요.</span></div>
     <div class="diffwrap" id="diffWrap"></div>`:"";
   return `<div class="sec">
     <div class="sec-h"><span class="t">📸 주간 SERP 스크린샷 아카이브</span><span class="sub">· ${shots.length}주차 · 자동 캡쳐</span>
@@ -449,11 +449,11 @@ function renderProduct(){
     selA.selectedIndex=1;selB.selectedIndex=0; // A=이전주, B=최신
     setCol("A",selA.value);setCol("B",selB.value);
     const meta=$("#diffMeta"),wrap=$("#diffWrap"),btn=$("#diffGo"),sens=$("#diffSens");
-    const clearDiff=()=>{if(wrap)wrap.innerHTML="";if(meta)meta.textContent="두 주차를 고른 뒤 변화 감지를 누르세요.";};
+    const clearDiff=()=>{if(wrap)wrap.innerHTML="";if(meta)meta.textContent="두 주차를 선택한 뒤 변화 감지를 누르세요.";};
     async function doDiff(){
       const a=shots.find(s=>s.id===selA.value),b=shots.find(s=>s.id===selB.value);
       if(!a||!b)return;
-      if(a.id===b.id){meta.textContent="같은 주차입니다 — 서로 다른 두 주차를 선택하세요.";wrap.innerHTML="";return;}
+      if(a.id===b.id){meta.textContent="같은 주차입니다 — 서로 다른 주차를 선택해주세요.";wrap.innerHTML="";return;}
       btn.disabled=true;btn.textContent="분석 중…";
       try{
         const th=(31-(+sens.value))/100;                       // 민감도↑ → 임계값↓ → 더 예민
@@ -513,7 +513,7 @@ function renderBrand(){
       <div class="sec-b"><div class="bgrid">${cards}</div></div></div>`;
   }).join("");
   $("#content").innerHTML=`
-    <div class="kpi-row">${kpi(brandsN+"/4","감시 경쟁사")}${kpi(total,"누적 캡쳐")}${kpi(thisWeek,"이번주 캡쳐")}${kpi(esc(asof),"최신 기준일")}</div>
+    <div class="kpi-row">${kpi(brandsN+"/4","모니터링 경쟁사")}${kpi(total,"누적 캡쳐")}${kpi(thisWeek,"이번주 캡쳐")}${kpi(esc(asof),"최신 기준일")}</div>
     <div class="note" style="margin-top:0">경쟁사별 PC·모바일 브랜드검색 이미지를 확인합니다.</div>
     ${sections}`;
 }
