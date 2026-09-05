@@ -300,13 +300,6 @@ let SEASONAL={
  birth:[
   {m:[3,4,5],tag:"봄 결혼·임신 시즌 여파",why:"봄 시즌의 결혼과 임신 계획 증가에 따라 태아보험 가입에 대한 관심이 높아집니다.",kws:["태아보험","임신보험","태아보험 시기"],act:"임신 초기라는 가입 적기를 강조한 콘텐츠 지속 노출"},
   {m:[1],tag:"신년 가족계획",why:"새해를 맞아 출산과 가족계획을 수립하는 고객들이 늘어납니다.",kws:["태아보험 추천","출산 준비","자녀보험"],act:"연말부터 연초에 걸쳐 준비 콘텐츠 배포"}],
- overseas:[
-  {m:[7,8],tag:"여름 휴가 성수기",why:"여름은 해외여행의 최성수기이며 여행자보험 수요가 크게 증가합니다.",kws:["해외여행보험","여행자보험","항공기지연","휴대품 손해"],act:"6월 초부터 성수기를 선점하는 마케팅"},
-  {m:[1,2],tag:"겨울·설 연휴 여행",why:"연말연시와 설 연휴 기간에 해외여행을 계획하는 고객들이 많아집니다.",kws:["겨울 여행자보험","설 연휴 해외여행","해외여행보험"],act:"12월 초부터 겨울여행 캠페인 시작"},
-  {m:[5,9,10],tag:"봄·가을 황금연휴/추석",why:"봄의 황금연휴와 가을의 추석 연휴에 단기 해외여행이 집중됩니다.",kws:["황금연휴 여행보험","추석 해외여행보험","단기 여행자보험"],act:"연휴 3주 전부터 단기상품 노출"}],
- overseaslong:[
-  {m:[2,3],tag:"봄학기 유학·어학연수 출국",why:"봄학기 유학과 어학연수를 준비하는 출국객들이 장기체류와 유학생보험을 찾습니다.",kws:["유학생보험","어학연수 보험","장기체류보험"],act:"1월 말부터 출국 준비 콘텐츠 배포"},
-  {m:[8,9],tag:"가을학기·워홀 출국",why:"가을학기 유학과 워킹홀리데이 출국이 집중되는 시기입니다.",kws:["유학생보험","워홀보험","해외장기체류보험"],act:"7월 말부터 마케팅 시작"}],
  holeinone:[
   {m:[3,4,5],tag:"봄 개장 라운딩",why:"봄 시즌에 골프 시즌이 개장되면서 홀인원보험의 단기 가입 수요가 발생합니다.",kws:["홀인원보험","캐롯 홀인원","원데이 골프보험"],act:"2월 말부터 시즌 오픈 광고 시작"},
   {m:[9,10,11],tag:"가을 골프 성수기",why:"가을은 골프의 최성수기이며 라운딩이 크게 증가하고 홀인원 가능성과 선물 수요가 높아집니다.",kws:["홀인원보험","투게더 홀인원","골프 선물"],act:"8월 말부터 성수기와 선물 캠페인 시작"}],
@@ -350,7 +343,7 @@ let curKey="__all";
 const TRENDS_FALLBACK={"asof":"2026-07-23","source":"sample","products":{"home":{"months":[100,57.7,15.5,15.5,15.5,15.5,15.5,15.5,15.5,15.5,57.7,57.7],"peakMonths":[1]},"hrmf":{"months":[100,100,100,100,26.8,100,100,100,26.8,26.8,100,100],"peakMonths":[1,2,3,4,6,7,8,11,12]},"golf":{"months":[100,100,100,100,100,26.8,26.8,26.8,100,100,100,100],"peakMonths":[1,2,3,4,5,9,10,11,12]},"cncr":{"months":[100,26.8,100,26.8,26.8,26.8,26.8,26.8,26.8,26.8,100,100],"peakMonths":[1,3,11,12]},"dntl":{"months":[100,100,26.8,26.8,26.8,100,100,100,26.8,26.8,26.8,26.8],"peakMonths":[1,2,6,7,8]},"driver":{"months":[100,100,100,26.8,26.8,26.8,100,100,100,100,26.8,100],"peakMonths":[1,2,3,7,8,9,10,12]},"woman":{"months":[26.8,26.8,100,26.8,26.8,26.8,26.8,26.8,26.8,100,100,100],"peakMonths":[3,10,11,12]},"birth":{"months":[100,26.8,100,100,100,26.8,26.8,26.8,26.8,26.8,26.8,26.8],"peakMonths":[1,3,4,5]},"overseas":{"months":[100,100,26.8,26.8,100,26.8,100,100,100,100,26.8,26.8],"peakMonths":[1,2,5,7,8,9,10]},"overseaslong":{"months":[26.8,100,100,26.8,26.8,26.8,26.8,100,100,26.8,26.8,26.8],"peakMonths":[2,3,8,9]},"holeinone":{"months":[26.8,26.8,100,100,100,26.8,26.8,26.8,100,100,100,26.8],"peakMonths":[3,4,5,9,10,11]},"event":{"months":[26.8,26.8,26.8,100,100,26.8,26.8,26.8,100,100,26.8,100],"peakMonths":[4,5,9,10,12]},"chronic":{"months":[100,26.8,26.8,26.8,26.8,26.8,26.8,26.8,26.8,26.8,100,100],"peakMonths":[1,11,12]}}};
 let TRENDS=TRENDS_FALLBACK;   // data/trends.json 로드 시 실측으로 교체(Pages/서버)
 let VOL={asof:null,source:"none",products:{}}; // 네이버 검색광고 키워드도구 월검색량
-let SIGNALS={asof:null,source:"none",weather:{},travel:{},exit_tour:{},newreg:{},triggers:{}}; // 수요 신호
+let SIGNALS={asof:null,source:"none",weather:{},travel:{},newreg:{},triggers:{}}; // 수요 신호
 const MONTHS_SHORT=["1","2","3","4","5","6","7","8","9","10","11","12"];
 const normKw=s=>String(s||"").replace(/\s/g,"").toLowerCase();
 const fmtVolume=n=>(+n||0).toLocaleString("ko-KR");
@@ -451,10 +444,7 @@ function renderOverview(){
     let kpis=`${kpi(now.length,MONTHS[CURM-1]+" 실행 이슈")}${kpi(next.length,MONTHS[nextM-1]+" 선제 이슈")}${kpi(now.filter(x=>MAIN.has(x.p.key)).length,"선택월 메인상품")}${kpi(totalWins,"연간 시즈널 이슈")}`;
     if(SIGNALS.asof){
       const nc=(SIGNALS.newreg&&SIGNALS.newreg.count)?Math.round(SIGNALS.newreg.count).toLocaleString("ko-KR"):"—";
-      const oc=(SIGNALS.exit_tour&&SIGNALS.exit_tour.outbound_count)?Math.round(SIGNALS.exit_tour.outbound_count).toLocaleString("ko-KR"):"—";
-      const tr=(SIGNALS.travel&&SIGNALS.travel.overseas_ratio)?Math.round(SIGNALS.travel.overseas_ratio):null;
-      const tr_txt=tr!==null?tr+" 지수":"—";
-      kpis+=`${kpi(nc,"차량등록(운전자)")}${kpi(oc,"월별출국통계")}${kpi(tr_txt,"해외여행수요")}`;
+      kpis+=`${kpi(nc,"차량등록(운전자)")}`;
     }
     return kpis;
   };
@@ -493,36 +483,15 @@ function signalTimeSeries(){
       <div style="font-size:10px;color:var(--muted);text-align:center">최근 12개월</div>
     </div>
   `:""
-  // 출국통계 시계열
-  const exitSeries=(SIGNALS.exit_tour?.series||[]).slice(-12);
-  const exitChart=exitSeries.length?`
-    <div style="flex:1;min-width:300px">
-      <div style="font-size:13px;font-weight:800;margin-bottom:10px;color:var(--ink)">🌍 월별 출국통계</div>
-      <div style="display:flex;align-items:flex-end;gap:2px;height:120px;padding:10px 0">
-        ${(()=>{
-          const outbounds=exitSeries.map(x=>x.outbound_korean||x.outbound_count||0);
-          const max=Math.max(...outbounds,1);
-          return outbounds.map((count,i)=>{
-            const pct=(count/max)*100;
-            const isNow=i===outbounds.length-1;
-            return `<div title="${count.toLocaleString('ko-KR')}" style="flex:1;background:${isNow?'#5bb96a':'#cdd2db'};height:${pct}%;border-radius:3px 3px 0 0;opacity:${isNow?1:0.7}"></div>`;
-          }).join('');
-        })()}
-      </div>
-      <div style="font-size:10px;color:var(--muted);text-align:center">최근 12개월</div>
-    </div>
-  `:""
-  return (newregChart||exitChart)?`
+  return newregChart?`
     <div class="sec-lbl" style="margin-top:18px">📈 월별 수요 시계열 <span style="font-weight:600;color:var(--muted);text-transform:none">· 최근 12개월 추이 · 기준 ${esc(SIGNALS.asof)}</span></div>
-    <div style="display:flex;gap:16px;margin-bottom:18px;flex-wrap:wrap">${newregChart}${exitChart}</div>
+    <div style="display:flex;gap:16px;margin-bottom:18px;flex-wrap:wrap">${newregChart}</div>
   `:"";
 }
 function signalApiStatus(){
   if(!SIGNALS.asof)return "";
   const apis=[
     {name:"🚗 자동차 신규등록(stat.molit)", key:"newreg", data:SIGNALS.newreg},
-    {name:"🌍 출입국관광통계(MOJ)", key:"exit_tour", data:SIGNALS.exit_tour},
-    {name:"✈️ 해외여행수요(네이버 데이터랩)", key:"travel", data:SIGNALS.travel},
     {name:"☀️ 기상특보(기상청)", key:"weather", data:SIGNALS.weather}
   ];
   const rows=apis.map(({name,data})=>{
@@ -530,8 +499,6 @@ function signalApiStatus(){
     const errorMsg=hasError?`${data.error}`.substring(0,60):null;
     const status=hasError?`<span style="color:#dc2626;font-weight:800">❌ 오류</span>`:`<span style="color:#10b981;font-weight:800">✓ 정상</span>`;
     const detail=data?.count?`${Math.round(data.count).toLocaleString('ko-KR')} 건`:
-                 data?.outbound_count?`출국 ${Math.round(data.outbound_count).toLocaleString('ko-KR')} 명`:
-                 data?.overseas_ratio?`지수 ${Math.round(data.overseas_ratio)}`:
                  data?.active?.length?`${data.active.length}종류 발효`:"—";
     return `<tr style="border-bottom:1px solid var(--line-2)">
       <td style="padding:10px;text-align:left;min-width:200px">${esc(name)}</td>
