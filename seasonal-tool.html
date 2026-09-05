@@ -234,9 +234,9 @@ table.mcal thead th.rl{z-index:3;}
 <div class="app">
   <aside class="sidebar">
     <div class="sb-brand"><div class="brand-logo" aria-hidden="true"></div>
-      <div><div class="bn">시즌·이벤트 캘린더</div><small>연간 시즌 매트릭스·검색량 추세</small></div></div>
+      <div><div class="bn">시즌·이벤트 캘린더</div><small>월별 시즌 이슈와 검색 추세</small></div></div>
     <nav class="sb-nav" id="sbNav"></nav>
-    <div class="sb-foot"><a href="index.html">← 통합 콘솔</a><br>추천 소재는 SA소재 탭에서 확인</div>
+    <div class="sb-foot"><a href="index.html">← 통합 콘솔</a><br>추천 광고 소재는 검색광고 소재 탭에서 확인</div>
   </aside>
   <main class="main">
     <header class="topbar">
@@ -274,49 +274,42 @@ const PRODUCTS=[
 // 초기값 = file:// 오프라인 폴백. 배포 시 data/seasonal.json(엔진·캘린더 공유 단일 소스)으로 교체됨.
 let SEASONAL={
  hrmf:[
-  {m:[6,7,8],tag:"장마·집중호우·태풍",why:"장마·호우로 누수·침수·풍수재 사고 급증(대표 예: 7월 장마 누수).",kws:["누수","침수","풍수재","주택화재보험 누수","벽지 곰팡이"],act:"6월 중순부터 ‘누수·풍수재 보장’ 검색광고·콘텐츠 선제 세팅"},
-  {m:[11,12,1,2],tag:"겨울 난방화재·동파",why:"전기장판·난로 등 난방기구 화재와 한파 동파 피해 증가.",kws:["전기장판 화재","동파","겨울 화재보험","난방 화재"],act:"11월 초 겨울 화재예방 콘텐츠·특약 안내"},
-  {m:[3,4],tag:"봄철 건조·산불",why:"건조기 화재·산불 위험 상승.",kws:["봄철 화재","건조 화재","산불 주택"],act:"2월 말 건조기 대비 콘텐츠"}],
+  {m:[6,7,8],tag:"장마·집중호우·태풍",why:"장마와 호우로 인한 누수, 침수, 풍수해 사고가 급증합니다. (예: 7월 장마 침수 피해)",kws:["누수","침수","풍수재","주택화재보험 누수","벽지 곰팡이"],act:"6월 중순부터 누수와 풍수해 보장을 강조한 검색광고와 콘텐츠로 선제 대응"},
+  {m:[11,12,1,2],tag:"겨울 난방화재·동파",why:"전기장판, 난로 등 난방기구 화재와 한파로 인한 동파 피해가 증가합니다.",kws:["전기장판 화재","동파","겨울 화재보험","난방 화재"],act:"11월 초부터 겨울 화재예방 콘텐츠와 특약을 안내"},
+  {m:[3,4],tag:"봄철 건조·산불",why:"건조기 화재와 산불 위험이 높아집니다.",kws:["봄철 화재","건조 화재","산불 주택"],act:"2월 말부터 건조기 사용 시기에 대비한 콘텐츠 준비"}],
  golf:[
-  {m:[3,4,5],tag:"봄 개장 시즌",why:"라운딩 재개·신규 골퍼 유입으로 가입 수요 시작.",kws:["골프보험","홀인원보험","봄 골프"],act:"2월 말 시즌 오픈 광고 준비"},
-  {m:[9,10,11],tag:"가을 최성수기",why:"골프 최성수기·홀인원 이벤트 증가.",kws:["홀인원보험","가을 골프","원데이 골프보험","캐롯 홀인원"],act:"8월 말 가을 성수기 선점 세팅"},
-  {m:[12,1,2],tag:"겨울 스크린골프",why:"실내 스크린골프로 이동 — 스크린 홀인원 수요.",kws:["스크린골프보험","스크린 홀인원","실내 골프"],act:"11월 말 스크린 상품 노출"}],
+  {m:[3,4,5],tag:"봄 개장 시즌",why:"라운딩을 재개하는 골퍼들과 신규 유입자들로 가입 수요가 시작됩니다.",kws:["골프보험","홀인원보험","봄 골프"],act:"2월 말부터 시즌 오픈을 알리는 광고 준비"},
+  {m:[9,10,11],tag:"가을 최성수기",why:"가을이 골프의 최성수기이며 홀인원 이벤트가 증가합니다.",kws:["홀인원보험","가을 골프","원데이 골프보험","캐롯 홀인원"],act:"8월 말부터 가을 성수기를 선점하는 마케팅 시작"},
+  {m:[12,1,2],tag:"겨울 스크린골프",why:"겨울에는 실내 스크린골프로 전환되며 스크린 홀인원 수요가 생깁니다.",kws:["스크린골프보험","스크린 홀인원","실내 골프"],act:"11월 말부터 스크린 상품을 집중 노출"}],
  cncr:[
-  {m:[1],tag:"신년 건강계획",why:"새해 건강·보장 점검 수요 집중.",kws:["암보험 추천","암보험 비교","건강보험 점검"],act:"12월 말~1월 초 캠페인"},
-  {m:[3],tag:"암예방의 날(3.21)",why:"암 예방·조기검진 관심 상승.",kws:["암보험","암 예방","유사암","암 진단비"],act:"3월 초 인식주간 연계 콘텐츠"},
-  {m:[11,12],tag:"연말정산 소득공제",why:"보장성보험 세액공제 문의 증가.",kws:["암보험 소득공제","보장성보험 공제"],act:"11월 말 안내"}],
+  {m:[1],tag:"신년 건강계획",why:"새해를 맞아 건강과 보장을 점검하려는 고객의 수요가 집중됩니다.",kws:["암보험 추천","암보험 비교","건강보험 점검"],act:"12월 말부터 1월 초까지 신년 캠페인"},
+  {m:[3],tag:"암예방의 날(3.21)",why:"암예방의 날을 기점으로 암 예방과 조기검진에 대한 관심이 높아집니다.",kws:["암보험","암 예방","유사암","암 진단비"],act:"3월 초부터 인식주간과 연계한 콘텐츠"},
+  {m:[11,12],tag:"연말정산 소득공제",why:"연말정산 시즌에 보장성보험의 세액공제에 대한 문의가 증가합니다.",kws:["암보험 소득공제","보장성보험 공제"],act:"11월 말부터 연말정산 공제 안내"}],
  dntl:[
-  {m:[1,2,7,8],tag:"방학 치과 성수기",why:"방학철 임플란트·교정·치료 집중으로 치아보험 관심 상승.",kws:["치아보험","임플란트","치아교정","치아보험 비교"],act:"방학 3~4주 전(6월 말·12월 말) 세팅"},
-  {m:[6],tag:"구강보건의 날(6.9)",why:"구강건강 인식 캠페인으로 관심 상승.",kws:["치아보험","스케일링","치아 건강"],act:"5월 말 캠페인 연계"}],
+  {m:[1,2,7,8],tag:"방학 치과 성수기",why:"겨울, 여름 방학 기간에 임플란트, 교정, 치료를 집중적으로 받는 시즌이 되어 치아보험 관심이 높아집니다.",kws:["치아보험","임플란트","치아교정","치아보험 비교"],act:"방학 3~4주 전(6월 말, 12월 말)부터 준비"},
+  {m:[6],tag:"구강보건의 날(6.9)",why:"구강보건의 날 캠페인으로 구강건강에 대한 관심과 보험 가입이 증가합니다.",kws:["치아보험","스케일링","치아 건강"],act:"5월 말부터 캠페인과 연계"}],
  driver:[
-  {m:[2,9,10],tag:"명절 장거리 운전",why:"설·추석 귀성 장거리 운전으로 사고·검색 급증.",kws:["운전자보험","명절 운전","장거리 운전 사고","원데이 운전자보험"],act:"명절 3주 전 검색광고·단기상품 노출"},
-  {m:[7,8],tag:"여름 휴가철·렌터카",why:"휴가 장거리·렌터카 운전 증가(휴가철 보장 이슈 뉴스 동반).",kws:["휴가철 운전자보험","렌터카 운전자보험","여름 운전"],act:"6월 말 휴가철 캠페인 세팅"},
-  {m:[3],tag:"신학기 스쿨존",why:"개학·어린이보호구역 사고 경각심 — 스쿨존 벌금 담보 소구.",kws:["스쿨존 운전자보험","어린이보호구역 벌금","운전자보험 벌금"],act:"2월 말 신학기 대비"},
-  {m:[12,1],tag:"겨울 빙판·눈길",why:"결빙·폭설로 눈길 사고 증가.",kws:["겨울 운전자보험","빙판길 사고","눈길 운전"],act:"11월 말 겨울 안전 콘텐츠"}],
+  {m:[2,9,10],tag:"명절 장거리 운전",why:"설과 추석의 귀성 장거리 운전으로 사고와 검색량이 급증합니다.",kws:["운전자보험","명절 운전","장거리 운전 사고","원데이 운전자보험"],act:"명절 3주 전부터 검색광고와 단기상품을 노출"},
+  {m:[7,8],tag:"여름 휴가철·렌터카",why:"휴가 중 장거리와 렌터카 운전이 증가하며 보장 관련 뉴스도 함께 나옵니다.",kws:["휴가철 운전자보험","렌터카 운전자보험","여름 운전"],act:"6월 말부터 휴가철 캠페인 시작"},
+  {m:[3],tag:"신학기 스쿨존",why:"개학 시즌에 어린이보호구역 사고의 심각성이 대두되고 스쿨존 벌금에 대한 관심이 높아집니다.",kws:["스쿨존 운전자보험","어린이보호구역 벌금","운전자보험 벌금"],act:"2월 말부터 신학기에 대비한 콘텐츠 준비"},
+  {m:[12,1],tag:"겨울 빙판·눈길",why:"결빙과 폭설로 인한 눈길 사고가 증가합니다.",kws:["겨울 운전자보험","빙판길 사고","눈길 운전"],act:"11월 말부터 겨울 안전 콘텐츠 배포"}],
  woman:[
-  {m:[3],tag:"여성의 날(3.8)",why:"여성건강 인식 상승 — 여성 특화 담보 관심.",kws:["여성건강보험","여성암보험","여성보험"],act:"2월 말 여성건강 콘텐츠"},
-  {m:[10],tag:"유방암 예방의 달(핑크리본)",why:"유방암 인식·검진 캠페인으로 관심 급증.",kws:["유방암보험","여성암 진단비","여성건강검진"],act:"9월 말 핑크리본 캠페인 연계"},
-  {m:[11,12],tag:"연말 건강검진",why:"연말 미룬 검진 몰림 — 검진 연계 수요.",kws:["여성건강검진","여성보험","자궁 초음파"],act:"10월 말 검진 시즌 콘텐츠"}],
+  {m:[3],tag:"여성의 날(3.8)",why:"여성의 날을 기점으로 여성건강에 대한 관심이 높아지고 여성 특화 담보에 주목이 집중됩니다.",kws:["여성건강보험","여성암보험","여성보험"],act:"2월 말부터 여성건강 관련 콘텐츠 배포"},
+  {m:[10],tag:"유방암 예방의 달(핑크리본)",why:"10월 핑크리본 캠페인으로 유방암 인식과 검진 수요가 급증합니다.",kws:["유방암보험","여성암 진단비","여성건강검진"],act:"9월 말부터 핑크리본 캠페인과 연계"},
+  {m:[11,12],tag:"연말 건강검진",why:"연말에 미뤄진 건강검진 수요가 몰리면서 검진 관련 보장을 찾는 고객이 증가합니다.",kws:["여성건강검진","여성보험","자궁 초음파"],act:"10월 말부터 검진 시즌 콘텐츠 준비"}],
  birth:[
-  {m:[3,4,5],tag:"봄 결혼·임신 시즌 여파",why:"결혼·임신 계획 증가 후 태아보험 가입 관심 상승.",kws:["태아보험","임신보험","태아보험 시기"],act:"가입 적기(임신 초기) 안내 상시 노출"},
-  {m:[1],tag:"신년 가족계획",why:"새해 출산·가족계획 수립.",kws:["태아보험 추천","출산 준비","자녀보험"],act:"연말~연초 준비 콘텐츠"}],
- overseas:[
-  {m:[7,8],tag:"여름 휴가 성수기",why:"해외여행 최성수기 — 여행자보험 수요 폭증.",kws:["해외여행보험","여행자보험","항공기지연","휴대품 손해"],act:"6월 초 성수기 선점 세팅"},
-  {m:[1,2],tag:"겨울·설 연휴 여행",why:"연말연시·설 해외여행 수요.",kws:["겨울 여행자보험","설 연휴 해외여행","해외여행보험"],act:"12월 초 겨울여행 캠페인"},
-  {m:[5,9,10],tag:"봄·가을 황금연휴/추석",why:"연휴·추석 단기 해외여행 집중.",kws:["황금연휴 여행보험","추석 해외여행보험","단기 여행자보험"],act:"연휴 3주 전 단기상품 노출"}],
- overseaslong:[
-  {m:[2,3],tag:"봄학기 유학·어학연수 출국",why:"봄학기 출국 준비 — 장기체류·유학생보험 수요.",kws:["유학생보험","어학연수 보험","장기체류보험"],act:"1월 말 출국 준비 콘텐츠"},
-  {m:[8,9],tag:"가을학기·워홀 출국",why:"가을학기·워홀 출국 집중.",kws:["유학생보험","워홀보험","해외장기체류보험"],act:"7월 말 세팅"}],
+  {m:[3,4,5],tag:"봄 결혼·임신 시즌 여파",why:"봄 시즌의 결혼과 임신 계획 증가에 따라 태아보험 가입에 대한 관심이 높아집니다.",kws:["태아보험","임신보험","태아보험 시기"],act:"임신 초기라는 가입 적기를 강조한 콘텐츠 지속 노출"},
+  {m:[1],tag:"신년 가족계획",why:"새해를 맞아 출산과 가족계획을 수립하는 고객들이 늘어납니다.",kws:["태아보험 추천","출산 준비","자녀보험"],act:"연말부터 연초에 걸쳐 준비 콘텐츠 배포"}],
  holeinone:[
-  {m:[3,4,5],tag:"봄 개장 라운딩",why:"봄 골프 시즌 개장 — 홀인원보험 단기 가입 수요.",kws:["홀인원보험","캐롯 홀인원","원데이 골프보험"],act:"2월 말 시즌 오픈 광고"},
-  {m:[9,10,11],tag:"가을 골프 성수기",why:"가을 최성수기 라운딩 급증 — 홀인원·선물하기 수요.",kws:["홀인원보험","투게더 홀인원","골프 선물"],act:"8월 말 성수기·선물 캠페인"}],
+  {m:[3,4,5],tag:"봄 개장 라운딩",why:"봄 시즌에 골프 시즌이 개장되면서 홀인원보험의 단기 가입 수요가 발생합니다.",kws:["홀인원보험","캐롯 홀인원","원데이 골프보험"],act:"2월 말부터 시즌 오픈 광고 시작"},
+  {m:[9,10,11],tag:"가을 골프 성수기",why:"가을은 골프의 최성수기이며 라운딩이 크게 증가하고 홀인원 가능성과 선물 수요가 높아집니다.",kws:["홀인원보험","투게더 홀인원","골프 선물"],act:"8월 말부터 성수기와 선물 캠페인 시작"}],
  event:[
-  {m:[4,5],tag:"봄 축제·체육행사",why:"봄 지역축제·체육대회·야외행사 집중 — 행사배상책임 수요.",kws:["행사보험","행사배상책임보험","체육행사 보험"],act:"3월 말 행사 시즌 세팅"},
-  {m:[9,10],tag:"가을 축제·불꽃놀이",why:"가을 지역축제·불꽃놀이·공연 성수기.",kws:["행사보험","불꽃놀이 보험","축제 배상책임"],act:"8월 말 가을 행사 대비"},
-  {m:[12],tag:"연말 행사·공연",why:"송년·연말 공연·행사 집중.",kws:["행사보험","공연 배상책임"],act:"11월 말 연말 행사"}],
+  {m:[4,5],tag:"봄 축제·체육행사",why:"봄 시즌에 지역축제, 체육대회, 야외행사가 집중적으로 개최되어 행사배상책임 수요가 증가합니다.",kws:["행사보험","행사배상책임보험","체육행사 보험"],act:"3월 말부터 행사 시즌을 대비한 마케팅"},
+  {m:[9,10],tag:"가을 축제·불꽃놀이",why:"가을은 지역축제, 불꽃놀이, 공연이 성수기인 시즌입니다.",kws:["행사보험","불꽃놀이 보험","축제 배상책임"],act:"8월 말부터 가을 행사에 대비"},
+  {m:[12],tag:"연말 행사·공연",why:"연말에 송년 공연과 행사가 집중적으로 개최됩니다.",kws:["행사보험","공연 배상책임"],act:"11월 말부터 연말 행사 대비"}],
  chronic:[
-  {m:[1],tag:"신년 건강계획",why:"새해 건강·보장 점검 — 유병력자 간편심사 관심 상승.",kws:["유병자보험","간편심사보험","유병력자 실손"],act:"12월 말~1월 초 캠페인"},
-  {m:[11,12],tag:"연말정산·보장 점검",why:"연말 보장 재점검 시즌 — 고령·유병자 가입 수요.",kws:["유병자보험","간편심사","보험 리모델링"],act:"10월 말 안내"}],
+  {m:[1],tag:"신년 건강계획",why:"새해를 맞아 건강과 보장을 점검하려는 고객 중 유병력자의 간편심사 보험에 대한 관심이 높아집니다.",kws:["유병자보험","간편심사보험","유병력자 실손"],act:"12월 말부터 1월 초까지 신년 캠페인"},
+  {m:[11,12],tag:"연말정산·보장 점검",why:"연말정산 시즌에 기존 보장을 재점검하려는 고령 및 유병자의 가입 수요가 증가합니다.",kws:["유병자보험","간편심사","보험 리모델링"],act:"10월 말부터 연말정산 관련 안내"}],
 };
 
 /* 일반 마케팅 캘린더(월별 테마·키워드·공휴일/기념일) — '한 장' 연간 뷰용 (보험 관련 절기 강조) */
@@ -350,7 +343,7 @@ let curKey="__all";
 const TRENDS_FALLBACK={"asof":"2026-07-23","source":"sample","products":{"home":{"months":[100,57.7,15.5,15.5,15.5,15.5,15.5,15.5,15.5,15.5,57.7,57.7],"peakMonths":[1]},"hrmf":{"months":[100,100,100,100,26.8,100,100,100,26.8,26.8,100,100],"peakMonths":[1,2,3,4,6,7,8,11,12]},"golf":{"months":[100,100,100,100,100,26.8,26.8,26.8,100,100,100,100],"peakMonths":[1,2,3,4,5,9,10,11,12]},"cncr":{"months":[100,26.8,100,26.8,26.8,26.8,26.8,26.8,26.8,26.8,100,100],"peakMonths":[1,3,11,12]},"dntl":{"months":[100,100,26.8,26.8,26.8,100,100,100,26.8,26.8,26.8,26.8],"peakMonths":[1,2,6,7,8]},"driver":{"months":[100,100,100,26.8,26.8,26.8,100,100,100,100,26.8,100],"peakMonths":[1,2,3,7,8,9,10,12]},"woman":{"months":[26.8,26.8,100,26.8,26.8,26.8,26.8,26.8,26.8,100,100,100],"peakMonths":[3,10,11,12]},"birth":{"months":[100,26.8,100,100,100,26.8,26.8,26.8,26.8,26.8,26.8,26.8],"peakMonths":[1,3,4,5]},"overseas":{"months":[100,100,26.8,26.8,100,26.8,100,100,100,100,26.8,26.8],"peakMonths":[1,2,5,7,8,9,10]},"overseaslong":{"months":[26.8,100,100,26.8,26.8,26.8,26.8,100,100,26.8,26.8,26.8],"peakMonths":[2,3,8,9]},"holeinone":{"months":[26.8,26.8,100,100,100,26.8,26.8,26.8,100,100,100,26.8],"peakMonths":[3,4,5,9,10,11]},"event":{"months":[26.8,26.8,26.8,100,100,26.8,26.8,26.8,100,100,26.8,100],"peakMonths":[4,5,9,10,12]},"chronic":{"months":[100,26.8,26.8,26.8,26.8,26.8,26.8,26.8,26.8,26.8,100,100],"peakMonths":[1,11,12]}}};
 let TRENDS=TRENDS_FALLBACK;   // data/trends.json 로드 시 실측으로 교체(Pages/서버)
 let VOL={asof:null,source:"none",products:{}}; // 네이버 검색광고 키워드도구 월검색량
-let SIGNALS={asof:null,source:"none",weather:{},travel:{},exit_tour:{},newreg:{},triggers:{}}; // 수요 신호
+let SIGNALS={asof:null,source:"none",weather:{},travel:{},newreg:{},triggers:{}}; // 수요 신호
 const MONTHS_SHORT=["1","2","3","4","5","6","7","8","9","10","11","12"];
 const normKw=s=>String(s||"").replace(/\s/g,"").toLowerCase();
 const fmtVolume=n=>(+n||0).toLocaleString("ko-KR");
@@ -421,7 +414,7 @@ function repKwCards(){
     return `<div class="rep" data-key="${p.key}"><div class="rep-top"><div class="rep-nm">${esc(p.name)}${MAIN.has(p.key)?" ★":""}</div>${badge}</div>${sub}${mid}<div class="rep-kw">${chips}</div>${actualLine}</div>`;
   };
   const src=TRENDS&&TRENDS.source==="datalab"?"데이터랩 실측":"근사(연동 전)";
-  return `<div class="sec-lbl" style="margin-top:24px">🔑 카테고리 대표키워드 <span style="font-weight:600;color:var(--muted);text-transform:none">· 상품별 대표 키워드 2개 + 실측 검색추세 · ${esc(src)} · 카드 클릭 → 상품 시즌 탭</span></div>
+  return `<div class="sec-lbl" style="margin-top:24px">🔑 상품별 대표 키워드 <span style="font-weight:600;color:var(--muted);text-transform:none">· 상품별 대표 키워드와 실측 검색추세 · ${esc(src)} · 카드 클릭하면 상품 시즌 탭으로 이동</span></div>
     <div class="rep-grid">${PRODUCTS.map(card).join("")}</div>`;
 }
 
@@ -451,23 +444,20 @@ function renderOverview(){
     let kpis=`${kpi(now.length,MONTHS[CURM-1]+" 실행 이슈")}${kpi(next.length,MONTHS[nextM-1]+" 선제 이슈")}${kpi(now.filter(x=>MAIN.has(x.p.key)).length,"선택월 메인상품")}${kpi(totalWins,"연간 시즈널 이슈")}`;
     if(SIGNALS.asof){
       const nc=(SIGNALS.newreg&&SIGNALS.newreg.count)?Math.round(SIGNALS.newreg.count).toLocaleString("ko-KR"):"—";
-      const oc=(SIGNALS.exit_tour&&SIGNALS.exit_tour.outbound_count)?Math.round(SIGNALS.exit_tour.outbound_count).toLocaleString("ko-KR"):"—";
-      const tr=(SIGNALS.travel&&SIGNALS.travel.overseas_ratio)?Math.round(SIGNALS.travel.overseas_ratio):null;
-      const tr_txt=tr!==null?tr+" 지수":"—";
-      kpis+=`${kpi(nc,"차량등록(운전자)")}${kpi(oc,"월별출국통계")}${kpi(tr_txt,"해외여행수요")}`;
+      kpis+=`${kpi(nc,"차량등록(운전자)")}`;
     }
     return kpis;
   };
   $("#content").innerHTML=`
     <div class="kpi-row">${signalKpis()}</div>
-    <div class="sec-lbl">📌 선택월·익월 실행 플랜 <span class="now">${MONTHS[CURM-1]} → ${MONTHS[nextM-1]}</span> <span style="font-weight:600;color:var(--muted);text-transform:none">· 검색량은 네이버 검색광고 키워드도구 PC+모바일 실측</span></div>
+    <div class="sec-lbl">📌 이달과 다음달 마케팅 실행계획 <span class="now">${MONTHS[CURM-1]} → ${MONTHS[nextM-1]}</span> <span style="font-weight:600;color:var(--muted);text-transform:none">· 검색량은 네이버 검색광고 키워드도구 PC+모바일 실측</span></div>
     <div class="plan-cols">
-      <section class="plan-col"><div class="plan-col-h"><span>당월 실행 · ${MONTHS[CURM-1]}</span><small>지금 노출·운영</small></div>${now.length?`<div class="now-grid">${planCards(now)}</div>`:`<div class="note" style="margin-top:0">선택월의 고정 시즌 이슈가 없습니다.</div>`}</section>
-      <section class="plan-col next"><div class="plan-col-h"><span>익월 준비 · ${MONTHS[nextM-1]}</span><small>소재·키워드·FAQ 선제 준비</small></div>${next.length?`<div class="now-grid">${planCards(next)}</div>`:`<div class="note" style="margin-top:0">익월 신규 시즌 이슈가 없습니다.</div>`}</section>
+      <section class="plan-col"><div class="plan-col-h"><span>이달 실행 · ${MONTHS[CURM-1]}</span><small>지금 진행 중인 캠페인</small></div>${now.length?`<div class="now-grid">${planCards(now)}</div>`:`<div class="note" style="margin-top:0">선택하신 월에 해당하는 시즌 이슈가 없습니다.</div>`}</section>
+      <section class="plan-col next"><div class="plan-col-h"><span>다음달 준비 · ${MONTHS[nextM-1]}</span><small>광고 소재, 키워드, FAQ 사전 준비</small></div>${next.length?`<div class="now-grid">${planCards(next)}</div>`:`<div class="note" style="margin-top:0">다음 월의 신규 시즌 이슈가 없습니다.</div>`}</section>
     </div>
     ${signalTimeSeries()}
     ${signalApiStatus()}
-    <div class="sec-lbl" style="margin-top:24px">🗓️ 연간 마케팅 이슈 캘린더 <span style="font-weight:600;color:var(--muted);text-transform:none">· 한 장에 총체적으로 · 상품행 클릭 시 세부 탭(월별 이슈)으로</span></div>
+    <div class="sec-lbl" style="margin-top:24px">🗓️ 연간 마케팅 이슈 캘린더 <span style="font-weight:600;color:var(--muted);text-transform:none">· 전체 상품의 월별 시즌 이슈 한눈에 · 상품명 클릭 시 세부 정보 확인</span></div>
     ${annualMatrix()}
     <div class="lg">${Object.keys(SEASON).map(s=>`<span><i style="background:${SEASON[s][1]}"></i>${SEASON[s][0]}</span>`).join("")}<span style="color:var(--brand);font-weight:700">▮ ${MONTHS[CURM-1]} (선택월)</span></div>
     ${repKwCards()}`;
@@ -493,36 +483,15 @@ function signalTimeSeries(){
       <div style="font-size:10px;color:var(--muted);text-align:center">최근 12개월</div>
     </div>
   `:""
-  // 출국통계 시계열
-  const exitSeries=(SIGNALS.exit_tour?.series||[]).slice(-12);
-  const exitChart=exitSeries.length?`
-    <div style="flex:1;min-width:300px">
-      <div style="font-size:13px;font-weight:800;margin-bottom:10px;color:var(--ink)">🌍 월별 출국통계</div>
-      <div style="display:flex;align-items:flex-end;gap:2px;height:120px;padding:10px 0">
-        ${(()=>{
-          const outbounds=exitSeries.map(x=>x.outbound_korean||x.outbound_count||0);
-          const max=Math.max(...outbounds,1);
-          return outbounds.map((count,i)=>{
-            const pct=(count/max)*100;
-            const isNow=i===outbounds.length-1;
-            return `<div title="${count.toLocaleString('ko-KR')}" style="flex:1;background:${isNow?'#5bb96a':'#cdd2db'};height:${pct}%;border-radius:3px 3px 0 0;opacity:${isNow?1:0.7}"></div>`;
-          }).join('');
-        })()}
-      </div>
-      <div style="font-size:10px;color:var(--muted);text-align:center">최근 12개월</div>
-    </div>
-  `:""
-  return (newregChart||exitChart)?`
+  return newregChart?`
     <div class="sec-lbl" style="margin-top:18px">📈 월별 수요 시계열 <span style="font-weight:600;color:var(--muted);text-transform:none">· 최근 12개월 추이 · 기준 ${esc(SIGNALS.asof)}</span></div>
-    <div style="display:flex;gap:16px;margin-bottom:18px;flex-wrap:wrap">${newregChart}${exitChart}</div>
+    <div style="display:flex;gap:16px;margin-bottom:18px;flex-wrap:wrap">${newregChart}</div>
   `:"";
 }
 function signalApiStatus(){
   if(!SIGNALS.asof)return "";
   const apis=[
     {name:"🚗 자동차 신규등록(stat.molit)", key:"newreg", data:SIGNALS.newreg},
-    {name:"🌍 출입국관광통계(MOJ)", key:"exit_tour", data:SIGNALS.exit_tour},
-    {name:"✈️ 해외여행수요(네이버 데이터랩)", key:"travel", data:SIGNALS.travel},
     {name:"☀️ 기상특보(기상청)", key:"weather", data:SIGNALS.weather}
   ];
   const rows=apis.map(({name,data})=>{
@@ -530,8 +499,6 @@ function signalApiStatus(){
     const errorMsg=hasError?`${data.error}`.substring(0,60):null;
     const status=hasError?`<span style="color:#dc2626;font-weight:800">❌ 오류</span>`:`<span style="color:#10b981;font-weight:800">✓ 정상</span>`;
     const detail=data?.count?`${Math.round(data.count).toLocaleString('ko-KR')} 건`:
-                 data?.outbound_count?`출국 ${Math.round(data.outbound_count).toLocaleString('ko-KR')} 명`:
-                 data?.overseas_ratio?`지수 ${Math.round(data.overseas_ratio)}`:
                  data?.active?.length?`${data.active.length}종류 발효`:"—";
     return `<tr style="border-bottom:1px solid var(--line-2)">
       <td style="padding:10px;text-align:left;min-width:200px">${esc(name)}</td>
@@ -569,7 +536,7 @@ function annualMatrix(){
       return `<td class="mc${m===CURM?" cnow":""}"><div class="pcell empty" data-key="${p.key}"></div></td>`;}).join("");
     return `<tr><td class="rl pn${MAIN.has(p.key)?" main":""}" data-key="${p.key}">${esc(p.name)}</td>${cells}</tr>`;
   }).join("");
-  return `<div class="mcal-wrap"><table class="mcal"><thead>${monthHead}</thead><tbody>${themeRow}${kwRow}${dayRow}<tr class="divrow"><td class="rl">보험 상품</td><td class="mc" colspan="12">상품별 시즌 이슈 · 셀/상품명 클릭 → 세부 탭</td></tr>${prodRows}</tbody></table></div>`;
+  return `<div class="mcal-wrap"><table class="mcal"><thead>${monthHead}</thead><tbody>${themeRow}${kwRow}${dayRow}<tr class="divrow"><td class="rl">보험 상품</td><td class="mc" colspan="12">상품별 월별 시즌 이슈 · 상품명 클릭하면 상품 세부 정보 확인</td></tr>${prodRows}</tbody></table></div>`;
 }
 function renderProduct(){
   const p=getP(curKey);const wins=winsOf(p.key);
@@ -583,16 +550,16 @@ function renderProduct(){
         <span class="season">${sc[0]}${active?" · 선택월 ●":""}</span></div>
       <div class="win-b">
         <div class="why">${esc(w.why)}</div>
-        <div class="kwl"><span class="mini-lbl">이슈 키워드 <a class="datalab" href="${DATALAB}" target="_blank" rel="noopener">데이터랩에서 추세 검증 ↗</a></span><div class="chips">${w.kws.map(chip).join("")}</div></div>
+        <div class="kwl"><span class="mini-lbl">마케팅 키워드 <a class="datalab" href="${DATALAB}" target="_blank" rel="noopener">데이터랩에서 추세 검증 ↗</a></span><div class="chips">${w.kws.map(chip).join("")}</div></div>
         <div class="act">⏱ <b>선제 대응</b> · ${esc(w.act)}</div>
       </div></div>`;}).join("");
   $("#content").innerHTML=`
     <div class="seedbar"><h2>${esc(p.name)}${MAIN.has(p.key)?' <span style="font-size:11px;color:var(--brand);font-weight:800">★ 메인 상품군</span>':""}</h2>
       <div class="ytl">${tl}</div></div>
     ${trendSection(p)}
-    <div class="sec-lbl">시즌별 이슈 · 키워드 · 선제 대응</div>
+    <div class="sec-lbl">계절별 시즌 이슈와 선제 대응</div>
     <div class="wins">${cards}</div>
-    <div class="note">피크 전에 소재·키워드·콘텐츠를 준비하세요.</div>`;
+    <div class="note">성수기를 대비해 광고 소재, 키워드, 콘텐츠를 미리 준비하세요.</div>`;
 }
 function render(){(curKey==="__all"?renderOverview():renderProduct());renderSidebar();window.scrollTo({top:0});}
 // 뷰 ↔ URL 해시 동기화(새로고침·뒤로가기). 상품은 상품키를 해시로.
