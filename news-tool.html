@@ -197,14 +197,14 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
     <div class="sb-brand"><div class="brand-logo" aria-hidden="true"></div>
       <div><div class="bn">카테고리 뉴스 모니터링</div><small>손보업계·경쟁사·상품별</small></div></div>
     <nav class="sb-nav" id="sbNav"></nav>
-    <div class="sb-foot"><a href="index.html">← 통합 콘솔(main)로</a><br>헤드라인·링크는 공개 뉴스 · 요약/시사점은 마케팅 분석<br>실시간 갱신은 로컬 연동 서버 필요</div>
+    <div class="sb-foot"><a href="index.html">← 통합 콘솔(main)로</a><br>헤드라인·링크는 공개 뉴스 · 요약/시사점은 마케팅 분석<br>실시간 갱신은 로컬 서버 연동 필요</div>
   </aside>
   <main class="main">
     <header class="topbar">
       <a class="crumb" href="index.html">Modoo ›</a>
       <div><div id="pt">전체 개요</div><div id="pts"></div></div>
       <div class="tr">
-        <button class="btn" id="refreshAll" title="모든 카테고리 최신 뉴스 갱신(팀 프록시)">🔄 전체 갱신</button>
+        <button class="btn" id="refreshAll" title="모든 카테고리 최신 뉴스 가져오기(팀 프록시)">🔄 전체 갱신</button>
         <button class="icon-btn" id="themeBtn" type="button" aria-label="테마 전환"></button>
       </div>
     </header>
@@ -403,14 +403,14 @@ function newsPanel(p){
       ?`<div class="sig-live">⚠ <b>출입국 통계 확인 필요</b> ${esc(exit.error)} <span class="src">· TOUR_API_URL/KEY와 응답 필드 확인</span></div>`
       :"";
   const sigBanner=(sig&&sig.level==="high")?`<div class="sig-live">🔴 <b>실시간 수요 신호</b> ${esc(sig.note||"")} <span class="src">· 공공데이터 ${esc(SIGNALS.asof||"")}</span></div>`:"";
-  const trgBox=trg.length?`<div class="nm-box nm-trg"><span class="lb">🔥 수요 트리거 <small>이 이벤트가 뜨면 검색·가입 급증 → 검색광고·콘텐츠 선제 대응</small></span>${sigBanner}${newregBanner}${signalIssue}
+  const trgBox=trg.length?`<div class="nm-box nm-trg"><span class="lb">🔥 수요 트리거 <small>이 이벤트 발생 시 검색·가입 급증 → 선제 대응</small></span>${sigBanner}${newregBanner}${signalIssue}
     ${exitBanner}
     <div class="trg-list">${trg.map(t=>`<a class="trg" href="${_naverNews(t.kw)}" target="_blank" rel="noopener"><b>${esc(t.ev)}</b><span>${esc(t.why)}</span><em>＋${esc(t.kw)} 뉴스 ↗</em></a>`).join("")}</div></div>`:"";
   const extraLinks=!trg.length?(p.extra||[]).map(k=>`<a class="more" href="${_naverNews(k)}" target="_blank" rel="noopener" title="추가 감시 키워드">＋${esc(k)} ↗</a>`).join(""):"";
   return `<div class="newsmon">
     <div class="nm-top"><span class="t">📰 ${esc(p.name)}</span>
       <span class="asof">${stamp}</span>
-      <button class="nm-refresh" data-refresh="${esc(p.key)}" title="프록시/로컬서버로 최신 뉴스 가져오기">🔄 실시간 갱신</button>
+      <button class="nm-refresh" data-refresh="${esc(p.key)}" title="최신 뉴스 가져오기(팀 프록시)">🔄 실시간 갱신</button>
       <a class="more" href="${naverMore(p)}" target="_blank" rel="noopener">네이버 뉴스 ↗</a>${extraLinks}</div>
     <div class="nm-body">
       <div class="nm-box nm-sum"><span class="lb">동향 요약</span>${esc(HUMANIZE.light(n.summary))}</div>
@@ -426,7 +426,7 @@ function renderProduct(){
     <div class="seedbar"><div class="st"><h2>${esc(p.name)}</h2><span class="tier">${esc(p.cat)} · ${esc(p.tier)}</span>
       <span style="margin-left:auto;font-size:11.5px;color:var(--muted)">카테고리 뉴스 모니터링</span></div></div>
     ${newsPanel(p)}
-    <div class="note">요약은 기사 제목·설명문 기준입니다. 중요한 내용은 원문을 확인하세요.</div>`;
+    <div class="note">요약은 기사 제목·설명 기준입니다. 중요 내용은 원문 확인이 필요합니다.</div>`;
 }
 function renderOverview(){
   $("#pt").textContent="전체 개요"; $("#pts").textContent=`· ${PRODUCTS.filter(p=>NEWSMON[p.key]).length}개 카테고리`;
@@ -450,9 +450,9 @@ function renderOverview(){
     <div class="ov-grid">${indCards}</div>
     <div class="sec-lbl">📰 최신 헤드라인 (상품 카테고리)</div>
     <div class="newsmon"><div class="nm-body"><ul class="nm-list" style="margin-top:0">${top}</ul></div></div>
-    <div class="sec-lbl">상품 카테고리별 동향 · 카드를 클릭하면 상세(🔥=수요 트리거)</div>
+    <div class="sec-lbl">상품 카테고리별 동향 · 카드 클릭으로 상세보기(🔥=수요 트리거)</div>
     <div class="ov-grid">${cards}</div>
-    <div class="note">담당 상품과 업계·경쟁사 뉴스를 모아 봅니다.</div>`;
+    <div class="note">담당 상품과 업계·경쟁사 뉴스를 함께 확인합니다.</div>`;
   loadAutoClips();                                     // 개요 상단 '자동 수집 최신'을 클리핑 아카이브(하루 2회)에서 채움
 }
 /* 전체 개요 상단: 자동 수집 최신 헤드라인 — data/clips 최신 일자의 상위 헤드라인(비동기) */
@@ -529,11 +529,11 @@ function renderIndustry(){
       <a class="more" href="${naverMore(p)}" target="_blank" rel="noopener">${esc(p.q)} 뉴스 ↗</a></div>`;};
   $("#content").innerHTML=`
     <div class="seedbar"><div class="st"><h2>🏢 손보업계·경쟁사</h2><span class="tier">업계 전반 + 빅4/5</span>
-      <span style="margin-left:auto;font-size:11.5px;color:var(--muted)">한 화면에서 통합 확인</span></div></div>
+      <span style="margin-left:auto;font-size:11.5px;color:var(--muted)">통합 확인</span></div></div>
     ${newsPanel(biz)}
     <div class="sec-lbl">경쟁사 동향 · 삼성·DB·현대·KB·메리츠</div>
     <div class="ci-grid">${comps.map(compCard).join("")}</div>
-    <div class="note">카드에서 새로고침하거나 원문을 확인할 수 있습니다.</div>`;
+    <div class="note">카드에서 새로고침하거나 원문 확인이 가능합니다.</div>`;
 }
 
 /* 클리핑 아카이브 (data/clips/ · 하루 2회 자동 수집 · 날짜검색·일/월 요약) */
@@ -564,7 +564,7 @@ function renderClips(){
   loadClipIndex(()=>{
     const dates=CLIPS_INDEX.dates||[];
     $("#pt").textContent="클리핑 아카이브";
-    if(!dates.length){$("#pts").textContent="";$("#content").innerHTML=`<div class="note" style="margin-top:0"><b>클리핑 아카이브</b> · 매일 <b>09시·13시</b>에 카테고리별 뉴스를 자동 수집해 날짜별로 쌓습니다(News Clip 워크플로우). 아직 수집분이 없어요 — 첫 실행 후 이 화면에서 날짜별·누계로 조회·검색할 수 있습니다.</div>`;return;}
+    if(!dates.length){$("#pts").textContent="";$("#content").innerHTML=`<div class="note" style="margin-top:0"><b>클리핑 아카이브</b> · 매일 <b>09시·13시</b>에 카테고리별 뉴스를 자동 수집해 저장합니다(News Clip 워크플로우). 아직 수집 데이터가 없습니다 — 첫 실행 후 이 화면에서 날짜별·누계 조회·검색이 가능합니다.</div>`;return;}
     if(clipDate!=="__all"&&!dates.some(d=>d.date===clipDate))clipDate="__all";
     const totalAll=dates.reduce((s,d)=>s+(d.total||0),0);
     $("#pts").textContent=`· ${dates.length}일 · 누계 ${totalAll}건`;
@@ -603,7 +603,7 @@ function renderClipBody(){
   loadClipDay(clipDate,d=>{                     // 단일 날짜 모드: 카테고리별 그룹
     if(myReq!==clipReq||clipDate==="__all")return;    // stale 가드
     const b=$("#clipBody");if(!b)return;
-    if(!d){b.innerHTML=`<div class="empty">${esc(clipDate)} 클리핑을 불러올 수 없습니다.</div>`;return;}
+    if(!d){b.innerHTML=`<div class="empty">${esc(clipDate)} 클리핑 데이터를 불러올 수 없습니다.</div>`;return;}
     const sm=d.summary||{total:0,top:[]},cats=d.categories||{};
     const top=(sm.top||[]).filter(filt).map(it=>`<a class="clip-top" href="${esc(it.url)}" target="_blank" rel="noopener"><b>${esc(it.t)}</b><span>${esc(it.src||"")} · ${esc(it.date||"")}</span></a>`).join("");
     const order=Object.keys(cats).sort((a,b)=>{const M=["hrmf","driver","golf"];return (M.indexOf(a)<0?9:M.indexOf(a))-(M.indexOf(b)<0?9:M.indexOf(b));});
@@ -630,13 +630,13 @@ function applyItems(key,items){const clean=(items||[]).filter(it=>it.t&&it.url);
   NEWSMON[key].items=clean;NEWSMON[key].live=new Date().toLocaleString("ko-KR",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"});return clean.length;}
 function refreshOne(key,btn){const p=getP(key);if(!p||!NEWSMON[key])return;if(!needCred())return;
   if(btn){btn.disabled=true;btn.textContent="⏳ 가져오는 중…";}
-  fetchNews(p).then(d=>{if(d.error){toast("뉴스 오류: "+d.error);return;}const c=applyItems(key,d.items);toast(c?("최신 뉴스 "+c+"건 갱신됨"):"가져온 뉴스가 없습니다");render();})
-    .catch(()=>{toast("실시간 연동 실패 — 팀 프록시 응답 없음(잠시 후 다시 시도)");if(btn){btn.disabled=false;btn.textContent="🔄 실시간 갱신";}});}
+  fetchNews(p).then(d=>{if(d.error){toast("뉴스 오류: "+d.error);return;}const c=applyItems(key,d.items);toast(c?("최신 뉴스 "+c+"개 갱신됨"):"수집된 뉴스가 없습니다");render();})
+    .catch(()=>{toast("연동 실패 — 팀 프록시 응답 없음");if(btn){btn.disabled=false;btn.textContent="🔄 실시간 갱신";}});}
 $("#refreshAll").addEventListener("click",()=>{if(!needCred())return;const btn=$("#refreshAll");btn.disabled=true;btn.textContent="⏳ 전체 갱신 중…";
   const keys=ALLMON.filter(p=>NEWSMON[p.key]).map(p=>p.key);let i=0,ok=0,fail=false;
   (function next(){if(i>=keys.length){btn.disabled=false;btn.textContent="🔄 전체 갱신";if(!fail){toast(ok+"개 카테고리 갱신 완료");render();}return;}
     const key=keys[i++];fetchNews(getP(key)).then(d=>{if(d.error){fail=true;toast("뉴스 오류: "+d.error);btn.disabled=false;btn.textContent="🔄 전체 갱신";return;}if(applyItems(key,d.items))ok++;setTimeout(next,120);})
-      .catch(()=>{fail=true;toast("실시간 연동 실패 — 팀 프록시 응답 없음(잠시 후 다시 시도)");btn.disabled=false;btn.textContent="🔄 전체 갱신";});})();});
+      .catch(()=>{fail=true;toast("연동 실패 — 팀 프록시 응답 없음");btn.disabled=false;btn.textContent="🔄 전체 갱신";});})();});
 
 document.addEventListener("click",e=>{
   const rb=e.target.closest(".nm-refresh");if(rb){e.stopPropagation();refreshOne(rb.dataset.refresh,rb);return;}
