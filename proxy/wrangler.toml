@@ -26,8 +26,10 @@ compatibility_date = "2024-11-01"
 #   wrangler secret put AD_KEY
 #   wrangler secret put AD_SECRET
 #   wrangler secret put AD_CUSTOMER
+#   wrangler secret put ANTHROPIC_API_KEY
 #   wrangler secret put ACTOR_HASH_SALT
 # ACTOR_HASH_SALT는 32바이트 이상 무작위 값으로 생성하고 저장소에 커밋하지 않는다.
+# ANTHROPIC_API_KEY는 https://console.anthropic.com에서 발급받는다.
 # /v1/feedback 경로는 Cloudflare Access 정책으로 보호해
 # Cf-Access-Authenticated-User-Email과 Cf-Access-Jwt-Assertion을 함께 전달한다.
 # (설정창 헤더 방식(A)만 쓸 거면 시크릿 등록 불필요)
