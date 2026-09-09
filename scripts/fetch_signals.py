@@ -709,7 +709,7 @@ def build_triggers(weather, travel, exit_tour=None, newreg=None):
     if exit_tour and exit_tour.get("outbound_count") is not None:
         count = exit_tour.get("outbound_count")
         if isinstance(count, (int, float)) and count >= 100:
-            trg["overseas_exit"] = {
+            trg["overseas"] = {
                 "level": "high",
                 "note": f"출입국관광통계({exit_tour.get('period','')}) 수치 {count} → 해외여행보험 수요 모니터링",
                 "basis": exit_tour.get("basis", "출입국관광통계 API"),

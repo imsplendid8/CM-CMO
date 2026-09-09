@@ -127,7 +127,7 @@ def compute_action_lines(products, main, seasonal, signals, now):
                 outbound_num = None
             if outbound_num is not None and outbound_num >= 100:
                 period = str(exit_tour.get("period") or signals.get("asof") or "").strip()
-                put("overseas_exit", 0, f"🛫 해외여행보험 — 출입국관광통계 {period} 수치 {outbound_num:g}: 해외여행보험 수요 점검")
+                put("overseas", 0, f"🛫 해외여행보험 — 출입국관광통계 {period} 수치 {outbound_num:g}: 해외여행보험 수요 점검")
 
     # (2) 시즌 이슈, 메인 우선. span(정확 일자) 있으면 엔진과 동일 기준(일자), 없으면 월 폴백.
     today = now.date()
