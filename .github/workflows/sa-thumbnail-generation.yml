@@ -1,11 +1,11 @@
 name: SA Thumbnail Auto-Generation
 
-# 주간 실행 (매주 월요일 08:00 UTC)
+# 월 1회 자동 실행 (매월 1일 08:00 UTC)
 # 또는 수동으로 Run workflow 버튼으로 실행
 on:
   schedule:
-    # 매주 월요일 08:00 UTC (한국 기준 월요일 17:00)
-    - cron: "0 8 * * 1"
+    # 매월 1일 08:00 UTC (한국 기준 월 1일 17:00)
+    - cron: "0 8 1 * *"
 
   workflow_dispatch:
     inputs:

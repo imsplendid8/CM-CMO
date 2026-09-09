@@ -40,7 +40,7 @@
 #### 1.3 자동화 인프라
 - ✅ **GitHub Actions 워크플로우**
   - `.github/workflows/sa-thumbnail-generation.yml`
-  - 주간 스케줄 (매주 월요일 08:00 UTC)
+  - 월간 스케줄 (매월 1일 08:00 UTC)
   - 수동 트리거 지원
   - 조건부 실행 및 재시도 로직
 
@@ -128,7 +128,7 @@ npm start
 # Actions > SA Thumbnail Auto-Generation > Run workflow
 
 # 3. 자동 스케줄 (기본값)
-# 매주 월요일 08:00 UTC 자동 실행
+# 매월 1일 08:00 UTC 자동 실행
 ```
 
 ---
