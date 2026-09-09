@@ -172,6 +172,10 @@ td.kw{font-weight:700;color:var(--ink);white-space:normal;} td.c{text-align:cent
           <button data-pf="구글">구글</button>
           <button data-pf="AI">AI검색</button>
         </div>
+        <div class="seg" id="volMode">
+          <button data-mode="latest" class="on" title="최신 검색량">최신</button>
+          <button data-mode="history" title="월별 검색량 추이">월간</button>
+        </div>
         <button class="btn primary" id="expNaver" title="네이버 검색광고 구조 참고 내부용 CSV · 공식 템플릿 확인 후 업로드">네이버 내부검토 CSV(70원)</button>
         <button class="btn" id="exp" title="전체 키워드 CSV(플랫폼·매치타입 포함)">CSV 내보내기</button>
         <button class="icon-btn" id="themeBtn" type="button" aria-label="테마 전환"></button>
@@ -285,7 +289,7 @@ function naverAdGroupName(product, row){
   return `${product?.name||"상품"} · ${base}`;
 }
 
-let curKey="__all", pf="all", VOL={},VOL_META={asof:null,source:"none"},VOL_HISTORY={snapshots:{}},AUTOCOMPLETE={products:{}},AUTO_META=new Map(),AUTO_SELECTED=new Set();
+let curKey="__all", pf="all", volMode="latest", VOL={},VOL_META={asof:null,source:"none"},VOL_HISTORY={snapshots:{}},AUTOCOMPLETE={products:{}},AUTO_META=new Map(),AUTO_SELECTED=new Set();
 const NEW_MIN=100,RISING_MIN_BASE=10,RISING_MIN_DELTA=50,RISING_MIN_RATE=.5;
 const nk=s=>String(s).replace(/\s/g,"");
 const hasVol=()=>Object.keys(VOL).length>0;
@@ -485,6 +489,22 @@ function productBody(p){
   const nvCnt=rows.filter(r=>["네이버","검색광고","자동완성"].includes(r.src)).length;
   const kpi=(n,l,col)=>`<div class="kpi"><div class="n"${col?` style="color:${col}"`:""}>${n}</div><div class="l">${l}</div></div>`;
   const vh=hasVol();
+
+  if(volMode==="history"){
+    const periods=Object.keys(VOL_HISTORY.snapshots||{}).sort().slice(-6);
+    const snapMaps=new Map(periods.map(period=>[period,snapshotKeywordMap(period,p.key)]));
+    const trows=rows.map(r=>{
+      const cells=periods.map(period=>{const m=snapMaps.get(period),row=m?.get(nk(r.kw));return `<td class="c" style="font-family:var(--mono);font-weight:700">${row?.total?fmtVol(row.total):"—"}</td>`;}).join("");
+      return `<tr><td class="kw">${esc(r.kw)}</td><td class="c"><span class="src ${r.src||"도구"}">${r.src||"도구"}</span></td>${cells}</tr>`;
+    }).join("");
+    const headers=periods.map(p=>`<th class="c">${p}</th>`).join("");
+    return `<div class="kpi-row">${kpi(rows.length,"총 키워드")}${kpi(nvCnt,"네이버 도구 추가","var(--nav-ink)")}${kpi(ic.거래+ic.담보,"거래·담보형","var(--trx)")}${kpi(pc.구글+pc.공통+ic.AI,"구글·AI","var(--goo-ink)")}</div>
+      ${autocompletePanel(p)}
+      ${moverPanel(p.key)}
+      <div class="sec-lbl">월별 검색량 추이 <span style="font-weight:600;color:var(--muted);text-transform:none">· 최근 6개월 · PC+모바일 합계</span></div>
+      <div class="tbl-wrap"><table><thead><tr><th>키워드</th><th class="c">출처</th>${headers}</tr></thead><tbody>${trows}</tbody></table></div>`;
+  }
+
   const rows2=vh?rows.slice().sort((a,b)=>{const va=volOf(a.kw),vb=volOf(b.kw);return((vb?vb.pc+vb.mobile:-1)-(va?va.pc+va.mobile:-1));}):rows;
   const movement=new Map(monthlyMovers(p.key).rows.map(row=>[nk(row.keyword),row]));
   const trows=rows2.map(r=>{const v=volOf(r.kw),move=movement.get(nk(r.kw)),auto=AUTO_META.get(autoSelectionKey(p.key,r.kw)),vol=v?(v.pc||0)+(v.mobile||0):null;
@@ -599,6 +619,7 @@ document.addEventListener("click",e=>{
   if(e.target.closest("#autoExport")){exportSelectedAutocomplete();return;}
   const si=e.target.closest(".sb-item,[data-key]"); if(si&&si.dataset.key){curKey=si.dataset.key;render();return;}
   const sg=e.target.closest("#pfSeg button"); if(sg){pf=sg.dataset.pf;document.querySelectorAll("#pfSeg button").forEach(b=>b.classList.toggle("on",b===sg));render();return;}
+  const vm=e.target.closest("#volMode button"); if(vm){volMode=vm.dataset.mode;document.querySelectorAll("#volMode button").forEach(b=>b.classList.toggle("on",b===vm));render();return;}
 });
 $("#exp").addEventListener("click",exportCsv);
 $("#expNaver").addEventListener("click",exportNaverBulk);
