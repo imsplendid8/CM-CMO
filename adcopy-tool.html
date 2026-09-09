@@ -435,7 +435,7 @@ function josa(w,c,v){const ch=String(w).trim().slice(-1),code=ch.charCodeAt(0);c
 function dw(s){const out=[];for(const t of String(s).split(" ")){const p=out[out.length-1];if(p&&(p===t||t.startsWith(p)||p.startsWith(t))){if(t.length>p.length)out[out.length-1]=t;continue;}out.push(t);}return out.join(" ");}
 const wrap=(arr,mn,mx,ss)=>uniq(arr.map(x=>dw(HUMANIZE.light(x)))).map(x=>({tx:x,len:clen(x),ban:(AD_REVIEW?.review?lintBan(x):[]),ss:!!ss})).filter(o=>o.len>=mn&&o.len<=mx&&!o.ban.length);
 /* 기존 심의안 문구는 검토 초안에 보존하되, 현재 근거가 필요한 표현은 별도 표시한다. */
-const wrapReference=(arr,mn,mx)=>uniq(arr.map(x=>dw(HUMANIZE.light(x)))).map(x=>({tx:x,len:clen(x),ban:lintBan(x),reference:true})).filter(o=>o.len>=mn&&o.len<=mx);
+const wrapReference=(arr,mn,mx)=>uniq(arr.map(x=>dw(HUMANIZE.light(x)))).map(x=>({tx:x,len:clen(x),ban:(AD_REVIEW?.review?lintBan(x):[]),reference:true})).filter(o=>o.len>=mn&&o.len<=mx);
 
 /* ① 광고 제목 (브랜드형, ≤15자) — 실제 시트 2번 컬럼 */
 const BRANDS=["한화손보 다이렉트","한화다이렉트 대표","한화다이렉트 공식","한화손보 공식","한화 다이렉트","한화손보"];
