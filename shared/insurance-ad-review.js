@@ -83,6 +83,12 @@
       message: "판매채널 표현과 실제 가입 경로·상품 기초서류의 일치 여부를 확인해야 합니다.",
       action: "광고주체, 상품명, 판매채널과 랜딩의 가입 경로를 협회 제출 전 대조하세요.",
     }),
+    freeze({
+      id: "FCPA-22-8WEEK-BOUNDARY", source: "fcpa22", status: "manual_review",
+      terms: freeze(["자동차보험만으로", "자동차보험이 모두", "8주면", "경상치료만", "자동차보험 충분"]),
+      message: "자동차보험의 경상치료(8주) 기준과 운전자보험의 보장 범위 구분이 명확하지 않을 수 있습니다.",
+      action: "자동차보험의 8주 경상 기준, 8주 초과 의료비·일실손해·후유장애 보장 필요성을 정확하게 구분하여 표시하세요. 약관상 실제 보장 범위를 확인하세요.",
+    }),
   ]);
 
   const compact = (value) => String(value == null ? "" : value).replace(/\s+/g, "").toLowerCase();
