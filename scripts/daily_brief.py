@@ -210,6 +210,14 @@ _ES = {
     "meta": "color:#8a919e;font-size:11px;line-height:1.55;margin-top:6px;overflow-wrap:anywhere;word-break:break-word;",
 }
 
+def _trim_to_sentences(text, max_sentences=3):
+    """요약을 1~3문장으로 제한. 마침표·느낌표·물음표 기준."""
+    if not text:
+        return text
+    import re
+    sentences = re.split(r'(?<=[.!?])\s+', text.strip())
+    return ' '.join(sentences[:max_sentences])
+
 
 def render_email():
     """데일리 브리핑을 반응형 이메일(HTML+텍스트)로 렌더한다.
@@ -231,7 +239,8 @@ def render_email():
         for it in news:
             tag = it.get("tag", "")
             t = esc(it.get("title", ""))
-            g = esc(hk.humanize(it.get("what", "")))
+            summary = _trim_to_sentences(it.get("what", ""), 3)
+            g = esc(hk.humanize(summary))
             src = esc(it.get("source", ""))
             dt = esc(it.get("date", ""))
             url = it.get("url", "")
@@ -274,7 +283,8 @@ def render_email():
     P += [f"[주요 뉴스 요약 · 전체 상위 {len(news)}건]"]
     for it in news:
         P.append(f"· ({it.get('tag','')}) {it.get('title','')} ({it.get('source','')}·{it.get('date','')})")
-        P.append(f"  {hk.humanize(it.get('what',''))}")
+        summary = _trim_to_sentences(it.get('what',''), 3)
+        P.append(f"  {hk.humanize(summary)}")
         if it.get("url"):
             P.append(f"  {it['url']}")
     P += ["", f"🔭 전체 대시보드 → https://{HUB}"]
