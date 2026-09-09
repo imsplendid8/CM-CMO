@@ -1,146 +1,87 @@
 {
-  "asof": "2026-09-02",
-  "source": "sample",
+  "asof": "2026-09-08",
+  "source": "data.go.kr",
   "weather": {
-    "active": [
-      "호우",
-      "폭염"
-    ]
+    "active": [],
+    "error": "HTTP Error 403: Forbidden"
   },
   "travel": {
-    "overseas_ratio": 88.0,
-    "period": "2026-07-23",
-    "avg": 61.0,
-    "peak": 100.0,
+    "overseas_ratio": 81.1,
+    "period": "2026-09-07",
+    "avg": 79.5,
+    "peak": 100,
     "basis": "최근 7일 평균 vs 90일"
   },
   "exit_tour": {
-    "outbound_count": 128.4,
-    "period": "2026-07",
-    "basis": "출입국관광통계 API",
+    "outbound_count": 105038485,
+    "inbound_foreign": 64638352,
+    "period": "202607",
+    "source": "moj-exit-api",
+    "basis": "법무부 출입국심사 월별 통계",
     "trend": {
+      "growth_3m": 3.4,
+      "growth_6m": 6.9,
       "direction": "up",
-      "strength": "moderate",
-      "growth_6m": 8.5
+      "strength": "moderate"
     },
     "series": [
       {
-        "period": "202601",
-        "data": 95.2
-      },
-      {
         "period": "202602",
-        "data": 98.1
+        "outbound_korean": 93687358
       },
       {
         "period": "202603",
-        "data": 102.3
+        "outbound_korean": 95982573
       },
       {
         "period": "202604",
-        "data": 110.5
+        "outbound_korean": 98269995
       },
       {
         "period": "202605",
-        "data": 115.2
+        "outbound_korean": 100611862
       },
       {
         "period": "202606",
-        "data": 120.8
+        "outbound_korean": 102617940
       },
       {
         "period": "202607",
-        "data": 128.4
+        "outbound_korean": 105038485
       }
-    ],
-    "source": "tourism-api"
+    ]
   },
   "newreg": {
-    "count": 17422,
-    "period": "2026-07",
-    "mom": 5.3,
+    "count": 6777673.0,
+    "period": "202607",
+    "mom": null,
+    "trend": {},
+    "source": "stat.molit",
     "basis": "신규등록정보 서비스",
-    "trend": {
-      "direction": "up",
-      "strength": "strong",
-      "growth_6m": 12.8,
-      "growth_3m": 9.2
+    "status_code": "INFO-000",
+    "message": "정상 처리되었습니다.",
+    "request": {
+      "protocol": "stat.molit",
+      "form_id": "5498",
+      "style_num": "2",
+      "start_dt": "202602",
+      "end_dt": "202607"
     },
-    "by_region": {
-      "경기": {
-        "count": 3200,
-        "ratio": 18.4
-      },
-      "서울": {
-        "count": 2100,
-        "ratio": 12.1
-      },
-      "부산": {
-        "count": 1500,
-        "ratio": 8.6
-      },
-      "인천": {
-        "count": 1200,
-        "ratio": 6.9
-      },
-      "대구": {
-        "count": 1050,
-        "ratio": 6.0
-      }
-    },
-    "series": [
-      {
-        "period": "202601",
-        "count": 14200
-      },
-      {
-        "period": "202602",
-        "count": 14800
-      },
-      {
-        "period": "202603",
-        "count": 15100
-      },
-      {
-        "period": "202604",
-        "count": 15900
-      },
-      {
-        "period": "202605",
-        "count": 16500
-      },
-      {
-        "period": "202606",
-        "count": 16550
-      },
-      {
-        "period": "202607",
-        "count": 17422
-      }
-    ],
-    "source": "stat.molit"
+    "series": []
   },
   "triggers": {
-    "hrmf": {
-      "level": "high",
-      "note": "기상특보 발효 → 호우·태풍 → 누수·침수·풍수재 / 폭염 → 전기과부하·에어컨 화재 담보 수요",
-      "kinds": [
-        "폭염",
-        "호우"
-      ]
-    },
     "overseas": {
       "level": "high",
-      "note": "‘여행자보험’ 검색수요 상승(2026-07-23 지수 88.0/평균 61.0) → 성수기 해외여행보험 대응"
+      "note": "‘여행자보험’ 검색수요 상승(2026-09-07 지수 81.1/평균 79.5) → 성수기 해외여행보험 대응"
     },
     "overseas_exit": {
       "level": "high",
-      "note": "출입국관광통계(2026-07) 수치 128.4 → 해외여행보험 수요 모니터링",
-      "basis": "출입국관광통계 API"
+      "note": "출입국관광통계(202607) 수치 105038485 → 해외여행보험 수요 모니터링",
+      "basis": "법무부 출입국심사 월별 통계"
     },
     "driver": {
       "level": "high",
-      "note": "자동차 신규등록(2026-07) 17422대 / 📈 강한 상승세(6개월 +12.8%) · 지역: 경기 +18.4% / 서울 +12.1% / 부산 +8.6% → 운전자보험 수요 점검",
+      "note": "자동차 신규등록(202607) 6777673.0대 → 운전자보험 수요 점검",
       "basis": [
         "신규등록정보 서비스"
       ]
