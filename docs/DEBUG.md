@@ -17,13 +17,13 @@
 
 ### 1. 대시보드 (`index.html`)에서 열기
 
-홈 화면 상단 네비게이션에서 **🐛 디버그** 버튼을 클릭하면 오른쪽에 슬라이드 패널이 나타납니다.
+상단 내비게이션 우측의 **🐛 디버그** 버튼을 클릭하면 우측에 슬라이드 패널이 나타납니다.
 
 ### 2. 패널 구성
 
 ```
 ┌─────────────────────────┐
-│ 🐛 디버그               │ ✕
+│ 🐛 디버그           ✕    │
 ├─────────────────────────┤
 │ 전체: 42    오류: 3    │
 │ 경고: 7     도구: 5    │
@@ -32,7 +32,7 @@
 │                         │
 │ seo-audit              │
 │ 14:32:45               │
-│ [Fetch Fail] data...   │
+│ [Fetch Error] data...  │
 │ (404) Not Found        │
 │                         │
 │ keyword-tool           │
@@ -59,8 +59,8 @@
 ```javascript
 // 콘솔 예시
 [keyword-tool] DEBUG [Fetch Start] data/products.json
-[keyword-tool] DEBUG [Fetch OK] data/products.json (127ms, 200)
-[serp-tool] WARN [Fetch Fail] data/trends.json (404) Not Found
+[keyword-tool] DEBUG [Fetch OK] data/products.json (127ms)
+[serp-tool] WARN [Fetch 404] data/trends.json
 [serp-tool] ERROR [Render Failed] #trend-chart - selector not found
 ```
 
@@ -100,11 +100,12 @@ logs.filter(l => l.msg.includes('404'))
 
 ## 🤖 자동 모니터링 (GitHub Actions)
 
-### health-check.yml 워크플로우
+### health-check.yml 워크플로우 (Playwright)
 
 - **주기**: 6시간마다 자동 실행
 - **대상**: 모든 8개 도구 (렌더링 검사)
 - **실패 시**: GitHub Issues 자동 생성
+- **런타임**: Playwright (Puppeteer 대체, 더 안정적)
 
 ```
 schedule:
@@ -122,7 +123,7 @@ schedule:
 **시간**: 2026-09-10 14:32:45
 
 ### 문제 도구
-- **serp-tool.html**: Error: Timeout waiting for networkidle0
+- **serp-tool.html**: Error: waitForFunction timeout
 - **adcopy-tool.html**: TypeError: Cannot read property 'length' of undefined
 
 ### 확인 필요
@@ -180,12 +181,12 @@ try {
 ## 🚀 트러블슈팅
 
 ### 패널이 열리지 않음
-- 브라우저 console에서 `window.DEBUG` 확인
+- 브라우저 console에서 `window.DebugMonitor` 확인
 - localStorage 용량 초과 여부 확인
 - 페이지 새로고침 시도
 
 ### 로그가 저장되지 않음
-- localStorage 사용 불가 확인 (프라이빗 모드, 용량 부족)
+- localStorage 사용 가능 확인 (프라이빗 모드, 용량 부족)
 - 권한 설정 확인
 - 브라우저 개발자 도구 > Application > Local Storage 확인
 
@@ -206,10 +207,11 @@ try {
 
 ## 🔗 관련 파일
 
-- **Core**: `/scripts/debug-monitor.js`
-- **Dashboard**: `/index.html` (임베드)
-- **모니터링**: `/.github/workflows/health-check.yml`
-- **도구들**: 모두 DebugMonitor 클래스 포함
+- **Core**: `/scripts/debug-monitor.js` (소스 코드)
+- **Embedding**: `/scripts/embed-debug-monitor.js` (AST 기반 도구 임베딩)
+- **Dashboard**: `/index.html` (디버그 패널 포함)
+- **Monitoring**: `/.github/workflows/health-check.yml` (Playwright 기반)
+- **도구들**: 모두 DebugMonitor 클래스 자동 임베드됨
 
 ---
 

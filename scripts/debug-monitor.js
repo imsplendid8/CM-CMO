@@ -15,7 +15,6 @@ class DebugMonitor {
   }
 
   init() {
-    // 전역 에러 핸들러
     window.addEventListener('error', (e) => {
       this.error(`[JS Error] ${e.message}`, {
         file: e.filename,
@@ -25,14 +24,12 @@ class DebugMonitor {
       });
     });
 
-    // 미처리 Promise rejection
     window.addEventListener('unhandledrejection', (e) => {
       this.error(`[Promise Rejection] ${e.reason}`, {
         reason: String(e.reason)
       });
     });
 
-    // 네트워크 오류 감지를 위해 fetch 래핑
     this.wrapFetch();
   }
 
@@ -84,7 +81,6 @@ class DebugMonitor {
     this.logs.push(entry);
     this.save();
 
-    // 콘솔에도 출력
     const prefix = `[${this.toolName}] ${level.toUpperCase()}`;
     console[level === 'error' ? 'error' : level === 'warn' ? 'warn' : 'log'](
       prefix, msg, meta
@@ -96,7 +92,6 @@ class DebugMonitor {
   error(msg, meta) { this.log(msg, meta, 'error'); }
   info(msg, meta) { this.log(msg, meta, 'info'); }
 
-  // 데이터 로드 시간 측정
   startMeasure(label) {
     this.loadStartTime[label] = Date.now();
   }
@@ -106,7 +101,6 @@ class DebugMonitor {
     this.info(`[Perf] ${label}: ${ms}ms`, { ...meta, ms });
   }
 
-  // 렌더링 오류 체크
   checkRender(selector, label) {
     const el = document.querySelector(selector);
     if (!el) {
@@ -121,10 +115,9 @@ class DebugMonitor {
     return true;
   }
 
-  // 저장·로드
   save() {
     try {
-      const limit = 500; // 최대 500개 항목 유지
+      const limit = 500;
       const toSave = this.logs.slice(-limit);
       localStorage.setItem('mf-debug-log', JSON.stringify(toSave));
     } catch (e) {
@@ -146,7 +139,6 @@ class DebugMonitor {
     localStorage.removeItem('mf-debug-log');
   }
 
-  // 현재 로그 반환 (대시보드용)
   static getStatus() {
     const logs = DebugMonitor.load();
     const toolLogs = {};
@@ -171,7 +163,6 @@ class DebugMonitor {
   }
 }
 
-// 글로벌 인스턴스 (각 도구에서 자동 초기화)
 if (typeof window !== 'undefined') {
   const toolName = document.querySelector('title')?.textContent || 'unknown';
   window.DEBUG = new DebugMonitor(toolName);

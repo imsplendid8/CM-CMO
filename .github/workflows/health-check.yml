@@ -20,103 +20,107 @@ jobs:
           cache: 'npm'
 
       - name: 의존성 설치
-        run: npm ci --optional --legacy-peer-deps 2>/dev/null || npm ci --legacy-peer-deps
+        run: npm ci --legacy-peer-deps
 
-      - name: Puppeteer 설치 및 검증
-        timeout-minutes: 10
+      - name: Playwright 설치
         run: |
-          echo "🔧 Puppeteer 설치..."
-          npm install puppeteer --no-save --legacy-peer-deps || {
-            echo "❌ Puppeteer 설치 실패"
+          echo "🔧 Playwright 설치..."
+          npm install --save-dev @playwright/test@latest --legacy-peer-deps || {
+            echo "❌ Playwright 설치 실패"
             exit 1
           }
-          echo "✓ Puppeteer 설치 완료"
-          which chromium-browser || which chromium || which google-chrome || {
-            echo "⚠️ Chrome/Chromium 미발견"
-            exit 1
-          }
+          echo "✓ Playwright 설치 완료"
 
       - name: 모든 도구 렌더링 검사
         timeout-minutes: 10
         continue-on-error: true
         run: |
-          cat > /tmp/health-check.js << 'EOFJS'
-          const puppeteer = require('puppeteer');
-          const fs = require('fs');
+          cat > /tmp/health-check.mjs << 'EOFJS'
+          import { chromium } from '@playwright/test';
+          import fs from 'fs';
+          import path from 'path';
+          import { fileURLToPath } from 'url';
 
-          (async () => {
-            const tools = [
-              'index.html', 'seo-audit.html', 'keyword-tool.html', 'news-tool.html',
-              'serp-tool.html', 'seasonal-tool.html', 'adcopy-tool.html', 'powercontent-tool.html'
-            ];
+          const __dirname = path.dirname(fileURLToPath(import.meta.url));
+          const tools = [
+            'index.html', 'seo-audit.html', 'keyword-tool.html', 'news-tool.html',
+            'serp-tool.html', 'seasonal-tool.html', 'adcopy-tool.html', 'powercontent-tool.html'
+          ];
 
-            const browser = await puppeteer.launch({
-              headless: 'new',
-              args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+          const browser = await chromium.launch({ headless: true });
+          const results = [];
+
+          for (const tool of tools) {
+            const page = await browser.newPage();
+            const url = `file://${process.cwd()}/${tool}`;
+            let hasError = false;
+            let errorMsg = '';
+
+            page.on('pageerror', err => {
+              console.error(`[${tool}] Page error:`, err.message);
+              hasError = true;
+              errorMsg = err.message;
             });
 
-            const results = [];
-
-            for (const tool of tools) {
-              const page = await browser.newPage();
-              page.on('error', err => console.error(`[${tool}] Page error:`, err.message));
-              page.on('console', msg => {
-                if (msg.type() === 'error') console.log(`[${tool}] Console error:`, msg.text());
-              });
-
-              try {
-                await page.goto(`file://${process.cwd()}/${tool}`, {
-                  waitUntil: 'networkidle2',
-                  timeout: 15000
-                });
-
-                // 1초 대기 후 렌더링 완료 확인
-                await page.waitForTimeout(1000);
-
-                // 기본 렌더링 확인 (body 내용이 있는지)
-                const hasContent = await page.evaluate(() => {
-                  return document.body.children.length > 0;
-                });
-
-                results.push({
-                  tool,
-                  status: hasContent ? 'OK' : 'EMPTY',
-                  hasContent
-                });
-
-                console.log(`✓ ${tool}: ${hasContent ? 'OK' : 'EMPTY'}`);
-              } catch (err) {
-                results.push({
-                  tool,
-                  status: 'ERROR',
-                  error: err.message
-                });
-                console.log(`✗ ${tool}: ${err.message}`);
+            page.on('console', msg => {
+              if (msg.type() === 'error') {
+                console.log(`[${tool}] Console error:`, msg.text());
               }
+            });
 
-              await page.close();
-            }
-
-            await browser.close();
-
-            // 결과 저장
-            fs.writeFileSync('/tmp/health-check-results.json', JSON.stringify(results, null, 2));
-
-            // 실패 확인
-            const failed = results.filter(r => r.status !== 'OK');
-            if (failed.length > 0) {
-              console.log(`\n⚠️ ${failed.length}개 도구에 문제 발견:`);
-              failed.forEach(r => {
-                console.log(`  - ${r.tool}: ${r.error || r.status}`);
+            try {
+              await page.goto(url, {
+                waitUntil: 'networkidle',
+                timeout: 15000
               });
-              process.exit(1);
+
+              // 1초 대기 후 렌더링 완료 확인
+              await page.waitForTimeout(1000);
+
+              // 기본 렌더링 확인
+              const hasContent = await page.evaluate(() => {
+                return document.body.children.length > 0;
+              });
+
+              results.push({
+                tool,
+                status: hasContent && !hasError ? 'OK' : hasContent ? 'WARN' : 'EMPTY',
+                hasContent,
+                error: errorMsg || null
+              });
+
+              console.log(`✓ ${tool}: ${hasContent ? 'OK' : 'EMPTY'} ${errorMsg ? `(${errorMsg})` : ''}`);
+            } catch (err) {
+              results.push({
+                tool,
+                status: 'ERROR',
+                error: err.message
+              });
+              console.log(`✗ ${tool}: ${err.message}`);
             }
 
-            console.log(`\n✅ 모든 ${tools.length}개 도구 정상`);
-          })();
+            await page.close();
+          }
+
+          await browser.close();
+
+          // 결과 저장
+          fs.writeFileSync('/tmp/health-check-results.json', JSON.stringify(results, null, 2));
+
+          // 실패 확인
+          const failed = results.filter(r => r.status !== 'OK');
+          if (failed.length > 0) {
+            console.log(`\n⚠️ ${failed.length}개 도구에 문제 발견:`);
+            failed.forEach(r => {
+              console.log(`  - ${r.tool}: ${r.error || r.status}`);
+            });
+            process.exit(1);
+          }
+
+          console.log(`\n✅ 모든 ${tools.length}개 도구 정상`);
           EOFJS
 
-          node /tmp/health-check.js
+          node /tmp/health-check.mjs
 
       - name: 결과 업로드
         if: always()
