@@ -1,0 +1,166 @@
+name: 대시보드·도구 헬스 체크
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # 6시간마다 실행 (KST 기준 약 09:00, 15:00, 21:00, 03:00)
+  workflow_dispatch:        # 수동 실행 가능
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: 의존성 설치
+        run: npm ci --legacy-peer-deps
+
+      - name: Playwright 설치
+        run: |
+          echo "🔧 Playwright 설치..."
+          npm install --save-dev @playwright/test@latest --legacy-peer-deps || {
+            echo "❌ Playwright 설치 실패"
+            exit 1
+          }
+          echo "✓ Playwright 설치 완료"
+
+      - name: 모든 도구 렌더링 검사
+        timeout-minutes: 10
+        continue-on-error: true
+        run: |
+          cat > /tmp/health-check.mjs << 'EOFJS'
+          import { chromium } from '@playwright/test';
+          import fs from 'fs';
+          import path from 'path';
+          import { fileURLToPath } from 'url';
+
+          const __dirname = path.dirname(fileURLToPath(import.meta.url));
+          const tools = [
+            'index.html', 'seo-audit.html', 'keyword-tool.html', 'news-tool.html',
+            'serp-tool.html', 'seasonal-tool.html', 'adcopy-tool.html', 'powercontent-tool.html'
+          ];
+
+          const browser = await chromium.launch({ headless: true });
+          const results = [];
+
+          for (const tool of tools) {
+            const page = await browser.newPage();
+            const url = `file://${process.cwd()}/${tool}`;
+            let hasError = false;
+            let errorMsg = '';
+
+            page.on('pageerror', err => {
+              console.error(`[${tool}] Page error:`, err.message);
+              hasError = true;
+              errorMsg = err.message;
+            });
+
+            page.on('console', msg => {
+              if (msg.type() === 'error') {
+                console.log(`[${tool}] Console error:`, msg.text());
+              }
+            });
+
+            try {
+              await page.goto(url, {
+                waitUntil: 'networkidle',
+                timeout: 15000
+              });
+
+              // 1초 대기 후 렌더링 완료 확인
+              await page.waitForTimeout(1000);
+
+              // 기본 렌더링 확인
+              const hasContent = await page.evaluate(() => {
+                return document.body.children.length > 0;
+              });
+
+              results.push({
+                tool,
+                status: hasContent && !hasError ? 'OK' : hasContent ? 'WARN' : 'EMPTY',
+                hasContent,
+                error: errorMsg || null
+              });
+
+              console.log(`✓ ${tool}: ${hasContent ? 'OK' : 'EMPTY'} ${errorMsg ? `(${errorMsg})` : ''}`);
+            } catch (err) {
+              results.push({
+                tool,
+                status: 'ERROR',
+                error: err.message
+              });
+              console.log(`✗ ${tool}: ${err.message}`);
+            }
+
+            await page.close();
+          }
+
+          await browser.close();
+
+          // 결과 저장
+          fs.writeFileSync('/tmp/health-check-results.json', JSON.stringify(results, null, 2));
+
+          // 실패 확인
+          const failed = results.filter(r => r.status !== 'OK');
+          if (failed.length > 0) {
+            console.log(`\n⚠️ ${failed.length}개 도구에 문제 발견:`);
+            failed.forEach(r => {
+              console.log(`  - ${r.tool}: ${r.error || r.status}`);
+            });
+            process.exit(1);
+          }
+
+          console.log(`\n✅ 모든 ${tools.length}개 도구 정상`);
+          EOFJS
+
+          node /tmp/health-check.mjs
+
+      - name: 결과 업로드
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: health-check-results
+          path: /tmp/health-check-results.json
+          retention-days: 30
+
+      - name: 실패 시 이슈 생성
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let results = [];
+            try {
+              results = JSON.parse(fs.readFileSync('/tmp/health-check-results.json', 'utf8'));
+            } catch (e) {
+              console.log('결과 파일 읽기 실패');
+            }
+
+            const failed = results.filter(r => r.status !== 'OK');
+            if (failed.length === 0) return;
+
+            const body = `## 🔴 헬스 체크 실패\n\n` +
+              `**시간:** ${new Date().toLocaleString('ko-KR')}\n\n` +
+              `### 문제 도구\n` +
+              failed.map(r => `- **${r.tool}**: ${r.error || r.status}`).join('\n') +
+              `\n\n### 확인 필요\n` +
+              `1. 도구 렌더링 상태 확인\n` +
+              `2. 콘솔 에러 메시지 검토\n` +
+              `3. 네트워크 오류 확인\n` +
+              `4. 데이터 로드 상태 검증\n` +
+              `\n[GitHub Actions 로그 보기](${context.server_url}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`;
+
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `⚠️ 헬스 체크: ${failed.length}개 도구 문제`,
+              body,
+              labels: ['🐛 debug', '⚠️ incident']
+            });

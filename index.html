@@ -182,6 +182,30 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 .mf .clear{background:var(--surface);color:var(--ink-2);}
 .mf .save:hover{filter:brightness(1.05);} .mf .clear:hover{border-color:#e2564a;color:#e2564a;}
 .ktoast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:120;background:var(--ink);color:var(--surface);font-size:12.5px;font-weight:700;padding:11px 18px;border-radius:10px;box-shadow:var(--sh-lg);opacity:0;transition:.25s;pointer-events:none;}
+/* 디버그 패널 — 우측 슬라이드 드로어 */
+.debug-mask{position:fixed;inset:0;z-index:98;background:rgba(15,23,41,.3);backdrop-filter:blur(2px);opacity:0;visibility:hidden;transition:opacity .25s;pointer-events:none;}
+.debug-mask.on{opacity:1;visibility:visible;pointer-events:auto;}
+.debug-panel{position:fixed;top:0;right:0;bottom:0;z-index:99;width:360px;background:var(--surface);border-left:1px solid var(--line);box-shadow:var(--sh-lg);transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow:hidden;}
+.debug-panel.on{transform:translateX(0);}
+.debug-header{display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid var(--line);flex:0 0 auto;}
+.debug-header h2{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;margin:0;}
+.debug-header button{background:none;border:none;cursor:pointer;color:var(--ink-2);font-size:18px;padding:4px;transition:.14s;}
+.debug-header button:hover{color:var(--ink);}
+.debug-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 16px;background:var(--surface-2);border-bottom:1px solid var(--line);}
+.debug-stat{font-size:11px;display:flex;flex-direction:column;gap:4px;}
+.debug-stat-val{font-size:16px;font-weight:800;color:var(--ink);}
+.debug-stat-label{color:var(--muted);font-weight:600;}
+.debug-logs{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px;display:flex;flex-direction:column;gap:6px;}
+.debug-log{padding:10px;border-radius:8px;font-size:11px;line-height:1.5;border-left:3px solid var(--line);}
+.debug-log.debug{background:var(--surface-2);border-color:#999;color:var(--ink-2);}
+.debug-log.info{background:color-mix(in srgb,#fbbf24 15%,transparent);border-color:#fbbf24;color:var(--ink);}
+.debug-log.warn{background:color-mix(in srgb,#f97316 15%,transparent);border-color:#f97316;color:var(--ink);}
+.debug-log.error{background:color-mix(in srgb,#ef4444 15%,transparent);border-color:#ef4444;color:var(--ink);}
+.debug-log-time{display:block;font-size:10px;color:var(--muted);margin-bottom:3px;}
+.debug-log-tool{display:block;font-size:10px;font-weight:700;color:var(--brand);margin-bottom:2px;}
+.debug-empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);text-align:center;padding:20px;font-size:12px;}
+@media(max-width:900px){.debug-panel{width:100%;max-width:100%;}}
+@media(max-width:600px){.debug-panel{width:100%;max-width:100%;}}
 .ktoast.on{opacity:1;}
 </style>
 <link rel="stylesheet" href="shared/ui-polish.css">
@@ -195,6 +219,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
   <nav class="nav" id="nav"></nav>
   <div class="tr">
     <button class="themebtn" id="homeBtn" data-tool="home" title="홈"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.7 12 3.5l9 7.2"/><path d="M5.5 9.3V20h13V9.3"/><path d="M9.7 20v-5.4h4.6V20"/></svg></button>
+    <button class="themebtn" id="debugBtn" type="button" title="디버그 패널" aria-label="디버그 패널">🐛</button>
     <a class="ext" id="openTab" href="#" target="_blank" rel="noopener" title="현재 화면을 새 탭에서 열기">↗ 새 탭</a>
     <button class="themebtn" id="themeBtn" type="button" aria-label="테마 전환"></button>
   </div>
@@ -212,6 +237,35 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
   <div id="sheetBody"></div>
 </nav>
 <div class="ktoast" id="ktoast"></div>
+<!-- 디버그 패널 -->
+<div class="debug-mask" id="debugMask"></div>
+<div class="debug-panel" id="debugPanel">
+  <div class="debug-header">
+    <h2>🐛 디버그</h2>
+    <button id="debugClose" aria-label="닫기">✕</button>
+  </div>
+  <div class="debug-stats" id="debugStats">
+    <div class="debug-stat">
+      <div class="debug-stat-label">전체</div>
+      <div class="debug-stat-val">-</div>
+    </div>
+    <div class="debug-stat">
+      <div class="debug-stat-label">오류</div>
+      <div class="debug-stat-val">-</div>
+    </div>
+    <div class="debug-stat">
+      <div class="debug-stat-label">경고</div>
+      <div class="debug-stat-val">-</div>
+    </div>
+    <div class="debug-stat">
+      <div class="debug-stat-label">도구</div>
+      <div class="debug-stat-val">-</div>
+    </div>
+  </div>
+  <div class="debug-logs" id="debugLogs">
+    <div class="debug-empty">로그 없음</div>
+  </div>
+</div>
 <script>
 "use strict";
 const WIKI="https://github.com/imsplendid8/CM-CMO/blob/main/docs/README.md";
@@ -416,6 +470,12 @@ document.addEventListener("keydown",e=>{const card=e.target.closest('.card[data-
 document.getElementById("themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const isDark=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;const nt=isDark?"light":"dark";document.documentElement.setAttribute("data-theme",nt);try{localStorage.setItem("mf_theme",nt)}catch(_){}; try{if(frame&&frame.contentDocument)frame.contentDocument.documentElement.setAttribute("data-theme",nt);}catch(_){}});
 
 function ktoast(m){const t=document.getElementById("ktoast");t.textContent=m;t.classList.add("on");setTimeout(()=>t.classList.remove("on"),1900);}
+function toggleDebugPanel(){const p=document.getElementById("debugPanel");const m=document.getElementById("debugMask");p.classList.toggle("on");m.classList.toggle("on");if(p.classList.contains("on"))refreshDebugPanel();}
+function closeDebugPanel(){document.getElementById("debugPanel").classList.remove("on");document.getElementById("debugMask").classList.remove("on");}
+function refreshDebugPanel(){const status=(typeof DebugMonitor!=='undefined')&&window.DebugMonitor.getStatus?DebugMonitor.getStatus():{totalLogs:0,by:{},recent:[],errors:[],warnings:[]};const stats=document.querySelectorAll(".debug-stat-val");const tools=Object.keys(status.by).length;stats[0].textContent=status.totalLogs;stats[1].textContent=status.errors.length;stats[2].textContent=status.warnings.length;stats[3].textContent=tools;const logsEl=document.getElementById("debugLogs");if(!status.recent||status.recent.length===0){logsEl.innerHTML='<div class="debug-empty">로그 없음</div>';return;}logsEl.innerHTML=status.recent.map(log=>`<div class="debug-log ${log.level}"><span class="debug-log-tool">${log.tool}</span><span class="debug-log-time">${new Date(log.time).toLocaleTimeString('ko-KR')}</span><div>${log.msg}</div></div>`).join('');}
+document.getElementById("debugBtn").addEventListener("click",toggleDebugPanel);
+document.getElementById("debugClose").addEventListener("click",closeDebugPanel);
+document.getElementById("debugMask").addEventListener("click",closeDebugPanel);
 try{localStorage.removeItem("mf_keys");}catch(e){}   // 개인 API 키 입력 기능 제거 — 남아있던 개인 override도 정리(팀 전원 프록시로 통일)
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeSheet();closeToolMenu();}});
 document.getElementById("sheetMask").addEventListener("click",closeSheet);
@@ -450,5 +510,6 @@ try{
   document.body.innerHTML="<div style='padding:20px;font-family:monospace;line-height:1.6'><h2>⚠️ 대시보드 초기화 오류</h2><pre style='background:#f0f0f0;padding:10px;overflow:auto'>"+esc(e.message)+"\n\n"+esc(e.stack)+"</pre><p><strong>브라우저 개발자도구(F12)의 콘솔 탭을 확인하세요.</strong></p></div>";
 }
 </script>
+<script>class DebugMonitor{constructor(e="unknown"){this.toolName=e,this.logs=[],this.startTime=Date.now(),this.loadStartTime={},this.init()}init(){window.addEventListener("error",e=>{this.error(`[JS Error] ${e.message}`,{file:e.filename,line:e.lineno,col:e.colno,stack:e.error?.stack})}),window.addEventListener("unhandledrejection",e=>{this.error(`[Promise Rejection] ${e.reason}`,{reason:String(e.reason)})}),this.wrapFetch()}wrapFetch(){const e=window.fetch,t=this;window.fetch=function(...i){const n=i[0],r=(i[1]?.method||"GET").toUpperCase();t.loadStartTime[n]=Date.now(),t.debug(`[Fetch Start] ${r} ${n}`);return e.apply(this,i).then(e=>{const i=Date.now()-t.loadStartTime[n];e.ok?t.debug(`[Fetch OK] ${r} ${n} (${i}ms)`,{url:n,method:r,status:e.status,ms:i,retryable:e.status>=500}):t.warn(`[Fetch ${e.status}] ${r} ${n}`,{url:n,method:r,status:e.status,ms:i,retryable:e.status>=500})}).catch(e=>{const i=Date.now()-t.loadStartTime[n];t.error(`[Fetch Error] ${r} ${n}`,{url:n,method:r,error:e.message,ms:i,retryable:e.message.includes("timeout")||e.message.includes("network")})})}}log(e,t={},i="log"){const n={time:new Date().toISOString(),tool:this.toolName,msg:e,meta:t,level:i,elapsed:Date.now()-this.startTime};this.logs.push(n),this.save(),console["error"===i?"error":"warn"===i?"warn":"log"](`[${this.toolName}] ${i.toUpperCase()}`,e,t)}debug(e,t){this.log(e,t,"debug")}warn(e,t){this.log(e,t,"warn")}error(e,t){this.log(e,t,"error")}info(e,t){this.log(e,t,"info")}startMeasure(e){this.loadStartTime[e]=Date.now()}endMeasure(e,t={}){const i=Date.now()-(this.loadStartTime[e]||Date.now());this.info(`[Perf] ${e}: ${i}ms`,{...t,ms:i})}checkRender(e,t){if(!document.querySelector(e))return this.error(`[Render Failed] ${t} - selector not found: ${e}`),!1;return""!==document.querySelector(e).textContent?.trim()?(this.debug(`[Render OK] ${t}`),!0):(this.warn(`[Render Warning] ${t} - empty content`,{selector:e}),!1)}save(){try{const e=this.logs.slice(-500);localStorage.setItem("mf-debug-log",JSON.stringify(e))}catch(e){console.warn("DebugMonitor: localStorage write failed",e.message)}}static load(){try{const e=localStorage.getItem("mf-debug-log");return e?JSON.parse(e):[]}catch(e){return console.warn("DebugMonitor: localStorage read failed",e.message),[]}}static clear(){localStorage.removeItem("mf-debug-log")}static getStatus(){const e=DebugMonitor.load(),t={};return e.forEach(e=>{t[e.tool]||(t[e.tool]={debug:0,info:0,warn:0,error:0,lastError:null}),t[e.tool][e.level]++,("error"===e.level||"warn"===e.level)&&(t[e.tool].lastError=e)}),{totalLogs:e.length,by:t,recent:e.slice(-20),errors:e.filter(e=>"error"===e.level),warnings:e.filter(e=>"warn"===e.level)}}}if("undefined"!=typeof window){const e=document.querySelector("title")?.textContent||"unknown";window.DEBUG=new DebugMonitor(e)}</script>
 </body>
 </html>
