@@ -292,7 +292,7 @@ function naverAdGroupName(product, row){
   return `${product?.name||"상품"} · ${base}`;
 }
 
-let curKey="__all", pf="all", volMode="latest", selectedKeyword=null, VOL={},VOL_META={asof:null,source:"none"},VOL_HISTORY={snapshots:{}},AUTOCOMPLETE={products:{}},AUTO_META=new Map(),AUTO_SELECTED=new Set();
+let curKey="__all", pf="all", volMode="latest", selectedKeyword=null, VOL={},VOL_META={asof:null,source:"none"},VOL_HISTORY={snapshots:{}},AUTOCOMPLETE={products:{}},AUTO_META=new Map(),AUTO_SELECTED=new Set(),GOOGLE_VOL={},GOOGLE_META={asof:null,source:"none"};
 const NEW_MIN=100,RISING_MIN_BASE=10,RISING_MIN_DELTA=50,RISING_MIN_RATE=.5;
 const nk=s=>String(s).replace(/\s/g,"");
 const hasVol=()=>Object.keys(VOL).length>0;
@@ -345,6 +345,25 @@ function applyVolumeData(vd){
 }
 function applyVolumeHistory(history){
   if(history&&history.source==="searchad"&&history.snapshots)VOL_HISTORY=history;
+  render();
+}
+/* Google Trends · Google Ads 검색량 자동 반영 (data/google-volume.json) */
+function applyGoogleVolumeData(gd){
+  if(!gd||gd.source!=="google"||!gd.products)return;
+  GOOGLE_META=gd;
+  Object.keys(gd.products||{}).forEach(key=>{
+    if(!PRODUCTS.some(p=>p.key===key))return;
+    const map=(gd.products[key]||{}).keywords||{};
+    Object.keys(map).forEach(k=>{
+      const nkey=nk(k);const v=map[k]||{};
+      GOOGLE_VOL[nkey]={
+        trends: v.monthly||[],
+        volume: v.monthly_volume||0,
+        competition: v.competition||"",
+        source: v.source||"google"
+      };
+    });
+  });
   render();
 }
 function autoSelectionKey(productKey,keyword){return `${productKey}|${nk(keyword)}`;}
@@ -728,6 +747,8 @@ render();
 fetch("data/volume.json").then(r=>r.ok?r.json():null).then(d=>{if(d)applyVolumeData(d);}).catch(()=>{});
 // 월별 스냅샷이 2개 이상 쌓이면 신규·급상승 후보를 자동 계산한다.
 fetch("data/volume-history.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)applyVolumeHistory(d);}).catch(()=>{});
+// Google Trends · Google Ads 검색량 병렬 로드 (구글 트렌드와 경쟁도)
+fetch("data/google-volume.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)applyGoogleVolumeData(d);}).catch(()=>{});
 // 공개 네이버 검색 화면의 월간 자동완성 표시어. 직전 수집월 대비 신규 여부를 데이터에 포함한다.
 fetch("data/keyword-autocomplete.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)applyAutocompleteData(d);}).catch(()=>{});
 </script>
