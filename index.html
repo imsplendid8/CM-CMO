@@ -98,6 +98,25 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 .data-health{margin:14px 0;padding:18px 20px;background:var(--surface);border:1px solid var(--line);border-radius:15px;box-shadow:var(--sh)}
 .data-health h2{font-size:15px;margin-bottom:3px}.data-health>p{font-size:11.5px;color:var(--muted);margin-bottom:12px}.health-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .health-item{padding:10px 11px;border:1px solid var(--line-2);border-radius:10px;background:var(--surface-2);min-width:0}.health-item .row{display:flex;align-items:center;justify-content:space-between;gap:6px}.health-item b{font-size:11.5px}.health-item small{display:block;color:var(--muted);font-size:10px;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.health-state{font-size:9.5px;font-weight:800;padding:3px 6px;border-radius:999px}.health-state.healthy{color:#11723b;background:#e6f5ec}.health-state.partial,.health-state.stale{color:#8a5906;background:#fbf1de}.health-state.missing,.health-state.unknown{color:#b4242a;background:#fcecec}
+/* 디버그 패널 */
+#debugPanel{position:fixed;top:0;right:-360px;width:360px;height:100vh;background:var(--surface);border-left:1px solid var(--line);box-shadow:-8px 0 20px rgba(0,0,0,.1);overflow-y:auto;z-index:999;transition:.3s ease-out;font-size:12px;}
+#debugPanel.on{right:0;}
+.debug-header{padding:16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex:0 0 auto;}
+.debug-header h3{font-size:13px;font-weight:700;}
+.debug-close{background:none;border:none;padding:4px;cursor:pointer;color:var(--muted);opacity:.6;transition:.2s;}
+.debug-close:hover{opacity:1;}
+.debug-stats{padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px;border-bottom:1px solid var(--line);}
+.debug-stat{padding:8px;background:var(--surface-2);border-radius:8px;text-align:center;}
+.debug-stat b{display:block;font-size:16px;font-weight:800;margin-bottom:2px;}
+.debug-stat small{color:var(--muted);font-size:10px;}
+.debug-logs{flex:1 1 auto;overflow-y:auto;}
+.debug-log{padding:12px 16px;border-bottom:1px solid var(--line-2);font-family:var(--mono);font-size:11px;line-height:1.4;}
+.debug-log.error{background:color-mix(in srgb,#b4242a 6%,transparent);border-left:3px solid #b4242a;}
+.debug-log.warn{background:color-mix(in srgb,#8a5906 6%,transparent);border-left:3px solid #8a5906;}
+.debug-log.info{background:color-mix(in srgb,var(--brand) 6%,transparent);border-left:3px solid var(--brand);}
+.debug-log-time{color:var(--muted);font-size:10px;}
+.debug-log-msg{color:var(--ink);margin:4px 0;word-break:break-word;}
+.debug-log-tool{color:var(--brand);font-weight:600;font-size:10px;margin-bottom:3px;}
 @media(max-width:700px){.health-grid{grid-template-columns:1fr 1fr}.data-health{padding:15px}.health-item{padding:9px}}
 .usage{display:flex;gap:14px;flex-wrap:wrap;margin-top:24px;padding:16px 18px;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh);}
 .usage .ut{font-size:11.5px;font-weight:800;color:var(--ink-2);letter-spacing:.01em;display:flex;align-items:center;gap:7px;width:100%;}
@@ -212,7 +231,25 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
   <div id="sheetBody"></div>
 </nav>
 <div class="ktoast" id="ktoast"></div>
+<!-- 디버그 패널 (우측 슬라이드 패널) -->
+<div id="debugPanel">
+  <div class="debug-header">
+    <h3>🐛 디버그</h3>
+    <button class="debug-close" onclick="toggleDebugPanel()">✕</button>
+  </div>
+  <div class="debug-stats" id="debugStats">
+    <div class="debug-stat"><b>0</b><small>전체</small></div>
+    <div class="debug-stat"><b>0</b><small>오류</small></div>
+    <div class="debug-stat"><b>0</b><small>경고</small></div>
+    <div class="debug-stat"><b>0</b><small>도구</small></div>
+  </div>
+  <div class="debug-logs" id="debugLogs"></div>
+</div>
 <script>
+/* 글로벌 디버깅 시스템 */
+class DebugMonitor{constructor(t="unknown"){this.toolName=t;this.logs=[];this.startTime=Date.now();this.loadStartTime={};this.init()}init(){window.addEventListener("error",e=>{this.error(`[JS Error] ${e.message}`,{file:e.filename,line:e.lineno,col:e.colno,stack:e.error?.stack})});window.addEventListener("unhandledrejection",e=>{this.error(`[Promise Rejection] ${e.reason}`,{reason:String(e.reason)})});this.wrapFetch()}wrapFetch(){const t=window.fetch,e=this;window.fetch=function(...n){const s=n[0];return e.loadStartTime[s]=Date.now(),e.debug(`[Fetch Start] ${s}`),t.apply(this,n).then(t=>{const n=Date.now()-e.loadStartTime[s];return t.ok?e.debug(`[Fetch OK] ${s} (${n}ms, ${t.status})`):e.warn(`[Fetch Fail] ${s} (${t.status}) ${t.statusText}`,{url:s,status:t.status,ms:n}),t}).catch(t=>{const n=Date.now()-e.loadStartTime[s];throw e.error(`[Fetch Error] ${s}`,{url:s,error:t.message,ms:n}),t})}}log(t,e={},n="log"){const s={time:new Date().toISOString(),tool:this.toolName,msg:t,meta:e,level:n,elapsed:Date.now()-this.startTime};this.logs.push(s),this.save(),"error"===n?console.error:("warn"===n?console.warn:console.log)(`[${this.toolName}] ${n.toUpperCase()}`,t,e)}debug(t,e){this.log(t,e,"debug")}warn(t,e){this.log(t,e,"warn")}error(t,e){this.log(t,e,"error")}info(t,e){this.log(t,e,"info")}startMeasure(t){this.loadStartTime[t]=Date.now()}endMeasure(t,e={}){const n=Date.now()-(this.loadStartTime[t]||Date.now());this.info(`[Perf] ${t}: ${n}ms`,{...e,ms:n})}checkRender(t,e){const n=document.querySelector(t);return n&&n.textContent?.trim()?(this.debug(`[Render OK] ${e}`),!0):(n||this.error(`[Render Failed] ${e} - selector not found: ${t}`),n&&!n.textContent?.trim()&&this.warn(`[Render Warning] ${e} - empty content`,{selector:t}),!1)}save(){try{const t=this.logs.slice(-500);localStorage.setItem("mf-debug-log",JSON.stringify(t))}catch(t){console.warn("DebugMonitor: localStorage write failed",t.message)}}static load(){try{const t=localStorage.getItem("mf-debug-log");return t?JSON.parse(t):[]}catch(t){return console.warn("DebugMonitor: localStorage read failed",t.message),[]}}static clear(){localStorage.removeItem("mf-debug-log")}static getStatus(){const t={},e=DebugMonitor.load();return e.forEach(e=>{t[e.tool]||(t[e.tool]={debug:0,info:0,warn:0,error:0,lastError:null}),t[e.tool][e.level]++,("error"===e.level||"warn"===e.level)&&(t[e.tool].lastError=e)}),{totalLogs:e.length,by:t,recent:e.slice(-20),errors:e.filter(t=>"error"===t.level),warnings:e.filter(t=>"warn"===t.level)}}}
+typeof window!=="undefined"&&(window.DEBUG=new DebugMonitor((document.querySelector("title")?.textContent||"unknown")));
+
 "use strict";
 const WIKI="https://github.com/imsplendid8/CM-CMO/blob/main/docs/README.md";
 const TOOLS=[
@@ -324,6 +361,7 @@ function renderNav(active){
   DESKTOP_CORE.map(toolById).filter(Boolean).forEach(t=>h+=item(t.id,ICON[t.id]||t.icon,t.id==="eventcal"?"연간플랜":t.name,t.ac,ACTIVE===t.id));
   h+=`<div class="navdd"><button class="navb ddbtn${secondaryActive?" on":""}" data-act="tools" aria-haspopup="menu" aria-expanded="false"><span class="ic">${ICON.sheet}</span><span>${secondaryActive?esc((toolById(ACTIVE)||{}).name||"더보기"):"더보기"}</span><span class="cx">⌄</span></button>
     <div class="ddpanel" id="toolMenu" role="menu">${secondary.map(dditem).join("")}<div class="ddsep"></div><a class="dditem" role="menuitem" href="overview.html"><span class="ic">${ICON.overview}</span><span>전체 안내</span></a><a class="dditem" role="menuitem" href="${WIKI}" target="_blank" rel="noopener"><span class="ic">${ICON.wiki}</span><span>위키</span></a></div></div>`;
+  h+=`<button class="navb" onclick="toggleDebugPanel()" title="디버그 패널 열기"><span class="ic">🐛</span>디버그</button>`;
   nav.innerHTML=h;
   renderBotnav();                                                       // 하단 탭바도 같은 ACTIVE로 동기화
 }
@@ -421,6 +459,35 @@ try{localStorage.removeItem("mf_keys");}catch(e){}   // 개인 API 키 입력 �
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeSheet();closeToolMenu();}});
 document.getElementById("sheetMask").addEventListener("click",closeSheet);
 document.getElementById("sheet").addEventListener("click",e=>{if(e.target.closest("a"))closeSheet();});  // 시트 내 링크 이동 시 닫기
+
+/* ===== 디버그 패널 ===== */
+function toggleDebugPanel(){document.getElementById("debugPanel").classList.toggle("on");refreshDebugPanel();}
+function refreshDebugPanel(){
+  // DebugMonitor에서 상태 로드
+  if(typeof DebugMonitor==="undefined")return;
+  const status=DebugMonitor.getStatus();
+  const stats=document.getElementById("debugStats");
+  const logs=document.getElementById("debugLogs");
+  if(!stats||!logs)return;
+
+  // 통계 업데이트
+  const tools=Object.keys(status.by).length;
+  stats.innerHTML=`
+    <div class="debug-stat"><b>${status.totalLogs}</b><small>전체</small></div>
+    <div class="debug-stat"><b>${status.errors.length}</b><small>오류</small></div>
+    <div class="debug-stat"><b>${status.warnings.length}</b><small>경고</small></div>
+    <div class="debug-stat"><b>${tools}</b><small>도구</small></div>
+  `;
+
+  // 로그 표시 (최근 30개)
+  logs.innerHTML=status.recent.reverse().map(log=>`
+    <div class="debug-log ${log.level}">
+      <div class="debug-log-tool">${esc(log.tool)}</div>
+      <div class="debug-log-time">${new Date(log.time).toLocaleTimeString('ko-KR')}</div>
+      <div class="debug-log-msg">${esc(log.msg)}</div>
+    </div>
+  `).join("");
+}
 
 try{
   console.log("🔧 Dashboard init start");
