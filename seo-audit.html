@@ -1,3 +1,6 @@
+<!doctype html>
+<html lang="ko">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://*.workers.dev; object-src 'none'; base-uri 'self'; form-action 'self'">
@@ -361,7 +364,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 </style>
 <link rel="stylesheet" href="shared/ui-polish.css">
 <script src="shared/ui-icons.js" defer></script>
-
+</head>
+<body>
 <div class="app">
   <aside class="sidebar">
     <div class="sb-brand">
@@ -1448,3 +1452,5 @@ Promise.all([
   fetch("data/seo/site-observations.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)SEO_INTEL_DATA=Object.assign({},SEO_INTEL_DATA,d,intelLoadStore()||{});}).catch(()=>{}),
 ]).then(()=>{if(view==="product")renderScreen(); if(view==="intel")renderIntel();});
 </script>
+</body>
+</html>
