@@ -15,9 +15,10 @@
 | 별도 도구(부서 전용) | BSA(브랜드검색) 운영 CLI는 **부서 전용 private 저장소 `imsplendid8/Private`** 로 분리(계약·단가 등 민감데이터). 공개 CM-CMO엔 포함하지 않음 |
 | 팀 실시간 프록시 | `proxy/naver-proxy-worker.js` (Cloudflare Worker · 키=워커 시크릿) |
 | 폰트 | `fonts/PretendardVariable.woff2` (자체호스팅) |
-| 스크립트 | `scripts/` (workflow용: `naver_searchad_volume`·`naver_trends`·`daily_brief`·`capture_serp`·`check_products_sync`; 로컬 폴백: `naver_local_server`) |
+| 스크립트 | `scripts/` (workflow용: `naver_searchad_volume`·`naver_trends`·`daily_brief`·`capture_serp`·`check_products_sync`; 디버그: `debug-monitor.js`) |
+| 디버그 시스템 | 🐛 `docs/DEBUG.md` — 모든 도구에 내장된 자동 에러 추적·localStorage 로그·GitHub Actions 헬스체크 |
 | 스킬 7종 | `.claude/skills/` — 뉴스·카드뉴스·한국어 윤문 + SERP 소재·FAQ·`insurance-ad-review`(현행 금소법·시행령·감독규정 기반 사전검수)·`cm-seo-title-ops`(SearchAd/GSC 기반 파워컨텐츠 제목 운영) |
-| 배포·자동화 | `.github/workflows/` — pages·ci·daily-brief·trends·searchad·serp-capture(브랜드검색)·news-clip(하루 2회)·signals(수요 신호)·technical-seo |
+| 배포·자동화 | `.github/workflows/` — pages·ci·daily-brief·trends·searchad·serp-capture(브랜드검색)·news-clip(하루 2회)·signals(수요 신호)·technical-seo·health-check(6시간마다 도구 렌더링 검사) |
 
 ## 작업 규칙
 - **트렁크 기반**: main에서 짧은 브랜치 → 검증 → 바로 병합·push(자동 배포). 롱리브 브랜치 금지.
@@ -31,6 +32,13 @@
 - 고객·임직원 개인정보·회사 영업비밀은 **외부 AI/커밋 금지**. 반드시 **샘플·공개·비식별/가상 데이터**만.
 - 뉴스 헤드라인·링크·SERP는 공개 정보만. 요약·시사점은 자체 분석.
 - 광고성 문구는 `shared/insurance-ad-review.js`로 1차 검수하고 최신 상품자료·약관·준법감시인·손해보험협회 최종 심의를 거친다. `자동 위험표현 없음`은 심의 승인이 아니다. 검색량/입찰가는 각 광고 플랫폼에서 확정.
+
+## 🐛 자동 모니터링 (디버그 시스템)
+모든 도구는 **DebugMonitor** 시스템으로 자동 감시됩니다.
+- **대시보드 패널**: index.html의 🐛 디버그 버튼으로 실시간 에러·경고·성능 추적
+- **localStorage 기록**: 모든 도구의 JS 에러·네트워크 실패·느린 로드 자동 저장
+- **GitHub Actions**: 6시간마다 모든 도구의 렌더링 검사, 실패 시 Issues 자동 생성
+- **사용법**: `docs/DEBUG.md` 참고. 개발 중 `window.DEBUG?.error()`, `window.DEBUG?.warn()` 호출로 로깅
 
 ## 분석 산출물 톤 (cm-news-analysis 스킬)
 인사말·미사여구 없이 **[핵심 요약]→[상세]** 2단계, 뉴스는 **이슈–업계영향–담당자 참고** 3요소, **메인 3종(운전자·주택화재·골프)** 비중 강조.
