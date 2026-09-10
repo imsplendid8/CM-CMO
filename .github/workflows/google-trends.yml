@@ -1,0 +1,48 @@
+name: Google Trends
+
+# 매주 월요일 06:00 KST(=21:00 UTC 전날) Google Trends 데이터를 수집해 data/google-volume.json 갱신.
+# 필요 라이브러리: pytrends (pip install pytrends)
+# 무료 구현 — Google Trends 공식 API 대체 (비공식이지만 안정적)
+# 수동 실행: Actions → Google Trends → Run workflow
+
+on:
+  schedule:
+    - cron: "0 21 * * 0"   # 매주 월요일 06:00 KST(=21:00 UTC 전날)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cm-cmo-data-writers
+  cancel-in-progress: false
+
+jobs:
+  google-trends:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install pytrends requests
+
+      - name: Fetch Google Trends data
+        run: python3 scripts/google_trends_volume.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/google-volume.json
+          if git diff --staged --quiet; then echo "변경 없음"; else
+            git commit -m "chore: Google Trends 데이터 갱신 (data/google-volume.json)"
+            for i in 1 2 3; do
+              git pull --rebase --autostash origin main && git push && break
+              echo "push 재시도 $i (main 갱신 감지)"; sleep $((i*5))
+              [ "$i" = 3 ] && { echo "::error::main push 실패 — 재시도 소진"; exit 1; }
+            done
+          fi
