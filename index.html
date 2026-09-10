@@ -261,6 +261,9 @@ function loadUsage(boxId){
 const HEALTH_SOURCES=[
   {name:"뉴스 클리핑",file:"data/clips/index.json",field:"updated",maxAge:2},
   {name:"수요 신호",file:"data/signals.json",field:"asof",maxAge:2},
+  {name:"출국통계",file:"data/signals.json",field:"exit_tour.period",maxAge:35},
+  {name:"기상수요",file:"data/signals.json",field:"weather.active",maxAge:2},
+  {name:"자동차등록대수",file:"data/signals.json",field:"newreg.period",maxAge:35},
   {name:"실측 검색량",file:"data/volume.json",field:"asof",maxAge:9},
   {name:"데이터랩",file:"data/trends.json",field:"asof",maxAge:35},
   {name:"SERP",file:"serp/manifest.json",field:"asof",maxAge:9},
@@ -271,13 +274,17 @@ function dataErrors(value,out=[],depth=0){
 }
 function healthItem(source,data){
   if(!data)return {...source,state:"missing",date:"—",detail:"파일 누락 또는 읽기 실패"};
-  const raw=data[source.field],date=typeof raw==="string"?raw.slice(0,10):"";
+  const getField=(obj,path)=>{const keys=path.split(".");let v=obj;for(const k of keys){if(!v||typeof v!=="object")return undefined;v=v[k];}return v;};
+  const raw=getField(data,source.field),rawStr=typeof raw==="string"?raw:"";
+  let date="";
+  if(/^\d{4}-\d{2}-\d{2}$/.test(rawStr))date=rawStr;
+  else if(/^\d{6}$/.test(rawStr))date=rawStr.slice(0,4)+"-"+rawStr.slice(4,6)+"-01";
   const parsed=/^\d{4}-\d{2}-\d{2}$/.test(date)?new Date(date+"T00:00:00Z"):null;
   if(!parsed||Number.isNaN(parsed.getTime()))return {...source,state:"unknown",date:"—",detail:"기준일 확인 불가"};
   const age=Math.floor((Date.now()-parsed.getTime())/86400000),errors=dataErrors(data);
   const state=age<0?"unknown":age>source.maxAge?"stale":errors.length?"partial":"healthy";
   const src=data.source||data._source||"자동수집";
-  return {...source,state,date,detail:errors.length?errors.slice(0,2).join(" · "):`${src} · ${age}일 전`};
+  return {...source,state,date:date.slice(0,7),detail:errors.length?errors.slice(0,2).join(" · "):`${src} · ${age}일 전`};
 }
 function loadDataHealth(){
   const box=document.getElementById("dataHealth");if(!box)return;
