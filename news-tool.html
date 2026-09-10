@@ -614,7 +614,7 @@ function renderClipBody(){
     if(!d){b.innerHTML=`<div class="empty">${esc(clipDate)} 클리핑을 불러올 수 없습니다.</div>`;return;}
     const sm=d.summary||{total:0,top:[]},cats=d.categories||{};
     const top=(sm.top||[]).filter(filt).map(it=>`<a class="clip-top" href="${esc(it.url)}" target="_blank" rel="noopener"><b>${esc(it.t)}</b><span>${esc(it.src||"")} · ${esc(it.date||"")}</span></a>`).join("");
-    const order=Object.keys(cats).sort((a,b)=>{const M=["hrmf","driver","golf"];return (M.indexOf(a)<0?9:M.indexOf(a))-(M.indexOf(b)<0?9:M.indexOf(b));});
+    const order=Object.keys(cats).sort((a,b)=>{const M=["hrmf","autoins","driver","golf"];return (M.indexOf(a)<0?9:M.indexOf(a))-(M.indexOf(b)<0?9:M.indexOf(b));});
     const catHtml=order.map(k=>{const c=cats[k];let items=(c.items||[]).filter(it=>filt(Object.assign({cat:c.name},it)));if(clipN>0)items=items.slice(0,clipN);if(!items.length)return "";  // 카테고리명도 검색 대상
       return `<div class="clip-cat"><div class="clip-cat-h">${esc(c.name)}<span>${items.length}</span></div>${items.map(it=>`<a class="clip-it" href="${esc(it.url)}" target="_blank" rel="noopener"><span class="dt">${esc(it.date||"")}</span><span class="tt">${esc(it.t)}</span><span class="ss">${esc(it.src||"")}</span></a>`).join("")}</div>`;}).join("");
     b.innerHTML=`<div class="clip-sum"><div class="clip-sum-h">📎 ${esc(clipDate)} 요약 <span>${esc((d.runs||[]).join("·"))} · 총 ${sm.total}건</span></div>${top||"<span class='muted'>결과 없음</span>"}</div>${catHtml||`<div class="empty">검색 결과가 없습니다.</div>`}`;
