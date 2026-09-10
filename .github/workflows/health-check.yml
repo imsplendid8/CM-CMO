@@ -22,6 +22,20 @@ jobs:
       - name: 의존성 설치
         run: npm ci --optional --legacy-peer-deps 2>/dev/null || npm ci --legacy-peer-deps
 
+      - name: Puppeteer 설치 및 검증
+        timeout-minutes: 10
+        run: |
+          echo "🔧 Puppeteer 설치..."
+          npm install puppeteer --no-save --legacy-peer-deps || {
+            echo "❌ Puppeteer 설치 실패"
+            exit 1
+          }
+          echo "✓ Puppeteer 설치 완료"
+          which chromium-browser || which chromium || which google-chrome || {
+            echo "⚠️ Chrome/Chromium 미발견"
+            exit 1
+          }
+
       - name: 모든 도구 렌더링 검사
         timeout-minutes: 10
         continue-on-error: true
@@ -102,7 +116,6 @@ jobs:
           })();
           EOFJS
 
-          npm install puppeteer > /dev/null 2>&1
           node /tmp/health-check.js
 
       - name: 결과 업로드

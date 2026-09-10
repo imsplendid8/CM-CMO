@@ -42,26 +42,31 @@ class DebugMonitor {
 
     window.fetch = function(...args) {
       const url = args[0];
+      const method = (args[1]?.method || 'GET').toUpperCase();
       self.loadStartTime[url] = Date.now();
-      self.debug(`[Fetch Start] ${url}`);
+      self.debug(`[Fetch Start] ${method} ${url}`);
 
       return originalFetch.apply(this, args)
         .then(r => {
           const ms = Date.now() - self.loadStartTime[url];
+          const context = { url, method, status: r.status, ms, retryable: r.status >= 500 };
           if (r.ok) {
-            self.debug(`[Fetch OK] ${url} (${ms}ms, ${r.status})`);
+            self.debug(`[Fetch OK] ${method} ${url} (${ms}ms)`, context);
           } else {
-            self.warn(`[Fetch Fail] ${url} (${r.status}) ${r.statusText}`, {
-              url, status: r.status, ms
-            });
+            self.warn(`[Fetch ${r.status}] ${method} ${url}`, context);
           }
           return r;
         })
         .catch(err => {
           const ms = Date.now() - self.loadStartTime[url];
-          self.error(`[Fetch Error] ${url}`, {
-            url, error: err.message, ms
-          });
+          const context = {
+            url,
+            method,
+            error: err.message,
+            ms,
+            retryable: err.message.includes('timeout') || err.message.includes('network')
+          };
+          self.error(`[Fetch Error] ${method} ${url}`, context);
           throw err;
         });
     };
