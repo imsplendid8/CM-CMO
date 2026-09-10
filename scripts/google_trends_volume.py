@@ -85,19 +85,22 @@ def main():
 
     # 상품 마스터 로드
     try:
-        products = load("data/products.json")
+        data = load("data/products.json")
+        products = data.get("products", [])
     except Exception as e:
         print(f"ERROR: data/products.json 로드 실패: {e}")
         sys.exit(1)
 
-    # 모든 상품의 검색어 수집
+    # 모든 상품의 검색어 수집 (serpKw 대표키워드 + core 핵심어)
     all_keywords = []
     for product in products:
-        q = product.get("q", "")
-        extra = product.get("extra", [])
-        if q:
-            all_keywords.append(q)
-            all_keywords.extend(extra)
+        kw = product.get("serpKw", "")
+        if kw:
+            all_keywords.append(kw)
+        # core 키워드들도 추가 (최대 5개까지)
+        core = product.get("core", [])
+        if isinstance(core, list):
+            all_keywords.extend(core[:3])
 
     all_keywords = list(dict.fromkeys(all_keywords))  # 중복 제거 (순서 유지)
     print(f"총 {len(all_keywords)}개 키워드 수집 대상\n")
@@ -117,7 +120,7 @@ def main():
     # 저장
     output_path = os.path.join(ROOT, "data", "google-volume.json")
     try:
-        atomic_json_write(output_path, result, indent=2, ensure_ascii=False)
+        atomic_json_write(output_path, result, indent=2)
         print(f"📁 {output_path} 저장 완료")
     except Exception as e:
         print(f"ERROR: 저장 실패: {e}")
