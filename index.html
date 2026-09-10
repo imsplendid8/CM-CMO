@@ -421,16 +421,35 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeSheet();closeT
 document.getElementById("sheetMask").addEventListener("click",closeSheet);
 document.getElementById("sheet").addEventListener("click",e=>{if(e.target.closest("a"))closeSheet();});  // 시트 내 링크 이동 시 닫기
 
-renderHome();
-loadUsage();
-const start=(location.hash||"").replace("#","");
-// 레거시 딥링크 보존: 예전 '시즌 캘린더' 카드(#season)는 통합 캘린더의 시즌 탭으로
-const LEGACY_HASH={season:["eventcal","#season"]};
-renderNav("home");
-const lg=LEGACY_HASH[start];
-if(lg&&LOCAL){show(lg[0],lg[1]);}
-else if(start&&TOOLS.some(t=>t.id===start)&&LOCAL){show(start);}
-else {show("home");}
+try{
+  console.log("🟦 Dashboard init: renderHome...");
+  renderHome();
+  console.log("✅ renderHome complete");
+
+  console.log("🟦 Dashboard init: loadUsage...");
+  loadUsage();
+  console.log("✅ loadUsage complete");
+
+  console.log("🟦 Dashboard init: renderNav...");
+  const start=(location.hash||"").replace("#","");
+  const LEGACY_HASH={season:["eventcal","#season"]};
+  renderNav("home");
+  console.log("✅ renderNav complete");
+
+  console.log("🟦 Dashboard init: show...");
+  const lg=LEGACY_HASH[start];
+  if(lg&&LOCAL){show(lg[0],lg[1]);}
+  else if(start&&TOOLS.some(t=>t.id===start)&&LOCAL){show(start);}
+  else {show("home");}
+  console.log("✅ Dashboard init complete");
+}catch(err){
+  console.error("❌ Dashboard initialization failed:", err);
+  console.error("Stack:", err.stack);
+  const homeEl=document.getElementById("home");
+  if(homeEl){
+    homeEl.innerHTML=`<div style="padding:20px;color:red;"><h2>🔴 Dashboard Error</h2><p>${esc(err.message)}</p><pre style="background:#eee;padding:10px;overflow:auto;font-size:12px;">${esc(err.stack)}</pre></div>`;
+  }
+}
 </script>
 </body>
 </html>
