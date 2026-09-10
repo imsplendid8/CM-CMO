@@ -437,8 +437,25 @@ function renderProduct(){
     <div class="note">요약은 기사 제목·설명문 기준입니다. 중요한 내용은 원문을 확인하세요.</div>`;
 }
 function renderOverview(){
-  $("#pt").textContent="전체 개요"; $("#pts").textContent=`· ${PRODUCTS.filter(p=>NEWSMON[p.key]).length}개 카테고리`;
+  try {
+    window.DEBUG?.info("renderOverview called");
+    const contentEl = $("#content");
+    window.DEBUG?.info("Content element found", {exists: !!contentEl, display: contentEl?.style?.display});
+    if (!contentEl) {
+      window.DEBUG?.error("CRITICAL: #content element not found!");
+      return;
+    }
+    window.DEBUG?.info("NEWSMON check", {keys: Object.keys(NEWSMON).length, hasHome: !!NEWSMON.home, homeItems: NEWSMON.home?.items?.length});
+
+    const pt = $("#pt");
+    const pts = $("#pts");
+    window.DEBUG?.info("Header elements", {ptExists: !!pt, ptsExists: !!pts});
+
+    if (pt) pt.textContent="전체 개요";
+    if (pts) pts.textContent=`· ${PRODUCTS.filter(p=>NEWSMON[p.key]).length}개 카테고리`;
+
   const totalHeads=PRODUCTS.reduce((s,p)=>s+(NEWSMON[p.key]?NEWSMON[p.key].items.length:0),0);
+  window.DEBUG?.debug("Data summary", {totalHeads, productsCount: PRODUCTS.length});
   const live=PRODUCTS.filter(p=>NEWSMON[p.key]&&NEWSMON[p.key].live).length;
   // 최신순 통합 헤드라인 (상위 6)
   const all=[];PRODUCTS.forEach(p=>{const n=NEWSMON[p.key];if(n)n.items.forEach(it=>all.push(Object.assign({cat:p.name,key:p.key},it)));});
@@ -461,7 +478,11 @@ function renderOverview(){
     <div class="sec-lbl">상품 카테고리별 동향 · 카드를 클릭하면 상세(🔥=수요 트리거)</div>
     <div class="ov-grid">${cards}</div>
     <div class="note">담당 상품과 업계·경쟁사 뉴스를 모아 봅니다.</div>`;
+  window.DEBUG?.info("Content rendered", {length: $("#content").innerHTML.length});
   loadAutoClips();                                     // 개요 상단 '자동 수집 최신'을 클리핑 아카이브(하루 2회)에서 채움
+  } catch (e) {
+    window.DEBUG?.error("renderOverview error: " + e.message, {stack: e.stack});
+  }
 }
 /* 전체 개요 상단: 자동 수집 최신 헤드라인 — data/clips 최신 일자의 상위 헤드라인(비동기) */
 function loadAutoClips(){
@@ -521,7 +542,16 @@ function applyUnifiedBrief(){
     if(changed)render();
   }).catch(()=>{});
 }
-function render(){curKey==="__all"?renderOverview():curKey==="__clips"?renderClips():curKey.startsWith("ind_")?renderIndustry():renderProduct();renderSidebar();window.scrollTo({top:0});}
+function render(){
+  window.DEBUG?.debug("render() called", {curKey});
+  try {
+    curKey==="__all"?renderOverview():curKey==="__clips"?renderClips():curKey.startsWith("ind_")?renderIndustry():renderProduct();
+    renderSidebar();
+    window.scrollTo({top:0});
+  } catch (e) {
+    window.DEBUG?.error("render() error: " + e.message, {curKey, stack: e.stack});
+  }
+}
 
 /* 손보업계·경쟁사 통합 뷰 — 업계 전반 + 빅4/5를 한 화면에 */
 function renderIndustry(){
