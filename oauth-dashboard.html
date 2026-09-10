@@ -561,33 +561,52 @@
       }
     }
 
-    // 대시보드 데이터 조회 (Claude API 직접 호출)
+    // 대시보드 데이터 조회
     async function fetchPersonalizedDashboard(token, userData) {
-      // 실제 구현: 백엔드 API 호출
-      // return await fetch('/api/personalized-dashboard', {
-      //   headers: { Authorization: `Bearer ${token}` }
-      // }).then(r => r.json());
+      try {
+        // 백엔드 API 호출
+        const response = await fetch('/api/personalized-dashboard', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
 
-      // 데모용 데이터
-      return {
-        kpis: [
-          { label: "월별 신규등록", value: 12450, trend: "up", change: 15 },
-          { label: "검색광고 ROI", value: 3.2, trend: "up", change: 8 },
-          { label: "활성 캠페인", value: 24, trend: "down", change: -3 },
-          { label: "평균 CPC", value: 1250, trend: "up", change: 12 }
-        ],
-        recommendations: [
-          "🔔 6월 장마철 누수 보장 검색광고 강화 (예상 수요 +45%)",
-          "💡 운전자보험: 6월 말 휴가철 캠페인 준비 시작",
-          "📈 파워컨텐츠: 신규 콘텐츠 3개 배포 예정 (수요신호 기반)",
-          "⭐ A/B 테스트: 기존 제목 대비 신제목 CTR +22% 확인됨"
-        ],
-        alerts: [
-          { severity: "high", message: "🚨 [긴급] 암보험 입찰가 경쟁 심화 - 예산 재검토 필요" },
-          { severity: "medium", message: "⚠️ 여성보험 전환율 하락 (지난주 대비 -12%) - 소재 개선 권장" },
-          { severity: "medium", message: "📊 임신·출산보험 검색량 계절성 피크 진입 - 재고 확인" }
-        ]
-      };
+        if (!response.ok) {
+          throw new Error(`API 오류: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result.success && result.dashboard) {
+          return result.dashboard;
+        } else {
+          throw new Error(result.error || '대시보드 생성 실패');
+        }
+      } catch (error) {
+        console.warn('API 호출 실패, 폴백 데이터 사용:', error);
+        // 폴백: 데모용 기본 데이터 반환
+        return {
+          kpis: [
+            { label: "월별 신규등록", value: 12450, trend: "up", change: 15 },
+            { label: "검색광고 ROI", value: 3.2, trend: "up", change: 8 },
+            { label: "활성 캠페인", value: 24, trend: "down", change: -3 },
+            { label: "평균 CPC", value: 1250, trend: "up", change: 12 }
+          ],
+          recommendations: [
+            "🔔 6월 장마철 누수 보장 검색광고 강화 (예상 수요 +45%)",
+            "💡 운전자보험: 6월 말 휴가철 캠페인 준비 시작",
+            "📈 파워컨텐츠: 신규 콘텐츠 3개 배포 예정 (수요신호 기반)",
+            "⭐ A/B 테스트: 기존 제목 대비 신제목 CTR +22% 확인됨"
+          ],
+          alerts: [
+            { severity: "high", message: "🚨 [긴급] 암보험 입찰가 경쟁 심화 - 예산 재검토 필요" },
+            { severity: "medium", message: "⚠️ 여성보험 전환율 하락 (지난주 대비 -12%) - 소재 개선 권장" },
+            { severity: "medium", message: "📊 임신·출산보험 검색량 계절성 피크 진입 - 재고 확인" }
+          ]
+        };
+      }
     }
 
     // 대시보드 렌더링

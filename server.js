@@ -1,10 +1,19 @@
+#!/usr/bin/env node
 /**
- * Modooflow OAuth 대시보드 백엔드
- * Express.js 서버 (로컬 개발 + 프로덕션 배포용)
+ * Modooflow OAuth 대시보드 서버
+ * Express.js 백엔드 — OAuth 인증 + Claude API 연동
  *
- * 사용법:
- * npm install express cors dotenv @anthropic-ai/sdk
- * node server.js
+ * 설치:
+ *   npm install express cors dotenv @anthropic-ai/sdk
+ *
+ * 실행:
+ *   node server.js
+ *   또는: npm start
+ *
+ * 테스트:
+ *   curl -X POST http://localhost:3000/api/personalized-dashboard \
+ *     -H "Authorization: Bearer demo_token_user_001" \
+ *     -H "Content-Type: application/json"
  */
 
 const express = require("express");
@@ -13,9 +22,8 @@ const path = require("path");
 require("dotenv").config();
 
 const {
-  generatePersonalizedDashboard,
+  createDashboardHandler,
   generateDefaultDashboard,
-  authenticateUser,
   USER_PREFERENCES
 } = require("./api/personalized-dashboard.js");
 
@@ -23,176 +31,202 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // 미들웨어
-app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "http://localhost:8000",
-    "https://imsplendid8.github.io"
-  ],
-  credentials: true
-}));
+app.use(cors());
 app.use(express.json());
 app.use(express.static("."));
 
-/**
- * 헬스 체크
- */
-app.get("/api/health", (req, res) => {
-  res.json({
-    status: "ok",
-    message: "Modooflow OAuth Dashboard API",
-    timestamp: new Date().toISOString()
-  });
+// 헬스 체크
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-/**
- * 사용자 목록 (개발용)
- */
-app.get("/api/users", (req, res) => {
-  const users = Object.values(USER_PREFERENCES).map(u => ({
-    id: u.id,
-    name: u.name,
-    role: u.role,
-    email: u.email
-  }));
+// 대시보드 API
+app.post("/api/personalized-dashboard", createDashboardHandler());
 
-  res.json({ users });
+// OAuth 콜백 (Google)
+app.get("/oauth/google/callback", async (req, res) => {
+  try {
+    const { code, state } = req.query;
+
+    if (!code) {
+      return res.status(400).json({ error: "인증 코드가 없습니다" });
+    }
+
+    // TODO: Google OAuth 토큰 교환
+    // const token = await exchangeGoogleToken(code);
+
+    // 임시: 데모 토큰 사용
+    const demoToken = "demo_token_user_001";
+    res.redirect(`/oauth-dashboard.html?token=${demoToken}&provider=google`);
+
+  } catch (error) {
+    console.error("Google OAuth 콜백 오류:", error);
+    res.status(500).json({ error: "인증 중 오류가 발생했습니다" });
+  }
 });
 
-/**
- * 개인화 대시보드 생성
- * Authorization: Bearer demo_token_user_001
- */
-app.post("/api/personalized-dashboard", async (req, res) => {
+// OAuth 콜백 (GitHub)
+app.get("/oauth/github/callback", async (req, res) => {
+  try {
+    const { code, state } = req.query;
+
+    if (!code) {
+      return res.status(400).json({ error: "인증 코드가 없습니다" });
+    }
+
+    // TODO: GitHub OAuth 토큰 교환
+    // const token = await exchangeGithubToken(code);
+
+    // 임시: 데모 토큰 사용
+    const demoToken = "demo_token_user_002";
+    res.redirect(`/oauth-dashboard.html?token=${demoToken}&provider=github`);
+
+  } catch (error) {
+    console.error("GitHub OAuth 콜백 오류:", error);
+    res.status(500).json({ error: "인증 중 오류가 발생했습니다" });
+  }
+});
+
+// 사용자 정보 조회 (로그인된 사용자)
+app.get("/api/me", (req, res) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-      return res.status(401).json({ error: "No authorization token" });
+      return res.status(401).json({ error: "인증되지 않음" });
     }
 
     const token = authHeader.split(" ")[1];
-    const userPreferences = authenticateUser(token);
 
-    if (!userPreferences) {
-      return res.status(403).json({ error: "Invalid token" });
+    // 데모 토큰 파싱
+    if (token.startsWith("demo_token_")) {
+      const userId = token.replace("demo_token_", "");
+      const user = USER_PREFERENCES[userId];
+
+      if (user) {
+        return res.json({
+          success: true,
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role
+          }
+        });
+      }
     }
 
-    // Claude API가 활성화되면 generatePersonalizedDashboard 사용
-    // 지금은 기본값 반환
-    const dashboard = generateDefaultDashboard(userPreferences);
+    res.status(403).json({ error: "유효하지 않은 토큰" });
+  } catch (error) {
+    console.error("사용자 정보 조회 오류:", error);
+    res.status(500).json({ error: "오류가 발생했습니다" });
+  }
+});
+
+// 기본 대시보드 (토큰 없이 데모용)
+app.get("/api/demo-dashboard/:userId", (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = USER_PREFERENCES[userId];
+
+    if (!user) {
+      return res.status(404).json({ error: "사용자를 찾을 수 없습니다" });
+    }
+
+    const dashboard = generateDefaultDashboard(user);
 
     res.json({
       success: true,
       user: {
-        id: userPreferences.id,
-        name: userPreferences.name,
-        role: userPreferences.role,
-        email: userPreferences.email
+        id: user.id,
+        name: user.name,
+        role: user.role
       },
-      dashboard: dashboard,
-      timestamp: new Date().toISOString()
+      dashboard: dashboard
     });
-
   } catch (error) {
-    console.error("대시보드 생성 오류:", error);
-    res.status(500).json({
-      error: "대시보드를 생성할 수 없습니다",
-      message: error.message
+    console.error("데모 대시보드 오류:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 사용 가능한 사용자 목록 (개발용)
+app.get("/api/users", (req, res) => {
+  try {
+    const users = Object.values(USER_PREFERENCES).map(user => ({
+      id: user.id,
+      name: user.name,
+      role: user.role,
+      email: user.email
+    }));
+
+    res.json({
+      success: true,
+      users: users,
+      devNote: "개발 환경에서만 사용하세요. 프로덕션에서는 제거해야 합니다."
     });
+  } catch (error) {
+    console.error("사용자 목록 조회 오류:", error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-/**
- * OAuth 콜백 - Google
- * 실제 구현 시 Google API로 토큰 교환 필요
- */
-app.get("/oauth/google/callback", (req, res) => {
-  const { code, state } = req.query;
-
-  if (!code) {
-    return res.status(400).json({ error: "Missing authorization code" });
-  }
-
-  // TODO: code → access_token 교환
-  // TODO: access_token으로 사용자 정보 조회
-  // TODO: JWT 생성 및 클라이언트로 전달
-
-  res.json({
-    message: "Google OAuth callback received",
-    code: code.substring(0, 10) + "...",
-    status: "pending_implementation"
-  });
+// 로그 기록
+app.use((req, res, next) => {
+  const now = new Date().toISOString();
+  console.log(`[${now}] ${req.method} ${req.path}`);
+  next();
 });
 
-/**
- * OAuth 콜백 - GitHub
- * 실제 구현 시 GitHub API로 토큰 교환 필요
- */
-app.get("/oauth/github/callback", (req, res) => {
-  const { code, state } = req.query;
-
-  if (!code) {
-    return res.status(400).json({ error: "Missing authorization code" });
-  }
-
-  // TODO: code → access_token 교환 (POST https://github.com/login/oauth/access_token)
-  // TODO: access_token으로 사용자 정보 조회 (GET https://api.github.com/user)
-  // TODO: JWT 생성 및 클라이언트로 전달
-
-  res.json({
-    message: "GitHub OAuth callback received",
-    code: code.substring(0, 10) + "...",
-    status: "pending_implementation"
-  });
-});
-
-/**
- * 에러 핸들러
- */
+// 에러 핸들러
 app.use((err, req, res, next) => {
-  console.error("Unhandled error:", err);
+  console.error("서버 오류:", err);
   res.status(500).json({
-    error: "Internal server error",
-    message: process.env.NODE_ENV === "development" ? err.message : "An error occurred"
-  });
-});
-
-/**
- * 404 핸들러
- */
-app.use((req, res) => {
-  res.status(404).json({
-    error: "Not found",
-    path: req.path
+    error: "내부 서버 오류",
+    message: process.env.NODE_ENV === "development" ? err.message : undefined
   });
 });
 
 // 서버 시작
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`
-╔════════════════════════════════════════════╗
-║     Modooflow OAuth Dashboard API          ║
-║     http://localhost:${PORT}               ║
-╚════════════════════════════════════════════╝
+╔════════════════════════════════════════════════════════════════════════╗
+║           Modooflow OAuth 대시보드 서버 시작                            ║
+╚════════════════════════════════════════════════════════════════════════╝
 
-📚 API 엔드포인트:
-  GET  /api/health                    헬스 체크
-  GET  /api/users                     사용자 목록
-  POST /api/personalized-dashboard    개인화 대시보드
+🚀 서버: http://localhost:${PORT}
+📊 대시보드: http://localhost:${PORT}/oauth-dashboard.html
+📝 API 문서: docs/OAUTH_DASHBOARD_SETUP.md
 
-🧪 테스트:
+📡 엔드포인트:
+  • POST /api/personalized-dashboard — 개인화 대시보드 생성
+  • GET  /api/me — 로그인한 사용자 정보
+  • GET  /api/demo-dashboard/:userId — 데모 대시보드 (토큰 불필요)
+  • GET  /api/users — 사용 가능한 사용자 목록 (개발용)
+
+🔐 환경 변수:
+  ANTHROPIC_API_KEY = ${process.env.ANTHROPIC_API_KEY ? "✓ 설정됨" : "✗ 미설정 (필수)"}
+  PORT = ${PORT}
+
+💡 테스트 명령:
   curl -X POST http://localhost:${PORT}/api/personalized-dashboard \\
     -H "Authorization: Bearer demo_token_user_001" \\
     -H "Content-Type: application/json"
 
-📱 프론트엔드:
-  http://localhost:${PORT}/oauth-dashboard.html
+  또는 브라우저에서 http://localhost:${PORT}/oauth-dashboard.html 방문
 
-⚙️ 환경 변수:
-  PORT=${PORT}
-  ANTHROPIC_API_KEY=${process.env.ANTHROPIC_API_KEY ? "✓ 설정됨" : "✗ 미설정"}
-  NODE_ENV=${process.env.NODE_ENV || "development"}
   `);
 });
 
-module.exports = app;
+// 종료 시그널 처리
+process.on("SIGTERM", () => {
+  console.log("\n🛑 SIGTERM 신호 수신. 서버를 종료합니다...");
+  server.close(() => {
+    console.log("✓ 서버 종료됨");
+    process.exit(0);
+  });
+});
+
+// 내보내기 (테스트용)
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = app;
+}

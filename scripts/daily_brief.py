@@ -127,7 +127,7 @@ def compute_action_lines(products, main, seasonal, signals, now):
                 outbound_num = None
             if outbound_num is not None and outbound_num >= 100:
                 period = str(exit_tour.get("period") or signals.get("asof") or "").strip()
-                put("overseas_exit", 0, f"🛫 해외여행보험 — 출입국관광통계 {period} 수치 {outbound_num:g}: 해외여행보험 수요 점검")
+                put("overseas", 0, f"🛫 해외여행보험 출국통계 {period} 수치 {outbound_num:g}: 출국수요 점검")
 
     # (2) 시즌 이슈, 메인 우선. span(정확 일자) 있으면 엔진과 동일 기준(일자), 없으면 월 폴백.
     today = now.date()
@@ -210,6 +210,14 @@ _ES = {
     "meta": "color:#8a919e;font-size:11px;line-height:1.55;margin-top:6px;overflow-wrap:anywhere;word-break:break-word;",
 }
 
+def _trim_to_sentences(text, max_sentences=3):
+    """요약을 1~3문장으로 제한. 마침표·느낌표·물음표 기준."""
+    if not text:
+        return text
+    import re
+    sentences = re.split(r'(?<=[.!?])\s+', text.strip())
+    return ' '.join(sentences[:max_sentences])
+
 
 def render_email():
     """데일리 브리핑을 반응형 이메일(HTML+텍스트)로 렌더한다.
@@ -231,7 +239,8 @@ def render_email():
         for it in news:
             tag = it.get("tag", "")
             t = esc(it.get("title", ""))
-            g = esc(hk.humanize(it.get("what", "")))
+            summary = _trim_to_sentences(it.get("what", ""), 3)
+            g = esc(hk.humanize(summary))
             src = esc(it.get("source", ""))
             dt = esc(it.get("date", ""))
             url = it.get("url", "")
@@ -274,7 +283,8 @@ def render_email():
     P += [f"[주요 뉴스 요약 · 전체 상위 {len(news)}건]"]
     for it in news:
         P.append(f"· ({it.get('tag','')}) {it.get('title','')} ({it.get('source','')}·{it.get('date','')})")
-        P.append(f"  {hk.humanize(it.get('what',''))}")
+        summary = _trim_to_sentences(it.get('what',''), 3)
+        P.append(f"  {hk.humanize(summary)}")
         if it.get("url"):
             P.append(f"  {it['url']}")
     P += ["", f"🔭 전체 대시보드 → https://{HUB}"]

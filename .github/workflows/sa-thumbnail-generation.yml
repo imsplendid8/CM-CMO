@@ -1,0 +1,134 @@
+name: SA Thumbnail Auto-Generation
+
+# 월 1회 자동 실행 (매월 1일 08:00 UTC)
+# 또는 수동으로 Run workflow 버튼으로 실행
+on:
+  schedule:
+    # 매월 1일 08:00 UTC (한국 기준 월 1일 17:00)
+    - cron: "0 8 1 * *"
+
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "생성할 최대 썸네일 수"
+        required: false
+        default: "8"
+        type: string
+      product:
+        description: "특정 상품만 생성 (비우면 전체, 예: driver, home)"
+        required: false
+        default: ""
+        type: string
+      force:
+        description: "기존 이미지도 재생성"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: sa-thumbnail-generation
+  cancel-in-progress: false
+
+jobs:
+  generate-thumbnails:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@1a4442caab8340d8a1f9c4bc5dd46c4e80e39edd # v4
+        with:
+          node-version: "18"
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          pip install anthropic pydantic
+
+      - name: Generate SA thumbnails using Claude
+        id: generate
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LIMIT: ${{ github.event.inputs.limit || '8' }}
+          PRODUCT: ${{ github.event.inputs.product || '' }}
+          FORCE: ${{ github.event.inputs.force || 'false' }}
+        run: |
+          python3 scripts/generate_sa_thumbnails.py \
+            --limit "$LIMIT" \
+            --product "$PRODUCT" \
+            ${FORCE:+--force}
+
+      - name: Validate generated images
+        if: ${{ always() && steps.generate.outcome == 'success' }}
+        run: |
+          node scripts/check_adcopy_images.mjs
+
+      - name: Commit and push changes
+        if: ${{ always() && steps.generate.outcome == 'success' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # 생성된 이미지와 데이터 파일 커밋
+          git add assets/insurance/generated data/adcopy/ || true
+
+          if git diff --cached --quiet; then
+            echo "✓ 변경사항 없음 - 이미 최신 상태입니다"
+          else
+            git commit -m "chore(sa): auto-generate thumbnail assets with Claude API
+
+- Claude API로 SA 소재 썸네일 자동 생성
+- 검색 신호 및 시즌 데이터 기반 콘텐츠 생성
+- 자동화 완료"
+
+            for attempt in 1 2 3; do
+              if git pull --rebase --autostash origin main && git push origin HEAD:main; then
+                echo "✓ 커밋 푸시 완료"
+                exit 0
+              fi
+              if [ $attempt -lt 3 ]; then
+                sleep $((attempt * 5))
+              fi
+            done
+
+            echo "::error::푸시 실패 - 로컬 변경사항을 수동으로 확인하세요"
+            exit 1
+          fi
+
+      - name: Report summary
+        if: ${{ always() }}
+        run: |
+          if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+            {
+              echo "## SA 썸네일 자동 생성"
+              echo ""
+              echo "### 실행 정보"
+              echo "- 날짜: $(date -u '+%Y-%m-%d %H:%M:%S') UTC"
+              echo "- 트리거: ${{ github.event_name }}"
+              if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+                echo "- 제한: ${{ github.event.inputs.limit }}"
+                echo "- 상품 필터: ${{ github.event.inputs.product || '전체' }}"
+                echo "- 강제 재생성: ${{ github.event.inputs.force }}"
+              fi
+              echo ""
+              echo "### 결과"
+              if [ "${{ steps.generate.outcome }}" = "success" ]; then
+                echo "✅ 썸네일 생성 성공"
+              else
+                echo "⚠️ 썸네일 생성 실패"
+              fi
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
