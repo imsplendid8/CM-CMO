@@ -1138,7 +1138,7 @@ function render(){
       <div class="spec">이미지 <b>${SPEC.image.width}×${SPEC.image.height}</b>·PNG/JPG·5MB 이하</div>
       ${seasonChips}
     </div>
-    <div class="banner"><b>소재 가이드 ${esc(MATERIAL_SPEC.verifiedAt)} · 보험광고 사전검수 ${esc(AD_REVIEW.verifiedAt)}</b> · 자동 차단 표현과 검증되지 않은 수치·보장확정 표현은 소재 생성에서 제외합니다. 결과는 협회·준법 승인이 아니며 상품자료·약관·랜딩을 사람이 확인해야 합니다. <a href="${esc(AD_REVIEW.sources.knia.url)}" target="_blank" rel="noopener">손해보험협회 심의시스템 ↗</a> · <a href="${esc(MATERIAL_SPEC.guideUrl)}" target="_blank" rel="noopener">네이버 등록 가이드 ↗</a></div>
+    <div class="banner"><b>소재 가이드 ${esc(MATERIAL_SPEC?.verifiedAt||"—")} · 보험광고 사전검수 ${esc(AD_REVIEW?.verifiedAt||"—")}</b> · 자동 차단 표현과 검증되지 않은 수치·보장확정 표현은 소재 생성에서 제외합니다. 결과는 협회·준법 승인이 아니며 상품자료·약관·랜딩을 사람이 확인해야 합니다. <a href="${esc(AD_REVIEW?.sources?.knia?.url||"#")}" target="_blank" rel="noopener">손해보험협회 심의시스템 ↗</a> · <a href="${esc(MATERIAL_SPEC?.guideUrl||"#")}" target="_blank" rel="noopener">네이버 등록 가이드 ↗</a></div>
 
     <div class="sec-lbl">📌 상품·시장 참고</div>
     ${volPanel}
