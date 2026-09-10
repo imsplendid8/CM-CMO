@@ -262,7 +262,7 @@ const HEALTH_SOURCES=[
   {name:"뉴스 클리핑",file:"data/clips/index.json",field:"updated",maxAge:2},
   {name:"수요 신호",file:"data/signals.json",field:"asof",maxAge:2},
   {name:"출국통계",file:"data/signals.json",field:"exit_tour.period",maxAge:35},
-  {name:"날씨기상정보",file:"data/signals.json",field:"weather.active",maxAge:2},
+  {name:"기상수요",file:"data/signals.json",field:"weather.active",maxAge:2},
   {name:"자동차등록대수",file:"data/signals.json",field:"newreg.period",maxAge:35},
   {name:"실측 검색량",file:"data/volume.json",field:"asof",maxAge:9},
   {name:"데이터랩",file:"data/trends.json",field:"asof",maxAge:35},
@@ -422,33 +422,32 @@ document.getElementById("sheetMask").addEventListener("click",closeSheet);
 document.getElementById("sheet").addEventListener("click",e=>{if(e.target.closest("a"))closeSheet();});  // 시트 내 링크 이동 시 닫기
 
 try{
-  console.log("🟦 Dashboard init: renderHome...");
+  console.log("🔧 Dashboard init start");
+  console.log("TOOLS defined?", typeof TOOLS !== 'undefined', "length:", TOOLS?.length);
+  console.log("renderHome defined?", typeof renderHome);
+
   renderHome();
-  console.log("✅ renderHome complete");
+  console.log("✅ renderHome() complete");
 
-  console.log("🟦 Dashboard init: loadUsage...");
   loadUsage();
-  console.log("✅ loadUsage complete");
+  console.log("✅ loadUsage() complete");
 
-  console.log("🟦 Dashboard init: renderNav...");
   const start=(location.hash||"").replace("#","");
+  // 레거시 딥링크 보존: 예전 '시즌 캘린더' 카드(#season)는 통합 캘린더의 시즌 탭으로
   const LEGACY_HASH={season:["eventcal","#season"]};
-  renderNav("home");
-  console.log("✅ renderNav complete");
 
-  console.log("🟦 Dashboard init: show...");
+  renderNav("home");
+  console.log("✅ renderNav() complete");
+
   const lg=LEGACY_HASH[start];
   if(lg&&LOCAL){show(lg[0],lg[1]);}
   else if(start&&TOOLS.some(t=>t.id===start)&&LOCAL){show(start);}
   else {show("home");}
   console.log("✅ Dashboard init complete");
-}catch(err){
-  console.error("❌ Dashboard initialization failed:", err);
-  console.error("Stack:", err.stack);
-  const homeEl=document.getElementById("home");
-  if(homeEl){
-    homeEl.innerHTML=`<div style="padding:20px;color:red;"><h2>🔴 Dashboard Error</h2><p>${esc(err.message)}</p><pre style="background:#eee;padding:10px;overflow:auto;font-size:12px;">${esc(err.stack)}</pre></div>`;
-  }
+}catch(e){
+  console.error("❌ Init error:", e.message);
+  console.error("Stack:", e.stack);
+  document.body.innerHTML="<div style='padding:20px;font-family:monospace;line-height:1.6'><h2>⚠️ 대시보드 초기화 오류</h2><pre style='background:#f0f0f0;padding:10px;overflow:auto'>"+esc(e.message)+"\n\n"+esc(e.stack)+"</pre><p><strong>브라우저 개발자도구(F12)의 콘솔 탭을 확인하세요.</strong></p></div>";
 }
 </script>
 </body>
