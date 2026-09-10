@@ -564,10 +564,6 @@ function render(){
   curKey==="__all"?renderOverview():curKey==="__pro"?renderPro():renderProduct();
   renderSidebar();
   window.scrollTo({top:0});
-  // 이벤트 핸들러 바인딩
-  const backBtn=document.getElementById("backBtn");
-  if(backBtn)backBtn.addEventListener("click",e=>{e.preventDefault();selectedKeyword=null;render();});
-  document.querySelectorAll("tr[data-kw]").forEach(tr=>tr.addEventListener("click",e=>{e.preventDefault();selectedKeyword=tr.dataset.kw;render();}));
 }
 
 function exportCsv(){
@@ -635,6 +631,8 @@ document.addEventListener("click",e=>{
   const autoInput=e.target.closest("[data-auto-key]");if(autoInput){autoInput.checked?AUTO_SELECTED.add(autoInput.dataset.autoKey):AUTO_SELECTED.delete(autoInput.dataset.autoKey);return;}
   if(e.target.closest("#autoSelectNew")){const p=getP(curKey);if(!p)return;autocompleteRows(p.key).forEach(row=>{const key=autoSelectionKey(p.key,row.keyword);if(row.isNew&&row.registration==="recommended")AUTO_SELECTED.add(key);});render();toast("신규 등록 추천 키워드를 선택했습니다");return;}
   if(e.target.closest("#autoExport")){exportSelectedAutocomplete();return;}
+  if(e.target.closest("#backBtn")){selectedKeyword=null;render();return;}
+  const ktr=e.target.closest("tr[data-kw]"); if(ktr&&volMode==="history"){selectedKeyword=ktr.dataset.kw;render();return;}
   const si=e.target.closest(".sb-item,[data-key]"); if(si&&si.dataset.key){curKey=si.dataset.key;render();return;}
   const sg=e.target.closest("#pfSeg button"); if(sg){pf=sg.dataset.pf;document.querySelectorAll("#pfSeg button").forEach(b=>b.classList.toggle("on",b===sg));render();return;}
   const vm=e.target.closest("#volMode button"); if(vm){volMode=vm.dataset.mode;document.querySelectorAll("#volMode button").forEach(b=>b.classList.toggle("on",b===vm));selectedKeyword=null;render();return;}
