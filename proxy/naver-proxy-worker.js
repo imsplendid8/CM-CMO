@@ -28,7 +28,7 @@
 const ALLOW_ORIGINS = [
   "https://imsplendid8.github.io",
 ];
-const ROUTE_DAILY_MAX = { search: 500, datalab: 100, searchad: 100, feedback: 200, dashboard: 500 };
+const ROUTE_DAILY_MAX = { search: 500, datalab: 100, searchad: 100, feedback: 200, dashboard: 500, gsc: 200 };
 const MAX_QUERY_LENGTH = 4096;
 const MAX_BODY_BYTES = 64 * 1024;
 const MAX_FEEDBACK_META_BYTES = 8 * 1024;
@@ -66,6 +66,12 @@ function routeAllowed(method, p) {
   if (p === "/v1/feedback") return method === "POST";
   // OAuth 팀 대시보드 (Claude API 연동)
   if (p === "/api/personalized-dashboard") return method === "POST";
+  // Google Search Console
+  if (p === "/gsc/authorize") return method === "POST";
+  if (p === "/gsc/callback") return method === "GET";
+  if (p === "/gsc/query-metrics") return method === "GET";
+  if (p === "/gsc/index-status") return method === "GET";
+  if (p === "/gsc/crawl-errors") return method === "GET";
   return false;
 }
 
@@ -77,7 +83,7 @@ async function hmacSha256B64(secret, msg) {
 
 // ── 사용량/레이트리밋 ──
 const today = () => new Date().toISOString().slice(0, 10); // UTC 기준일
-const DAILY_LIMIT = { search: 25000, datalab: 1000, searchad: null, dashboard: 1000, feedback: 5000 };
+const DAILY_LIMIT = { search: 25000, datalab: 1000, searchad: null, dashboard: 1000, feedback: 5000, gsc: 500 };
 async function bump(env, cat) {
   try {
     const k = `u:${cat}:${today()}`;
@@ -99,12 +105,13 @@ const routeCategory = (p) => p.startsWith("/naver/v1/datalab/") ? "datalab"
   : p.startsWith("/naver/v1/search/") ? "search"
   : p === "/searchad/keywordstool" ? "searchad"
   : p === "/api/personalized-dashboard" ? "dashboard"
+  : p.startsWith("/gsc/") ? "gsc"
   : "feedback";
 async function usageReport(env) {
   const date = today();
-  const out = { date, tracked: !!(env && env.USAGE), limits: DAILY_LIMIT, usage: { search: 0, datalab: 0, searchad: 0, dashboard: 0, feedback: 0 } };
+  const out = { date, tracked: !!(env && env.USAGE), limits: DAILY_LIMIT, usage: { search: 0, datalab: 0, searchad: 0, dashboard: 0, feedback: 0, gsc: 0 } };
   if (env && env.USAGE) {
-    for (const cat of ["search", "datalab", "searchad", "dashboard", "feedback"]) {
+    for (const cat of ["search", "datalab", "searchad", "dashboard", "feedback", "gsc"]) {
       out.usage[cat] = parseInt((await env.USAGE.get(`u:${cat}:${date}`)) || "0", 10);
     }
   }
@@ -436,6 +443,162 @@ export default {
         const body = await r.text();
         await bump(env, "searchad");
         return new Response(body, { status: r.status, headers: corsFor(origin, { "content-type": "application/json; charset=utf-8" }) });
+      }
+
+      // ── Google Search Console OAuth & API ──
+      if (p.startsWith("/gsc/")) {
+        const clientId = env.GOOGLE_OAUTH_CLIENT_ID;
+        const clientSecret = env.GOOGLE_OAUTH_CLIENT_SECRET;
+        const redirectUri = env.GOOGLE_OAUTH_REDIRECT_URI;
+
+        // OAuth 인증 시작
+        if (p === "/gsc/authorize") {
+          if (!clientId) return jsonFor(origin, { error: "GSC client not configured: GOOGLE_OAUTH_CLIENT_ID" }, 500);
+          const state = Math.random().toString(36).substring(7);
+          const scope = "https://www.googleapis.com/auth/webmasters.readonly";
+          const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}&state=${encodeURIComponent(state)}&access_type=offline&prompt=consent`;
+
+          // 상태 저장 (세션용, 간단히 메모리 사용)
+          if (env.GSC_TOKENS) {
+            const key = `gsc_state:${state}`;
+            await env.GSC_TOKENS.put(key, JSON.stringify({ created: Date.now() }), { expirationTtl: 600 });
+          }
+
+          return new Response(JSON.stringify({ authUrl }), {
+            status: 200,
+            headers: corsFor(origin, { "content-type": "application/json; charset=utf-8" })
+          });
+        }
+
+        // OAuth 콜백
+        if (p === "/gsc/callback") {
+          const code = url.searchParams.get("code");
+          const state = url.searchParams.get("state");
+
+          if (!code || !state) return jsonFor(origin, { error: "missing code or state" }, 400);
+          if (!clientId || !clientSecret || !redirectUri) {
+            return jsonFor(origin, { error: "GSC client not configured" }, 500);
+          }
+
+          try {
+            const tokenResp = await fetch("https://oauth2.googleapis.com/token", {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded" },
+              body: `code=${encodeURIComponent(code)}&client_id=${encodeURIComponent(clientId)}&client_secret=${encodeURIComponent(clientSecret)}&redirect_uri=${encodeURIComponent(redirectUri)}&grant_type=authorization_code`
+            });
+
+            if (!tokenResp.ok) {
+              return jsonFor(origin, { error: "token exchange failed" }, 502);
+            }
+
+            const tokenData = await tokenResp.json();
+            const sessionId = Math.random().toString(36).substring(7);
+
+            // 토큰을 KV에 저장 (24시간)
+            if (env.GSC_TOKENS) {
+              const key = `gsc_token:${sessionId}`;
+              await env.GSC_TOKENS.put(key, JSON.stringify({
+                accessToken: tokenData.access_token,
+                refreshToken: tokenData.refresh_token,
+                expiresIn: tokenData.expires_in,
+                created: Date.now()
+              }), { expirationTtl: 86400 });
+            }
+
+            await bump(env, "gsc");
+            return jsonFor(origin, { ok: true, sessionId });
+          } catch (e) {
+            return jsonFor(origin, { error: "token exchange error: " + String(e.message) }, 502);
+          }
+        }
+
+        // GSC 쿼리 메트릭 조회
+        if (p === "/gsc/query-metrics" && req.method === "GET") {
+          const sessionId = url.searchParams.get("sessionId");
+          const property = url.searchParams.get("property") || "https://www.hanwhadirect.com/";
+
+          if (!sessionId) return jsonFor(origin, { error: "sessionId required" }, 400);
+          if (!clientId || !clientSecret) return jsonFor(origin, { error: "GSC client not configured" }, 500);
+          if (!env.GSC_TOKENS) return jsonFor(origin, { error: "GSC token storage not configured" }, 503);
+
+          try {
+            const tokenKey = `gsc_token:${sessionId}`;
+            const tokenJson = await env.GSC_TOKENS.get(tokenKey);
+            if (!tokenJson) return jsonFor(origin, { error: "session not found" }, 401);
+
+            let tokenData = JSON.parse(tokenJson);
+            const now = Date.now();
+
+            // 토큰 갱신 필요 여부 확인
+            if (now - tokenData.created > (tokenData.expiresIn - 300) * 1000) {
+              const refreshResp = await fetch("https://oauth2.googleapis.com/token", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `client_id=${encodeURIComponent(clientId)}&client_secret=${encodeURIComponent(clientSecret)}&refresh_token=${encodeURIComponent(tokenData.refreshToken)}&grant_type=refresh_token`
+              });
+
+              if (refreshResp.ok) {
+                const newTokenData = await refreshResp.json();
+                tokenData = {
+                  accessToken: newTokenData.access_token,
+                  refreshToken: newTokenData.refresh_token || tokenData.refreshToken,
+                  expiresIn: newTokenData.expires_in,
+                  created: now
+                };
+                await env.GSC_TOKENS.put(tokenKey, JSON.stringify(tokenData), { expirationTtl: 86400 });
+              }
+            }
+
+            // GSC API 호출
+            const gscApiUrl = `https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(property)}/searchAnalytics/query`;
+            const startDate = new Date(now - 28 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+            const endDate = new Date(now).toISOString().split("T")[0];
+
+            const gscResp = await fetch(gscApiUrl, {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${tokenData.accessToken}`,
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                startDate,
+                endDate,
+                dimensions: ["query"],
+                rowLimit: 10,
+                startRow: 0
+              })
+            });
+
+            if (!gscResp.ok) {
+              return jsonFor(origin, { error: `GSC API error: ${gscResp.status}` }, gscResp.status === 401 ? 401 : 502);
+            }
+
+            const gscData = await gscResp.json();
+            await bump(env, "gsc");
+
+            // 데이터 변환 (샘플 포맷)
+            const rows = gscData.rows || [];
+            const metrics = {
+              totalClicks: rows.reduce((s, r) => s + (r.clicks || 0), 0),
+              totalImpressions: rows.reduce((s, r) => s + (r.impressions || 0), 0),
+              avgPosition: rows.length ? (rows.reduce((s, r) => s + (r.position || 0), 0) / rows.length).toFixed(1) : 0,
+              avgCTR: rows.length ? (rows.reduce((s, r) => s + (r.ctr || 0), 0) / rows.length).toFixed(2) : 0,
+              topQueries: rows.map(r => ({
+                query: r.keys[0] || "",
+                clicks: Math.round(r.clicks || 0),
+                impressions: Math.round(r.impressions || 0),
+                position: (r.position || 0).toFixed(1),
+                ctr: (r.ctr || 0).toFixed(2)
+              }))
+            };
+
+            return jsonFor(origin, metrics);
+          } catch (e) {
+            return jsonFor(origin, { error: "GSC query failed: " + String(e.message) }, 502);
+          }
+        }
+
+        return jsonFor(origin, { error: "unknown GSC route" }, 404);
       }
 
       return jsonFor(origin, { error: "unknown route" }, 404);

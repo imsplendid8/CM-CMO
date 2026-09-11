@@ -1376,6 +1376,17 @@ document.addEventListener("click",e=>{
 
 /* ── Google Search Console 검색 성과 ── */
 function renderGSC(){
+  const sessionId=sessionStorage.getItem("gsc_sessionId");
+  if(!sessionId){
+    $("#v-gsc").innerHTML=`
+      <div style="padding:40px;text-align:center;color:var(--ink-2)">
+        <div style="font-size:14px;margin-bottom:20px">Google Search Console 데이터를 연결하세요</div>
+        <button id="gscLoginBtn" style="padding:10px 24px;background:var(--grad);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600">GSC 계정 연결</button>
+        <div style="font-size:11px;color:var(--muted);margin-top:16px">한화손보 직접 계정만 조회 가능합니다</div>
+      </div>`;
+    return;
+  }
+
   const sum=GSC_DATA.summary||{};
   const formatNum=n=>(n||0).toLocaleString();
   const cwvScore=(pct)=>pct>=75?"A (양호)":pct>=50?"B (보통)":"C (개선 필요)";
@@ -1511,6 +1522,29 @@ function setView(v){
   window.scrollTo({top:0,behavior:"auto"});
 }
 function selectProduct(k){curKey=k;setView("product");}
+async function initGSCLogin(){
+  const loginBtn=$("#gscLoginBtn");
+  if(!loginBtn)return;
+  loginBtn.addEventListener("click",async()=>{
+    loginBtn.disabled=true;
+    loginBtn.textContent="인증 중...";
+    try{
+      const resp=await fetch(`${DEFAULT_PROXY}/gsc/authorize`,{method:"POST"});
+      const data=await resp.json();
+      if(data.authUrl){
+        window.location.href=data.authUrl;
+      }else{
+        toast("인증 실패: "+data.error);
+        loginBtn.disabled=false;
+        loginBtn.textContent="GSC 계정 연결";
+      }
+    }catch(e){
+      toast("오류: "+e.message);
+      loginBtn.disabled=false;
+      loginBtn.textContent="GSC 계정 연결";
+    }
+  });
+}
 document.addEventListener("click",e=>{
   const nb=e.target.closest("[data-nav]"); if(nb){setView(nb.dataset.nav);return;}
   const sp=e.target.closest("[data-screen]"); if(sp){selectProduct(sp.dataset.screen);return;}
@@ -1533,11 +1567,35 @@ let GSC_DATA={asof:null,summary:{},topQueries:[],byProduct:{},indexStatus:{},cra
 /* ── init ── */
 $("#productCount").textContent=PRODUCTS.length;
 setView("dash");
+
+// GSC 콜백 처리 (OAuth 완료 후)
+const urlParams=new URLSearchParams(window.location.search);
+const gscCode=urlParams.get("code");
+if(gscCode){
+  const gscState=urlParams.get("state");
+  fetch(`${DEFAULT_PROXY}/gsc/callback?code=${encodeURIComponent(gscCode)}&state=${encodeURIComponent(gscState)}`).then(r=>r.json()).then(d=>{
+    if(d.sessionId){
+      sessionStorage.setItem("gsc_sessionId",d.sessionId);
+      toast("GSC 연결 완료");
+      window.history.replaceState({},document.title,window.location.pathname);
+      if(view==="gsc")renderGSC();
+    }else{
+      toast("GSC 인증 실패");
+    }
+  }).catch(e=>toast("오류: "+e.message));
+}
+
 Promise.all([
   fetch("data/volume.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.source==="searchad"&&d.products)SEO_VOL=d;}).catch(()=>{}),
   fetch("data/seo/site-observations.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)SEO_INTEL_DATA=Object.assign({},SEO_INTEL_DATA,d,intelLoadStore()||{});}).catch(()=>{}),
-  fetch("data/gsc-sample.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)GSC_DATA=d;}).catch(()=>{}),
-]).then(()=>{if(view==="product")renderScreen(); if(view==="intel")renderIntel();});
+  (()=>{
+    const sessionId=sessionStorage.getItem("gsc_sessionId");
+    if(sessionId){
+      return fetch(`${DEFAULT_PROXY}/gsc/query-metrics?sessionId=${encodeURIComponent(sessionId)}`,{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.topQueries)GSC_DATA={summary:d,topQueries:d.topQueries||[],byProduct:{},indexStatus:{},crawlErrors:[]};}).catch(()=>{});
+    }
+    return fetch("data/gsc-sample.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)GSC_DATA=d;}).catch(()=>{});
+  })(),
+]).then(()=>{if(view==="product")renderScreen(); if(view==="intel")renderIntel(); initGSCLogin();});
 </script>
 </body>
 </html>
