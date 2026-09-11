@@ -388,6 +388,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
     <div class="content">
       <section class="view" id="v-dash"></section>
       <section class="view" id="v-product"></section>
+      <section class="view" id="v-gsc"></section>
       <section class="view" id="v-intel"></section>
       <section class="view" id="v-pro"></section>
     </div>
@@ -650,8 +651,26 @@ const $=(s,el=document)=>el.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 const charLen=s=>[...s].length, utf8Len=s=>new TextEncoder().encode(s).length;
 const euckrLen=s=>{let n=0;for(const c of s)n+=(c.codePointAt(0)>127?2:1);return n;};
-const gScore=p=>Math.round(AXES.reduce((s,k)=>s+p.ax[k]*W.google[k],0));
-const nScore=p=>Math.round(AXES.reduce((s,k)=>s+p.ax[k]*W.naver[k],0));
+function gScore(p){
+  let base=AXES.reduce((s,k)=>s+p.ax[k]*W.google[k],0);
+  const gscProd=GSC_DATA.byProduct?.[p.key];
+  if(gscProd){
+    const posScore=Math.max(0,100-(gscProd.avgPosition||100)*5);
+    const ctrScore=Math.min(100,(gscProd.avgCTR||0)*10);
+    base+=posScore*0.1+ctrScore*0.1;
+  }
+  return Math.round(base);
+}
+function nScore(p){
+  let base=AXES.reduce((s,k)=>s+p.ax[k]*W.naver[k],0);
+  const gscProd=GSC_DATA.byProduct?.[p.key];
+  if(gscProd){
+    const posScore=Math.max(0,100-(gscProd.avgPosition||100)*5);
+    const ctrScore=Math.min(100,(gscProd.avgCTR||0)*10);
+    base+=posScore*0.08+ctrScore*0.08;
+  }
+  return Math.round(base);
+}
 const grade=n=>n>=80?["A","good"]:n>=65?["B","good"]:n>=50?["C","mid"]:n>=40?["D","mid"]:["F","bad"];
 const sevWord=v=>v==="good"?"양호":v==="mid"?"보통":"수정필요";
 const bgOf=g=>g==="good"?"var(--good-bg)":g==="mid"?"var(--mid-bg)":"var(--bad-bg)";
@@ -1355,6 +1374,69 @@ document.addEventListener("click",e=>{
   }
 });
 
+/* ── Google Search Console 검색 성과 ── */
+function renderGSC(){
+  const sum=GSC_DATA.summary||{};
+  const formatNum=n=>(n||0).toLocaleString();
+  const cwvScore=(pct)=>pct>=75?"A (양호)":pct>=50?"B (보통)":"C (개선 필요)";
+  const kpi=(num,lbl,sub,col)=>`<div class="kpi"><div class="k-num"${col?` style="color:${col}"`:""}>${typeof num==="number"?formatNum(num):num}</div><div class="k-lbl">${lbl}</div>${sub?`<div class="k-sub" style="color:${col||"var(--muted)"}">${sub}</div>`:""}</div>`;
+
+  const queries=GSC_DATA.topQueries||[];
+  const queryHtml=queries.slice(0,10).map((q,i)=>`<div class="rank-item">
+    <span class="ri-rank">${i+1}</span>
+    <span class="ri-name">${esc(q.query||"")}<small>위치 ${(q.position||0).toFixed(1)} · CTR ${(q.ctr||0).toFixed(1)}%</small></span>
+    <span class="ri-score" style="background:var(--brand-50);color:var(--brand-600)">${formatNum(q.clicks||0)} 클릭</span></div>`).join("");
+
+  const indexStatus=GSC_DATA.indexStatus||{};
+  const crawlErr=GSC_DATA.crawlErrors||[];
+
+  $("#v-gsc").innerHTML=`
+    <div class="kpi-row">
+      ${kpi(formatNum(sum.totalClicks||0),"총 클릭수","지난 28일","var(--good)")}
+      ${kpi(formatNum(sum.totalImpressions||0),"총 노출수","검색 결과","var(--brand-600)")}
+      ${kpi((sum.avgPosition||0).toFixed(1),"평균 순위","낮을수록 좋음",sum.avgPosition<=5?"var(--good)":sum.avgPosition<=10?"var(--mid)":"var(--bad)")}
+      ${kpi((sum.avgCTR||0).toFixed(2)+"%","평균 CTR","클릭율","var(--mid)")}
+    </div>
+    <div class="dash-2">
+      <div class="panel">
+        <h3>📊 상위 검색어 (클릭)</h3>
+        ${queryHtml}
+      </div>
+      <div class="panel">
+        <h3>⚙️ 기술적 상태</h3>
+        <div class="wstd">
+          <div class="wstd-h">코어 웹 바이탈</div>
+          <div class="wstd-cols">
+            <div><b>LCP:</b> <span class="good">${cwvScore(sum.coreWebVitals?.lcp?.good||0)}</span></div>
+            <div><b>FID:</b> <span class="good">${cwvScore(sum.coreWebVitals?.fid?.good||0)}</span></div>
+          </div>
+        </div>
+        <div class="wstd">
+          <div class="wstd-h">색인 상태</div>
+          <div class="wstd-cols">
+            <div><b>색인됨:</b> ${formatNum(indexStatus.totalIndexed||0)}</div>
+            <div><b>발견됨:</b> ${formatNum(indexStatus.totalDiscovered||0)}</div>
+          </div>
+        </div>
+        ${crawlErr.length?`<div class="wstd">
+          <div class="wstd-h">크롤링 오류</div>
+          <div class="wstd-cols">
+            ${crawlErr.map(e=>`<div><b>${esc(e.type||"")}:</b> <span class="bad">${e.count}건</span></div>`).join("")}
+          </div>
+        </div>`:""}
+      </div>
+    </div>
+    <div class="panel" style="margin-top:16px">
+      <h3>💡 GSC 데이터 기반 인사이트</h3>
+      <div style="font-size:12.5px;color:var(--ink-2);line-height:1.8">
+        · <b>검색 가시성:</b> 평균 순위 ${(sum.avgPosition||"").toFixed(1)} 유지 → 상위 5위 진입 검색어 ${queries.filter(q=>q.position<=5).length}개<br>
+        · <b>클릭률 개선:</b> 현재 ${(sum.avgCTR||0).toFixed(2)}% CTR → 제목/설명 개선 시 +15% 기대<br>
+        · <b>Core Web Vitals:</b> LCP·FID·CLS 각 ${(sum.coreWebVitals?.lcp?.good||0)}% · ${(sum.coreWebVitals?.fid?.good||0)}% · ${(sum.coreWebVitals?.cls?.good||0)}% 양호<br>
+        · <b>색인 적용:</b> 발견된 ${formatNum(indexStatus.totalDiscovered||0)}개 중 ${formatNum(indexStatus.totalIndexed||0)}개 색인 (${Math.round((indexStatus.totalIndexed||0)/(indexStatus.totalDiscovered||1)*100)}%)
+      </div>
+    </div>`;
+}
+
 /* ── 대시보드 ── */
 function renderDash(){
   const rows=PRODUCTS.map(p=>({p,g:gScore(p),n:nScore(p)}));
@@ -1413,13 +1495,15 @@ function renderSidebar(){
     `<div class="sb-cap">장기 · ${catProducts("장기").length}</div>`+catProducts("장기").map(prodBtn).join("")+
     `<div class="sb-cap">일반 · ${catProducts("일반").length}</div>`+catProducts("일반").map(prodBtn).join("")+
     `<div class="sb-cap">도구</div>`+
+    `<button class="sb-item${view==="gsc"?" on":""}" data-nav="gsc"><span class="sb-ico">📊</span>검색 성과</button>`+
     `<button class="sb-item${view==="intel"?" on":""}" data-nav="intel"><span class="sb-ico">🧭</span>SEO 인텔</button>`+
     `<button class="sb-item${view==="pro"?" on":""}" data-nav="pro"><span class="sb-ico">⚡</span>범용 진단</button>`;
 }
 function setView(v){
   view=v;
-  ["dash","product","intel","pro"].forEach(x=>$("#v-"+x).classList.remove("on"));
+  ["dash","product","gsc","intel","pro"].forEach(x=>$("#v-"+x).classList.remove("on"));
   if(v==="dash"){$("#v-dash").classList.add("on");$("#pageTitle").textContent="대시보드";renderDash();}
+  else if(v==="gsc"){$("#v-gsc").classList.add("on");$("#pageTitle").textContent="검색 성과 (GSC)";renderGSC();}
   else if(v==="intel"){$("#v-intel").classList.add("on");$("#pageTitle").textContent="SEO 인텔";renderIntel();}
   else if(v==="pro"){$("#v-pro").classList.add("on");$("#pageTitle").textContent="범용 진단";renderPro();}
   else if(v==="product"){$("#v-product").classList.add("on");renderScreen();}
@@ -1444,12 +1528,15 @@ $("#themeBtn").addEventListener("click",()=>{
   const dark=cur?cur==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
   document.documentElement.setAttribute("data-theme",dark?"light":"dark");try{localStorage.setItem("mf_theme",dark?"light":"dark")}catch(_){}});
 
+/* ── GSC 데이터 ── */
+let GSC_DATA={asof:null,summary:{},topQueries:[],byProduct:{},indexStatus:{},crawlErrors:[]};
 /* ── init ── */
 $("#productCount").textContent=PRODUCTS.length;
 setView("dash");
 Promise.all([
   fetch("data/volume.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.source==="searchad"&&d.products)SEO_VOL=d;}).catch(()=>{}),
   fetch("data/seo/site-observations.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)SEO_INTEL_DATA=Object.assign({},SEO_INTEL_DATA,d,intelLoadStore()||{});}).catch(()=>{}),
+  fetch("data/gsc-sample.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)GSC_DATA=d;}).catch(()=>{}),
 ]).then(()=>{if(view==="product")renderScreen(); if(view==="intel")renderIntel();});
 </script>
 </body>
