@@ -1377,15 +1377,6 @@ document.addEventListener("click",e=>{
 /* ── Google Search Console 검색 성과 ── */
 function renderGSC(){
   const sessionId=sessionStorage.getItem("gsc_sessionId");
-  if(!sessionId){
-    $("#v-gsc").innerHTML=`
-      <div style="padding:40px;text-align:center;color:var(--ink-2)">
-        <div style="font-size:14px;margin-bottom:20px">Google Search Console 데이터를 연결하세요</div>
-        <button id="gscLoginBtn" style="padding:10px 24px;background:var(--grad);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600">GSC 계정 연결</button>
-        <div style="font-size:11px;color:var(--muted);margin-top:16px">한화손보 직접 계정만 조회 가능합니다</div>
-      </div>`;
-    return;
-  }
 
   const sum=GSC_DATA.summary||{};
   const formatNum=n=>(n||0).toLocaleString();
@@ -1401,7 +1392,13 @@ function renderGSC(){
   const indexStatus=GSC_DATA.indexStatus||{};
   const crawlErr=GSC_DATA.crawlErrors||[];
 
+  const loginPrompt=!sessionId?`<div style="padding:20px;background:var(--brand-50);border-radius:8px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between">
+    <div><div style="font-size:13px;font-weight:600;color:var(--brand-600)">📊 실시간 GSC 데이터 연결</div><div style="font-size:11px;color:var(--brand-600);margin-top:4px">Google Search Console 계정을 연결하면 실제 검색 성과를 확인할 수 있습니다</div></div>
+    <button id="gscLoginBtn" style="padding:8px 16px;background:var(--grad);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;white-space:nowrap;margin-left:16px">연결하기</button>
+  </div>`:"";
+
   $("#v-gsc").innerHTML=`
+    ${loginPrompt}
     <div class="kpi-row">
       ${kpi(formatNum(sum.totalClicks||0),"총 클릭수","지난 28일","var(--good)")}
       ${kpi(formatNum(sum.totalImpressions||0),"총 노출수","검색 결과","var(--brand-600)")}
