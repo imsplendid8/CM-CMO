@@ -461,21 +461,23 @@ function genSubTitles(p){
   ];
   return wrap(pool,4,SPEC.titleMax);
 }
-/* ③ 설명 롤링 (20~45자) — 실제 시트 4번 컬럼(롤링) */
+/* ③ 설명 롤링 (20~45자) — 기획 각도 + 차별점을 포함한 설명 */
 function genDescs(p){
-  const n=p.name, a=al(p), c3=p.covers.slice(0,3).join("·");
+  const n=p.name, a=al(p), c3=p.covers.slice(0,3).join("·"), c0=p.covers[0], c1=p.covers[p.covers.length-1];
   if(REVIEW_REFERENCE[p.key])return wrapReference(REVIEW_REFERENCE[p.key].descriptions,SPEC.descMin,SPEC.descMax);
   if(p.cat==="사이트")return wrap(["한화손보 다이렉트 공식 사이트에서 상품별 보험료 계산","필요한 보험상품을 고르고 온라인 설계 조건 확인"],SPEC.descMin,SPEC.descMax);
   const pool=[
     `${c3}, 항목별 지급사유와 제외 조건을 나란히 비교`,
-    `${p.covers[0]}을 찾는다면 적용 시점과 가입 조건부터 정리`,
-    `${p.covers[0]}과 ${p.covers[p.covers.length-1]}, 필요한 항목을 골라 보험료 계산`,
-    `${a} 설계 화면에서 선택 항목과 최종 보험료를 함께 비교`,
-    `${n}, 검색 결과에서 놓친 질문을 상품 안내에서 이어서 확인`,
+    `${c0}을 찾는다면 적용 시점과 가입 조건부터 정리`,
+    `${c0}과 ${c1}, 필요한 항목을 골라 보험료 계산`,
+    `${a} 설계에서 선택 항목과 최종 보험료를 함께 비교`,
+    `검색 뒤 질문 정리부터 ${c0} 적용 범위까지 한 번에`,
+    `${c0} 지급사유는? ${c1}은 안 되나? 상품 안내에서 답하기`,
+    `${n} 가입 전 놓치기 쉬운 제외 조건과 적용 시점`,
   ];
   return wrap(pool,SPEC.descMin,SPEC.descMax);
 }
-/* ④ 추가설명 (≤45자, 광고그룹당 최대 4개) */
+/* ④ 추가설명 (≤45자, 광고그룹당 최대 4개) — 청구·제외·경계 중심 */
 function genAdditionalDescs(p){
   const a=al(p), c0=p.covers[0], c1=p.covers[p.covers.length-1];
   if(p.cat==="사이트")return wrap([
@@ -486,11 +488,13 @@ function genAdditionalDescs(p){
   ],2,SPEC.additionalDescMax);
   return wrap([
     `${c0}의 지급사유와 보장하지 않는 경우를 함께 비교`,
-    `${a} 보험료 계산 전 선택 항목과 가입 조건을 정리`,
+    `${c0} 청구 전 필요 서류와 제외 조건부터 확인`,
     `${c0}과 ${c1}, 두 항목의 적용 범위를 나란히 비교`,
-    `${p.name} 설계 결과와 최종 청약 내용을 다시 확인`,
+    `${p.name} 설계 후 청약 내용 재확인과 지급사유 미리 보기`,
     `${c0} 관련 검색 뒤 놓치기 쉬운 적용 시점까지 확인`,
-    `${p.name} 상품 안내에서 질문을 정리한 뒤 보험료 계산`,
+    `${p.name} 약관 목차에서 지급 기준·제외·특약 찾기`,
+    `${c0} 청구 거절 사례와 실제 적용 기준 이해하기`,
+    `가입 조건·적용 시점·제외 조건, 상품 안내에서 3단계 확인`,
   ],2,SPEC.additionalDescMax);
 }
 /* ⑤ 홍보문구 (≤14자, 광고그룹당 최대 2개) — 확인되지 않은 할인·속도 주장은 생성하지 않는다. */
@@ -514,7 +518,7 @@ function genSubs(p){
   return wrap(pool,2,SPEC.subMax);
 }
 
-/* 월간 SERP 공통 기획안을 제목·설명·추가설명·홍보문구·이미지에 함께 적용한다. */
+/* 월간 SERP 기획안(angle·our_coverage·competitor_gap·customer_pain·why_now)을 SA 소재에 반영 */
 function serpIdeas(p){
   const a=AD_ANALYSIS[p.key]||{}, common=a.common_soju||[];
   const overlaps=x=>common.some(c=>x.includes(c)||c.includes(x));
@@ -530,12 +534,18 @@ function serpIdeas(p){
   const observedBrands=(a.observed_ads||[]).map(x=>x.brand).filter(Boolean).slice(0,2).join("·")||"경쟁사";
   const lastCover=(p.covers||[])[(p.covers||[]).length-1]||selectedAngle;
   const monitoring=agent.monitoring||{},market=agent.market_patterns||{},basis=`${agent.latest_date||a.latest_date||AD_META.asof||"기준일 없음"} · ${observedBrands} 관측`;
+  const serp_angle=agent.serp_angle||"",serp_coverage=agent.serp_coverage||"",serp_gap=agent.serp_gap||"",serp_pain=agent.serp_pain||"";
+  const enhanced=serp_angle?[
+    {strategy:"차별 각도형",title:title(`${serp_angle.split("→")[0]}만 우리가 다루는 이유`,serp_angle),desc:`${serp_angle.split("→")[0]}은 경쟁사와 달리 ${serp_coverage||selectedAngle}부터 정리`,why:`SERP: ${serp_gap||"차별점 공백"}을 우리 보장으로 채우는 전략`},
+    {strategy:"고객 질문 답변형",title:serp_pain?title(`${serp_pain.split(": ")[0]}? 보장하나요`,selectedAngle):title(`${selectedDemand} 검색 뒤 나오는 질문`,`${selectedAngle} 확인`),desc:`"${serp_pain||selectedDemand}" 검색자가 묻는 것을 상품 안내에서 답하기`,why:`실제 고객 질문 중심의 소재 · ${basis}`},
+    {strategy:"보장 범위 명확화형",title:title(`${serp_coverage}의 범위: ${selectedAngle}은 O, ${lastCover}은 X`,`${selectedAngle}·${lastCover} 경계`),desc:`${serp_coverage}의 지급사유와 제외 조건을 명확히 구분`,why:`고객 청구 거절의 원인(경계 오해)을 선제적으로 해결`},
+  ]:[];
   const fallback=hasEvidence?[
     {strategy:"SERP 공백형",title:title(`${selectedAngle} 조건 읽기`,`${al(p)} 선택 기준`),desc:`${selectedAngle}, 이름보다 지급사유·제외 조건·적용 시점을 먼저 확인`,why:`${basis} · 공통 소구 ${common.join("·")||"없음"}을 반복하지 않은 상품 각도`},
     {strategy:"검색 행동형",title:title(`${al(p)} 보험료 계산`,`${al(p)} 설계 안내`),desc:`${selectedDemand} 검색 뒤 ${selectedAngle} 선택 항목과 보험료를 나란히 비교`,why:`실측 검색어 ‘${selectedDemand}’와 SERP 추천 소구 ‘${selectedAngle}’를 함께 반영`},
     {strategy:"항목 비교형",title:title(`${selectedAngle}·${lastCover} 비교`,`${al(p)} 항목 비교`),desc:`${selectedAngle}과 ${lastCover}, 각각의 적용 상황을 상품 안내에서 비교`,why:`SERP 추천 소구를 상품 마스터의 범위 안에서 비교형으로 확장`},
   ]:[];
-  const raw=(agent.sa_recommendations?.length?agent.sa_recommendations.map(x=>({...x,desc:x.description||x.desc})):fallback);
+  const raw=(agent.sa_recommendations?.length?agent.sa_recommendations.map(x=>({...x,desc:x.description||x.desc})):(enhanced.length?enhanced:fallback));
   const candidates=raw.map(x=>({...x,title:dw(HUMANIZE.light(x.title)),desc:dw(HUMANIZE.light(x.desc))}))
     .filter(x=>clen(x.title)>=4&&clen(x.title)<=SPEC.titleMax&&clen(x.desc)>=SPEC.descMin&&clen(x.desc)<=SPEC.descMax&&!lintBan(x.title+x.desc).length)
     .filter(inScope)
