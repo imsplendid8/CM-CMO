@@ -11,6 +11,7 @@
 - 공개 뉴스 헤드라인·링크만 저장(데이터 거버넌스).
 """
 import os, sys, json, re, datetime, urllib.parse, urllib.request
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 try:
     from scripts.io_utils import atomic_json_write
@@ -80,12 +81,15 @@ def main():
         src = "sample"
     else:
         src = "naver"
-        for c in cats:
-            try:
-                items = naver_news(c["q"])
-                if items: clip_cats[c["key"]] = {"name": c["name"], "q": c["q"], "items": items}
-            except Exception as e:
-                clip_cats[c["key"]] = {"name": c["name"], "q": c["q"], "items": [], "error": str(e)[:100]}
+        with ThreadPoolExecutor(max_workers=6) as executor:
+            futures = {executor.submit(naver_news, c["q"]): c for c in cats}
+            for future in as_completed(futures):
+                c = futures[future]
+                try:
+                    items = future.result()
+                    if items: clip_cats[c["key"]] = {"name": c["name"], "q": c["q"], "items": items}
+                except Exception as e:
+                    clip_cats[c["key"]] = {"name": c["name"], "q": c["q"], "items": [], "error": str(e)[:100]}
 
     # 같은 날 파일 병합(오전+오후) · url dedup
     fpath = os.path.join(CLIPS, f"{TODAY}.json")
