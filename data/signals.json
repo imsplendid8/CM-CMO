@@ -1,14 +1,14 @@
 {
-  "asof": "2026-09-11",
+  "asof": "2026-09-12",
   "source": "data.go.kr",
   "weather": {
     "active": [],
-    "error": "HTTP Error 403: Forbidden"
+    "error": "<urlopen error timed out>"
   },
   "travel": {
-    "overseas_ratio": 79.3,
-    "period": "2026-09-10",
-    "avg": 79.9,
+    "overseas_ratio": 78.0,
+    "period": "2026-09-11",
+    "avg": 80.0,
     "peak": 100,
     "basis": "최근 7일 평균 vs 90일"
   },
@@ -52,35 +52,24 @@
     ]
   },
   "newreg": {
-    "count": 6777673.0,
+    "count": null,
     "period": "202607",
     "mom": null,
-    "trend": {},
     "source": "stat.molit",
-    "basis": "신규등록정보 서비스",
-    "status_code": "INFO-000",
-    "message": "정상 처리되었습니다.",
+    "error": "<urlopen error timed out>",
     "request": {
       "protocol": "stat.molit",
       "form_id": "5498",
       "style_num": "2",
       "start_dt": "202602",
       "end_dt": "202607"
-    },
-    "series": []
+    }
   },
   "triggers": {
     "overseas": {
       "level": "high",
       "note": "출국통계(202607) 수치 105038485 → 해외여행보험 출국수요 모니터링",
       "basis": "법무부 출입국심사 월별 통계"
-    },
-    "driver": {
-      "level": "high",
-      "note": "자동차 신규등록(202607) 6777673.0대 → 운전자보험 수요 점검",
-      "basis": [
-        "신규등록정보 서비스"
-      ]
     }
   }
 }
