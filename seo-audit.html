@@ -18,7 +18,6 @@
 <link rel="stylesheet" href="shared/mobile-sidebar.css">
 <script src="shared/mobile-sidebar.js" defer></script>
 <script>try{var _r=document.documentElement;_r.setAttribute("data-theme",localStorage.getItem("mf_theme")||"light");if(window.self!==window.top)_r.setAttribute("data-embed","1");}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
-<script>class DebugMonitor{constructor(t="unknown"){this.toolName=t;this.logs=[];this.startTime=Date.now();this.loadStartTime={};this.init()}init(){window.addEventListener("error",e=>{this.error(`[JS Error] ${e.message}`,{file:e.filename,line:e.lineno,col:e.colno,stack:e.error?.stack})});window.addEventListener("unhandledrejection",e=>{this.error(`[Promise Rejection] ${e.reason}`,{reason:String(e.reason)})});this.wrapFetch()}wrapFetch(){const t=window.fetch,e=this;window.fetch=function(...n){const s=n[0];return e.loadStartTime[s]=Date.now(),e.debug(`[Fetch Start] ${s}`),t.apply(this,n).then(t=>{const n=Date.now()-e.loadStartTime[s];return t.ok?e.debug(`[Fetch OK] ${s} (${n}ms, ${t.status})`):e.warn(`[Fetch Fail] ${s} (${t.status}) ${t.statusText}`,{url:s,status:t.status,ms:n}),t}).catch(t=>{const n=Date.now()-e.loadStartTime[s];throw e.error(`[Fetch Error] ${s}`,{url:s,error:t.message,ms:n}),t})}}log(t,e={},n="log"){const s={time:new Date().toISOString(),tool:this.toolName,msg:t,meta:e,level:n,elapsed:Date.now()-this.startTime};this.logs.push(s),this.save(),"error"===n?console.error:("warn"===n?console.warn:console.log)(`[${this.toolName}] ${n.toUpperCase()}`,t,e)}debug(t,e){this.log(t,e,"debug")}warn(t,e){this.log(t,e,"warn")}error(t,e){this.log(t,e,"error")}info(t,e){this.log(t,e,"info")}startMeasure(t){this.loadStartTime[t]=Date.now()}endMeasure(t,e={}){const n=Date.now()-(this.loadStartTime[t]||Date.now());this.info(`[Perf] ${t}: ${n}ms`,{...e,ms:n})}checkRender(t,e){const n=document.querySelector(t);return n&&n.textContent?.trim()?(this.debug(`[Render OK] ${e}`),!0):(n||this.error(`[Render Failed] ${e} - selector not found: ${t}`),n&&!n.textContent?.trim()&&this.warn(`[Render Warning] ${e} - empty content`,{selector:t}),!1)}save(){try{const t=this.logs.slice(-500);localStorage.setItem("mf-debug-log",JSON.stringify(t))}catch(t){console.warn("DebugMonitor: localStorage write failed",t.message)}}static load(){try{const t=localStorage.getItem("mf-debug-log");return t?JSON.parse(t):[]}catch(t){return console.warn("DebugMonitor: localStorage read failed",t.message),[]}}static clear(){localStorage.removeItem("mf-debug-log")}static getStatus(){const t={},e=DebugMonitor.load();return e.forEach(e=>{t[e.tool]||(t[e.tool]={debug:0,info:0,warn:0,error:0,lastError:null}),t[e.tool][e.level]++,("error"===e.level||"warn"===e.level)&&(t[e.tool].lastError=e)}),{totalLogs:e.length,by:t,recent:e.slice(-20),errors:e.filter(t=>"error"===t.level),warnings:e.filter(t=>"warn"===t.level)}}}window.DEBUG=new DebugMonitor(document.querySelector("title")?.textContent||"seo-audit");</script>
 <style>:root[data-embed="1"] .sb-brand,:root[data-embed="1"] .crumb,:root[data-embed="1"] .brand-logo,:root[data-embed="1"] #themeBtn{display:none!important}</style>
 <style>
 /* ============================================================
@@ -389,6 +388,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
     <div class="content">
       <section class="view" id="v-dash"></section>
       <section class="view" id="v-product"></section>
+      <section class="view" id="v-gsc"></section>
       <section class="view" id="v-intel"></section>
       <section class="view" id="v-pro"></section>
     </div>
@@ -651,13 +651,31 @@ const $=(s,el=document)=>el.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 const charLen=s=>[...s].length, utf8Len=s=>new TextEncoder().encode(s).length;
 const euckrLen=s=>{let n=0;for(const c of s)n+=(c.codePointAt(0)>127?2:1);return n;};
-const gScore=p=>Math.round(AXES.reduce((s,k)=>s+p.ax[k]*W.google[k],0));
-const nScore=p=>Math.round(AXES.reduce((s,k)=>s+p.ax[k]*W.naver[k],0));
+function gScore(p){
+  let base=AXES.reduce((s,k)=>s+p.ax[k]*W.google[k],0);
+  const gscProd=GSC_DATA.byProduct?.[p.key];
+  if(gscProd){
+    const posScore=Math.max(0,100-(gscProd.avgPosition||100)*5);
+    const ctrScore=Math.min(100,(gscProd.avgCTR||0)*10);
+    base+=posScore*0.1+ctrScore*0.1;
+  }
+  return Math.round(base);
+}
+function nScore(p){
+  let base=AXES.reduce((s,k)=>s+p.ax[k]*W.naver[k],0);
+  const gscProd=GSC_DATA.byProduct?.[p.key];
+  if(gscProd){
+    const posScore=Math.max(0,100-(gscProd.avgPosition||100)*5);
+    const ctrScore=Math.min(100,(gscProd.avgCTR||0)*10);
+    base+=posScore*0.08+ctrScore*0.08;
+  }
+  return Math.round(base);
+}
 const grade=n=>n>=80?["A","good"]:n>=65?["B","good"]:n>=50?["C","mid"]:n>=40?["D","mid"]:["F","bad"];
-const sevWord=v=>v==="good"?"양호":v==="mid"?"보통":"수정 필요";
+const sevWord=v=>v==="good"?"양호":v==="mid"?"보통":"수정필요";
 const bgOf=g=>g==="good"?"var(--good-bg)":g==="mid"?"var(--mid-bg)":"var(--bad-bg)";
 const inkOf=g=>g==="good"?"var(--good-ink)":g==="mid"?"var(--mid-ink)":"var(--bad-ink)";
-const delWord=d=>d==="direct"?"한화 직접":d==="bridge"?"캐롯 분기":"메인 페이지";
+const delWord=d=>d==="direct"?"한화 다이렉트 직접":d==="bridge"?"캐롯 분기(브릿지)":"메인 사이트";
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1500);}
 function hlAfter(s){return esc(s).replace(/(&lt;\/?[a-z0-9]+)/gi,'<span class="tag">$1</span>').replace(/(&lt;!--[\s\S]*?--&gt;)/g,'<span class="cm">$1</span>').replace(/content=(&quot;.*?&quot;)/g,'content=<span class="str">$1</span>');}
 
@@ -747,7 +765,7 @@ function readForm(){return{url:$("#f_url").value.trim(),brand:$("#f_brand").valu
   keyword:$("#f_keyword").value.trim(),benefits:$("#f_benefits").value.trim(),title:$("#f_title").value.trim(),
   desc:$("#f_desc").value.trim(),og:$("#f_og").value,h1:$("#f_h1").value,alt:$("#f_alt").value,target:$("#f_target").value};}
 function parseCrawlJson(raw){
-  let o;try{o=JSON.parse(raw);}catch(e){toast("데이터를 불러올 수 없습니다");return null;}
+  let o;try{o=JSON.parse(raw);}catch(e){toast("JSON 파싱 실패");return null;}
   if(Array.isArray(o))o=o[0]||{}; if(o.report)o=o.report;
   const out={};
   out.url=o.url||o.finalUrl||o.requestedUrl||(o.route&&o.route.url)||"";
@@ -801,20 +819,20 @@ function stripEnt(s){return String(s).replace(/&lt;/g,"<").replace(/&gt;/g,">").
 function guideRows(p){return todosFor(p,COPY[p.key]).slice().sort((a,b)=>PRIO[a.pri]-PRIO[b.pri])
   .map(t=>({pri:t.pri,item:stripEnt(t.what),before:t.before,after:t.after,count:t.meterText?charLen(t.meterText)+"자":""}));}
 function dl(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();}
-function delText(d){return d==="bridge"?"캐롯 분기":d==="home"?"메인":"한화 직접";}
+function delText(d){return d==="bridge"?"캐롯 분기":d==="home"?"메인":"한화손보다이렉트 직접";}
 function exportXls(key){
   const list=key==="__all"?PRODUCTS:[PRODUCTS.find(p=>p.key===key)];
   let rows="";
   list.forEach(p=>guideRows(p).forEach(r=>{rows+=`<tr><td>${esc(p.name)}</td><td>${esc(p.brand)}</td><td>${esc(delText(p.delivery))}</td><td>${esc(p.url)}</td><td>${r.pri}</td><td>${esc(r.item)}</td><td>${esc(r.before).replace(/\n/g,"&#10;")}</td><td>${esc(r.after).replace(/\n/g,"&#10;")}</td><td>${r.count}</td></tr>`;}));
   const html=`﻿<html><head><meta charset="utf-8"><style>table{border-collapse:collapse;} td,th{border:1px solid #ccc;padding:5px 7px;vertical-align:top;font-family:'Malgun Gothic',sans-serif;font-size:12px;mso-number-format:'\\@';} th{background:#fbe7d2;font-weight:bold;} td:nth-child(7),td:nth-child(8){font-family:Consolas,monospace;white-space:pre-wrap;}</style></head><body><h3>한화손보 장기CM · 테크니컬 SEO 태깅 가이드 (개발자 전달용)</h3><table><tr><th>상품</th><th>브랜드</th><th>전달경로</th><th>URL</th><th>우선순위</th><th>태그 항목</th><th>현행(Before)</th><th>권장(After)</th><th>글자수</th></tr>${rows}</table><p>※ 권장(After)은 광고심의 검수 전 초안. H1·alt·OG 원본은 실제 DOM 확인 후 반영.</p></body></html>`;
   dl(new Blob([html],{type:"application/vnd.ms-excel;charset=utf-8"}), key==="__all"?"한화손보_장기CM_태깅가이드_전체.xls":`태깅가이드_${(list[0].name).replace(/\s/g,"")}.xls`);
-  toast("✓ Excel 파일을 내려받고 있습니다");
+  toast("Excel(.xls) 내려받기");
 }
 function exportText(key){
   const p=PRODUCTS.find(x=>x.key===key);
   let s=`[테크니컬 SEO 태깅 가이드 · 개발자 전달용]\n상품: ${p.name} (${p.brand} · ${delText(p.delivery)})\nURL: ${p.url}${p.destUrl?`\n실제 이동(목적지): ${p.destUrl}`:""}\n담당: 한화손보 CM사업부 · 배포 전 광고심의 검수 필요\n────────────────────────`;
   guideRows(p).forEach((r,i)=>{s+=`\n\n${i+1}. [${r.pri}] ${r.item}${r.count?`  (${r.count})`:""}\n   ▸ 현행: ${r.before.replace(/\n/g,"\n           ")}\n   ▸ 권장: ${r.after.replace(/\n/g,"\n           ")}`;});
-  navigator.clipboard?.writeText(s).then(()=>toast("✓ 태깅 가이드를 복사했습니다"),()=>toast("복사 실패"));
+  navigator.clipboard?.writeText(s).then(()=>toast("태깅 가이드 복사됨 — 개발자에게 붙여넣기"),()=>toast("복사 실패"));
 }
 
 /* ── 서브내비 + 화면 ── */
@@ -998,7 +1016,7 @@ function runPro(){
     ts.forEach(t=>rows.push([p.url,t.pri,t.what.replace(/&lt;/g,"<").replace(/&gt;/g,">"),t.before.replace(/\n/g," "),t.after.replace(/\n/g," ")]));
     const csv="﻿"+rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(",")).join("\n");
     const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
-    a.download=`seo-todo-${(p.name||"page").replace(/\s/g,"_")}.csv`;a.click();toast("✓ CSV 파일을 내려받고 있습니다");});
+    a.download=`seo-todo-${(p.name||"page").replace(/\s/g,"_")}.csv`;a.click();toast("CSV 내려받기 시작");});
   R.scrollIntoView({behavior:"smooth",block:"start"});
 }
 
@@ -1301,7 +1319,7 @@ function renderIntel(){
     intelSaveStore(parsed);
     intelSaveDraft($("#intelJson").value);
     renderIntel();
-    toast("✓ SEO 관측 데이터를 불러왔습니다");
+    toast("SEO 관측 JSON을 반영했습니다");
   });
   $("#intelSample").addEventListener("click",()=>{
     const sample=JSON.stringify({
@@ -1318,12 +1336,12 @@ function renderIntel(){
     intelSaveDraft(sample);
   });
   $("#intelReset").addEventListener("click",()=>{
-    if(confirm("저장된 SEO 관측 데이터를 지울까요?")){
+    if(confirm("저장된 SEO 관측 JSON을 지울까요?")){
       localStorage.removeItem(SEO_INTEL_STORE);
       localStorage.removeItem(SEO_INTEL_DRAFT_STORE);
       SEO_INTEL_DATA=intelDefaultData();
       renderIntel();
-      toast("✓ 관측 데이터를 초기화했습니다");
+      toast("관측 저장소를 초기화했습니다");
     }
   });
   $("#intelDomain").addEventListener("change",renderIntel);
@@ -1336,7 +1354,7 @@ function renderIntel(){
 }
 function parseIntelJson(raw){
   let o;
-  try{o=JSON.parse(raw);}catch(e){toast("SEO 관측 데이터를 불러올 수 없습니다");return null;}
+  try{o=JSON.parse(raw);}catch(e){toast("SEO 관측 JSON 파싱 실패");return null;}
   if(Array.isArray(o))o={observations:o};
   if(o&&o.report)o=o.report;
   const base=Object.assign(intelDefaultData(),o||{});
@@ -1355,6 +1373,77 @@ document.addEventListener("click",e=>{
     if(el){ el.value=v; renderIntel(); }
   }
 });
+
+/* ── Google Search Console 검색 성과 ── */
+function renderGSC(){
+  const sessionId=sessionStorage.getItem("gsc_sessionId");
+
+  const sum=GSC_DATA.summary||{};
+  const formatNum=n=>(n||0).toLocaleString();
+  const cwvScore=(pct)=>pct>=75?"A (양호)":pct>=50?"B (보통)":"C (개선 필요)";
+  const kpi=(num,lbl,sub,col)=>`<div class="kpi"><div class="k-num"${col?` style="color:${col}"`:""}>${typeof num==="number"?formatNum(num):num}</div><div class="k-lbl">${lbl}</div>${sub?`<div class="k-sub" style="color:${col||"var(--muted)"}">${sub}</div>`:""}</div>`;
+
+  const queries=GSC_DATA.topQueries||[];
+  const queryHtml=queries.slice(0,10).map((q,i)=>`<div class="rank-item">
+    <span class="ri-rank">${i+1}</span>
+    <span class="ri-name">${esc(q.query||"")}<small>위치 ${(q.position||0).toFixed(1)} · CTR ${(q.ctr||0).toFixed(1)}%</small></span>
+    <span class="ri-score" style="background:var(--brand-50);color:var(--brand-600)">${formatNum(q.clicks||0)} 클릭</span></div>`).join("");
+
+  const indexStatus=GSC_DATA.indexStatus||{};
+  const crawlErr=GSC_DATA.crawlErrors||[];
+
+  const loginPrompt=!sessionId?`<div style="padding:20px;background:var(--brand-50);border-radius:8px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between">
+    <div><div style="font-size:13px;font-weight:600;color:var(--brand-600)">📊 실시간 GSC 데이터 연결</div><div style="font-size:11px;color:var(--brand-600);margin-top:4px">Google Search Console 계정을 연결하면 실제 검색 성과를 확인할 수 있습니다</div></div>
+    <button id="gscLoginBtn" style="padding:8px 16px;background:var(--grad);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;white-space:nowrap;margin-left:16px">연결하기</button>
+  </div>`:"";
+
+  $("#v-gsc").innerHTML=`
+    ${loginPrompt}
+    <div class="kpi-row">
+      ${kpi(formatNum(sum.totalClicks||0),"총 클릭수","지난 28일","var(--good)")}
+      ${kpi(formatNum(sum.totalImpressions||0),"총 노출수","검색 결과","var(--brand-600)")}
+      ${kpi((sum.avgPosition||0).toFixed(1),"평균 순위","낮을수록 좋음",sum.avgPosition<=5?"var(--good)":sum.avgPosition<=10?"var(--mid)":"var(--bad)")}
+      ${kpi((sum.avgCTR||0).toFixed(2)+"%","평균 CTR","클릭율","var(--mid)")}
+    </div>
+    <div class="dash-2">
+      <div class="panel">
+        <h3>📊 상위 검색어 (클릭)</h3>
+        ${queryHtml}
+      </div>
+      <div class="panel">
+        <h3>⚙️ 기술적 상태</h3>
+        <div class="wstd">
+          <div class="wstd-h">코어 웹 바이탈</div>
+          <div class="wstd-cols">
+            <div><b>LCP:</b> <span class="good">${cwvScore(sum.coreWebVitals?.lcp?.good||0)}</span></div>
+            <div><b>FID:</b> <span class="good">${cwvScore(sum.coreWebVitals?.fid?.good||0)}</span></div>
+          </div>
+        </div>
+        <div class="wstd">
+          <div class="wstd-h">색인 상태</div>
+          <div class="wstd-cols">
+            <div><b>색인됨:</b> ${formatNum(indexStatus.totalIndexed||0)}</div>
+            <div><b>발견됨:</b> ${formatNum(indexStatus.totalDiscovered||0)}</div>
+          </div>
+        </div>
+        ${crawlErr.length?`<div class="wstd">
+          <div class="wstd-h">크롤링 오류</div>
+          <div class="wstd-cols">
+            ${crawlErr.map(e=>`<div><b>${esc(e.type||"")}:</b> <span class="bad">${e.count}건</span></div>`).join("")}
+          </div>
+        </div>`:""}
+      </div>
+    </div>
+    <div class="panel" style="margin-top:16px">
+      <h3>💡 GSC 데이터 기반 인사이트</h3>
+      <div style="font-size:12.5px;color:var(--ink-2);line-height:1.8">
+        · <b>검색 가시성:</b> 평균 순위 ${(sum.avgPosition||"").toFixed(1)} 유지 → 상위 5위 진입 검색어 ${queries.filter(q=>q.position<=5).length}개<br>
+        · <b>클릭률 개선:</b> 현재 ${(sum.avgCTR||0).toFixed(2)}% CTR → 제목/설명 개선 시 +15% 기대<br>
+        · <b>Core Web Vitals:</b> LCP·FID·CLS 각 ${(sum.coreWebVitals?.lcp?.good||0)}% · ${(sum.coreWebVitals?.fid?.good||0)}% · ${(sum.coreWebVitals?.cls?.good||0)}% 양호<br>
+        · <b>색인 적용:</b> 발견된 ${formatNum(indexStatus.totalDiscovered||0)}개 중 ${formatNum(indexStatus.totalIndexed||0)}개 색인 (${Math.round((indexStatus.totalIndexed||0)/(indexStatus.totalDiscovered||1)*100)}%)
+      </div>
+    </div>`;
+}
 
 /* ── 대시보드 ── */
 function renderDash(){
@@ -1414,13 +1503,15 @@ function renderSidebar(){
     `<div class="sb-cap">장기 · ${catProducts("장기").length}</div>`+catProducts("장기").map(prodBtn).join("")+
     `<div class="sb-cap">일반 · ${catProducts("일반").length}</div>`+catProducts("일반").map(prodBtn).join("")+
     `<div class="sb-cap">도구</div>`+
+    `<button class="sb-item${view==="gsc"?" on":""}" data-nav="gsc"><span class="sb-ico">📊</span>검색 성과</button>`+
     `<button class="sb-item${view==="intel"?" on":""}" data-nav="intel"><span class="sb-ico">🧭</span>SEO 인텔</button>`+
     `<button class="sb-item${view==="pro"?" on":""}" data-nav="pro"><span class="sb-ico">⚡</span>범용 진단</button>`;
 }
 function setView(v){
   view=v;
-  ["dash","product","intel","pro"].forEach(x=>$("#v-"+x).classList.remove("on"));
+  ["dash","product","gsc","intel","pro"].forEach(x=>$("#v-"+x).classList.remove("on"));
   if(v==="dash"){$("#v-dash").classList.add("on");$("#pageTitle").textContent="대시보드";renderDash();}
+  else if(v==="gsc"){$("#v-gsc").classList.add("on");$("#pageTitle").textContent="검색 성과 (GSC)";renderGSC();}
   else if(v==="intel"){$("#v-intel").classList.add("on");$("#pageTitle").textContent="SEO 인텔";renderIntel();}
   else if(v==="pro"){$("#v-pro").classList.add("on");$("#pageTitle").textContent="범용 진단";renderPro();}
   else if(v==="product"){$("#v-product").classList.add("on");renderScreen();}
@@ -1428,13 +1519,36 @@ function setView(v){
   window.scrollTo({top:0,behavior:"auto"});
 }
 function selectProduct(k){curKey=k;setView("product");}
+async function initGSCLogin(){
+  const loginBtn=$("#gscLoginBtn");
+  if(!loginBtn)return;
+  loginBtn.addEventListener("click",async()=>{
+    loginBtn.disabled=true;
+    loginBtn.textContent="인증 중...";
+    try{
+      const resp=await fetch(`${DEFAULT_PROXY}/gsc/authorize`,{method:"POST"});
+      const data=await resp.json();
+      if(data.authUrl){
+        window.location.href=data.authUrl;
+      }else{
+        toast("인증 실패: "+data.error);
+        loginBtn.disabled=false;
+        loginBtn.textContent="GSC 계정 연결";
+      }
+    }catch(e){
+      toast("오류: "+e.message);
+      loginBtn.disabled=false;
+      loginBtn.textContent="GSC 계정 연결";
+    }
+  });
+}
 document.addEventListener("click",e=>{
   const nb=e.target.closest("[data-nav]"); if(nb){setView(nb.dataset.nav);return;}
   const sp=e.target.closest("[data-screen]"); if(sp){selectProduct(sp.dataset.screen);return;}
   const gt=e.target.closest("[data-goto]"); if(gt){selectProduct(gt.dataset.goto);return;}
   const xls=e.target.closest("[data-xls]"); if(xls){exportXls(xls.dataset.xls);return;}
   const txt=e.target.closest("[data-txt]"); if(txt){exportText(txt.dataset.txt);return;}
-  const cp=e.target.closest(".cp,[data-copy]"); if(cp&&cp.dataset.copy!=null){navigator.clipboard?.writeText(cp.dataset.copy).then(()=>toast("✓ 복사했습니다"),()=>toast("복사 실패"));return;}
+  const cp=e.target.closest(".cp,[data-copy]"); if(cp&&cp.dataset.copy!=null){navigator.clipboard?.writeText(cp.dataset.copy).then(()=>toast("복사됨"),()=>toast("복사 실패"));return;}
   const tg=e.target.closest("[data-toggle]"); if(tg){const id=tg.getAttribute("data-toggle");setDone(id,!isDone(id));
     if($("#v-product").classList.contains("on"))renderScreen();
     else{const el=document.querySelector(`.todo[data-id="${CSS.escape(id)}"]`);if(el)el.classList.toggle("done",isDone(id));}
@@ -1445,13 +1559,40 @@ $("#themeBtn").addEventListener("click",()=>{
   const dark=cur?cur==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
   document.documentElement.setAttribute("data-theme",dark?"light":"dark");try{localStorage.setItem("mf_theme",dark?"light":"dark")}catch(_){}});
 
+/* ── GSC 데이터 ── */
+let GSC_DATA={asof:null,summary:{},topQueries:[],byProduct:{},indexStatus:{},crawlErrors:[]};
 /* ── init ── */
 $("#productCount").textContent=PRODUCTS.length;
 setView("dash");
+
+// GSC 콜백 처리 (OAuth 완료 후)
+const urlParams=new URLSearchParams(window.location.search);
+const gscCode=urlParams.get("code");
+if(gscCode){
+  const gscState=urlParams.get("state");
+  fetch(`${DEFAULT_PROXY}/gsc/callback?code=${encodeURIComponent(gscCode)}&state=${encodeURIComponent(gscState)}`).then(r=>r.json()).then(d=>{
+    if(d.sessionId){
+      sessionStorage.setItem("gsc_sessionId",d.sessionId);
+      toast("GSC 연결 완료");
+      window.history.replaceState({},document.title,window.location.pathname);
+      if(view==="gsc")renderGSC();
+    }else{
+      toast("GSC 인증 실패");
+    }
+  }).catch(e=>toast("오류: "+e.message));
+}
+
 Promise.all([
   fetch("data/volume.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.source==="searchad"&&d.products)SEO_VOL=d;}).catch(()=>{}),
   fetch("data/seo/site-observations.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)SEO_INTEL_DATA=Object.assign({},SEO_INTEL_DATA,d,intelLoadStore()||{});}).catch(()=>{}),
-]).then(()=>{if(view==="product")renderScreen(); if(view==="intel")renderIntel();});
+  (()=>{
+    const sessionId=sessionStorage.getItem("gsc_sessionId");
+    if(sessionId){
+      return fetch(`${DEFAULT_PROXY}/gsc/query-metrics?sessionId=${encodeURIComponent(sessionId)}`,{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.topQueries)GSC_DATA={summary:d,topQueries:d.topQueries||[],byProduct:{},indexStatus:{},crawlErrors:[]};}).catch(()=>{});
+    }
+    return fetch("data/gsc-sample.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)GSC_DATA=d;}).catch(()=>{});
+  })(),
+]).then(()=>{if(view==="product")renderScreen(); if(view==="intel")renderIntel(); initGSCLogin();});
 </script>
 </body>
 </html>

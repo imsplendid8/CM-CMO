@@ -1,0 +1,75 @@
+{
+  "asof": "2026-09-10",
+  "updated": "2026-09-11T00:00:00Z",
+  "property": "https://www.hanwhadirect.com/",
+  "summary": {
+    "totalClicks": 12450,
+    "totalImpressions": 156800,
+    "avgPosition": 8.2,
+    "avgCTR": 7.94,
+    "coreWebVitals": {
+      "lcp": {"good": 75, "fair": 18, "poor": 7},
+      "fid": {"good": 92, "fair": 6, "poor": 2},
+      "cls": {"good": 81, "fair": 12, "poor": 7}
+    }
+  },
+  "topQueries": [
+    {"query": "다이렉트자동차보험", "clicks": 1250, "impressions": 18900, "position": 3.5, "ctr": 6.6},
+    {"query": "운전자보험", "clicks": 980, "impressions": 15600, "position": 5.2, "ctr": 6.3},
+    {"query": "화재보험", "clicks": 750, "impressions": 12400, "position": 7.1, "ctr": 6.0},
+    {"query": "암보험", "clicks": 650, "impressions": 11200, "position": 8.5, "ctr": 5.8},
+    {"query": "치아보험", "clicks": 580, "impressions": 9800, "position": 9.2, "ctr": 5.9}
+  ],
+  "byProduct": {
+    "driver": {
+      "clicks": 2100,
+      "impressions": 28500,
+      "avgPosition": 6.8,
+      "avgCTR": 7.37,
+      "topQuery": "운전자보험"
+    },
+    "hrmf": {
+      "clicks": 1250,
+      "impressions": 18900,
+      "avgPosition": 7.5,
+      "avgCTR": 6.61,
+      "topQuery": "화재보험"
+    },
+    "cncr": {
+      "clicks": 890,
+      "impressions": 14200,
+      "avgPosition": 8.2,
+      "avgCTR": 6.27,
+      "topQuery": "암보험"
+    },
+    "dntl": {
+      "clicks": 750,
+      "impressions": 11800,
+      "avgPosition": 8.9,
+      "avgCTR": 6.35,
+      "topQuery": "치아보험"
+    },
+    "home": {
+      "clicks": 3200,
+      "impressions": 42000,
+      "avgPosition": 5.2,
+      "avgCTR": 7.62,
+      "topQuery": "다이렉트자동차보험"
+    }
+  },
+  "indexStatus": {
+    "totalIndexed": 487,
+    "totalIndexedInSitemap": 450,
+    "totalDiscovered": 520,
+    "totalDiscoveredInSitemap": 502,
+    "notIndexedReason": [
+      {"reason": "Excluded by robots.txt", "count": 12},
+      {"reason": "Crawl anomaly", "count": 5},
+      {"reason": "Not selected as canonical", "count": 16}
+    ]
+  },
+  "crawlErrors": [
+    {"type": "not_found", "count": 3, "urls": ["/products/discontinued", "/old-promo", "/broken-link"]},
+    {"type": "server_error", "count": 1, "urls": ["/api/timeout"]}
+  ]
+}

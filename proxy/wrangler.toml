@@ -28,8 +28,21 @@ compatibility_date = "2024-11-01"
 #   wrangler secret put AD_CUSTOMER
 #   wrangler secret put ANTHROPIC_API_KEY
 #   wrangler secret put ACTOR_HASH_SALT
+#   wrangler secret put GOOGLE_OAUTH_CLIENT_ID           (Google Cloud OAuth 클라이언트 ID)
+#   wrangler secret put GOOGLE_OAUTH_CLIENT_SECRET       (Google Cloud OAuth 클라이언트 보안 비밀)
+#   wrangler secret put GOOGLE_OAUTH_REDIRECT_URI        (https://... /gsc/callback 형태)
 # ACTOR_HASH_SALT는 32바이트 이상 무작위 값으로 생성하고 저장소에 커밋하지 않는다.
 # ANTHROPIC_API_KEY는 https://console.anthropic.com에서 발급받는다.
+# GOOGLE_OAUTH_* 값은 Google Cloud Console에서 OAuth 2.0 자격증명으로부터 얻는다.
+#   상세: docs/gsc-oauth-setup.md 참고
 # /v1/feedback 경로는 Cloudflare Access 정책으로 보호해
 # Cf-Access-Authenticated-User-Email과 Cf-Access-Jwt-Assertion을 함께 전달한다.
 # (설정창 헤더 방식(A)만 쓸 거면 시크릿 등록 불필요)
+
+# GSC OAuth 토큰 저장용 KV 네임스페이스:
+#   대시보드: Workers & Pages → 워커 → Settings → Bindings → Add → KV namespace
+#            Variable name = GSC_TOKENS, 새 네임스페이스(예: modooflow-gsc-tokens) 생성 후 연결 → Deploy
+#   CLI:     wrangler kv namespace create GSC_TOKENS   → 출력된 id 를 아래에 붙여넣고 주석 해제
+# [[kv_namespaces]]
+# binding = "GSC_TOKENS"
+# id = "여기에_GSC_토큰_네임스페이스_id"

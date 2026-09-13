@@ -8,17 +8,31 @@ Modooflow는 13개 보험상품의 SEO·키워드·뉴스·SERP·시즌·광고�
 
 ## 현재 브랜치 작업
 
-- 브랜치: `agent/full-hardening`
-- 목적: 공개 Secret 제거, SearchAd 프록시 제한, 13×50 소재 내보내기, 모바일 진입, 데이터 신선도, 피드백 루프, 운영 자동화 검증
-- 상태: 로컬 구현·브라우저·운영 드라이런 완료, 원격 푸시 및 [Draft PR #24](https://github.com/imsplendid8/CM-CMO/pull/24) 생성. CI 104개 테스트·전체 JS·650행 검증 성공
-- 상세 완료 조건과 외부 작업은 `NEXT.md` 참조
+- 브랜치: `claude/material-quality-improvement-7x4w2d`
+- 목적: Google Search Console OAuth 통합으로 seo-audit.html을 기술 SEO 운영 보드로 고도화
+- 상태: GSC OAuth 2.0 구현 완료, Cloudflare Worker 경로 추가, 샘플 데이터 폴백, UI 비인증 진입 가능 상태
+- 상세 진행 상황은 아래 참조
+
+## GSC 통합 현황 (2026-09-11)
+
+### 구현 완료 항목
+1. **OAuth 2.0 흐름**: Cloudflare Worker에서 `/gsc/authorize`, `/gsc/callback`, `/gsc/query-metrics` 경로 구현
+2. **seo-audit.html UI**: "검색 성과" 탭 추가, 샘플 데이터로 미인증 진입 가능
+3. **토큰 관리**: KV namespace에 sessionId 기반 토큰 저장, 자동 갱신 로직
+4. **샘플 데이터**: `data/gsc-sample.json`으로 UI/UX 검증, 인증 전 미리보기
+
+### 필요한 외부 작업 (배포)
+1. Google Cloud OAuth 클라이언트 ID/보안비밀 생성 → Cloudflare 시크릿 등록
+2. KV namespace `GSC_TOKENS` 생성 → wrangler.toml에 바인딩
+3. Worker 재배포 → `/gsc/*` 경로 활성화
+4. seo-audit.html 자체호스팅 페이지 갱신
 
 ## 사용자 화면
 
 | 화면 | 역할 | 상태 |
 |---|---|---|
 | `index.html` | 오늘의 업무 흐름, 5종 데이터 상태, 도구 허브 | 구현 |
-| `seo-audit.html` | 테크니컬 SEO 진단 | 운영 |
+| `seo-audit.html` | 기술 SEO 운영 보드 (GSC 통합 중) | 코드 완료, 배포 대기 |
 | `keyword-tool.html` | 키워드·검색량과 내부 검토용 내보내기 | 운영 |
 | `news-tool.html` | 뉴스 모니터링과 클리핑 | 운영 |
 | `serp-tool.html` | 검색결과 캡처·diff·광고 관측 | 운영 |
