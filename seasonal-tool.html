@@ -258,7 +258,7 @@ table.mcal thead th.rl{z-index:3;}
 <script>
 "use strict";
 const MONTHS=["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"];
-const NOW=new Date();let CURM=window.ModooPlanning.getMonth();
+const NOW=new Date();let CURM=(window.ModooPlanning?.getMonth?.())||NOW.getMonth()+1;
 /* 계절 태깅: 월→계절 색 키 */
 function seasonOf(ms){const m=ms[0];if([3,4,5].includes(m))return"spring";if([6,7,8].includes(m))return"summer";if([9,10,11].includes(m))return"fall";if([12,1,2].includes(m))return"winter";return"year";}
 const SEASON={spring:["봄","var(--spring)","var(--spring-bg)"],summer:["여름","var(--summer)","var(--summer-bg)"],fall:["가을","var(--fall)","var(--fall-bg)"],winter:["겨울","var(--winter)","var(--winter-bg)"],year:["연중","var(--year)","var(--year-bg)"]};
@@ -618,8 +618,8 @@ document.addEventListener("click",e=>{
 });
 window.addEventListener("hashchange",()=>{const k=keyFromHash(location.hash);if(k&&k!==curKey){curKey=k;render();}});
 $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");try{localStorage.setItem("mf_theme",d?"light":"dark")}catch(_){};});
-$("#planMonth").innerHTML=window.ModooPlanning.optionMarkup(CURM);
-$("#planMonth").addEventListener("change",e=>{CURM=window.ModooPlanning.setMonth(e.target.value);render();});
+if(window.ModooPlanning){$("#planMonth").innerHTML=window.ModooPlanning.optionMarkup(CURM);
+$("#planMonth").addEventListener("change",e=>{CURM=window.ModooPlanning.setMonth(e.target.value);render();});}else{const opts=Array.from({length:12},((_,i)=>i+1)).map(m=>`<option value="${m}"${m===CURM?" selected":""}>${m}월</option>`).join("");$("#planMonth").innerHTML=opts;}
 // 진입 해시로 초기 뷰 결정(#reco/#news/#event → 뉴스·추천, 상품키 → 해당 상품, 그 외 → 연간 캘린더)
 const _k0=keyFromHash(location.hash); if(_k0)curKey=_k0;
 render();

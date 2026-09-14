@@ -199,15 +199,15 @@ def build_message():
 
 # ── 이메일 스타일 토큰 — 인라인 CSS(메일 클라이언트 호환), 이미지 없음 ──
 _ES = {
-    "wrap": "width:100%;max-width:680px;margin:0;padding:20px 14px;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Malgun Gothic','Apple SD Gothic Neo',sans-serif;color:#20242c;background:#ffffff;text-align:left;overflow-wrap:anywhere;word-break:keep-all;",
-    "h2": "font-size:19px;font-weight:800;margin:0 0 3px;letter-spacing:-.02em;text-align:left;overflow-wrap:anywhere;word-break:keep-all;",
-    "sub": "font-size:12.5px;color:#6b7280;margin:0 0 6px;line-height:1.55;text-align:left;overflow-wrap:anywhere;",
-    "h3": "font-size:15px;font-weight:800;margin:26px 0 10px;padding-bottom:6px;border-bottom:2px solid #eceef1;text-align:left;overflow-wrap:anywhere;",
-    "card": "width:100%;box-sizing:border-box;border:1px solid #e6e8ec;border-radius:8px;padding:11px 12px;margin:0 0 9px;background:#ffffff;text-align:left;overflow-wrap:anywhere;word-break:keep-all;",
+    "wrap": "width:100%;max-width:680px;margin:0;padding:20px 14px;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Malgun Gothic','Apple SD Gothic Neo',sans-serif;color:#20242c;background:#ffffff;text-align:left;word-wrap:break-word;overflow-wrap:break-word;",
+    "h2": "font-size:19px;font-weight:800;margin:0 0 3px;letter-spacing:-.02em;text-align:left;word-wrap:break-word;overflow-wrap:break-word;",
+    "sub": "font-size:12.5px;color:#6b7280;margin:0 0 6px;line-height:1.55;text-align:left;word-wrap:break-word;overflow-wrap:break-word;",
+    "h3": "font-size:15px;font-weight:800;margin:26px 0 10px;padding-bottom:6px;border-bottom:2px solid #eceef1;text-align:left;word-wrap:break-word;overflow-wrap:break-word;",
+    "card": "width:100%;box-sizing:border-box;border:1px solid #e6e8ec;border-radius:8px;padding:11px 12px;margin:0 0 9px;background:#ffffff;text-align:left;word-wrap:break-word;overflow-wrap:break-word;",
     "tag": "display:inline-block;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:99px;margin:0 0 6px;vertical-align:1px;",
-    "title": "display:block;color:#1f2937;text-decoration:none;font-size:13px;font-weight:700;line-height:1.55;white-space:normal;overflow-wrap:anywhere;word-break:keep-all;",
-    "summary": "color:#5f6774;font-size:12px;line-height:1.65;margin-top:5px;overflow-wrap:anywhere;word-break:keep-all;",
-    "meta": "color:#8a919e;font-size:11px;line-height:1.55;margin-top:6px;overflow-wrap:anywhere;word-break:break-word;",
+    "title": "display:block;color:#1f2937;text-decoration:none;font-size:13px;font-weight:700;line-height:1.55;white-space:normal;word-wrap:break-word;overflow-wrap:break-word;",
+    "summary": "color:#5f6774;font-size:12px;line-height:1.65;margin-top:5px;word-wrap:break-word;overflow-wrap:break-word;",
+    "meta": "color:#8a919e;font-size:11px;line-height:1.55;margin-top:6px;word-wrap:break-word;overflow-wrap:break-word;",
 }
 
 def _trim_to_sentences(text, max_sentences=3):
