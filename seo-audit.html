@@ -1592,7 +1592,7 @@ Promise.all([
     }
     return fetch("data/gsc-sample.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)GSC_DATA=d;}).catch(()=>{});
   })(),
-]).then(()=>{if(view==="product")renderScreen(); if(view==="gsc")renderGSC(); if(view==="intel")renderIntel(); initGSCLogin();});
+]).then(()=>{renderSidebar(); if(view==="product")renderScreen(); else if(view==="gsc")renderGSC(); else if(view==="intel")renderIntel(); else if(view==="dash")renderDash(); initGSCLogin();});
 </script>
 </body>
 </html>
