@@ -1592,7 +1592,7 @@ Promise.all([
     }
     return fetch("data/gsc-sample.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)GSC_DATA=d;}).catch(()=>{});
   })(),
-]).then(()=>{renderSidebar(); if(view==="product")renderScreen(); else if(view==="gsc")renderGSC(); else if(view==="intel")renderIntel(); else if(view==="dash")renderDash(); initGSCLogin();});
+]).then(()=>{renderSidebar(); if(view==="product"){$("#v-product").classList.add("on");renderScreen();} else if(view==="gsc"){$("#v-gsc").classList.add("on");renderGSC();} else if(view==="intel"){$("#v-intel").classList.add("on");renderIntel();} else if(view==="dash"){$("#v-dash").classList.add("on");renderDash();} initGSCLogin();});
 </script>
 </body>
 </html>
