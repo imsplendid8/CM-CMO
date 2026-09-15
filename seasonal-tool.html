@@ -435,7 +435,7 @@ function planCards(items){
       <div class="act">⏱ ${esc(w.act)}</div></div>`;}).join("");
 }
 function renderOverview(){
-  const nextM=window.ModooPlanning.nextMonth(CURM);
+  const nextM=(window.ModooPlanning?.nextMonth?.(CURM))||((CURM%12)+1);
   $("#pt").textContent="연간 시즈널 캘린더";
   $("#pts").textContent=`· ${MONTHS[CURM-1]} 선택 · 검색량 ${VOL.asof||"연동 대기"}`;
   const now=[],next=[];PRODUCTS.forEach(p=>winsOf(p.key).forEach(w=>{
