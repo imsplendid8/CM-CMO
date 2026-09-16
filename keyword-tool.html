@@ -208,6 +208,7 @@ const PRODUCTS=[
  {key:"cncr",cat:"장기",name:"암보험",tier:"중형",core:["암보험","다이렉트 암보험","내가고른 암보험"],special:["유사암","진단비","소액암","표적항암","재발암"]},
  {key:"dntl",cat:"장기",name:"치아보험",tier:"중형",core:["치아보험","다이렉트 치아보험","치아안심보험"],special:["임플란트","스케일링","보철","크라운","충치"]},
  {key:"driver",cat:"장기",name:"운전자보험",tier:"대형",core:["운전자보험","다이렉트 운전자보험","캐롯 운전자보험"],special:["벌금","변호사선임","형사합의금","교통사고","12대중과실"]},
+ {key:"autoins",cat:"장기",name:"자동차보험",tier:"대형",core:["자동차보험","다이렉트 자동차보험","자동차 보험"],special:["자동차보험료","보험료 비교","할인","가입","어린이보험"]},
  {key:"woman",cat:"장기",name:"여성건강보험",tier:"니치",core:["여성건강보험","여성보험","여성 다이렉트보험"],special:["임신","출산","산후조리","여성암","자궁"]},
  {key:"birth",cat:"장기",name:"임신·출산(태아)보험",tier:"니치",core:["태아보험","임신보험","출산보험"],special:["태아","선천이상","미숙아","산모","제왕절개"]},
  {key:"overseas",cat:"일반",name:"해외여행보험",tier:"중형",core:["해외여행보험","여행자보험","다이렉트 여행자보험"],special:["실손","휴대품","항공기지연","여권분실"]},
@@ -225,6 +226,12 @@ const MODS=[
 const AGES=["20대","30대","40대","50대","60대"];
 const TIER_IDX={대형:92,중형:55,니치:24};
 const BUSINESS_EXCLUDED=/\bTM\b|텔레마케팅/i;
+
+/* 브랜드 키워드 — 대표(representative) · 브랜드+보험명(brand+insurance) 탭 구조 */
+const BRANDS=[
+ {key:"kw_brand_hanwha",name:"한화손보",tier:"대형",brands:["한화손보","한화 다이렉트"],core:["한화손보","한화 다이렉트","한화 보험"]},
+ {key:"kw_brand_carrot",name:"캐롯",tier:"대형",brands:["캐롯"],core:["캐롯","캐롯 보험","캐롯 다이렉트"]}
+];
 
 const $=(s,el=document)=>el.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
@@ -262,7 +269,29 @@ function genKeywords(p){
   aiq.forEach(q=>push(q,q.split(" ").length,"AI","AI","대화형"));
   return rows;
 }
+/* 브랜드 키워드 생성 — 대표와 브랜드+상품명 탭 */
+function genBrandKeywords(b){
+  const rows=[],seen=new Set();
+  const push=(kw,gram,intent,tab)=>{kw=kw.trim().replace(/\s+/g," ");if(!kw||BUSINESS_EXCLUDED.test(kw)||seen.has(kw))return;seen.add(kw);
+    rows.push({kw,gram,intent,pf:"네이버",mt:"일치",tab});};
+  // 탭 1: 대표(representative) — 브랜드 기본 키워드
+  const rep=b.core||b.brands||[];
+  rep.forEach(c=>push(c,c.split(" ").length,"브랜드","대표"));
+  ["보험","다이렉트","사이트","가입","비교","리뷰","후기"].forEach(w=>{
+    rep.forEach(c=>push(`${c} ${w}`,2,"거래","대표"));
+  });
+  // 탭 2: 브랜드+보험명 — 브랜드와 보험 상품 조합
+  PRODUCTS.forEach(p=>{
+    rep.forEach(br=>{
+      const kw=`${br} ${p.name}`;
+      push(kw,2,"브랜드","브랜드+보험명");
+      push(`${br} ${p.core[0]}`,2,"브랜드","브랜드+보험명");
+    });
+  });
+  return rows;
+}
 const ALL={}; PRODUCTS.forEach(p=>ALL[p.key]=genKeywords(p));
+BRANDS.forEach(b=>ALL[b.key]=genBrandKeywords(b));
 const INTENT_COL={거래:"var(--trx)",정보:"var(--inf)",브랜드:"var(--brd)",담보:"var(--brand)"};
 
 function naverCampaignName(product){
@@ -294,15 +323,17 @@ function naverAdGroupName(product, row){
   return `${product?.name||"상품"} · ${base}`;
 }
 
-let curKey="__all", pf="all", volMode="latest", selectedKeyword=null, VOL={},VOL_META={asof:null,source:"none"},VOL_HISTORY={snapshots:{}},AUTOCOMPLETE={products:{}},AUTO_META=new Map(),AUTO_SELECTED=new Set(),GOOGLE_VOL={},GOOGLE_META={asof:null,source:"none"};
+let curKey="__all", pf="all", volMode="latest", selectedKeyword=null, brandTab="대표", VOL={},VOL_META={asof:null,source:"none"},VOL_HISTORY={snapshots:{}},AUTOCOMPLETE={products:{}},AUTO_META=new Map(),AUTO_SELECTED=new Set(),GOOGLE_VOL={},GOOGLE_META={asof:null,source:"none"};
 const NEW_MIN=100,RISING_MIN_BASE=10,RISING_MIN_DELTA=50,RISING_MIN_RATE=.5;
 const nk=s=>String(s).replace(/\s/g,"");
 const hasVol=()=>Object.keys(VOL).length>0;
 const volOf=kw=>VOL[nk(kw)]||null;
 const fmtVol=n=>n>=10000?(n/10000).toFixed(1)+"만":n>=1000?(n/1000).toFixed(1)+"천":String(n);
 const filt=rows=>pf==="all"?rows:rows.filter(r=>r.pf===pf||(pf!=="AI"&&r.pf==="공통"));
+const filtBrand=rows=>rows.filter(r=>r.tab===brandTab);
 let PROSEED=null;
 const getP=k=>k==="__pro"?PROSEED:PRODUCTS.find(p=>p.key===k);
+const getB=k=>BRANDS.find(b=>b.key===k);
 // 도구 생성분 + 네이버 키워드도구에서 가져온 연관키워드 병합
 const IMPORTED={};
 function rowsOf(key){return (ALL[key]||[]).map(r=>r.src?r:Object.assign({src:"도구"},r)).concat(IMPORTED[key]||[]);}
@@ -463,6 +494,8 @@ function renderSidebar(){
     h+=`<div class="sb-cap">${cat}</div>`;
     PRODUCTS.filter(p=>p.cat===cat).forEach(p=>h+=item(p.key,p.name,rowsOf(p.key).length,curKey===p.key));
   });
+  h+=`<div class="sb-cap">브랜드</div>`;
+  BRANDS.forEach(b=>h+=item(b.key,b.name,rowsOf(b.key).length,curKey===b.key));
   h+=`<div class="sb-cap">도구</div>`+item("__pro","⚡ 범용 키워드 생성",rowsOf("__pro").length||"",curKey==="__pro");
   $("#sbNav").innerHTML=h;
 }
@@ -509,8 +542,10 @@ function renderOverview(){
     </div>
     <div class="note">상품·담보·가입 의도별 키워드를 만들고 검색량과 경쟁도를 함께 확인합니다.</div>`;
 }
-function productBody(p){
-  const rows=filt(rowsOf(p.key)),ic=intentCounts(rows),pc=pfCounts(rows);
+function productBody(p,isBrand){
+  const allRows=rowsOf(p.key);
+  const rows=isBrand?filtBrand(filt(allRows)):filt(allRows);
+  const ic=intentCounts(rows),pc=pfCounts(rows);
   const nvCnt=rows.filter(r=>["네이버","검색광고","자동완성"].includes(r.src)).length;
   const kpi=(n,l,col)=>`<div class="kpi"><div class="n"${col?` style="color:${col}"`:""}>${n}</div><div class="l">${l}</div></div>`;
   const vh=hasVol();
@@ -541,20 +576,26 @@ function productBody(p){
   const movement=new Map(monthlyMovers(p.key).rows.map(row=>[nk(row.keyword),row]));
   const trows=rows2.map(r=>{const v=volOf(r.kw),move=movement.get(nk(r.kw)),auto=AUTO_META.get(autoSelectionKey(p.key,r.kw)),vol=v?(v.pc||0)+(v.mobile||0):null;
     return `<tr><td class="kw">${esc(r.kw)}${auto?.isNew?'<span class="move-tag">신규 자동완성</span>':move?`<span class="move-tag">${move.kind==="new"?"신규":"▲ "+Math.round(move.rate*100)+"%"}</span>`:""}</td><td class="c"><span class="src ${r.src||"도구"}">${r.src||"도구"}</span></td><td class="c gram">${r.gram}단어</td><td class="c"><span class="pill ${r.intent}">${r.intent}</span></td><td class="c"><span class="pill ${r.pf}">${r.pf}</span></td><td class="c gram">${r.mt}</td>`+(vh?`<td class="c" style="font-family:var(--mono);font-weight:700">${vol!=null?fmtVol(vol):"—"}</td><td class="c gram">${v?esc(v.comp||"—"):"—"}</td>`:"")+`</tr>`;}).join("");
+  const tabsHtml=isBrand?`<div class="seg" style="margin-bottom:12px"><button class="on" data-tab="대표">대표</button><button data-tab="브랜드+보험명">브랜드+보험명</button></div>`:"";
   return `<div class="kpi-row">${kpi(rows.length,"총 키워드")}${kpi(nvCnt,"네이버 도구 추가","var(--nav-ink)")}${kpi(ic.거래+ic.담보,"거래·담보형","var(--trx)")}${kpi(pc.구글+pc.공통+ic.AI,"구글·AI","var(--goo-ink)")}</div>
+    ${tabsHtml}
     ${autocompletePanel(p)}
     ${moverPanel(p.key)}
     <div class="sec-lbl">키워드셋 <span style="font-weight:600;color:var(--muted);text-transform:none">· 도구 생성 + 네이버 실시간 검색량(프록시) · 인텐트·플랫폼 자동 분류</span></div>
     <div class="tbl-wrap"><table><thead><tr><th>키워드</th><th class="c">출처</th><th class="c">구성</th><th class="c">인텐트</th><th class="c">추천 플랫폼</th><th class="c">매치타입</th>${vh?'<th class="c">월검색량</th><th class="c">경쟁도</th>':''}</tr></thead><tbody>${trows}</tbody></table></div>`;
 }
 function renderProduct(){
-  const p=getP(curKey);const rows=filt(ALL[p.key]);
+  const p=getP(curKey)||getB(curKey);
+  const isBrand=!!getB(curKey);
+  const seedKey=curKey;
+  const rows=isBrand?filtBrand(filt(rowsOf(seedKey))):filt(rowsOf(seedKey));
   $("#pt").textContent=p.name; $("#pts").textContent=`· ${rows.length} 키워드`;
+  const seedsDisplay=p.core?p.core.map(c=>`<span class="seed">${esc(c)}</span>`).join(""):"";
   $("#content").innerHTML=`
-    <div class="seedbar"><div class="st"><h2>${esc(p.name)}</h2><span class="tier ${p.tier}">검색수요 ${p.tier}</span>
-      <span style="margin-left:auto;font-size:11.5px;color:var(--muted)">광고그룹 = 이 상품</span></div>
-      <div class="seeds">${p.core.map(c=>`<span class="seed">${esc(c)}</span>`).join("")}${p.special.map(s=>`<span class="seed" style="background:var(--surface-2);color:var(--ink-2)">+${esc(s)}</span>`).join("")}</div></div>
-    ${productBody(p)}
+    <div class="seedbar"><div class="st"><h2>${esc(p.name)}</h2><span class="tier ${p.tier}">${isBrand?"브랜드":"검색수요 "+p.tier}</span>
+      <span style="margin-left:auto;font-size:11.5px;color:var(--muted)">${isBrand?"브랜드 키워드":"광고그룹 = 이 상품"}</span></div>
+      <div class="seeds">${seedsDisplay}</div></div>
+    ${productBody(p,isBrand)}
     <div class="note">내보낸 CSV는 내부 검토용입니다. 등록 전 입찰가와 필수 열을 확인하세요.</div>`;
 }
 function renderPro(){
@@ -590,13 +631,19 @@ function render(){
 
 function exportCsv(){
   if(curKey==="__pro"&&!PROSEED){toast("먼저 범용 키워드를 생성하세요");return;}
-  const list = curKey==="__all" ? PRODUCTS : [getP(curKey)];
+  const isBrand=!!getB(curKey);
+  const list = curKey==="__all" ? PRODUCTS : (isBrand?[getB(curKey)]:[getP(curKey)]);
   const vh=hasVol();
   const rows=[["광고그룹","키워드","출처","구성(단어수)","인텐트","추천플랫폼","매치타입"].concat(vh?["월PC검색량","월모바일검색량","경쟁도"]:[])];
-  list.forEach(p=>filt(rowsOf(p.key)).forEach(r=>{const v=volOf(r.kw);rows.push([p.name,r.kw,r.src||"도구",r.gram,r.intent,r.pf,r.mt].concat(vh?[v?v.pc:"",v?v.mobile:"",v?v.comp||"":""]:[]));}));
+  list.forEach(p=>{
+    const baseRows=filt(rowsOf(p.key));
+    const finalRows=isBrand?filtBrand(baseRows):baseRows;
+    finalRows.forEach(r=>{const v=volOf(r.kw);rows.push([p.name,r.kw,r.src||"도구",r.gram,r.intent,r.pf,r.mt].concat(vh?[v?v.pc:"",v?v.mobile:"",v?v.comp||"":""]:[]));}
+  );});
   const csv="﻿"+rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(",")).join("\n");
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
-  a.download=`검색광고키워드_${curKey==="__all"?"전체":PRODUCTS.find(p=>p.key===curKey).name}.csv`;a.click();
+  const label=curKey==="__all"?"전체":PRODUCTS.find(p=>p.key===curKey)?.name||BRANDS.find(b=>b.key===curKey)?.name||"상품";
+  a.download=`검색광고키워드_${label}.csv`;a.click();
   toast(`CSV 내보내기 (${rows.length-1}개 키워드)`);
 }
 
@@ -604,14 +651,17 @@ function exportCsv(){
 const DEFAULT_BID=70;   // 실등록 시작 입찰가(원) — 등록 후 성과 보며 조정
 function exportNaverBulk(){
   if(curKey==="__pro"&&!PROSEED){toast("먼저 범용 키워드를 생성하세요");return;}
-  const list = curKey==="__all" ? PRODUCTS : [getP(curKey)];
+  const isBrand=!!getB(curKey);
+  const list = curKey==="__all" ? PRODUCTS : (isBrand?[getB(curKey)]:[getP(curKey)]);
   const vh=hasVol();
   const header=["캠페인 유형","캠페인 이름","광고그룹 이름","키워드","키워드 입찰가","연결URL(PC)","연결URL(모바일)"];
   const INTENT_ORDER=["거래","브랜드","담보","정보"];
   const vsum=kw=>{const v=volOf(kw);return v?((v.pc||0)+(v.mobile||0)):-1;};   // 검색량 합(없으면 -1 → 뒤로)
   const rows=[header]; let n=0;
   list.forEach(p=>{ if(!p)return;
-    const kws=filt(rowsOf(p.key)).filter(r=>{const auto=AUTO_META.get(autoSelectionKey(p.key,r.kw));return r.pf!=="구글" && r.intent!=="AI" && (!auto||auto.registration==="recommended");}); // 자동완성 검토·제외 키워드는 선택 내보내기에서만 허용
+    const baseRows=filt(rowsOf(p.key));
+    const filtered=isBrand?filtBrand(baseRows):baseRows;
+    const kws=filtered.filter(r=>{const auto=AUTO_META.get(autoSelectionKey(p.key,r.kw));return r.pf!=="구글" && r.intent!=="AI" && (!auto||auto.registration==="recommended");}); // 자동완성 검토·제외 키워드는 선택 내보내기에서만 허용
     const by={}; kws.forEach(r=>{(by[r.intent]=by[r.intent]||[]).push(r);});
     const camp=naverCampaignName(p);
     const order=INTENT_ORDER.concat(Object.keys(by).filter(i=>!INTENT_ORDER.includes(i)));
@@ -631,12 +681,13 @@ function exportNaverBulk(){
   if(!n){toast("네이버 대상 키워드가 없습니다(구글·AI 제외)");return;}
   const csv="﻿"+rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(",")).join("\n");
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
-  const nm=curKey==="__all"?"전체":(getP(curKey)?.name||"상품");
+  const nm=curKey==="__all"?"전체":(getP(curKey)?.name||getB(curKey)?.name||"상품");
   a.download=`네이버_내부검토_${nm}_${new Date().toISOString().slice(0,10)}.csv`;a.click();
   toast(`네이버 내부 검토용 · ${n}키워드 · 시작 입찰가 ${DEFAULT_BID}원`+(vh?" · 광고그룹 내 검색량순":"")+" · 공식 템플릿 확인 전 업로드 금지");
 }
 function exportSelectedAutocomplete(){
-  const list=curKey==="__all"?PRODUCTS:[getP(curKey)],rows=[["캠페인 유형","캠페인 이름","광고그룹 이름","키워드","키워드 입찰가","연결URL(PC)","연결URL(모바일)"]];
+  const isBrand=!!getB(curKey);
+  const list=curKey==="__all"?PRODUCTS:(isBrand?[getB(curKey)]:[getP(curKey)]),rows=[["캠페인 유형","캠페인 이름","광고그룹 이름","키워드","키워드 입찰가","연결URL(PC)","연결URL(모바일)"]];
   list.forEach(p=>{if(!p)return;autocompleteRows(p.key).forEach(row=>{
     if(!AUTO_SELECTED.has(autoSelectionKey(p.key,row.keyword))||row.registration==="exclude")return;
     const label=row.source_platform==="google"?"구글형 롱테일":row.source_type==="visible_ui"?"네이버 자동완성":"네이버 보강";
@@ -645,19 +696,20 @@ function exportSelectedAutocomplete(){
   if(rows.length===1){toast("먼저 등록할 자동완성 키워드를 선택하세요");return;}
   const csv="﻿"+rows.map(row=>row.map(value=>`"${String(value).replace(/"/g,'""')}"`).join(",")).join("\n");
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
-  const nm=curKey==="__all"?"전체":(getP(curKey)?.name||"상품");a.download=`네이버_자동완성_선택키워드_${nm}_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+  const nm=curKey==="__all"?"전체":(getP(curKey)?.name||getB(curKey)?.name||"상품");a.download=`네이버_자동완성_선택키워드_${nm}_${new Date().toISOString().slice(0,10)}.csv`;a.click();
   toast(`선택 키워드 ${rows.length-1}개 · 등록 전 상품 관련성과 입찰가를 확인하세요`);
 }
 
 document.addEventListener("click",e=>{
   const autoInput=e.target.closest("[data-auto-key]");if(autoInput){autoInput.checked?AUTO_SELECTED.add(autoInput.dataset.autoKey):AUTO_SELECTED.delete(autoInput.dataset.autoKey);return;}
-  if(e.target.closest("#autoSelectNew")){const p=getP(curKey);if(!p)return;autocompleteRows(p.key).forEach(row=>{const key=autoSelectionKey(p.key,row.keyword);if(row.isNew&&row.registration==="recommended")AUTO_SELECTED.add(key);});render();toast("신규 등록 추천 키워드를 선택했습니다");return;}
+  if(e.target.closest("#autoSelectNew")){const p=getP(curKey)||getB(curKey);if(!p)return;autocompleteRows(p.key).forEach(row=>{const key=autoSelectionKey(p.key,row.keyword);if(row.isNew&&row.registration==="recommended")AUTO_SELECTED.add(key);});render();toast("신규 등록 추천 키워드를 선택했습니다");return;}
   if(e.target.closest("#autoExport")){exportSelectedAutocomplete();return;}
   if(e.target.closest("#backBtn")){selectedKeyword=null;render();return;}
   const ktr=e.target.closest("tr[data-kw]"); if(ktr&&volMode==="history"){selectedKeyword=ktr.dataset.kw;render();return;}
-  const si=e.target.closest(".sb-item,[data-key]"); if(si&&si.dataset.key){curKey=si.dataset.key;render();return;}
+  const si=e.target.closest(".sb-item,[data-key]"); if(si&&si.dataset.key){curKey=si.dataset.key;brandTab="대표";render();return;}
   const sg=e.target.closest("#pfSeg button"); if(sg){pf=sg.dataset.pf;document.querySelectorAll("#pfSeg button").forEach(b=>b.classList.toggle("on",b===sg));render();return;}
   const vm=e.target.closest("#volMode button"); if(vm){volMode=vm.dataset.mode;document.querySelectorAll("#volMode button").forEach(b=>b.classList.toggle("on",b===vm));selectedKeyword=null;render();return;}
+  const bt=e.target.closest(".seg [data-tab]"); if(bt){brandTab=bt.dataset.tab;document.querySelectorAll(".seg button").forEach(b=>b.classList.toggle("on",b===bt));render();return;}
 });
 $("#exp").addEventListener("click",exportCsv);
 $("#expNaver").addEventListener("click",exportNaverBulk);
