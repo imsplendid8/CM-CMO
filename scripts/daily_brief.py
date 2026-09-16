@@ -201,13 +201,13 @@ def build_message():
 _ES = {
     "wrap": "width:100%;max-width:680px;margin:0;padding:20px 14px;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Malgun Gothic','Apple SD Gothic Neo',sans-serif;color:#20242c;background:#ffffff;text-align:left;word-wrap:break-word;overflow-wrap:break-word;",
     "h2": "font-size:19px;font-weight:800;margin:0 0 3px;letter-spacing:-.02em;text-align:left;word-wrap:break-word;overflow-wrap:break-word;",
-    "sub": "font-size:12.5px;color:#6b7280;margin:0 0 6px;line-height:1.55;text-align:left;word-wrap:break-word;overflow-wrap:break-word;",
+    "sub": "font-size:12.5px;color:#374151;margin:0 0 6px;line-height:1.55;text-align:left;word-wrap:break-word;overflow-wrap:break-word;",
     "h3": "font-size:15px;font-weight:800;margin:26px 0 10px;padding-bottom:6px;border-bottom:2px solid #eceef1;text-align:left;word-wrap:break-word;overflow-wrap:break-word;",
     "card": "width:100%;box-sizing:border-box;border:1px solid #e6e8ec;border-radius:8px;padding:11px 12px;margin:0 0 9px;background:#ffffff;text-align:left;word-wrap:break-word;overflow-wrap:break-word;",
     "tag": "display:inline-block;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:99px;margin:0 0 6px;vertical-align:1px;",
     "title": "display:block;color:#1f2937;text-decoration:none;font-size:13px;font-weight:700;line-height:1.55;white-space:normal;word-wrap:break-word;overflow-wrap:break-word;",
-    "summary": "color:#5f6774;font-size:12px;line-height:1.65;margin-top:5px;word-wrap:break-word;overflow-wrap:break-word;",
-    "meta": "color:#8a919e;font-size:11px;line-height:1.55;margin-top:6px;word-wrap:break-word;overflow-wrap:break-word;",
+    "summary": "color:#1f2937;font-size:12px;line-height:1.65;margin-top:5px;word-wrap:break-word;overflow-wrap:break-word;",
+    "meta": "color:#4b5563;font-size:11px;line-height:1.55;margin-top:6px;word-wrap:break-word;overflow-wrap:break-word;",
 }
 
 def _trim_to_sentences(text, max_sentences=3):
@@ -256,15 +256,15 @@ def render_email():
                       f'<div style="{S["meta"]}">{source_line}</div></div>')
         news_body = cards
     else:
-        news_body = '<div style="font-size:12.5px;color:#6b7280">주요 뉴스가 없습니다.</div>'
-    news_html = f'<h3 style="{S["h3"]}">📰 주요 뉴스 <span style="font-size:12px;color:#6b7280;font-weight:600">· 전체 상위 {len(news)}건</span></h3>{news_body}'
+        news_body = '<div style="font-size:12.5px;color:#374151">주요 뉴스가 없습니다.</div>'
+    news_html = f'<h3 style="{S["h3"]}">📰 주요 뉴스 <span style="font-size:12px;color:#374151;font-weight:600">· 전체 상위 {len(news)}건</span></h3>{news_body}'
 
     # 데이터 상태 + 푸터
     try:
         health = "<br>".join(esc(x) for x in cah.format_lines(cah.compute_health(now)))
     except Exception:
         health = "· 상태 확인 불가 · 자동수집이 정상이라고 단정할 수 없음"
-    footer = (f'<div style="margin-top:24px;padding-top:12px;border-top:1px solid #eceef1;font-size:11px;color:#6b7280;line-height:1.6">'
+    footer = (f'<div style="margin-top:24px;padding-top:12px;border-top:1px solid #eceef1;font-size:11px;color:#4b5563;line-height:1.6">'
               f'{health}<br><br>🔭 전체 대시보드 → <a href="https://{HUB}" style="color:#1f7a4d">{HUB}</a></div>')
 
     head = (f'<div style="{S["h2"]}">📮 (장기CM사업부) 뉴스 모니터링</div>'
