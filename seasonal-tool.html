@@ -87,11 +87,6 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .plan-col .now-grid{grid-template-columns:1fr;}
 .vol-line{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
 .vol-pill{font-size:10px;font-weight:800;color:var(--nav-ink);background:var(--nav-bg);border-radius:99px;padding:3px 8px;}
-/* 월별 그래프 바 */
-.bar-cell{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-height:120px;padding:8px 4px;gap:2px;}
-.bar-cell .bar{width:18px;background:var(--brand);border-radius:3px 3px 0 0;height:calc(var(--val) * 1px);opacity:0.8;transition:.2s;}
-.bar-cell .bar.forecast{background:var(--brand-600);opacity:0.4;}
-.bar-cell .label{font-family:var(--mono);font-size:9px;font-weight:700;color:var(--ink-2);white-space:nowrap;text-align:center;line-height:1.3;}
 @media(max-width:820px){.plan-cols{grid-template-columns:1fr;}.month-picker span{display:none;}}
 /* 카테고리 대표키워드 카드 */
 .rep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:11px;}
@@ -228,7 +223,6 @@ table.mcal thead th.rl{z-index:3;}
 :root[data-theme="light"]{--ink:#0f1729;--ink-2:#4a5163;--muted:#8b93a3;--faint:#cdd2db;--bg:#f7f8fa;--surface:#ffffff;--surface-2:#f4f6f8;--line:#e8ebef;--line-2:#eef1f4;--sh:0 1px 2px rgba(15,23,41,.04),0 2px 6px rgba(15,23,41,.05);--sh-lg:0 12px 30px rgba(15,23,41,.10);}
 </style>
 <script>try{var _r=document.documentElement;_r.setAttribute("data-theme",localStorage.getItem("mf_theme")||"light");if(window.self!==window.top)_r.setAttribute("data-embed","1");}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
-<script>class DebugMonitor{constructor(t="unknown"){this.toolName=t;this.logs=[];this.startTime=Date.now();this.loadStartTime={};this.init()}init(){window.addEventListener("error",e=>{this.error(`[JS Error] ${e.message}`,{file:e.filename,line:e.lineno,col:e.colno,stack:e.error?.stack})});window.addEventListener("unhandledrejection",e=>{this.error(`[Promise Rejection] ${e.reason}`,{reason:String(e.reason)})});this.wrapFetch()}wrapFetch(){const t=window.fetch,e=this;window.fetch=function(...n){const s=n[0];return e.loadStartTime[s]=Date.now(),e.debug(`[Fetch Start] ${s}`),t.apply(this,n).then(t=>{const n=Date.now()-e.loadStartTime[s];return t.ok?e.debug(`[Fetch OK] ${s} (${n}ms, ${t.status})`):e.warn(`[Fetch Fail] ${s} (${t.status}) ${t.statusText}`,{url:s,status:t.status,ms:n}),t}).catch(t=>{const n=Date.now()-e.loadStartTime[s];throw e.error(`[Fetch Error] ${s}`,{url:s,error:t.message,ms:n}),t})}}log(t,e={},n="log"){const s={time:new Date().toISOString(),tool:this.toolName,msg:t,meta:e,level:n,elapsed:Date.now()-this.startTime};this.logs.push(s),this.save(),"error"===n?console.error:("warn"===n?console.warn:console.log)(`[${this.toolName}] ${n.toUpperCase()}`,t,e)}debug(t,e){this.log(t,e,"debug")}warn(t,e){this.log(t,e,"warn")}error(t,e){this.log(t,e,"error")}info(t,e){this.log(t,e,"info")}startMeasure(t){this.loadStartTime[t]=Date.now()}endMeasure(t,e={}){const n=Date.now()-(this.loadStartTime[t]||Date.now());this.info(`[Perf] ${t}: ${n}ms`,{...e,ms:n})}checkRender(t,e){const n=document.querySelector(t);return n&&n.textContent?.trim()?(this.debug(`[Render OK] ${e}`),!0):(n||this.error(`[Render Failed] ${e} - selector not found: ${t}`),n&&!n.textContent?.trim()&&this.warn(`[Render Warning] ${e} - empty content`,{selector:t}),!1)}save(){try{const t=this.logs.slice(-500);localStorage.setItem("mf-debug-log",JSON.stringify(t))}catch(t){console.warn("DebugMonitor: localStorage write failed",t.message)}}static load(){try{const t=localStorage.getItem("mf-debug-log");return t?JSON.parse(t):[]}catch(t){return console.warn("DebugMonitor: localStorage read failed",t.message),[]}}static clear(){localStorage.removeItem("mf-debug-log")}static getStatus(){const t={},e=DebugMonitor.load();return e.forEach(e=>{t[e.tool]||(t[e.tool]={debug:0,info:0,warn:0,error:0,lastError:null}),t[e.tool][e.level]++,("error"===e.level||"warn"===e.level)&&(t[e.tool].lastError=e)}),{totalLogs:e.length,by:t,recent:e.slice(-20),errors:e.filter(t=>"error"===t.level),warnings:e.filter(t=>"warn"===t.level)}}}window.DEBUG=new DebugMonitor(document.querySelector("title")?.textContent||"seasonal-tool");</script>
 <style>:root[data-embed="1"] .sb-brand,:root[data-embed="1"] .crumb,:root[data-embed="1"] .brand-logo,:root[data-embed="1"] #themeBtn{display:none!important}</style>
 <link rel="stylesheet" href="shared/mobile-sidebar.css">
 <link rel="stylesheet" href="shared/ui-polish.css">
@@ -258,7 +252,7 @@ table.mcal thead th.rl{z-index:3;}
 <script>
 "use strict";
 const MONTHS=["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"];
-const NOW=new Date();let CURM=(window.ModooPlanning?.getMonth?.())||NOW.getMonth()+1;
+const NOW=new Date();let CURM=window.ModooPlanning.getMonth();
 /* 계절 태깅: 월→계절 색 키 */
 function seasonOf(ms){const m=ms[0];if([3,4,5].includes(m))return"spring";if([6,7,8].includes(m))return"summer";if([9,10,11].includes(m))return"fall";if([12,1,2].includes(m))return"winter";return"year";}
 const SEASON={spring:["봄","var(--spring)","var(--spring-bg)"],summer:["여름","var(--summer)","var(--summer-bg)"],fall:["가을","var(--fall)","var(--fall-bg)"],winter:["겨울","var(--winter)","var(--winter-bg)"],year:["연중","var(--year)","var(--year-bg)"]};
@@ -435,7 +429,7 @@ function planCards(items){
       <div class="act">⏱ ${esc(w.act)}</div></div>`;}).join("");
 }
 function renderOverview(){
-  const nextM=(window.ModooPlanning?.nextMonth?.(CURM))||((CURM%12)+1);
+  const nextM=window.ModooPlanning.nextMonth(CURM);
   $("#pt").textContent="연간 시즈널 캘린더";
   $("#pts").textContent=`· ${MONTHS[CURM-1]} 선택 · 검색량 ${VOL.asof||"연동 대기"}`;
   const now=[],next=[];PRODUCTS.forEach(p=>winsOf(p.key).forEach(w=>{
@@ -475,7 +469,7 @@ function signalTimeSeries(){
   const newregSeries=SIGNALS.newreg?.series||[];
   const newregChart=newregSeries.length?`
     <div style="flex:1;min-width:300px">
-      <div style="font-size:13px;font-weight:800;margin-bottom:10px;color:var(--ink)">🚗 자동차 신규등록</div>
+      <div style="font-size:13px;font-weight:800;margin-bottom:10px;color:var(--ink)">📊 자동차 신규등록</div>
       <div style="display:flex;align-items:flex-end;gap:2px;height:120px;padding:10px 0">
         ${(()=>{
           const lastN=newregSeries.slice(-12).map(x=>x.count||0);
@@ -490,42 +484,9 @@ function signalTimeSeries(){
       <div style="font-size:10px;color:var(--muted);text-align:center">최근 12개월</div>
     </div>
   `:""
-  const exitSeries=SIGNALS.exit_tour?.series||[];
-  const exitChart=exitSeries.length?`
-    <div style="flex:1;min-width:300px">
-      <div style="font-size:13px;font-weight:800;margin-bottom:10px;color:var(--ink)">✈️ 해외여행(출국통계)</div>
-      <div style="display:flex;gap:0;margin:0 -4px;padding:10px 0">
-        ${(()=>{
-          const data=exitSeries.map(x=>x.outbound_korean||0);
-          const max=Math.max(...data,1);
-          // 간단한 선형 추세 예측: 마지막 3개월 평균으로 향후 3개월 예측
-          const recent=data.slice(-3);
-          const trend=recent.length>0?(recent.reduce((a,b)=>a+b,0)/recent.length):data[data.length-1]||0;
-          const forecast=[trend, trend*0.95, trend*0.9]; // 점진적 감소 추세
-          const allData=[...data,...forecast];
-          const allMax=Math.max(...allData,1);
-
-          return data.map((count,i)=>{
-            const pct=(count/allMax)*100;
-            const label=count.toLocaleString('ko-KR');
-            const month=new Date(2026, 0, 1+i*30).toLocaleDateString('ko-KR', {month:'short'}).replace('월','');
-            return \`<div class="bar-cell" style="--val:\${Math.max(pct, 2)}"><div class="bar"></div><div class="label">\${label}<br>\${month}</div></div>\`;
-          }).join('') +
-          forecast.map((count,i)=>{
-            const pct=(count/allMax)*100;
-            const label=Math.round(count).toLocaleString('ko-KR');
-            const month=new Date(2026, 0, 1+((data.length+i)*30)).toLocaleDateString('ko-KR', {month:'short'}).replace('월','');
-            return \`<div class="bar-cell" style="--val:\${Math.max(pct, 2)}"><div class="bar forecast"></div><div class="label">\${label}<br>\${month}</div></div>\`;
-          }).join('');
-        })()}
-      </div>
-      <div style="font-size:10px;color:var(--muted);text-align:center;margin-top:8px">실적(진한색) · 예측(연한색)</div>
-    </div>
-  `:"";
-  const charts=`${newregChart}${exitChart}`.trim();
-  return charts?`
-    <div class="sec-lbl" style="margin-top:18px">📈 월별 수요 시계열 <span style="font-weight:600;color:var(--muted);text-transform:none">· 운전자보험·여행보험 수요 신호 · 기준 ${esc(SIGNALS.asof)}</span></div>
-    <div style="display:flex;gap:16px;margin-bottom:18px;flex-wrap:wrap">${charts}</div>
+  return newregChart?`
+    <div class="sec-lbl" style="margin-top:18px">📈 월별 수요 시계열 <span style="font-weight:600;color:var(--muted);text-transform:none">· 최근 12개월 추이 · 기준 ${esc(SIGNALS.asof)}</span></div>
+    <div style="display:flex;gap:16px;margin-bottom:18px;flex-wrap:wrap">${newregChart}</div>
   `:"";
 }
 function signalApiStatus(){
@@ -618,8 +579,8 @@ document.addEventListener("click",e=>{
 });
 window.addEventListener("hashchange",()=>{const k=keyFromHash(location.hash);if(k&&k!==curKey){curKey=k;render();}});
 $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");try{localStorage.setItem("mf_theme",d?"light":"dark")}catch(_){};});
-if(window.ModooPlanning){$("#planMonth").innerHTML=window.ModooPlanning.optionMarkup(CURM);
-$("#planMonth").addEventListener("change",e=>{CURM=window.ModooPlanning.setMonth(e.target.value);render();});}else{const opts=Array.from({length:12},((_,i)=>i+1)).map(m=>`<option value="${m}"${m===CURM?" selected":""}>${m}월</option>`).join("");$("#planMonth").innerHTML=opts;}
+$("#planMonth").innerHTML=window.ModooPlanning.optionMarkup(CURM);
+$("#planMonth").addEventListener("change",e=>{CURM=window.ModooPlanning.setMonth(e.target.value);render();});
 // 진입 해시로 초기 뷰 결정(#reco/#news/#event → 뉴스·추천, 상품키 → 해당 상품, 그 외 → 연간 캘린더)
 const _k0=keyFromHash(location.hash); if(_k0)curKey=_k0;
 render();
