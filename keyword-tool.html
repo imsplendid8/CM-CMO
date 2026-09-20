@@ -558,9 +558,16 @@ function productBody(p,isBrand){
 
   if(volMode==="history"){
     const snapMaps=new Map(Object.entries(VOL_HISTORY.snapshots||{}).map(([period,snap])=>[period,new Map(snap.map(row=>[nk(row.kw),row]))]));
-    const periods=Array.from(snapMaps.keys()).sort().reverse();
+    const allPeriods=Array.from(snapMaps.keys()).sort().reverse();
+
+    // 첫 데이터가 생긴 월 찾기 (신규 키워드 추적 시점 기준)
+    let firstDataPeriod=null;
+    for(const period of allPeriods.slice().reverse()){const snap=snapMaps.get(period);if(snap&&snap.size>0){firstDataPeriod=period;break;}}
+    const periods=firstDataPeriod?allPeriods.filter(p=>p>=firstDataPeriod):allPeriods;
+
     if(selectedKeyword){
-      const skw=selectedKeyword,data=periods.map(period=>{const m=snapMaps.get(period),row=m?.get(nk(skw));return {period,total:row?.total||0};});
+      const skw=selectedKeyword,fullData=allPeriods.map(period=>{const m=snapMaps.get(period),row=m?.get(nk(skw));return {period,total:row?.total||0};}),
+        data=periods.map(period=>fullData.find(d=>d.period===period)).filter(Boolean);
       const max=Math.max(...data.map(d=>d.total),1),bars=data.map(d=>`<div class="bar-cell" style="--val:${Math.max(d.total/max*100,3)}%"><div class="bar"></div><div class="label">${fmtVol(d.total)}</div></div>`).join("");
       return `<div style="margin-bottom:16px"><button class="btn" id="backBtn" style="margin-bottom:12px">← 키워드 목록으로</button></div>
         <div class="sec-lbl">${esc(skw)}</div>
@@ -571,11 +578,12 @@ function productBody(p,isBrand){
       return `<tr data-kw="${nk(r.kw)}" style="cursor:pointer;transition:.1s"><td class="kw">${esc(r.kw)}</td><td class="c"><span class="src ${r.src||"도구"}">${r.src||"도구"}</span></td>${cells}</tr>`;
     }).join("");
     const headers=periods.map(p=>`<th class="c">${p}</th>`).join("");
+    const note=firstDataPeriod?`<div style="font-size:11.5px;color:var(--muted);margin-top:10px">* ${firstDataPeriod}부터 추적된 데이터를 표시합니다</div>`:"";
     return `<div class="kpi-row">${kpi(rows.length,"총 키워드")}${kpi(nvCnt,"네이버 도구 추가","var(--nav-ink)")}${kpi(ic.거래+ic.담보,"거래·담보형","var(--trx)")}${kpi(pc.구글+pc.공통+ic.AI,"구글·AI","var(--goo-ink)")}</div>
       ${autocompletePanel(p)}
       ${moverPanel(p.key)}
       <div class="sec-lbl">월별 검색량 추이</div>
-      <div class="tbl-wrap"><table><thead><tr><th>키워드</th><th class="c">출처</th>${headers}</tr></thead><tbody>${trows}</tbody></table></div>`;
+      <div class="tbl-wrap"><table><thead><tr><th>키워드</th><th class="c">출처</th>${headers}</tr></thead><tbody>${trows}</tbody></table></div>${note}`;
   }
 
   const rows2=vh?rows.slice().sort((a,b)=>{const va=volOf(a.kw),vb=volOf(b.kw);return((vb?vb.pc+vb.mobile:-1)-(va?va.pc+va.mobile:-1));}):rows;
