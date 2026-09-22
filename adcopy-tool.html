@@ -938,7 +938,7 @@ function generateStrategyVariants(strategyKey,{titles,descs,subt,additionalDescs
 
   // 조합 수 제한
   const maxCombos=Math.min(100,titles.length*descs.length*subt.length);
-  const allVariants=[];
+  const allVariants=[],spare=[];
   for(let i=0;i<maxCombos;i++){
     const ti=i%titles.length,di=Math.floor(i/titles.length)%descs.length,ai=Math.floor(i/(titles.length*descs.length))%subt.length;
     const adi=i%additionalDescs.length,pi=i%promos.length;
@@ -949,16 +949,17 @@ function generateStrategyVariants(strategyKey,{titles,descs,subt,additionalDescs
       additionalDescription:additionalDescs[adi].tx,
       promo:promos[pi].tx,
       sublink:extraSubs[i%extraSubs.length],
+      seasonal:!!descs[di].ss,
       score:0
     };
-    if(filterByStrategy(strategyKey,variant)){
-      variant.score=scoreVariant(variant);
-      allVariants.push(variant);
-    }
+    variant.score=scoreVariant(variant);
+    (filterByStrategy(strategyKey,variant)?allVariants:spare).push(variant);
   }
 
-  // 점수 높은 순으로 정렬해서 반환
-  return allVariants.sort((a,b)=>b.score-a.score).map(v=>{delete v.score;return v;});
+  // 전략 조건에 맞는 조합을 먼저 쓰고, 모자라면 점수순으로 채운다.
+  // (시즌 이슈가 없는 달처럼 조건에 맞는 문구가 하나도 없으면 그 전략 행이 통째로 비기 때문)
+  const byScore=(a,b)=>b.score-a.score;
+  return [...allVariants.sort(byScore),...spare.sort(byScore)].map(v=>{delete v.score;return v;});
 }
 function filterByStrategy(strategyKey,variant){
   const t=variant.title.toLowerCase(),d=variant.description.toLowerCase();
@@ -966,7 +967,7 @@ function filterByStrategy(strategyKey,variant){
     case"brand":return t.includes("한화")||d.includes("한화")||d.includes("신뢰")||d.includes("공신력");
     case"coverage":return d.includes("보장")||d.includes("보험")||d.includes("원")||d.match(/\d+[만천]원/);
     case"situation":return d.includes("보호")||d.includes("대비")||d.includes("점검")||d.includes("확인");
-    case"season":return d.includes("여름")||d.includes("겨울")||d.includes("봄")||d.includes("가을")||d.includes("날씨");
+    case"season":return variant.seasonal||d.includes("여름")||d.includes("겨울")||d.includes("봄")||d.includes("가을")||d.includes("날씨");
     case"action":return d.includes("가입")||d.includes("신청")||d.includes("계산")||d.includes("지금")||d.includes("상담");
     default:return true;
   }
