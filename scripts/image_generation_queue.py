@@ -74,7 +74,7 @@ def status_for(row: dict[str, Any], previous: dict[str, Any], root: Path = ROOT)
 
 
 def build_queue(root: Path = ROOT, plan_path: Path = PLAN_PATH,
-                queue_path: Path = QUEUE_PATH) -> dict[str, Any]:
+                queue_path: Path = QUEUE_PATH, persist: bool = True) -> dict[str, Any]:
     plan = read_json(plan_path, {})
     previous_payload = read_json(queue_path, {})
     previous = {
@@ -158,7 +158,8 @@ def build_queue(root: Path = ROOT, plan_path: Path = PLAN_PATH,
         payload["provider_model"] = previous_payload["provider_model"]
     if previous_payload.get("provider_configured_at"):
         payload["provider_configured_at"] = previous_payload["provider_configured_at"]
-    write_json(queue_path, payload)
+    if persist:
+        write_json(queue_path, payload)
     return payload
 
 
@@ -194,9 +195,9 @@ def sync_generated_assets(root: Path = ROOT, plan_path: Path = PLAN_PATH,
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--sync", action="store_true", help="확인된 생성 PNG를 계획에 반영")
-    parser.add_argument("--validate", action="store_true", help="대기열을 만들고 상태 요약만 출력")
+    parser.add_argument("--validate", action="store_true", help="파일을 쓰지 않고 대기열 상태만 계산해 출력")
     args = parser.parse_args()
-    payload = build_queue()
+    payload = build_queue(persist=not args.validate)
     synced = sync_generated_assets() if args.sync else 0
     print(
         f"[OK] 이미지 생성 큐 {payload['summary']['total']}건 · "
