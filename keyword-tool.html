@@ -183,6 +183,7 @@ td.kw{font-weight:700;color:var(--ink);white-space:normal;} td.c{text-align:cent
         </div>
         <button class="btn primary" id="expNaver" title="네이버 검색광고 구조를 참고한 내부 검토용 CSV · 공식 대량등록 템플릿 확인 전 업로드 금지">네이버 내부검토 CSV(70원)</button>
         <button class="btn" id="exp" title="전체 키워드 CSV(플랫폼·매치타입 포함)">CSV 내보내기</button>
+        <button class="btn" id="refreshBtn" title="현재 기준으로 키워드 전체 재생성 · 모든 데이터 캐시 초기화">🔄 새로고침</button>
         <button class="icon-btn" id="themeBtn" type="button" aria-label="테마 전환"></button>
       </div>
     </header>
@@ -815,6 +816,15 @@ $("#nvGo").addEventListener("click",()=>{
     }).catch(()=>{$("#nvStatus").textContent="실시간 연동 실패 — 팀 프록시 응답 없음(잠시 후 다시 시도)";});
 });
 $("#themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const d=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",d?"light":"dark");try{localStorage.setItem("mf_theme",d?"light":"dark")}catch(_){};});
+function reloadKeywordData(){
+  VOL={};VOL_META={asof:null,source:"none"};VOL_HISTORY={snapshots:{}};AUTOCOMPLETE={products:{}};AUTO_META.clear();AUTO_SELECTED.clear();GOOGLE_VOL={};GOOGLE_META={asof:null,source:"none"};
+  fetch("data/volume.json?cache="+Date.now()).then(r=>r.ok?r.json():null).then(d=>{if(d)applyVolumeData(d);render();}).catch(()=>{render();});
+  fetch("data/volume-history.json?cache="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)applyVolumeHistory(d);render();}).catch(()=>{});
+  fetch("data/keyword-autocomplete.json?cache="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)applyAutocompleteData(d);render();}).catch(()=>{});
+  fetch("data/google-volume.json?cache="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)applyGoogleVolumeData(d);render();}).catch(()=>{});
+  toast("키워드 전체 재생성됨 — 모든 데이터 캐시 초기화, 최신 기준으로 로드");
+}
+$("#refreshBtn").addEventListener("click",reloadKeywordData);
 render();
 // 검색광고 실검색량 자동 로드(Pages/서버 동일출처 · 아티팩트/file은 조용히 생략)
 fetch("data/volume.json").then(r=>r.ok?r.json():null).then(d=>{if(d)applyVolumeData(d);}).catch(()=>{});
