@@ -7,6 +7,10 @@
 전체 캐노니컬 상품을 유지한다. 자체완결 HTML 원칙상 런타임 공유 대신 이 검사로
 동기화를 강제한다. CI(.github/workflows/ci.yml)에서 실행.
 
+`autoins`(자동차보험)는 장기CM이 뉴스·검색 수요만 추적하고 광고 소재는 만들지
+않는 상품이라 소재 생성 3종에서 제외한다. seo-audit은 랜딩 실측 관측치(6축 점수)가
+쌓이면 제외 목록에서 빼고 PRODUCTS에 추가한다.
+
 사용: python3 scripts/check_products_sync.py   (불일치 시 exit 1)
 """
 import json, re, sys, os
@@ -16,9 +20,10 @@ FILES = ["seo-audit.html", "keyword-tool.html", "news-tool.html", "serp-tool.htm
 ALLOWED_EXTRA = {"pro", "__pro", "__all"}   # 범용 생성기 등 도구별 허용 키
 TOOL_EXCLUDED = {
     "keyword-tool.html": {"home"},
-    "seasonal-tool.html": {"home"},
-    "adcopy-tool.html": {"home"},
-    "powercontent-tool.html": {"home"},
+    "seasonal-tool.html": {"home", "autoins"},
+    "adcopy-tool.html": {"home", "autoins"},
+    "powercontent-tool.html": {"home", "autoins"},
+    "seo-audit.html": {"autoins"},   # 랜딩 실측 관측 전까지 보류
 }
 
 def canonical():
@@ -79,7 +84,8 @@ def main():
         for e in errors:
             print("  - " + e, file=sys.stderr)
         sys.exit(1)
-    print(f"✔ 상품 마스터 동기화 OK — 모니터링 {len(canon)}개 · 생성 {len(canon) - 1}개")
+    generated = len(canon) - len(TOOL_EXCLUDED["adcopy-tool.html"])
+    print(f"✔ 상품 마스터 동기화 OK — 모니터링 {len(canon)}개 · 소재 생성 {generated}개")
 
 if __name__ == "__main__":
     main()
