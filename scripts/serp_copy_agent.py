@@ -1080,7 +1080,7 @@ def generate(products, analysis, volume, manifest=None, dom=None, planning_month
     manifest, dom, source_context = manifest or {}, dom or {}, source_context or {}
     output = []
     for product in products.get("products") or []:
-        if product.get("cat") == "사이트":
+        if product.get("cat") == "사이트" or product.get("monitorOnly"):
             continue
         observed = ((analysis.get("products") or {}).get(product["key"]) or {})
         source_product = product_source_context(source_context, product["key"])

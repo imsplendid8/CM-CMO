@@ -43,9 +43,10 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn("variation", ADCOPY)
         self.assertIn("imageDirections", ADCOPY)
         self.assertIn("powerTopics", ADCOPY)
-        self.assertIn("SERP 공백형", ADCOPY)
-        self.assertIn("검색 행동형", ADCOPY)
-        self.assertIn("항목 비교형", ADCOPY)
+        # 0d4b5d2에서 SERP 전략이 3종(공백·검색행동·항목비교)에서 6종으로 재설계됐다.
+        for strategy in ("검색 수요형", "고객 질문 답변형", "보장 범위 명확화형",
+                         "상품 범위형", "차별 각도형", "특약·보험료형"):
+            self.assertIn(f'strategy:"{strategy}"', ADCOPY)
         self.assertIn("실제 반영된 SA 소재", ADCOPY)
         self.assertIn('const OUT_OF_SCOPE_VOLUME=["자동차보험","자동차 보험","한화생명","TM","텔레마케팅"]', ADCOPY)
         self.assertNotIn("공개 광고 관측", ADCOPY)
@@ -173,8 +174,8 @@ class TestAdcopyContract(unittest.TestCase):
             self.assertIn(marker, POWER)
         self.assertIn("function visualPlanFor", POWER)
         self.assertIn("bodyCharCount", POWER)
-        self.assertIn("발행 패키지 CSV", POWER)
-        self.assertIn("발행 원고 복사", POWER)
+        self.assertIn("패키지 CSV", POWER)
+        self.assertIn("원고 복사", POWER)
 
     def test_sa_and_power_content_share_material_review_rules(self):
         self.assertIn('shared/naver-material-specs.js', ADCOPY)
@@ -234,7 +235,7 @@ class TestAdcopyContract(unittest.TestCase):
         self.assertIn("function inScope(p,text)", POWER)
         self.assertIn("function exportCsv()", POWER)
         self.assertIn('id="exportCsv"', POWER)
-        self.assertIn("발행 패키지 CSV", POWER)
+        self.assertIn("패키지 CSV", POWER)
         self.assertIn('id="copyBrief"', POWER)
 
     def test_copy_candidates_use_shared_korean_humanizer(self):
