@@ -107,6 +107,107 @@ AXIS_LABELS = {
     "official_path": "공식 화면 대조",
     "serp_whitespace": "경쟁 소재 공백", "seasonal_scene": "실제 시즌 장면",
 }
+STRATEGY_LABELS = {
+    "search_action": "검색 행동형", "decision_detail": "선택 기준형",
+    "scope_compare": "항목 비교형", "terms_navigation": "약관 탐색형",
+    "official_path": "공식 화면형", "serp_whitespace": "SERP 공백형", "seasonal_scene": "시즌 장면형",
+}
+# 캡처 자료가 없는 상품의 실사용 SA 문구. 담보명은 상품 마스터 special 기준이며 수치·할인·속도 표현은 넣지 않는다.
+FALLBACK_SA_BLUEPRINTS = {
+    "birth": [
+        {"message_axis": "search_action", "title": "태아보험 보험료 계산",
+         "description": "출산 전 태아 때 가입해 필요한 보장을 골라 보험료를 계산해요",
+         "additional_description": "임신 주수에 맞춰 가입 가능 여부를 안내해요",
+         "promo": "태아보험료 계산", "sublinks": ["보험료계산", "가입시기", "보장내용", "가입안내"]},
+        {"message_axis": "scope_compare", "title": "선천이상·미숙아 보장",
+         "description": "선천이상이나 미숙아로 태어났을 때 필요한 치료를 보장으로 준비해요",
+         "additional_description": "선천이상과 미숙아의 지급 조건을 나눠서 안내해요",
+         "promo": "신생아 보장 보기", "sublinks": ["선천이상", "미숙아", "보험료", "가입안내"]},
+        {"message_axis": "decision_detail", "title": "태아보험 가입 시기",
+         "description": "태아보험은 출산 전에 가입해야 태아 때부터 보장받을 수 있어요",
+         "additional_description": "가입 가능한 임신 주수와 필요한 서류를 미리 안내해요",
+         "promo": "가입 시기 보기", "sublinks": ["가입시기", "가입조건", "보험료", "가입안내"]},
+        {"message_axis": "serp_whitespace", "title": "산모 질환도 함께 대비",
+         "description": "임신·출산 중 산모에게 생길 수 있는 질환도 함께 대비해요",
+         "additional_description": "제왕절개 등 출산 방식에 따른 보장 여부를 안내해요",
+         "promo": "산모 보장 보기", "sublinks": ["산모", "출산", "보험료", "가입안내"]},
+        {"message_axis": "terms_navigation", "title": "태아보험 보장 안내",
+         "description": "태아·신생아·산모 보장 구성을 한 화면에 정리했어요",
+         "additional_description": "보장하지 않는 경우와 지급 조건은 약관 기준으로 안내해요",
+         "promo": "보장내용 한눈에", "sublinks": ["보장내용", "약관확인", "보험료", "가입안내"]},
+    ],
+    "event": [
+        {"message_axis": "search_action", "title": "행사보험 보험료 계산",
+         "description": "행사 종류와 규모에 맞춰 행사배상책임보험료를 계산해요",
+         "additional_description": "공연·체육행사·축제 등 행사 성격에 맞게 고를 수 있어요",
+         "promo": "행사 보험료 계산", "sublinks": ["보험료계산", "행사유형", "보장내용", "가입안내"]},
+        {"message_axis": "decision_detail", "title": "관람객 사고 배상책임",
+         "description": "행사 중 관람객이 다치거나 물건이 파손됐을 때 배상책임을 보장해요",
+         "additional_description": "행사 주최자가 지는 배상 범위를 약관 기준으로 안내해요",
+         "promo": "배상책임 보기", "sublinks": ["배상책임", "관람객", "보험료", "가입안내"]},
+        {"message_axis": "scope_compare", "title": "공연·체육행사 보장",
+         "description": "공연부터 체육행사까지 행사 유형에 맞는 배상책임을 준비해요",
+         "additional_description": "행사 장소와 기간에 따라 달라지는 조건을 안내해요",
+         "promo": "행사 유형 보기", "sublinks": ["공연행사", "체육행사", "보험료", "가입안내"]},
+        {"message_axis": "serp_whitespace", "title": "불꽃놀이·수상행사 보장",
+         "description": "불꽃놀이·수상활동처럼 위험도가 다른 행사도 배상책임을 준비해요",
+         "additional_description": "행사별로 보장하지 않는 활동을 미리 안내해요",
+         "promo": "특수 행사 보기", "sublinks": ["불꽃놀이", "수상활동", "보험료", "가입안내"]},
+        {"message_axis": "terms_navigation", "title": "행사 전 가입 안내",
+         "description": "행사 일정에 맞춰 미리 가입해야 행사 중 사고를 보장받을 수 있어요",
+         "additional_description": "가입 가능 시점과 법인 사업자 가입 제한을 안내해요",
+         "promo": "가입 조건 보기", "sublinks": ["가입조건", "약관확인", "보험료", "가입안내"]},
+    ],
+    "chronic": [
+        {"message_axis": "search_action", "title": "간편보험 보험료 계산",
+         "description": "고혈압·당뇨가 있어도 간편심사로 보험료를 계산할 수 있어요",
+         "additional_description": "지금 치료 중인 질환이 있어도 가입 가능 여부를 안내해요",
+         "promo": "간편보험료 계산", "sublinks": ["보험료계산", "간편심사", "보장내용", "가입안내"]},
+        {"message_axis": "decision_detail", "title": "간편심사 고지 항목",
+         "description": "몇 가지 질문에만 답하는 간편심사로 가입 가능 여부를 알려드려요",
+         "additional_description": "고지해야 할 기간과 질환 범위를 쉽게 정리했어요",
+         "promo": "고지 항목 보기", "sublinks": ["고지항목", "간편심사", "보험료", "가입안내"]},
+        {"message_axis": "scope_compare", "title": "고혈압·당뇨 가입 안내",
+         "description": "고혈압이나 당뇨로 치료받고 있어도 가입할 수 있는지 안내해요",
+         "additional_description": "복용 중인 약과 치료 이력에 따라 조건이 달라질 수 있어요",
+         "promo": "가입 조건 보기", "sublinks": ["고혈압", "당뇨", "보험료", "가입안내"]},
+        {"message_axis": "serp_whitespace", "title": "유병력자 실손 보장",
+         "description": "지병이 있는 분도 병원 치료비를 실손으로 준비할 수 있어요",
+         "additional_description": "일반 실손과 다른 보장 범위를 항목별로 안내해요",
+         "promo": "실손 보장 보기", "sublinks": ["유병실손", "보장범위", "보험료", "가입안내"]},
+        {"message_axis": "terms_navigation", "title": "간편보험 보장 안내",
+         "description": "간편심사 보험의 보장 구성과 보장하지 않는 경우를 정리했어요",
+         "additional_description": "부담보·제외 조건은 약관 기준으로 함께 안내해요",
+         "promo": "보장내용 한눈에", "sublinks": ["보장내용", "약관확인", "보험료", "가입안내"]},
+    ],
+}
+# 캡처 자료가 없는 상품의 파워콘텐츠 3안: (축, 제목, 검색 의도, 초점, 목차, 대표 검색어)
+FALLBACK_POWER_SPECS = {
+    "birth": [
+        ("decision_detail", "태아보험, 언제 가입해야 보장받을 수 있을까?", "가입 전 준비", "태아",
+         ["태아보험이 필요한 이유", "가입 가능한 임신 주수와 시기", "출산 전 가입과 출산 뒤 가입의 차이", "가입 전 준비할 서류"], "태아보험 가입시기"),
+        ("scope_compare", "선천이상·미숙아, 태아보험 보장 기준 정리", "보장 정보 탐색", "선천이상",
+         ["선천이상과 미숙아란", "선천이상 보장이 적용되는 경우", "미숙아 보장이 적용되는 경우", "가입 전 보장하지 않는 경우"], "태아보험 선천이상"),
+        ("serp_whitespace", "태아보험에서 산모 보장도 함께 챙기는 법", "보장 정보 탐색", "산모",
+         ["임신·출산 중 산모에게 생길 수 있는 질환", "산모 보장이 적용되는 경우", "제왕절개 등 출산 방식과 보장", "태아·산모 보장 함께 고르기"], "태아보험 산모"),
+    ],
+    "event": [
+        ("decision_detail", "행사배상책임보험, 어떤 사고를 보장할까?", "보장 정보 탐색", "배상책임",
+         ["행사 중 생길 수 있는 사고", "관람객 부상과 물건 파손 배상", "주최자가 지는 배상 범위", "보장하지 않는 활동과 조건"], "행사배상책임보험"),
+        ("scope_compare", "공연·체육행사·불꽃놀이, 행사별 보험 고르는 법", "비교·의사결정", "공연행사",
+         ["행사 유형에 따라 달라지는 위험", "공연·체육행사 보장", "불꽃놀이·수상활동 보장", "행사 규모에 맞춰 고르기"], "행사보험"),
+        ("official_path", "행사보험, 행사 전 언제까지 가입해야 할까?", "가입 전 준비", "불꽃놀이",
+         ["행사보험 가입이 필요한 시점", "가입할 때 입력하는 행사 정보", "법인 사업자 가입 제한", "행사 전에 확인할 조건"], "행사보험 가입"),
+    ],
+    "chronic": [
+        ("decision_detail", "고혈압·당뇨가 있어도 보험 가입이 될까?", "가입 전 준비", "고혈압",
+         ["유병력자 보험이 필요한 이유", "간편심사로 가입하는 방법", "고혈압·당뇨 치료 이력과 가입 조건", "가입 전 준비할 정보"], "유병자보험 고혈압"),
+        ("scope_compare", "간편심사 보험과 일반 보험, 무엇이 다를까?", "비교·의사결정", "간편심사",
+         ["간편심사 보험이란", "고지 항목의 차이", "보장 범위와 보험료의 차이", "나에게 맞는 보험 고르기"], "간편심사보험"),
+        ("terms_navigation", "간편심사 고지 항목, 쉽게 정리한 질문 목록", "보장 정보 탐색", "당뇨",
+         ["간편심사에서 묻는 질문", "고지해야 하는 기간과 질환", "사실대로 고지해야 하는 이유", "부담보·제외 조건 이해하기"], "간편심사 고지"),
+    ],
+}
 MOVING_HOLIDAY_TERMS = ("추석", "설 연휴", "명절")
 STYLE_FAMILY = "premium_3d_animation_v4"
 MATERIAL_RULES_VERSION = 3
@@ -384,8 +485,12 @@ def _fit(options, minimum, maximum):
     for value in cleaned:
         if minimum <= len(value) <= maximum:
             return value
-    value = cleaned[0] if cleaned else "가입 전 확인"
-    return value[:maximum].rstrip(" ·,:")
+    value = min(cleaned, key=len) if cleaned else "보장내용 안내"
+    if len(value) <= maximum:
+        return value
+    # 글자 중간이 아니라 어절 경계에서 자른다('주택화재보험료 전'처럼 잘린 제목 방지).
+    cut = value[:maximum + 1].rsplit(" ", 1)[0]
+    return (cut if len(cut) >= minimum else value[:maximum]).rstrip(" ·,:")
 
 
 def _josa(value, batchim, open_value):
@@ -504,115 +609,74 @@ def variation_context(product, planning_month, season, signature):
 
 
 def _copy_for_axis(axis, product, keyword, angle, other, season):
+    """블루프린트가 없는 축의 SA 문구. 체크리스트형('~읽기/~대조/~기록')이 아니라 광고 어투로 쓴다."""
+    for item in FALLBACK_SA_BLUEPRINTS.get(product["key"]) or []:
+        if item["message_axis"] == axis:
+            return {"strategy": STRATEGY_LABELS[axis], **{key: item[key] for key in
+                    ("title", "description", "additional_description", "promo")},
+                    "sublinks": list(item["sublinks"])}
     name = product.get("serpKw") or product["name"]
     event = season.get("name")
+    pair = f"{_josa(angle, '과', '와')} {other}"
     if axis == "seasonal_scene" and event:
+        short = re.split(r"[·,(]", event)[0].strip()
+        focus = f"{name} 보장" if angle.replace(" ", "") in event.replace(" ", "") else f"{angle} 보장"
         return {
             "strategy": "시즌 장면형",
-            "title": _fit([f"{event} 전 {angle} 확인", f"{event} {angle} 선택", f"{name} 시즌 항목"], 4, 15),
-            "description": _fit([f"{event} 전 {angle} 적용 장면과 {other} 선택 조건을 함께 비교",
-                                  f"{_josa(event, '을', '를')} 앞두고 {name}의 {angle} 확인 순서 정리"], 20, 45),
-            "additional_description": _fit([f"{event} 일정·{angle} 적용기간·제외 조건을 비교",
-                                             f"{name} 설계 화면에서 {angle} 선택 항목 확인"], 2, 45),
-            "promo": _fit([f"{event} 기준 보기", f"{angle} 조건 보기", "항목 비교"], 2, 14),
-            "sublinks": ["보험료계산", "선택항목", "가입조건", "상품안내"],
+            "title": _fit([f"{short} 대비 {name}", f"{short} 전 {angle} 보장", f"{name} 시즌 보장"], 4, 15),
+            "description": _fit([f"{_josa(event, '을', '를')} 앞두고 {_josa(focus, '을', '를')} 미리 준비해요",
+                                  f"{event} 시기에 필요한 {pair} 보장을 골라 담아요"], 20, 45),
+            "additional_description": _fit([f"{event} 기간에 적용되는 조건과 보장하지 않는 경우를 안내해요",
+                                             f"{angle} 보장이 적용되는 상황을 알기 쉽게 안내해요"], 2, 45),
+            "promo": _fit([f"{angle} 보장 보기", "보장내용 한눈에"], 2, 14),
+            "sublinks": ["보험료계산", "보장내용", "가입조건", "가입안내"],
         }
-    if axis == "search_action":
-        return {"strategy": "검색 행동형", "title": _fit([f"{name}료 계산 전", f"{angle} 보험료 계산", f"{name} 선택 항목"], 4, 15),
-                "description": _fit([f"{angle}·{other} 선택 항목과 보험기간을 먼저 맞춰 보기",
-                                     f"{name} 계산 화면에서 {angle} 항목과 보험기간을 비교"], 20, 45),
-                "additional_description": _fit([f"같은 선택 조건으로 계산한 결과인지 최종 화면에서 대조",
-                                                 f"{angle} 선택 기준을 계산 전에 먼저 기록"], 2, 45),
-                "promo": _fit(["보험료 계산", f"{angle} 조건 보기"], 2, 14),
-                "sublinks": ["보험료계산", "선택항목", "가입조건", "상품안내"]}
-    if axis == "decision_detail":
-        return {"strategy": "선택 기준형", "title": _fit([f"{angle} 지급 조건", f"{angle} 조건 읽기", f"{name} 선택 기준"], 4, 15),
-                "description": _fit([f"{angle} 지급사유·적용 시점·제외 조건을 나눠 읽는 기준",
-                                     f"{angle} 선택 전 기간·한도 항목을 한 줄씩 정리"], 20, 45),
-                "additional_description": _fit([f"{other} 항목은 같은 기준으로 나란히 비교",
-                                                 f"{angle} 항목의 보장하지 않는 경우부터 읽기"], 2, 45),
-                "promo": _fit(["조건 비교", "제외 조건 보기"], 2, 14),
-                "sublinks": ["보장내용", "제외조건", "가입조건", "상품안내"]}
-    if axis == "scope_compare":
-        return {"strategy": "항목 비교형", "title": _fit([f"{angle}·{other} 차이", f"{name} 항목 비교"], 4, 15),
-                "description": _fit([f"{_josa(angle, '과', '와')} {other}의 지급사유와 적용 장면을 따로 비교",
-                                     f"{_josa(angle, '과', '와')} {other}의 기간·제외 조건을 한 표로 정리"], 20, 45),
-                "additional_description": _fit(["두 항목의 적용 시점과 보장하지 않는 경우를 나란히 읽기",
-                                                 "지급사유와 제외 조건을 같은 순서로 구분"], 2, 45),
-                "promo": _fit(["항목 비교", "조건 나누기"], 2, 14),
-                "sublinks": ["항목비교", "보장내용", "보험료계산", "가입안내"]}
-    if axis == "terms_navigation":
-        return {"strategy": "약관 탐색형", "title": _fit([f"{name} 약관 순서", f"{angle} 약관 찾기"], 4, 15),
-                "description": _fit([f"{angle} 지급사유·적용 시점·제외 조건을 차례로 읽기",
-                                     f"{name} 약관에서 {angle} 정의와 지급 조항을 함께 찾기"], 20, 45),
-                "additional_description": _fit([f"{other} 항목도 같은 목차 순서로 대조",
-                                                 "광고 표현과 약관 용어가 같은 뜻인지 기록"], 2, 45),
-                "promo": _fit(["약관 항목 보기", "지급 기준 보기"], 2, 14),
-                "sublinks": ["약관확인", "지급사유", "제외조건", "가입안내"]}
-    if axis == "official_path":
-        return {"strategy": "공식 화면형", "title": _fit(["최종 청약 조건 대조", f"{name} 설계 순서"], 4, 15),
-                "description": _fit([f"상품 안내·보험료 계산·최종 청약의 {angle} 조건을 비교",
-                                     f"설계 화면에 표시된 {angle} 조건과 납입기간을 기록"], 20, 45),
-                "additional_description": _fit(["선택 항목·납입 조건·보험기간을 처음 설계와 대조",
-                                                 f"최종 청약 전 {angle} 조건을 한 번 더 읽기"], 2, 45),
-                "promo": _fit(["청약 조건 보기", "설계 순서"], 2, 14),
-                "sublinks": ["보험료계산", "상품안내", "가입조건", "청약확인"]}
-    return {"strategy": "SERP 공백형", "title": _fit([f"{angle} 먼저 구분", f"{name} 놓친 질문"], 4, 15),
-            "description": _fit([f"검색 결과가 덜 설명한 {angle}·{other} 조건을 따로 정리",
-                                 f"{name}에서 빠지기 쉬운 {angle} 지급 기준을 질문으로 분리"], 20, 45),
-            "additional_description": _fit([f"{angle} 적용 시점과 보장하지 않는 경우까지 기록",
-                                             "검색 결과와 상품 안내의 차이를 메모"], 2, 45),
-            "promo": _fit(["핵심 질문 보기", "조건 구분"], 2, 14),
-            "sublinks": ["핵심질문", "보장내용", "보험료계산", "가입안내"]}
+    templates = {
+        "search_action": ([f"{name} 보험료 계산", f"{name} 보험료"],
+                          [f"{pair} 중 필요한 보장만 골라 보험료를 계산해요", f"필요한 보장만 골라 {name} 보험료를 계산해요"],
+                          ["필요 없는 보장은 빼고 꼭 필요한 보장만 남길 수 있어요"],
+                          ["내 보험료 바로 계산", "보험료 계산"], ["보험료계산", "보장선택", "보장내용", "가입안내"]),
+        "decision_detail": ([f"{angle} 보장 기준", f"{angle} 보장 안내"],
+                            [f"{angle} 보장이 어떤 경우에 적용되는지 지급 기준을 알기 쉽게 안내해요",
+                             f"{angle} 보장이 적용되는 상황과 지급 기준을 안내해요"],
+                            [f"{other} 보장도 같은 기준으로 함께 안내해요"],
+                            [f"{angle} 보장 보기", "지급 기준 보기"], ["보장내용", "지급기준", "보험료", "가입안내"]),
+        "scope_compare": ([f"{angle}·{other} 보장", f"{name} 보장 비교"],
+                          [f"{pair}, 보장 조건이 달라 항목별로 나눠 담아요", f"{pair} 보장을 항목별로 나눠 골라 담아요"],
+                          ["두 보장의 지급 조건과 보장하지 않는 경우를 나눠 안내해요"],
+                          ["보장 구성 보기", "항목별 보장"], ["보장비교", "보장내용", "보험료", "가입안내"]),
+        "terms_navigation": ([f"{name} 보장 안내", f"{angle} 약관 안내"],
+                             [f"{angle}·{other} 보장 내용과 보장하지 않는 경우를 약관 기준으로 정리했어요",
+                              f"{name} 보장 내용과 보장하지 않는 경우를 약관 기준으로 정리했어요"],
+                             ["지급 조건과 제외 사항은 상품설명서에서 함께 안내해요"],
+                             ["보장내용 한눈에", "약관 안내"], ["보장내용", "약관확인", "보험료", "가입안내"]),
+        "official_path": ([f"{name} 가입 안내", f"{name} 가입 절차"],
+                          [f"보험료 계산부터 가입까지 {name} 공식 화면에서 이어서 진행해요",
+                           "보험료 계산부터 가입까지 공식 화면에서 이어서 진행해요"],
+                          ["선택한 보장과 보험기간을 가입 전 한 화면에서 안내해요"],
+                          ["가입 절차 보기", "공식 가입 안내"], ["보험료계산", "상품안내", "가입조건", "가입안내"]),
+    }
+    if axis not in templates:  # serp_whitespace
+        templates[axis] = ([f"{angle} 보장도 준비", f"{name} {angle} 보장"],
+                           [f"다른 광고에서 잘 다루지 않는 {angle} 보장까지 {name}으로 준비해요",
+                            f"{angle} 보장이 필요한 상황을 {name}으로 미리 준비해요"],
+                           [f"{angle} 보장이 적용되는 상황과 조건을 안내해요"],
+                           [f"{angle} 보장 보기", "보장내용 한눈에"], ["보장내용", "보험료계산", "가입조건", "가입안내"])
+    titles, descriptions, additions, promos, sublinks = templates[axis]
+    return {"strategy": STRATEGY_LABELS.get(axis, "SERP 공백형"),
+            "title": _fit(titles, 4, 15), "description": _fit(descriptions, 20, 45),
+            "additional_description": _fit(additions, 2, 45), "promo": _fit(promos, 2, 14),
+            "sublinks": list(sublinks)}
 
 
 def source_sa_recommendations(product, context, basis, variation, feedback_rules=None, guide=None):
     rows = []
     source_ids = list(context.get("source_ids") or [])
     blueprints = list(context.get("sa_blueprints") or [])
-    if source_ids and not blueprints:
-        focuses = list(context.get("preferred_focus") or product.get("special") or [product["name"]])
-        angle = focuses[0]
-        other = focuses[1] if len(focuses) > 1 else (product.get("special") or [product["name"]])[0]
-        third = focuses[2] if len(focuses) > 2 else other
-        name = product.get("serpKw") or product["name"]
-        actions = list((context.get("landing") or {}).get("official_actions") or ["보험료 확인", "상품안내 보기"])
-        preferred_action = (next((value for value in actions if "보험료" in value), None)
-                            or next((value for value in actions if re.search(r"가입|플랜", value)), None)
-                            or actions[0])
-        action = re.sub(r"\s*(?:자세히\s*)?(?:보기|확인하기|알아보기|하기)$", "", preferred_action).strip() or "설계"
-        result_label = f"{action} 결과" if "보험료" in action else "설계 화면"
-        reader_question = str(context.get("reader_question") or f"{angle}과 {other}은 어떤 조건으로 나눠 봐야 할까?")
-        blueprints = [
-            {"message_axis": "scope_compare", "title": _fit([f"{angle}·{other} 구분", f"{name} 항목 비교"], 4, 15),
-             "description": _fit([f"{_josa(angle, '과', '와')} {other}, 지급사유와 적용 시점을 항목별로 비교"], 20, 45),
-             "additional_description": _fit(["보장하지 않는 경우와 필요한 확인 자료도 나란히 정리"], 2, 45),
-             "promo": "항목 차이 보기", "sublinks": ["항목비교", "지급사유", "제외조건", "상품안내"], "review_status": "필수 고지 필요"},
-            {"message_axis": "decision_detail", "title": _fit([f"{angle} 조건 읽기", f"{name} 선택 질문"], 4, 15),
-             "description": _fit([reader_question, f"{angle} 선택 전에 대상·시점·제외 조건을 질문으로 정리"], 20, 45),
-             "additional_description": _fit([f"{third}은 정의와 제외 조건을 별도 항목으로 확인"], 2, 45),
-             "promo": "선택 질문 보기", "sublinks": ["핵심질문", "보장내용", "가입조건", "상품안내"], "review_status": "사람 심의 필요"},
-            {"message_axis": "terms_navigation", "title": _fit([f"{third} 약관 찾기", f"{name} 약관 순서"], 4, 15),
-             "description": _fit([f"{third}의 용어 정의에서 지급 조항과 제외 조항까지 연결"], 20, 45),
-             "additional_description": "확인한 기준일과 최종 선택 내용을 함께 기록",
-             "promo": "약관 조항 보기", "sublinks": ["약관확인", "용어정의", "지급사유", "제외조건"], "review_status": "필수 고지 필요"},
-            {"message_axis": "search_action", "title": _fit([f"{name} 설계 전", f"{angle} 설계 전"], 4, 15),
-             "description": _fit([f"{action} 전에 대상·기간·선택 항목을 같은 순서로 메모"], 20, 45),
-             "additional_description": _fit([f"{_josa(angle, '과', '와')} {other}이 필요한 상황을 먼저 구분"], 2, 45),
-             "promo": _fit([actions[0], "설계 조건 보기"], 2, 14), "sublinks": ["보험료계산", "선택항목", "가입조건", "상품안내"], "review_status": "자동 위험표현 없음"},
-            {"message_axis": "official_path", "title": "최종 선택 조건 대조",
-             "description": _fit([f"{result_label}과 최종 청약의 선택 항목·기간을 비교"], 20, 45),
-             "additional_description": "광고의 짧은 표현은 최신 상품자료와 약관으로 다시 확인",
-             "promo": "청약 조건 보기", "sublinks": ["보험료계산", "상품안내", "가입조건", "청약확인"], "review_status": "사람 심의 필요"},
-        ]
     for index, item in enumerate(blueprints):
         axis = item.get("message_axis") or "serp_whitespace"
         row = {
-            "strategy": {
-                "search_action": "검색 행동형", "decision_detail": "선택 기준형",
-                "scope_compare": "항목 비교형", "terms_navigation": "약관 탐색형",
-                "official_path": "공식 화면형", "serp_whitespace": "SERP 공백형",
-            }.get(axis, "자료 근거형"),
+            "strategy": STRATEGY_LABELS.get(axis, "자료 근거형"),
             "title": item.get("title"),
             "description": item.get("description"),
             "additional_description": item.get("additional_description"),
@@ -898,46 +962,53 @@ def power_topics(product, keyword, angle, table_stakes, basis, planning_month, s
     second = (context_terms or season_terms or own_terms or [name])[0]
     saturated = "·".join(table_stakes[:2]) or "공통 보장 나열"
     specs = [
-        ("serp_whitespace", f"{keyword} 검색 뒤 {_josa(angle, '을', '를')} 따져볼 질문", "검색 후 탐색", angle,
-         ["검색 결과에서 반복된 표현", f"{angle} 기준에서 빠지기 쉬운 조건", "보험료 계산에 입력할 항목", "최종 화면에서 기록할 내용"]),
-        ("decision_detail", f"{name} 보험료 전에 맞춰볼 세 가지 조건", "비교·의사결정", second,
-         ["가입 목적과 기간 맞추기", f"{angle}·{second} 선택 항목 맞추기", "같은 조건으로 보험료 계산하기", "청약 화면에서 차이 찾기"]),
-        ("scope_compare", f"{_josa(angle, '과', '와')} {second}, 함께 볼 때 달라지는 점", "항목 비교", angle,
-         [f"{_josa(angle, '이', '가')} 궁금해지는 생활 상황", f"{_josa(second, '과', '와')} 겹치지 않는 지점", "지급사유와 제외 조건 나란히 읽기", "선택 항목 기록하기"]),
-        ("official_path", f"{name} 설계 화면을 끝까지 읽는 순서", "가입 흐름 탐색", second,
-         ["상품 안내에서 질문 만들기", "설계 화면에서 선택 항목 찾기", "보험료 결과의 조건 읽기", "최종 청약 내용 대조하기"]),
-        ("terms_navigation", f"{_josa(angle, '을', '를')} 약관 목차에서 빠르게 찾는 법", "약관 정보 탐색", angle,
-         ["용어 정의에서 시작하기", "지급사유 조항 연결하기", "보장하지 않는 경우 함께 읽기", "기준일과 질문 기록하기"]),
-        ("real_life", f"{_josa(angle, '이', '가')} 궁금해지는 생활 장면부터 약관까지", "상황 정보 탐색", angle,
-         ["실제 생활 질문으로 바꾸기", "광고 표현과 약관 용어 구분하기", "적용 조건을 사례 없이 설명하기", "내 조건으로 다시 계산하기"]),
+        ("serp_whitespace", f"{name}에서 {angle} 보장, 어떻게 볼까?", "검색 후 탐색", angle,
+         [f"{_josa(angle, '이', '가')} 필요한 상황", f"{angle} 보장이 적용되는 경우", "가입 전 알아둘 조건", "보장하지 않는 경우"]),
+        ("decision_detail", f"{name} 가입 전 알아둘 세 가지", "비교·의사결정", second,
+         ["가입 목적과 기간 정하기", f"{angle}·{second} 중 필요한 보장 고르기", "보험료 계산 전 정할 조건", "가입 전 보장하지 않는 경우"]),
+        ("scope_compare", f"{_josa(angle, '과', '와')} {second}, 보장 차이 정리", "항목 비교", angle,
+         [f"{_josa(angle, '과', '와')} {_josa(second, '은', '는')} 어떻게 다른가요", f"{angle} 보장이 적용되는 경우",
+          f"{second} 보장이 적용되는 경우", "내 상황에 맞게 고르기"]),
+        ("official_path", f"{name} 가입 과정 한눈에 보기", "가입 흐름 탐색", second,
+         ["보험료 계산에 필요한 정보", "필요한 보장 고르는 방법", "가입 전 확인할 조건", "가입 뒤 받는 안내"]),
+        ("terms_navigation", f"{name} {angle} 보장, 약관으로 알아보기", "약관 정보 탐색", angle,
+         [f"{angle} 보장의 뜻", "보장이 적용되는 경우", "보장하지 않는 경우", "청구할 때 필요한 서류"]),
+        ("real_life", f"{_josa(angle, '이', '가')} 필요할 때 {name} 보장 알아보기", "상황 정보 탐색", angle,
+         [f"{_josa(angle, '이', '가')} 필요한 생활 장면", f"{angle} 보장 내용", "가입 전 알아둘 조건", "보장하지 않는 경우"]),
     ]
     source_focuses = list((source_context or {}).get("preferred_focus") or [])
     if (source_context or {}).get("source_ids"):
         third = next((term for term in source_focuses if term not in {angle, second}), own_terms[-1] if own_terms else name)
-        reader_question = (source_context or {}).get("reader_question") or f"{name}에서 {angle} 조건을 어떻게 읽어야 할까?"
         specs = [
-            ("scope_compare", f"{angle}·{second} 지급 기준을 나누는 법", "항목 비교", angle,
-             [reader_question, f"{angle}·{second}의 약관 정의 구분", "지급사유와 적용 시점 나란히 보기", "보장하지 않는 경우와 질문 기록"]),
-            ("terms_navigation", f"{name} {third} 약관 조항 찾기", "약관 정보 탐색", third,
-             [f"{third} 관련 생활 표현 정리", "약관의 용어 정의에서 시작", "지급 조항과 제외 조항 연결", "기준일과 남은 질문 기록"]),
-            ("official_path", f"{name} 설계 전에 적을 세 가지 질문", "가입 흐름 탐색", angle,
-             ["랜딩의 공식 행동 경로 확인", f"{angle} 선택 항목과 기간 기록", "같은 입력 조건으로 보험료 확인", "최종 청약과 처음 메모 대조"]),
+            ("scope_compare", f"{angle}·{second}, 보장 기준 차이 정리", "항목 비교", angle,
+             [f"{angle}·{second}은 어떻게 다른가요", f"{angle} 보장이 적용되는 경우", f"{second} 보장이 적용되는 경우", "보장하지 않는 경우"]),
+            ("terms_navigation", f"{name} {third} 보장 알아보기", "약관 정보 탐색", third,
+             [f"{third} 보장의 뜻", "보장이 적용되는 경우", "보장하지 않는 경우", "청구할 때 필요한 서류"]),
+            ("official_path", f"{name} 가입 전 알아둘 세 가지", "가입 흐름 탐색", angle,
+             ["가입 목적과 기간 정하기", f"{angle} 중심으로 보장 고르기", "보험료 계산 전 정할 조건", "가입 전 보장하지 않는 경우"]),
         ]
     if season.get("name") and not (source_context or {}).get("source_ids"):
-        hook = ("출발 전 체크", "검색 뒤 비교", "약관에서 볼 항목", "보험료 전 질문")[variation["year"] % 4]
         seasonal_keyword = next((term for term in season.get("keywords") or [] if "보험" in term), keyword)
+        # 같은 연례 이벤트라도 해마다 제목을 바꿔 전년 원고와의 카니벌라이제이션을 막는다.
+        seasonal_title = (f"{season['name']} 전에 알아두는 {name} 보장",
+                          f"{season['name']}, {name}으로 미리 준비하기",
+                          f"{season['name']} 앞두고 {name} 보장 점검",
+                          f"{season['name']}에 {_josa(name, '이', '가')} 필요한 순간")[variation["year"] % 4]
         specs.insert(0, (
-            "seasonal_scene", f"{season['name']} {hook}, {name}", "시즌 의사결정", angle,
-            [f"{season['name']}에 달라지는 생활 동선", f"{angle}·{second} 확인 질문",
-             f"{saturated} 중심 검색 결과와 다른 관점", "일정 전 최종 설계 점검"],
+            "seasonal_scene", seasonal_title, "시즌 의사결정", angle,
+            [f"{season['name']}에 달라지는 생활 장면", f"{angle}·{second} 보장이 필요한 상황",
+             "시즌 전에 챙길 가입 조건", "보장하지 않는 경우"],
             seasonal_keyword,
         ))
+    curated = FALLBACK_POWER_SPECS.get(product["key"]) if not (source_context or {}).get("power_content_blueprints") else None
     year, month = _month_parts(planning_month)
     offset = (year * 12 + month + int(variation["serp_signature"][:6], 16)) % len(specs)
     rotated = specs[offset:] + specs[:offset]
     if season.get("name") and not (source_context or {}).get("source_ids"):
         seasonal_spec = next(row for row in specs if row[0] == "seasonal_scene")
         rotated = [seasonal_spec, *[row for row in rotated if row[0] != "seasonal_scene"]]
+    if curated:
+        rotated = [*curated, *rotated]
     # 같은 기준월의 기존 후보는 이번 일괄 갱신에서 교체 대상이다. 이를 이력 중복으로
     # 막으면 규칙을 바꿔도 새 주제가 0~1개만 남으므로, 이전 월 이력만 카니벌라이제이션
     # 기준으로 사용한다.
@@ -952,7 +1023,7 @@ def power_topics(product, keyword, angle, table_stakes, basis, planning_month, s
         if len(rows) == 3:
             break
         pattern, title, intent, focus, sections, *query_override = spec
-        fitted = apply_feedback_rules(_fit([title, f"{name} 선택 전에 질문을 정리하는 법"], 7, 28), feedback_rules)
+        fitted = apply_feedback_rules(_fit([title, f"{name} 가입 전 알아둘 점"], 7, 28), feedback_rules)
         safe_sections = [apply_feedback_rules(section, feedback_rules) for section in sections]
         blocked_hits = feedback_findings({
             "title": fitted,

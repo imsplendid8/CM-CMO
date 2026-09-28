@@ -28,6 +28,8 @@ jobs:
         run: |
           python scripts/serp_analysis.py
           python scripts/serp_copy_agent.py
+          # serp-candidates의 이미지 제안 ID가 바뀌므로 생성 대기열도 같은 실행에서 맞춘다(대기열 고아 방지).
+          python scripts/image_generation_queue.py
       - name: Search Console 검색어 수집 (Secret 설정 시)
         env:
           GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
@@ -51,7 +53,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add serp/ad_analysis.json data/adcopy/serp-candidates.json data/adcopy/powercontent-title-opportunities.json data/adcopy/powercontent-history.json data/seo/site-observations.json data/seo/faq-opportunities.json
+          git add serp/ad_analysis.json data/adcopy/serp-candidates.json data/adcopy/powercontent-title-opportunities.json data/adcopy/powercontent-history.json data/seo/site-observations.json data/seo/faq-opportunities.json data/adcopy/image-generation-queue.json
           git diff --cached --quiet && exit 0
           git commit -m "chore(content): SERP 소재 입력·FAQ 기회 갱신 $(date -u +%F)"
           for attempt in 1 2 3; do
