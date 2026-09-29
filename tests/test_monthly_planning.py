@@ -62,7 +62,7 @@ class TestMonthlyPlanningUiContract(unittest.TestCase):
         self.assertIn("cm_cmo_plan_month", shared)
         self.assertIn('id="planMonth"', seasonal)
         self.assertIn('id="planMonth"', adcopy)
-        self.assertIn("선택월·익월 실행 플랜", seasonal)
+        self.assertIn("이달과 다음달 마케팅 실행계획", seasonal)
         self.assertIn("function planningIssues", adcopy)
         self.assertIn("const issues=planningIssues(p)", adcopy)
         self.assertIn("상품 내용과 심의를 확인한 뒤 사용하세요", adcopy)

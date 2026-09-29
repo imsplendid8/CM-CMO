@@ -255,7 +255,8 @@ def generate(
         "scope_limited": "검색 범위를 좁혀 전체 수요보다 노출 기회가 작을 수 있음",
     }
     for product in products.get("products", []):
-        if product.get("key") == "home" or product.get("cat") == "사이트":
+        # monitorOnly: 뉴스·검색 수요만 추적하고 광고·콘텐츠 소재는 만들지 않는 상품(자동차보험)
+        if product.get("key") == "home" or product.get("cat") == "사이트" or product.get("monitorOnly"):
             continue
         rows = opportunity_rows(product, volume, faq)
         candidates = []

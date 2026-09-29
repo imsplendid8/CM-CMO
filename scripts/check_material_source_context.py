@@ -15,6 +15,12 @@ ROOT = Path(__file__).resolve().parents[1]
 CONTEXT = ROOT / "data/adcopy/material-source-context.json"
 OUTPUT = ROOT / "data/adcopy/serp-candidates.json"
 REVIEW_STATUSES = {"자동 차단", "근거 필요", "필수 고지 필요", "사람 심의 필요", "자동 위험표현 없음"}
+# 검색광고 한 줄은 고객이 얻는 것(혜택·상황)이어야 한다. 랜딩이 무엇을 보여주는지 설명하는
+# '안내형' 문구와 심의 체크리스트 어휘는 운영자가 광고로 쓸 수 없다고 반려했다.
+GUIDANCE_COPY = re.compile(
+    r"안내해|안내합|안내$|알려드|정리했|정리해|한눈에 (비교|정리)|나눠서|약관 기준|상품설명서"
+    r"|지급 (기준|조건)|보장하지 않는 경우|적용 조건|알기 쉽게|확인할 수 있|읽어보|읽기|대조|기록"
+    r"|확인해 보세요|살펴보세요")
 
 
 def fail(message):
@@ -72,6 +78,9 @@ def main() -> int:
         if topics and len(topics) != 3:
             fail(f"{key}: 직접 작성한 자료 기반 파워콘텐츠는 3안이어야 합니다")
         for row in sa:
+            for field in ("title", "description", "additional_description", "promo"):
+                if GUIDANCE_COPY.search(row.get(field) or ""):
+                    fail(f"{key}: SA 블루프린트 {field}가 고객 소구가 아닌 안내형 문구 → {row.get(field)}")
             if not (4 <= len(row.get("title") or "") <= 15):
                 fail(f"{key}: SA 제목 길이 오류")
             if not (20 <= len(row.get("description") or "") <= 45):
@@ -107,6 +116,8 @@ def main() -> int:
             if set(row.get("source_grounding", {}).get("source_ids") or []) != set(product.get("source_ids") or []):
                 fail(f"{key}: SA 후보에 자료 source id가 전달되지 않았습니다")
             direct_copy = " ".join(str(row.get(field) or "") for field in ("title", "description", "additional_description", "promo"))
+            if GUIDANCE_COPY.search(direct_copy):
+                fail(f"{key}: 생성된 SA가 고객 소구가 아닌 안내형 문구를 포함 → {direct_copy}")
             if re.search(r"24\s*시간|전화\s*없이|바로\s*가입|\d+\s*%\s*할인|최대\s*[\d,]+\s*만?원", direct_copy):
                 fail(f"{key}: 검토 전 편의·할인·금액 주장이 SA에 들어갔습니다")
         for row in result.get("power_content_topics") or []:

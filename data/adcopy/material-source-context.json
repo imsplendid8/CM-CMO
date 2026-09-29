@@ -212,81 +212,81 @@
       "whitespace_angles": ["치료 항목별 보장개시일", "보존치료와 보철치료 구분", "횟수·한도 조건 분리"],
       "sa_blueprints": [
         {
-          "message_axis": "decision_detail",
-          "title": "스케일링 기준 읽기",
-          "description": "급여 스케일링은 보장개시일과 연간 횟수 조건을 나눠 읽기",
-          "additional_description": "크라운 치료비는 지급사유와 제외 조건을 함께 비교",
-          "promo": "치료 항목 보기",
-          "sublinks": ["보험료계산", "치료항목", "가입조건", "상품안내"],
-          "review_status": "필수 고지 필요"
-        },
-        {
-          "message_axis": "scope_compare",
-          "title": "크라운·임플란트 비교",
-          "description": "보존치료와 보철치료를 구분해 치아별 지급 기준을 비교",
-          "additional_description": "틀니·임플란트는 보장개시일과 연간 한도를 별도 확인",
-          "promo": "항목 차이 보기",
-          "sublinks": ["치료비교", "보장내용", "보험료계산", "약관안내"],
+          "message_axis": "search_action",
+          "title": "치아보험 보험료 계산",
+          "description": "임플란트·크라운 등 필요한 치료 보장을 골라 보험료를 계산해요",
+          "additional_description": "앞으로 받을 치과 치료에 맞춰 보장을 골라요",
+          "promo": "치아보험료 계산",
+          "sublinks": ["보험료계산", "보장선택", "보장내용", "가입하기"],
           "review_status": "사람 심의 필요"
         },
         {
-          "message_axis": "search_action",
-          "title": "치아보험료 계산 전",
-          "description": "생년월일·성별 입력 뒤 필요한 치료 항목과 보험기간을 대조",
-          "additional_description": "설계 결과의 선택 항목을 최종 청약 내용과 다시 비교",
-          "promo": "보험료 계산",
-          "sublinks": ["보험료계산", "선택항목", "가입조건", "상품안내"],
-          "review_status": "자동 위험표현 없음"
+          "message_axis": "scope_compare",
+          "title": "임플란트·틀니 보장",
+          "description": "빠진 치아를 대신하는 임플란트와 틀니 치료비를 보장받아요",
+          "additional_description": "크라운 같은 보철치료 비용까지 함께 대비해요",
+          "promo": "임플란트 보장",
+          "sublinks": ["임플란트", "크라운", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
         },
         {
-          "message_axis": "terms_navigation",
-          "title": "치아보험 약관 찾기",
-          "description": "치료비 항목의 지급사유와 보장하지 않는 경우를 함께 읽기",
-          "additional_description": "보장개시일과 치료 횟수·한도는 항목별로 구분",
-          "promo": "약관 항목 보기",
-          "sublinks": ["약관안내", "지급사유", "제외조건", "가입안내"],
+          "message_axis": "decision_detail",
+          "title": "스케일링부터 보장",
+          "description": "정기 스케일링부터 충치 치료까지 일상적인 치과 치료도 챙겨요",
+          "additional_description": "자주 받는 치료부터 큰 치료까지 한 번에 대비해요",
+          "promo": "스케일링 보장",
+          "sublinks": ["스케일링", "충전치료", "보험료", "가입하기"],
           "review_status": "사람 심의 필요"
         },
         {
           "message_axis": "serp_whitespace",
-          "title": "치과치료 항목 나누기",
-          "description": "정기 관리·보존치료·보철치료를 한 표로 나누는 기준",
-          "additional_description": "치료 원인과 진단 시점도 가입 전 확인 항목으로 기록",
-          "promo": "선택 기준 보기",
-          "sublinks": ["핵심질문", "치료항목", "보험료계산", "가입안내"],
-          "review_status": "자동 위험표현 없음"
+          "title": "크라운 치료비 보장",
+          "description": "충치가 깊어져 씌우는 크라운 치료비를 치아보험으로 준비해요",
+          "additional_description": "비용이 큰 보철치료까지 미리 대비해 두세요",
+          "promo": "크라운 보장",
+          "sublinks": ["크라운", "보철치료", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "terms_navigation",
+          "title": "충치 치료비 보장",
+          "description": "충치가 생겼을 때 받는 충전치료 비용을 치아보험으로 보장받아요",
+          "additional_description": "작은 충치 치료부터 치아보험으로 챙겨요",
+          "promo": "충치 치료 보장",
+          "sublinks": ["충전치료", "스케일링", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
         }
       ],
       "power_content_blueprints": [
         {
           "message_axis": "scope_compare",
-          "title": "치아보험, 스케일링과 크라운을 따로 보는 이유",
-          "target_query": "치아보험 스케일링 크라운",
-          "intent": "항목 비교",
-          "focus": "스케일링·크라운",
-          "sections": ["같은 치과치료라도 항목이 달라지는 이유", "스케일링의 보장개시일과 횟수 조건", "크라운·임플란트 지급 기준 구분", "보험료 계산 전 치료 항목 체크리스트"],
-          "faq": ["스케일링과 크라운은 어떤 기준으로 나눠 봐야 하나요?", "치료 횟수와 보장개시일은 어디에서 확인하나요?"],
+          "title": "임플란트·틀니, 치아보험으로 보장받는 기준",
+          "target_query": "치아보험 임플란트",
+          "intent": "보장 정보 탐색",
+          "focus": "임플란트·틀니",
+          "sections": ["임플란트와 틀니, 보철치료의 종류", "치아보험이 보철치료를 보장하는 기준", "크라운 보장과의 차이", "가입 전 면책·감액기간 정리"],
+          "faq": ["임플란트도 치아보험으로 보장되나요?", "틀니와 임플란트 보장은 어떻게 다른가요?"],
           "review_status": "사람 심의 필요"
         },
         {
-          "message_axis": "terms_navigation",
-          "title": "크라운·임플란트 상담 전 약관에서 찾을 항목",
-          "target_query": "치아보험 크라운 임플란트",
-          "intent": "약관 정보 탐색",
-          "focus": "크라운·임플란트",
-          "sections": ["보존치료와 보철치료부터 구분하기", "지급사유와 치아별 기준 찾기", "보장개시일·횟수·한도 함께 읽기", "최종 설계와 약관을 대조하는 순서"],
-          "faq": ["크라운과 임플란트는 약관에서 어디를 찾아야 하나요?", "횟수와 한도 조건은 왜 따로 봐야 하나요?"],
-          "review_status": "필수 고지 필요"
+          "message_axis": "decision_detail",
+          "title": "치아보험 면책기간, 치료별로 언제부터 보장될까?",
+          "target_query": "치아보험 면책기간",
+          "intent": "보장 정보 탐색",
+          "focus": "크라운",
+          "sections": ["면책기간과 감액기간이란", "치료 항목마다 다른 보장 시작일", "가입 전에 받던 치료는 어떻게 되나요", "보장 시작일에 맞춰 치료 계획 세우기"],
+          "faq": ["치아보험은 가입하자마자 보장되나요?", "감액기간에는 보험금이 어떻게 지급되나요?"],
+          "review_status": "사람 심의 필요"
         },
         {
           "message_axis": "search_action",
-          "title": "치아보험료 계산 전 치료 항목을 나누는 법",
-          "target_query": "치아보험 보험료 계산",
-          "intent": "비교·의사결정",
-          "focus": "치료 항목",
-          "sections": ["최근 치과 기록과 예상 치료 나누기", "정기 관리·보존·보철치료 체크", "같은 조건으로 보험료 계산하기", "최종 청약의 선택 항목 대조하기"],
-          "faq": ["보험료 계산 전에 어떤 치료 항목을 정리해야 하나요?", "최종 청약에서 무엇을 다시 대조해야 하나요?"],
-          "review_status": "자동 위험표현 없음"
+          "title": "스케일링부터 크라운까지 치아보험 보장 정리",
+          "target_query": "치아보험 스케일링",
+          "intent": "기초 정보 탐색",
+          "focus": "스케일링",
+          "sections": ["치과 치료의 종류와 비용 구조", "스케일링과 충전치료 보장", "크라운·임플란트 같은 보철치료 보장", "내 치료 계획에 맞는 보장 고르기"],
+          "faq": ["스케일링도 치아보험으로 보장되나요?", "충전치료와 보철치료 보장은 어떻게 다른가요?"],
+          "review_status": "사람 심의 필요"
         }
       ]
     },
@@ -330,81 +330,81 @@
       "editorial_thesis": "가입 편의보다 벌금·변호사선임 등 비용 항목의 지급사유, 적용 시점, 제외 조건을 사고 뒤 절차에 맞춰 정리한다.",
       "sa_blueprints": [
         {
-          "message_axis": "serp_whitespace",
-          "title": "운전자보험 비용 항목",
-          "description": "가입 방법보다 벌금·변호사선임 관련 지급 조건을 먼저 구분",
-          "additional_description": "사고 뒤 절차별 비용 항목은 적용 시점과 제외 조건까지 확인",
-          "promo": "비용 항목 보기",
-          "sublinks": ["비용항목", "약관확인", "보험료", "가입안내"],
+          "message_axis": "search_action",
+          "title": "운전자보험 보험료 계산",
+          "description": "벌금·변호사선임비용 특약만 골라 담고 내 보험료를 바로 계산해요",
+          "additional_description": "꼭 필요한 특약만 남겨 나에게 맞는 운전자보험을 만들어요",
+          "promo": "특약 골라 가입하기",
+          "sublinks": ["보험료계산", "특약선택", "보장내용", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "decision_detail",
+          "title": "비탑승 중에도 보장",
+          "description": "차에서 내린 뒤 일어난 자동차 사고도 대인 형사합의금을 보장해요(특약)",
+          "additional_description": "보복운전·급발진 대비 특약까지 함께 골라 담을 수 있어요",
+          "promo": "비탑승 중에도 보장",
+          "sublinks": ["비탑승", "형사합의", "보험료", "가입하기"],
           "review_status": "사람 심의 필요"
         },
         {
           "message_axis": "scope_compare",
-          "title": "벌금·변호사선임 비교",
-          "description": "두 항목의 지급사유와 사고 시점별 적용 조건을 나눠 읽기",
-          "additional_description": "비탑승 상황 등 세부 적용 범위는 최신 약관에서 대조",
-          "promo": "항목 차이 보기",
-          "sublinks": ["지급사유", "제외조건", "보험료", "상품안내"],
-          "review_status": "필수 고지 필요"
-        },
-        {
-          "message_axis": "search_action",
-          "title": "운전자보험료 계산 전",
-          "description": "운전 빈도보다 필요한 비용 항목과 보험기간을 먼저 맞추기",
-          "additional_description": "같은 선택 조건으로 계산한 결과인지 최종 화면에서 비교",
-          "promo": "보험료 계산",
-          "sublinks": ["보험료계산", "선택항목", "가입조건", "상품안내"],
-          "review_status": "자동 위험표현 없음"
-        },
-        {
-          "message_axis": "terms_navigation",
-          "title": "운전자보험 약관 순서",
-          "description": "비용 항목의 지급사유·적용 시점·제외 조건을 차례로 읽기",
-          "additional_description": "광고의 짧은 표현은 약관 용어와 같은 뜻인지 다시 대조",
-          "promo": "약관 항목 보기",
-          "sublinks": ["약관확인", "지급사유", "제외조건", "가입안내"],
+          "title": "벌금·변호사선임 특약",
+          "description": "사고 뒤 벌금부터 변호사선임비용까지 한 번에 대비할 수 있어요(특약)",
+          "additional_description": "재판이 이어져도 심급별 변호사선임비용 특약으로 대비해요",
+          "promo": "특약 골라 담기",
+          "sublinks": ["벌금", "변호사선임", "보험료", "가입하기"],
           "review_status": "사람 심의 필요"
         },
         {
-          "message_axis": "official_path",
-          "title": "최종 청약 조건 대조",
-          "description": "상품 안내·보험료 계산·최종 청약에서 선택 조건이 같은지 비교",
-          "additional_description": "보험기간과 납입 조건도 처음 설계한 내용과 함께 기록",
-          "promo": "청약 조건 보기",
-          "sublinks": ["상품안내", "보험료계산", "가입조건", "청약확인"],
-          "review_status": "자동 위험표현 없음"
+          "message_axis": "serp_whitespace",
+          "title": "보복운전 피해도 대비",
+          "description": "남의 일 같지 않은 보복운전, 보복운전피해보장 특약으로 대비해요",
+          "additional_description": "예고 없는 급발진 사고엔 급발진 변호사선임비용 특약이 있어요",
+          "promo": "보복운전 특약",
+          "sublinks": ["보복운전", "급발진", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "terms_navigation",
+          "title": "형사합의금 실손 보장",
+          "description": "대인 사고로 형사합의가 필요할 때 드는 합의금을 실손으로 보장해요(특약)",
+          "additional_description": "사고 뒤 합의금 마련까지 운전자보험으로 미리 준비해요",
+          "promo": "형사합의금 보장",
+          "sublinks": ["형사합의", "보장내용", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
         }
       ],
       "power_content_blueprints": [
         {
-          "message_axis": "serp_whitespace",
-          "title": "운전자보험 가입 방법보다 먼저 볼 비용 항목",
-          "target_query": "운전자보험 비용 항목",
-          "intent": "비교·의사결정",
-          "focus": "비용 항목",
-          "sections": ["가입 편의 표현이 많은 검색 결과", "사고 뒤 절차를 비용 항목으로 나누기", "지급사유·적용 시점·제외 조건 읽기", "보험료 계산과 최종 청약 대조"],
-          "faq": ["운전자보험에서 비용 항목은 어떤 순서로 봐야 하나요?", "가입 방법보다 먼저 확인할 조건은 무엇인가요?"],
+          "message_axis": "decision_detail",
+          "title": "운전자보험, 비탑승 중 사고도 보장될까?",
+          "target_query": "운전자보험 비탑승",
+          "intent": "보장 정보 탐색",
+          "focus": "비탑승",
+          "sections": ["차에서 내린 뒤 생긴 사고, 비탑승 중 사고란", "자동차보험과 운전자보험이 보장하는 범위", "비탑승 중 형사합의금 특약이 적용되는 상황", "가입 전 보장하지 않는 경우 정리"],
+          "faq": ["차에서 내린 뒤 일어난 사고도 보장되나요?", "비탑승 중 사고의 형사합의금은 어떻게 보장되나요?"],
           "review_status": "사람 심의 필요"
         },
         {
           "message_axis": "scope_compare",
-          "title": "벌금·변호사선임을 사고 절차별로 보는 법",
-          "target_query": "운전자보험 벌금 변호사선임",
-          "intent": "항목 비교",
+          "title": "벌금·변호사선임비용, 운전자보험 특약 고르는 법",
+          "target_query": "운전자보험 특약",
+          "intent": "비교·의사결정",
           "focus": "벌금·변호사선임",
-          "sections": ["두 비용 항목이 궁금해지는 순간", "지급사유와 적용 시점 구분", "보장하지 않는 경우 함께 읽기", "내 설계에 필요한 질문 기록"],
-          "faq": ["벌금과 변호사선임 항목은 무엇이 다른가요?", "사고 시점에 따라 무엇을 확인해야 하나요?"],
-          "review_status": "필수 고지 필요"
+          "sections": ["사고 뒤 이어지는 절차와 드는 비용", "벌금 특약과 변호사선임비용 특약의 차이", "심급별 변호사선임비용 특약이 필요한 경우", "내 운전 습관에 맞춰 특약 고르기"],
+          "faq": ["벌금과 변호사선임비용 특약은 둘 다 필요한가요?", "심급별 변호사선임비용 특약은 어떤 경우에 쓰이나요?"],
+          "review_status": "사람 심의 필요"
         },
         {
-          "message_axis": "official_path",
-          "title": "운전자보험료 계산 뒤 최종 청약을 대조하는 순서",
-          "target_query": "운전자보험 보험료 계산",
-          "intent": "가입 전 준비",
-          "focus": "최종 청약",
-          "sections": ["필요한 비용 항목 먼저 적기", "같은 조건으로 보험료 계산하기", "보험기간·납입 조건 확인하기", "최종 청약 내용과 처음 설계 대조"],
-          "faq": ["보험료 계산 결과에서 무엇을 기록해야 하나요?", "최종 청약에서 다시 볼 항목은 무엇인가요?"],
-          "review_status": "자동 위험표현 없음"
+          "message_axis": "serp_whitespace",
+          "title": "보복운전·급발진 사고, 운전자보험으로 대비하는 법",
+          "target_query": "운전자보험 보복운전",
+          "intent": "보장 정보 탐색",
+          "focus": "보복운전",
+          "sections": ["보복운전 피해를 입었을 때 생기는 일", "보복운전피해보장 특약이 보장하는 내용", "급발진 사고와 변호사선임비용 특약", "특약 가입 전 보장하지 않는 경우"],
+          "faq": ["보복운전 피해도 운전자보험으로 보장되나요?", "급발진 사고 때 변호사선임비용은 어떻게 보장되나요?"],
+          "review_status": "사람 심의 필요"
         }
       ]
     },
@@ -448,81 +448,81 @@
       "editorial_thesis": "계절 공포 대신 피해 원인, 손상 부위, 거주 가능 여부를 기준으로 누수·풍수재·임시거주 관련 질문을 분리한다.",
       "sa_blueprints": [
         {
+          "message_axis": "search_action",
+          "title": "우리 집 화재보험료",
+          "description": "아파트·빌라·오피스텔, 우리 집 유형에 맞춰 보험료를 바로 계산해요",
+          "additional_description": "집주인도 세입자도 우리 집에 필요한 보장만 골라 담아요",
+          "promo": "우리 집 보험료 계산",
+          "sublinks": ["보험료계산", "주택유형", "보장내용", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
           "message_axis": "scope_compare",
-          "title": "누수·풍수재 차이",
-          "description": "피해 원인과 손상 부위를 나눠 두 항목의 적용 조건을 읽기",
-          "additional_description": "같은 물 피해라도 사고 원인과 제외 조건부터 따로 비교",
-          "promo": "항목 차이 보기",
-          "sublinks": ["누수항목", "풍수재", "보험료", "상품안내"],
+          "title": "누수·풍수재까지 보장",
+          "description": "집 안 누수부터 태풍·호우 피해까지 물로 생긴 손해를 보장해요",
+          "additional_description": "장마철 빗물 피해도 풍수재 보장으로 대비할 수 있어요",
+          "promo": "누수까지 보장",
+          "sublinks": ["누수", "풍수재", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "decision_detail",
+          "title": "화재 후 임시거주비",
+          "description": "화재로 집에 머물 수 없을 때 임시로 지낼 곳의 비용을 보장해요",
+          "additional_description": "집을 고치는 동안 지낼 곳의 비용까지 챙겨요",
+          "promo": "임시거주비 보장",
+          "sublinks": ["임시거주", "보장내용", "보험료", "가입하기"],
           "review_status": "사람 심의 필요"
         },
         {
           "message_axis": "serp_whitespace",
-          "title": "누수 원인부터 구분",
-          "description": "장마철 문구보다 발생 원인·손상 부위·제외 조건을 먼저 정리",
-          "additional_description": "집 안 누수 흔적은 원인과 수리 범위를 함께 기록",
-          "promo": "누수 기준 보기",
-          "sublinks": ["핵심질문", "누수항목", "제외조건", "가입안내"],
-          "review_status": "자동 위험표현 없음"
-        },
-        {
-          "message_axis": "search_action",
-          "title": "주택화재보험료 전",
-          "description": "집 형태와 소유·임차 여부, 필요한 항목과 기간을 먼저 맞추기",
-          "additional_description": "같은 조건으로 계산한 보험료인지 최종 설계에서 비교",
-          "promo": "보험료 계산",
-          "sublinks": ["보험료계산", "집조건", "가입조건", "상품안내"],
-          "review_status": "자동 위험표현 없음"
-        },
-        {
-          "message_axis": "decision_detail",
-          "title": "임시거주비 기준 읽기",
-          "description": "사고 뒤 거주 가능 여부와 지급사유·제외 조건을 함께 읽기",
-          "additional_description": "적용 기간과 필요한 증빙은 최신 상품자료에서 대조",
-          "promo": "지급 기준 보기",
-          "sublinks": ["지급사유", "제외조건", "보험료", "상품안내"],
-          "review_status": "필수 고지 필요"
+          "title": "아랫집 누수 피해 대비",
+          "description": "우리 집 누수로 아랫집에 피해를 줬다면 일상배상책임으로 대비해요",
+          "additional_description": "이웃에게 물어줘야 할 배상 비용까지 한 번에 준비해요",
+          "promo": "배상책임 보장",
+          "sublinks": ["배상책임", "누수", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
         },
         {
           "message_axis": "terms_navigation",
-          "title": "주택화재 약관 순서",
-          "description": "누수·풍수재·임시거주 관련 조항을 생활 장면별로 나눠 보기",
-          "additional_description": "보장 내용 옆에 보장하지 않는 경우도 함께 기록",
-          "promo": "약관 항목 보기",
-          "sublinks": ["약관확인", "보장내용", "제외조건", "가입안내"],
+          "title": "도난 피해도 보장",
+          "description": "집에 도둑이 들어 물건을 잃었을 때 도난 손해도 보장받아요",
+          "additional_description": "화재·누수·도난·배상책임, 필요한 보장만 골라 담아요",
+          "promo": "필요한 보장만 선택",
+          "sublinks": ["도난", "보장내용", "보험료", "가입하기"],
           "review_status": "사람 심의 필요"
         }
       ],
       "power_content_blueprints": [
         {
           "message_axis": "scope_compare",
-          "title": "주택화재보험에서 누수와 풍수재를 따로 읽는 이유",
-          "target_query": "주택화재보험 누수 풍수재",
-          "intent": "항목 비교",
+          "title": "누수 피해, 주택화재보험으로 보상받을 수 있을까?",
+          "target_query": "주택화재보험 누수",
+          "intent": "보장 정보 탐색",
           "focus": "누수·풍수재",
-          "sections": ["장마철 대비 문구에서 빠지기 쉬운 질문", "피해 원인과 손상 부위 나누기", "지급사유와 제외 조건 함께 읽기", "집 조건을 넣어 보험료 계산하기"],
-          "faq": ["누수와 풍수재는 어떤 기준으로 나눠 봐야 하나요?", "물 피해가 생기면 먼저 기록할 것은 무엇인가요?"],
+          "sections": ["집 안 누수, 원인에 따라 달라지는 보장", "누수와 풍수재 보장의 차이", "누수 사고 뒤 챙겨야 할 기록", "가입 전 보장하지 않는 경우 정리"],
+          "faq": ["누수 피해도 주택화재보험으로 보장되나요?", "누수와 풍수재 보장은 어떻게 다른가요?"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "decision_detail",
+          "title": "화재 후 임시거주비는 어떻게 보장될까?",
+          "target_query": "주택화재보험 임시거주비",
+          "intent": "보장 정보 탐색",
+          "focus": "임시거주비",
+          "sections": ["화재 뒤 집에 머물 수 없을 때", "임시거주비가 보장되는 상황", "지급 기간과 필요한 서류", "소유·임차 여부에 따른 차이"],
+          "faq": ["화재 후 임시거주비는 언제 받을 수 있나요?", "세입자도 임시거주비를 보장받을 수 있나요?"],
           "review_status": "사람 심의 필요"
         },
         {
           "message_axis": "serp_whitespace",
-          "title": "누수 피해, 원인과 손상 부위를 먼저 적는 법",
-          "target_query": "주택화재보험 누수",
-          "intent": "상황 정보 탐색",
-          "focus": "누수 원인",
-          "sections": ["누수 흔적을 발견한 첫 장면", "발생 원인과 손상 부위 기록", "수리 범위와 제외 조건 확인", "상품 안내와 약관을 대조하는 순서"],
-          "faq": ["누수 흔적을 발견하면 무엇부터 기록해야 하나요?", "수리 범위와 보장 범위는 어떻게 구분하나요?"],
+          "title": "아랫집 누수 피해, 일상배상책임으로 대비하기",
+          "target_query": "누수 배상책임",
+          "intent": "보장 정보 탐색",
+          "focus": "소유·임차 조건",
+          "sections": ["우리 집 누수로 이웃에 피해를 줬을 때", "일상배상책임이 보장하는 범위", "소유자와 세입자에 따라 달라지는 책임", "배상책임 보장 전 확인할 조건"],
+          "faq": ["아랫집 누수 피해도 보험으로 배상할 수 있나요?", "세입자도 일상배상책임에 가입할 수 있나요?"],
           "review_status": "사람 심의 필요"
-        },
-        {
-          "message_axis": "search_action",
-          "title": "주택화재보험료 전에 집 조건을 맞추는 순서",
-          "target_query": "주택화재보험 보험료",
-          "intent": "비교·의사결정",
-          "focus": "집 조건",
-          "sections": ["사는 집의 형태부터 적기", "소유·임차와 필요한 대상 구분", "같은 조건으로 보험료 계산", "최종 설계와 청약 내용 대조"],
-          "faq": ["보험료 계산 전에 어떤 집 조건을 맞춰야 하나요?", "소유·임차 여부는 어디에서 확인하나요?"],
-          "review_status": "자동 위험표현 없음"
         }
       ]
     },
@@ -543,7 +543,86 @@
       "preferred_focus": ["필드 홀인원", "스크린 홀인원", "골프 배상책임"],
       "comparison_terms": ["필드 홀인원", "스크린 홀인원"],
       "reader_question": "필드와 스크린의 홀인원 비용은 같은 조건으로 읽어도 될까?",
-      "editorial_thesis": "홀인원 장소와 횟수, 비용의 범위를 먼저 나누고 배상책임은 별도 지급사유와 제외 조건으로 읽는다."
+      "editorial_thesis": "홀인원 장소와 횟수, 비용의 범위를 먼저 나누고 배상책임은 별도 지급사유와 제외 조건으로 읽는다.",
+      "sa_blueprints": [
+        {
+          "message_axis": "search_action",
+          "title": "골프보험 보험료 계산",
+          "description": "라운딩 일정에 맞춰 필요한 보장만 골라 골프보험료를 계산해요",
+          "additional_description": "필드든 스크린이든 자주 치는 곳에 맞춰 보장을 골라요",
+          "promo": "골프보험료 계산",
+          "sublinks": ["보험료계산", "보장선택", "보장내용", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "scope_compare",
+          "title": "스크린 홀인원도 보장",
+          "description": "필드는 물론 스크린에서 나온 홀인원도 축하비용을 보장받아요",
+          "additional_description": "첫 홀인원의 기쁨, 축하 비용까지 골프보험으로 챙겨요",
+          "promo": "스크린 홀인원 보장",
+          "sublinks": ["필드", "스크린", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "decision_detail",
+          "title": "홀인원 축하비용 보장",
+          "description": "홀인원 뒤 한턱내는 축하 비용을 골프보험으로 준비해요",
+          "additional_description": "축하 식사와 기념품 비용까지 골프보험으로 챙겨요",
+          "promo": "축하비용 보장",
+          "sublinks": ["축하비용", "보장내용", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "serp_whitespace",
+          "title": "골프 배상책임 대비",
+          "description": "타구 사고로 다른 사람이 다쳤을 때 골프 배상책임으로 대비해요",
+          "additional_description": "캐디가 다친 경우까지 배상책임으로 대비할 수 있어요",
+          "promo": "배상책임 보장",
+          "sublinks": ["배상책임", "캐디", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "terms_navigation",
+          "title": "골프채 파손도 보장",
+          "description": "라운딩 중 골프채가 부러졌을 때 골프용품 손해를 보장받아요",
+          "additional_description": "아끼는 장비 손해까지 골프보험 하나로 대비해요",
+          "promo": "용품 손해 보장",
+          "sublinks": ["용품손해", "보장내용", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        }
+      ],
+      "power_content_blueprints": [
+        {
+          "message_axis": "scope_compare",
+          "title": "필드 홀인원과 스크린 홀인원, 보장이 다를까?",
+          "target_query": "골프보험 스크린 홀인원",
+          "intent": "비교·의사결정",
+          "focus": "필드 홀인원",
+          "sections": ["필드와 스크린, 홀인원이 인정되는 기준", "필드 홀인원 보장이 적용되는 경우", "스크린 홀인원 보장이 적용되는 경우", "내 라운딩 습관에 맞는 보장 고르기"],
+          "faq": ["스크린 골프 홀인원도 보장되나요?", "필드와 스크린 홀인원 보장은 어떻게 다른가요?"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "decision_detail",
+          "title": "홀인원 축하비용, 골프보험으로 준비하는 법",
+          "target_query": "홀인원 축하비용",
+          "intent": "보장 정보 탐색",
+          "focus": "스크린 홀인원",
+          "sections": ["홀인원 뒤 드는 축하 비용", "골프보험의 홀인원 축하비용 보장", "청구할 때 필요한 증빙 서류", "가입 전 보장하지 않는 경우"],
+          "faq": ["홀인원 축하비용은 어떤 비용까지 보장되나요?", "홀인원 축하비용 청구에 필요한 서류는 무엇인가요?"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "serp_whitespace",
+          "title": "골프 타구 사고, 배상책임은 어디까지 보장될까?",
+          "target_query": "골프 배상책임",
+          "intent": "보장 정보 탐색",
+          "focus": "골프 배상책임",
+          "sections": ["라운딩 중 타구 사고가 났을 때", "골프 배상책임이 보장하는 범위", "캐디 부상과 시설 손해 적용 여부", "배상책임 보장 전 확인할 조건"],
+          "faq": ["골프공에 다른 사람이 다치면 보장되나요?", "캐디가 다친 경우도 배상책임이 적용되나요?"],
+          "review_status": "사람 심의 필요"
+        }
+      ]
     },
     "holeinone": {
       "source_ids": ["naver-material-operation-20260822", "golf-review-20260901", "landing-pack-20260902"],
@@ -562,7 +641,86 @@
       "preferred_focus": ["홀인원 비용", "동반 플레이어", "청구 서류"],
       "comparison_terms": ["본인", "동반 플레이어"],
       "reader_question": "동반자와 함께 가입할 때 누구의 홀인원 비용을 어떤 서류로 확인할까?",
-      "editorial_thesis": "본인·동반자와 가입 단위를 먼저 구분하고 홀인원 인정 조건, 비용 범위, 청구 서류를 같은 순서로 정리한다."
+      "editorial_thesis": "본인·동반자와 가입 단위를 먼저 구분하고 홀인원 인정 조건, 비용 범위, 청구 서류를 같은 순서로 정리한다.",
+      "sa_blueprints": [
+        {
+          "message_axis": "search_action",
+          "title": "홀인원보험 보험료",
+          "description": "라운딩 인원과 일정만 넣으면 홀인원 보험료가 바로 나와요",
+          "additional_description": "원하는 날짜를 골라 필요한 만큼만 가입해요",
+          "promo": "홀인원 보험료",
+          "sublinks": ["보험료", "보장내용", "선물하기", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "scope_compare",
+          "title": "동반자와 함께 가입",
+          "description": "함께 라운딩하는 동반 플레이어와 한 번에 홀인원보험을 준비해요",
+          "additional_description": "라운딩 인원에 맞춰 함께 가입할 수 있어요",
+          "promo": "함께 가입하기",
+          "sublinks": ["동반자", "보장내용", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "decision_detail",
+          "title": "홀인원 축하비용 보장",
+          "description": "홀인원 뒤 축하 식사와 기념품 비용을 홀인원보험으로 보장받아요",
+          "additional_description": "기다리던 홀인원, 축하 비용까지 미리 챙겨요",
+          "promo": "축하비용 보장",
+          "sublinks": ["축하비용", "기념품", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "serp_whitespace",
+          "title": "골프 선물로 홀인원보험",
+          "description": "함께 라운딩하는 동반자에게 홀인원보험을 선물할 수 있어요",
+          "additional_description": "라운딩 앞둔 친구에게 특별한 선물로 마음을 전해요",
+          "promo": "선물하기",
+          "sublinks": ["선물하기", "보장내용", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "terms_navigation",
+          "title": "라운딩 날만 가입",
+          "description": "매일이 아니라 라운딩하는 날에 맞춰 짧게 가입할 수 있어요",
+          "additional_description": "원하는 라운딩 일정을 골라 필요한 만큼만 준비해요",
+          "promo": "일정 골라 가입",
+          "sublinks": ["라운딩", "보장내용", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        }
+      ],
+      "power_content_blueprints": [
+        {
+          "message_axis": "scope_compare",
+          "title": "내 홀인원과 동반자 홀인원, 보장 조건 비교",
+          "target_query": "홀인원보험 동반자",
+          "intent": "비교·의사결정",
+          "focus": "동반 플레이어",
+          "sections": ["본인 홀인원과 동반자 홀인원의 차이", "본인 홀인원 보장 기준", "동반 플레이어 홀인원 보장 기준", "라운딩 전 정해 둘 조건"],
+          "faq": ["동반자가 친 홀인원도 보장되나요?", "본인과 동반자 보장은 따로 가입하나요?"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "serp_whitespace",
+          "title": "라운딩 동반자에게 홀인원보험 선물하는 법",
+          "target_query": "홀인원보험 선물",
+          "intent": "가입 전 준비",
+          "focus": "홀인원 비용",
+          "sections": ["홀인원보험을 선물로 주는 방법", "선물받은 사람이 확인할 라운딩 일정", "선물한 보험의 보장 내용", "선물 전 확인할 가입 조건"],
+          "faq": ["홀인원보험을 다른 사람에게 선물할 수 있나요?", "선물받은 보험은 언제부터 보장되나요?"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "terms_navigation",
+          "title": "홀인원보험 청구, 어떤 서류가 필요할까?",
+          "target_query": "홀인원보험 청구",
+          "intent": "보장 정보 탐색",
+          "focus": "청구 서류",
+          "sections": ["홀인원 뒤 바로 챙겨야 할 것", "청구에 필요한 서류", "인정되는 골프장과 라운딩 조건", "보장하지 않는 경우"],
+          "faq": ["홀인원보험 청구에는 어떤 서류가 필요한가요?", "스크린 골프장 홀인원도 청구할 수 있나요?"],
+          "review_status": "사람 심의 필요"
+        }
+      ]
     },
     "cncr": {
       "source_ids": ["landing-pack-20260902"],
@@ -580,7 +738,86 @@
       "preferred_focus": ["진단비", "유사암", "항암치료"],
       "comparison_terms": ["진단비", "치료비"],
       "reader_question": "암 진단비와 치료비 항목은 어떤 시점과 지급사유로 나눠 읽어야 할까?",
-      "editorial_thesis": "진단 확정과 치료 시행을 구분하고 보장개시일, 경과기간, 갱신 여부를 항목별로 대조한다."
+      "editorial_thesis": "진단 확정과 치료 시행을 구분하고 보장개시일, 경과기간, 갱신 여부를 항목별로 대조한다.",
+      "sa_blueprints": [
+        {
+          "message_axis": "search_action",
+          "title": "내가고른 암보험",
+          "description": "진단비·치료비 중 필요한 보장만 직접 골라 나만의 암보험을 만들어요",
+          "additional_description": "이미 가진 보장은 빼고 부족한 부분만 채울 수 있어요",
+          "promo": "필요한 보장만 선택",
+          "sublinks": ["보험료계산", "보장선택", "보장내용", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "scope_compare",
+          "title": "진단비·치료비 따로 선택",
+          "description": "암 진단 때 받는 진단비와 치료 과정의 치료비를 따로 골라 담아요",
+          "additional_description": "치료가 길어져도 이어지는 치료비 보장을 더할 수 있어요",
+          "promo": "보장 골라 담기",
+          "sublinks": ["진단비", "치료비", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "decision_detail",
+          "title": "유사암 진단비 보장",
+          "description": "일반암뿐 아니라 유사암 진단비도 함께 준비할 수 있어요",
+          "additional_description": "유사암·소액암까지 진단비 보장을 더할 수 있어요",
+          "promo": "유사암 보장",
+          "sublinks": ["유사암", "진단비", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "serp_whitespace",
+          "title": "표적항암 치료비 보장",
+          "description": "비용 부담이 큰 표적항암약물 치료비를 따로 보장받을 수 있어요",
+          "additional_description": "항암방사선 치료비 보장도 함께 골라 담아요",
+          "promo": "표적항암 보장",
+          "sublinks": ["표적항암", "항암치료", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "terms_navigation",
+          "title": "암 치료 과정까지 대비",
+          "description": "진단부터 표적항암·항암방사선 치료까지 암보험 하나로 대비해요",
+          "additional_description": "진단비·치료비 조합을 내 상황에 맞게 직접 골라요",
+          "promo": "암보험 설계하기",
+          "sublinks": ["보장내용", "보장선택", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        }
+      ],
+      "power_content_blueprints": [
+        {
+          "message_axis": "decision_detail",
+          "title": "유사암 진단비, 일반암과 무엇이 다를까?",
+          "target_query": "유사암 진단비",
+          "intent": "보장 정보 탐색",
+          "focus": "유사암",
+          "sections": ["유사암과 소액암이란", "일반암과 유사암의 진단비 지급 기준", "약관에서 암 종류를 구분하는 방법", "가입 전 면책·감액기간 정리"],
+          "faq": ["유사암은 진단비가 어떻게 지급되나요?", "소액암과 유사암은 같은 뜻인가요?"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "scope_compare",
+          "title": "암보험 진단비와 치료비, 나눠서 준비하는 법",
+          "target_query": "암보험 진단비 치료비",
+          "intent": "비교·의사결정",
+          "focus": "진단비",
+          "sections": ["진단비와 치료비는 언제 받나요", "이미 가진 보장부터 정리하기", "필요한 보장만 골라 담는 방법", "보험료 계산 전 정할 조건"],
+          "faq": ["진단비와 치료비는 둘 다 필요한가요?", "이미 암보험이 있으면 무엇을 더 준비해야 하나요?"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "serp_whitespace",
+          "title": "표적항암 치료비, 암보험으로 준비할 수 있을까?",
+          "target_query": "표적항암 암보험",
+          "intent": "보장 정보 탐색",
+          "focus": "항암치료",
+          "sections": ["표적항암약물 치료란", "표적항암 치료비 보장이 적용되는 경우", "항암방사선 치료비 보장과의 차이", "가입 전 보장하지 않는 경우"],
+          "faq": ["표적항암 치료비도 암보험으로 보장되나요?", "항암방사선 치료비 보장과 무엇이 다른가요?"],
+          "review_status": "사람 심의 필요"
+        }
+      ]
     },
     "woman": {
       "source_ids": ["naver-material-operation-20260822", "woman-review-20260825", "woman-power-reference-20260902", "landing-pack-20260902"],
@@ -599,7 +836,86 @@
       "preferred_focus": ["임신·출산", "여성 질환", "여성암"],
       "comparison_terms": ["임신·출산", "여성 질환"],
       "reader_question": "임신·출산 계획과 여성 질환 보장을 한 화면에서 어떻게 나눠 봐야 할까?",
-      "editorial_thesis": "임신 전·출산·산후와 여성 질환을 생애 단계로 나누고 각 특약의 지급사유와 제외 조건을 분리한다."
+      "editorial_thesis": "임신 전·출산·산후와 여성 질환을 생애 단계로 나누고 각 특약의 지급사유와 제외 조건을 분리한다.",
+      "sa_blueprints": [
+        {
+          "message_axis": "search_action",
+          "title": "여성건강보험 보험료",
+          "description": "여성암부터 여성 질환까지 필요한 보장을 골라 보험료를 계산해요",
+          "additional_description": "지금 나의 생애 단계에 맞는 보장만 골라 담아요",
+          "promo": "여성보험료 계산",
+          "sublinks": ["보험료계산", "보장선택", "보장내용", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "scope_compare",
+          "title": "여성암 진단비 보장",
+          "description": "여성암 진단비와 자궁·난소 질환 보장을 함께 준비해요",
+          "additional_description": "여성 질환 보장까지 한 보험으로 챙겨요",
+          "promo": "여성암 보장",
+          "sublinks": ["여성암", "여성질환", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "decision_detail",
+          "title": "임신·출산 전후 보장",
+          "description": "임신과 출산 전후에 생길 수 있는 질환을 미리 보장으로 준비해요",
+          "additional_description": "임신 계획이 있다면 출산 전후 보장을 미리 챙겨요",
+          "promo": "임신·출산 보장",
+          "sublinks": ["임신출산", "보장내용", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "serp_whitespace",
+          "title": "생애 단계별 여성보험",
+          "description": "20대·30대·40대, 생애 단계마다 달라지는 여성 보장을 골라 담아요",
+          "additional_description": "지금 나에게 필요한 보장부터 먼저 담을 수 있어요",
+          "promo": "나에게 맞는 보장",
+          "sublinks": ["생애단계", "보장선택", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "terms_navigation",
+          "title": "자궁·난소 질환 보장",
+          "description": "자궁·난소 질환 치료에 필요한 보장을 여성건강보험으로 준비해요",
+          "additional_description": "여성암과 여성 질환을 한 보험에서 함께 챙겨요",
+          "promo": "여성질환 보장",
+          "sublinks": ["여성질환", "여성암", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        }
+      ],
+      "power_content_blueprints": [
+        {
+          "message_axis": "scope_compare",
+          "title": "여성암과 여성 질환, 여성건강보험 보장 차이",
+          "target_query": "여성건강보험 여성암",
+          "intent": "보장 정보 탐색",
+          "focus": "여성암",
+          "sections": ["여성암과 여성 질환은 어떻게 다른가요", "여성암 진단비 보장 기준", "자궁·난소 질환 보장 기준", "가입 전 보장하지 않는 경우"],
+          "faq": ["여성암과 여성 질환은 따로 보장되나요?", "자궁·난소 질환도 보장받을 수 있나요?"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "decision_detail",
+          "title": "임신 전후 여성건강보험, 언제 가입하면 좋을까?",
+          "target_query": "여성건강보험 임신",
+          "intent": "가입 전 준비",
+          "focus": "임신·출산",
+          "sections": ["임신 계획과 보험 가입 시기", "임신·출산 전후에 생길 수 있는 질환", "가입 가능 시기와 보장 개시 조건", "임신 중 가입할 때 달라지는 점"],
+          "faq": ["임신 중에도 여성건강보험에 가입할 수 있나요?", "임신·출산 관련 보장은 언제부터 시작되나요?"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "search_action",
+          "title": "20·30·40대 생애 단계별 여성보험 고르는 법",
+          "target_query": "여성보험 추천",
+          "intent": "비교·의사결정",
+          "focus": "여성 질환",
+          "sections": ["생애 단계마다 달라지는 건강 고민", "20·30대에 먼저 챙길 보장", "40대 이후 챙길 보장", "이미 가진 보장과 겹치지 않게 고르기"],
+          "faq": ["나이에 따라 필요한 여성보험 보장이 다른가요?", "이미 실손보험이 있어도 여성보험이 필요한가요?"],
+          "review_status": "사람 심의 필요"
+        }
+      ]
     },
     "overseas": {
       "source_ids": ["overseas-review-20260827", "landing-pack-20260902"],
@@ -618,7 +934,86 @@
       "preferred_focus": ["항공 지연", "수하물 지연", "휴대품 손해"],
       "comparison_terms": ["항공 지연", "수하물 지연"],
       "reader_question": "항공편 지연과 수하물 지연은 어떤 시간 기준과 비용 항목으로 나눠 볼까?",
-      "editorial_thesis": "여행 일정과 이동 구간을 먼저 적고 항공편·수하물·휴대품 사고의 인정 조건과 필요 서류를 나란히 정리한다."
+      "editorial_thesis": "여행 일정과 이동 구간을 먼저 적고 항공편·수하물·휴대품 사고의 인정 조건과 필요 서류를 나란히 정리한다.",
+      "sa_blueprints": [
+        {
+          "message_axis": "search_action",
+          "title": "해외여행보험 보험료",
+          "description": "여행 일정과 국가만 입력하면 개인정보 없이 보험료가 바로 나와요",
+          "additional_description": "여행 기간만큼만 필요한 보장을 골라 가입해요",
+          "promo": "여행 보험료 확인",
+          "sublinks": ["보험료계산", "보장선택", "보장내용", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "scope_compare",
+          "title": "항공·수하물 지연 보장",
+          "description": "비행기가 지연되거나 짐이 늦게 도착해 생긴 비용을 보장해요",
+          "additional_description": "공항에서 발이 묶여도 추가로 드는 비용을 덜 수 있어요",
+          "promo": "지연 보장",
+          "sublinks": ["항공지연", "수하물", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "decision_detail",
+          "title": "휴대품 파손·도난 보장",
+          "description": "여행 중 휴대품이 파손되거나 도난당했을 때 손해를 보장받아요",
+          "additional_description": "여행 가방 속 소지품 사고까지 대비할 수 있어요",
+          "promo": "휴대품 보장",
+          "sublinks": ["휴대품", "도난", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "serp_whitespace",
+          "title": "해외 병원비 보장",
+          "description": "여행지에서 다치거나 아파 병원에 가도 의료비를 보장받아요",
+          "additional_description": "낯선 곳에서 아플 때 병원비까지 여행자보험으로 대비해요",
+          "promo": "해외 의료비 보장",
+          "sublinks": ["해외의료", "보장내용", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "terms_navigation",
+          "title": "모바일로 여행자보험",
+          "description": "공항 가기 전 휴대폰으로 가입하고 여행 중 사고에 대비해요",
+          "additional_description": "여행 일정에 맞춰 필요한 기간만 가입할 수 있어요",
+          "promo": "여행자보험 가입",
+          "sublinks": ["가입하기", "보장내용", "휴대품", "보험료"],
+          "review_status": "사람 심의 필요"
+        }
+      ],
+      "power_content_blueprints": [
+        {
+          "message_axis": "scope_compare",
+          "title": "항공 지연·수하물 지연, 여행자보험 보장 차이",
+          "target_query": "여행자보험 항공지연",
+          "intent": "보장 정보 탐색",
+          "focus": "항공 지연",
+          "sections": ["항공 지연과 수하물 지연은 어떻게 다른가요", "항공 지연 보장이 적용되는 경우", "수하물 지연 보장이 적용되는 경우", "현지에서 챙겨야 할 증빙 서류"],
+          "faq": ["항공편이 지연되면 여행자보험으로 보장되나요?", "수하물이 늦게 오면 어떤 비용이 보장되나요?"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "decision_detail",
+          "title": "여행 중 휴대품 파손·도난, 보상받는 방법",
+          "target_query": "여행자보험 휴대품",
+          "intent": "보장 정보 탐색",
+          "focus": "휴대품 손해",
+          "sections": ["여행 중 휴대품 사고가 났을 때", "휴대품 손해 보장이 적용되는 경우", "현지에서 받아 둘 서류", "가입 전 보장하지 않는 경우"],
+          "faq": ["여행 중 잃어버린 물건도 보장되나요?", "휴대품 도난 때 필요한 서류는 무엇인가요?"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "serp_whitespace",
+          "title": "해외 병원비, 여행자보험으로 보장받는 기준",
+          "target_query": "여행자보험 해외의료비",
+          "intent": "보장 정보 탐색",
+          "focus": "수하물 지연",
+          "sections": ["여행 중 다치거나 아플 때", "해외 의료비 보장이 적용되는 경우", "현지 병원 이용과 청구 방법", "출국 전 가입해야 하는 이유"],
+          "faq": ["해외에서 병원에 가면 여행자보험으로 보장되나요?", "해외 의료비는 어떻게 청구하나요?"],
+          "review_status": "사람 심의 필요"
+        }
+      ]
     },
     "overseaslong": {
       "source_ids": ["overseaslong-review-20260827", "landing-pack-20260902"],
@@ -637,7 +1032,86 @@
       "preferred_focus": ["체류 목적", "해외 치료비", "구조송환"],
       "comparison_terms": ["해외 치료비", "국내 치료비"],
       "reader_question": "유학·워홀·출장 기간에 해외 치료와 귀국 후 치료를 어떻게 구분할까?",
-      "editorial_thesis": "체류 목적과 기간을 먼저 맞추고 해외 치료, 귀국 후 치료, 구조송환의 적용 지역과 지급 조건을 분리한다."
+      "editorial_thesis": "체류 목적과 기간을 먼저 맞추고 해외 치료, 귀국 후 치료, 구조송환의 적용 지역과 지급 조건을 분리한다.",
+      "sa_blueprints": [
+        {
+          "message_axis": "search_action",
+          "title": "장기체류보험 맞춤 플랜",
+          "description": "유학·워홀·주재원, 체류 목적과 기간에 맞춰 맞춤 플랜을 만들어요",
+          "additional_description": "머무는 기간만큼 필요한 보장을 골라 담아요",
+          "promo": "맞춤 플랜 시작",
+          "sublinks": ["플랜설계", "체류목적", "보장내용", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "scope_compare",
+          "title": "해외·국내 치료비 보장",
+          "description": "현지 병원 치료비는 물론 귀국 뒤 국내 치료비까지 보장받아요",
+          "additional_description": "잠시 귀국해 받는 치료도 보장이 이어져요",
+          "promo": "치료비 보장",
+          "sublinks": ["해외치료", "국내치료", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "decision_detail",
+          "title": "유학생 보험 준비",
+          "description": "긴 유학 생활 중 다치거나 아플 때를 대비해 유학생 보험을 준비해요",
+          "additional_description": "학교·비자 일정에 맞춰 보험 기간을 정할 수 있어요",
+          "promo": "유학생 보장",
+          "sublinks": ["유학생", "체류기간", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "serp_whitespace",
+          "title": "구조송환 비용 보장",
+          "description": "현지에서 큰 사고로 이송이나 귀국이 필요할 때 드는 비용을 보장해요",
+          "additional_description": "먼 타국에서 위급한 순간이 와도 대비할 수 있어요",
+          "promo": "구조송환 보장",
+          "sublinks": ["구조송환", "보장내용", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "terms_navigation",
+          "title": "워홀·주재원 보장",
+          "description": "워킹홀리데이와 해외 주재원처럼 긴 체류에 맞는 보장을 담아요",
+          "additional_description": "배상책임과 휴대품 손해 보장까지 함께 골라 담아요",
+          "promo": "체류 보장 담기",
+          "sublinks": ["워홀", "주재원", "보험료", "가입하기"],
+          "review_status": "사람 심의 필요"
+        }
+      ],
+      "power_content_blueprints": [
+        {
+          "message_axis": "decision_detail",
+          "title": "유학생 보험, 장기체류보험으로 준비하는 법",
+          "target_query": "유학생보험",
+          "intent": "가입 전 준비",
+          "focus": "체류 목적",
+          "sections": ["유학생에게 장기체류보험이 필요한 이유", "체류 목적과 기간에 맞춘 플랜 설계", "학교·비자 일정과 보험 기간 맞추기", "출국 전 가입 조건 정리"],
+          "faq": ["유학생도 장기체류보험에 가입할 수 있나요?", "보험 기간은 비자 기간에 맞춰야 하나요?"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "scope_compare",
+          "title": "해외 치료비와 귀국 후 국내 치료비 보장 차이",
+          "target_query": "장기체류보험 치료비",
+          "intent": "보장 정보 탐색",
+          "focus": "해외 치료비",
+          "sections": ["해외 치료비와 국내 치료비는 어떻게 다른가요", "현지 병원 이용 시 보장 기준", "일시 귀국해 치료받을 때 보장 기준", "가입 전 보장하지 않는 경우"],
+          "faq": ["귀국해서 받은 치료도 보장되나요?", "해외 치료비와 국내 치료비는 따로 청구하나요?"],
+          "review_status": "사람 심의 필요"
+        },
+        {
+          "message_axis": "serp_whitespace",
+          "title": "구조송환, 해외 장기체류 중 어떤 경우 보장될까?",
+          "target_query": "해외 구조송환",
+          "intent": "보장 정보 탐색",
+          "focus": "구조송환",
+          "sections": ["구조송환이 필요한 상황", "구조송환 비용 보장이 적용되는 경우", "현지에서 먼저 해야 할 일", "보장하지 않는 경우와 조건"],
+          "faq": ["구조송환 비용은 어떤 경우에 보장되나요?", "귀국 이송도 구조송환에 포함되나요?"],
+          "review_status": "사람 심의 필요"
+        }
+      ]
     }
   }
 }

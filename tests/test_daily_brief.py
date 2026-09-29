@@ -171,7 +171,9 @@ class TestChannelRendering(unittest.TestCase):
         self.assertIn('align="left"', email_html)
         self.assertIn("text-align:left", email_html)
         self.assertNotIn('align="center"', email_html)
-        self.assertIn("overflow-wrap:anywhere", email_html)
+        # Outlook·Gmail은 overflow-wrap:anywhere를 지원하지 않아 break-word + 구형 word-wrap을 쓴다.
+        self.assertIn("overflow-wrap:break-word", email_html)
+        self.assertIn("word-wrap:break-word", email_html)
         self.assertIn("width:100%;box-sizing:border-box", email_html)
         self.assertNotIn("white-space:nowrap", email_html)
         self.assertNotIn("<th", email_html)
