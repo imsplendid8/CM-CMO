@@ -231,10 +231,10 @@ def main() -> int:
         result = generate_thumbnail_with_claude(client, product_key, product_name, guidance)
 
         if result.get("status") == "generated":
-            print(f"  ✓ 생성 완료")
+            print("  ✓ 생성 완료")
             generated.append(result)
         else:
-            print(f"  ✗ 생성 실패")
+            print("  ✗ 생성 실패")
             failed.append(result)
 
     # 결과 저장

@@ -397,3 +397,28 @@ class TestUnclassified(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+class TestCopyQuality(unittest.TestCase):
+    """추천 SA 문구 회귀: 설명 42~45자 · 담보명 뒤 (특약) · 안내형 문구 없음."""
+
+    def test_copy_fits_sa_spec(self):
+        import coverage_terms
+        bundle = ee.load_bundle()
+        today = date(2026, 7, 1)
+        events = ee.build_events(bundle, today)
+        products = list(coverage_terms.load().get("terms", {}))
+        self.assertTrue(events and products)
+        checked = 0
+        for ev in events[:8]:
+            for state in ("upcoming", "active", "follow_up"):
+                for key in products:
+                    title, desc, sub = ee._copy(ev, ee._pname(bundle, key), state, key)
+                    self.assertTrue(42 <= len(desc) <= 45, (key, desc, len(desc)))
+                    self.assertEqual(coverage_terms.missing_rider_marks(desc, key), [], desc)
+                    self.assertNotRegex(desc + title, r"확인해|점검 안내|체크리스트")
+                    checked += 1
+            ev_urgent = dict(ev, type="긴급뉴스")
+            _, desc, _ = ee._copy(ev_urgent, ee._pname(bundle, products[0]), "active", products[0])
+            self.assertTrue(42 <= len(desc) <= 45, desc)
+        self.assertGreater(checked, 0)

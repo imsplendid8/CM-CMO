@@ -44,7 +44,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Node.js
-        uses: actions/setup-node@1a4442caab8340d8a1f9c4bc5dd46c4e80e39edd # v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "18"
 
@@ -108,6 +108,12 @@ jobs:
 
       - name: Report summary
         if: ${{ always() }}
+        # 수동 입력값은 셸에 직접 끼워 넣지 않고 환경변수로 전달(템플릿 주입 방지)
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_LIMIT: ${{ github.event.inputs.limit }}
+          INPUT_PRODUCT: ${{ github.event.inputs.product || '전체' }}
+          INPUT_FORCE: ${{ github.event.inputs.force }}
         run: |
           if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
             {
@@ -115,11 +121,11 @@ jobs:
               echo ""
               echo "### 실행 정보"
               echo "- 날짜: $(date -u '+%Y-%m-%d %H:%M:%S') UTC"
-              echo "- 트리거: ${{ github.event_name }}"
-              if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-                echo "- 제한: ${{ github.event.inputs.limit }}"
-                echo "- 상품 필터: ${{ github.event.inputs.product || '전체' }}"
-                echo "- 강제 재생성: ${{ github.event.inputs.force }}"
+              echo "- 트리거: ${EVENT_NAME}"
+              if [ "${EVENT_NAME}" = "workflow_dispatch" ]; then
+                echo "- 제한: ${INPUT_LIMIT}"
+                echo "- 상품 필터: ${INPUT_PRODUCT}"
+                echo "- 강제 재생성: ${INPUT_FORCE}"
               fi
               echo ""
               echo "### 결과"

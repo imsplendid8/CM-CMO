@@ -1,0 +1,21 @@
+# zizmor(GitHub Actions 보안 정적 분석) 예외 — 사유가 있는 항목만 둔다. CI의 워크플로 보안 검사가 이 설정을 읽는다.
+rules:
+  # 데이터를 커밋·푸시하는 워크플로는 체크아웃 인증 정보가 필요하다(읽기 전용 워크플로는 persist-credentials: false).
+  artipacked:
+    ignore:
+      - content-intelligence.yml
+      - event-reco.yml
+      - generate-image-assets.yml
+      - google-trends.yml
+      - monthly-image-plan.yml
+      - monthly-keyword-discovery.yml
+      - news-clip.yml
+      - sa-thumbnail-generation.yml
+      - searchad.yml
+      - serp-capture.yml
+      - signals.yml
+      - trends.yml
+  # 봇 커밋 뒤 재배포용. main 브랜치에서 성공한 내부 워크플로(비 PR)일 때만 배포하고 기본 브랜치를 체크아웃한다.
+  dangerous-triggers:
+    ignore:
+      - pages.yml

@@ -52,7 +52,7 @@ TODAY = datetime.date.today().isoformat()
 
 # DEBUG
 if not MOJ_EXIT_API_KEY:
-    print(f"[WARN] MOJ_EXIT_API_KEY not set")
+    print("[WARN] MOJ_EXIT_API_KEY not set")
     print(f"[DEBUG] All env keys: {', '.join(sorted([k for k in os.environ.keys() if 'MOJ' in k or 'TOUR' in k or 'API' in k]))}")
 
 # ── 엔드포인트 ─────────────────────────────
@@ -467,19 +467,15 @@ def _extract_molit_regions(payload):
     def walk(node, path=""):
         if isinstance(node, dict):
             # 현재 노드에서 지역명·개수 쌍 찾기
-            region_key = None
-            count_key = None
             region_val = None
             count_val = None
 
             for key, value in node.items():
                 normalized_key = re.sub(r"[^a-z0-9]", "", str(key).lower())
                 if any(tok in normalized_key for tok in region_tokens):
-                    region_key = key
                     region_val = str(value).strip() if value else None
                 if any(tok in normalized_key for tok in count_tokens):
                     if not any(skip in normalized_key for skip in ("code", "date", "month", "year", "period", "ym")):
-                        count_key = key
                         count_val = _coerce_float(value)
 
             if region_val and count_val is not None and region_val and len(region_val) <= 20:

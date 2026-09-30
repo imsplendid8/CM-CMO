@@ -21,12 +21,16 @@
 순수 함수(run/build_events/make_reco …)는 주입된 dict로 동작해 테스트가 fixture를 넣을 수 있다.
 표준 라이브러리만 사용.
 """
-import glob
 import hashlib
 import json
 import os
 import re
 from datetime import date, datetime, timedelta, timezone
+
+try:
+    import coverage_terms
+except ModuleNotFoundError:  # python -m scripts.event_engine
+    from scripts import coverage_terms
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MATERIAL_EXCLUDED_PRODUCTS = {"home"}
@@ -327,20 +331,34 @@ def _pname(bundle, key):
     return bundle.get("products", {}).get(key, {}).get("name", key)
 
 
-def _copy(ev, product_name, state):
-    """상태·유형별 예방/대비 톤 문구(제목·설명·소제목). 공포·압박·담보 단정 없음."""
+def _copy(ev, product_name, state, product_key=None):
+    """상태·유형별 SA 추천 문구(제목·설명·소제목). 안내형('확인해 두세요·점검 안내')이 아니라 고객 혜택으로 쓴다.
+
+    설명은 42~45자 · 담보명 바로 뒤 (특약) — coverage_terms.fit_sa(에이전트와 공용). 공포·압박·담보 단정 없음.
+    """
     ename = ev["name"]
+    terms = coverage_terms.load().get("terms", {}).get(product_key or "", [])
+    hint = " ".join([ename, *(ev.get("keywords") or [])])
+    rider = next((t for t in terms if t.replace("손해", "").replace("비용", "") in hint), terms[0] if terms else "")
+    focus = f"{rider} 보장" if rider else "필요한 보장"
     if ev["type"] == "긴급뉴스":
-        verb = "예방 점검 안내"
-        title = f"{ename} {product_name} 점검 안내"
-        desc = f"관련 소식이 있는 시기, {product_name} 보장 내용을 미리 확인해 두면 좋습니다."
-        sub = f"{product_name} 예방·점검 체크리스트"
+        title = f"{ename} {product_name} 대비"
+        desc = coverage_terms.fit_sa([
+            f"{ename} 소식이 이어질 때 {focus}을 {product_name}으로 {{pad}}챙겨 두세요",
+            f"{ename} 소식이 이어질 때 {focus}을 {{pad}}챙겨 두세요",
+        ], product_key or "")
+        sub = f"{ename} 대비 {focus}"
     else:
-        pv = {"upcoming": "선제 준비", "emerging": "미리 대비", "active": "지금 점검",
-              "cooling": "마무리 점검", "follow_up": "후속 점검", "ended": "보관"}.get(state, "점검")
+        pv = {"upcoming": "미리 준비", "emerging": "미리 대비", "active": "지금 대비",
+              "cooling": "끝까지 대비", "follow_up": "이어서 대비", "ended": "보관"}.get(state, "대비")
         title = f"{ename} {product_name} {pv}"
-        desc = f"{ename} 시기, {product_name} 보장 범위를 미리 확인해 두세요."
-        sub = f"{ename} 대비 {product_name} 확인 포인트"
+        desc = coverage_terms.fit_sa([
+            f"{ename} 시기에 필요한 {focus}을 {product_name}으로 {{pad}}챙겨 두세요",
+            f"{ename}을 앞두고 {focus}을 {product_name}으로 {{pad}}준비할 수 있어요",
+            f"{ename} 시기에 필요한 {focus}을 {{pad}}챙겨 두면 든든해요",
+            f"{ename} 시기에 필요한 {focus}을 {{pad}}챙겨 두세요",
+        ], product_key or "")
+        sub = f"{ename} 대비 {focus}"
     return title.strip(), desc.strip(), sub.strip()
 
 
@@ -429,7 +447,7 @@ def make_reco(ev, product_key, bundle, today, transition=None):
     facts, used = gather_facts(ev, product_key, bundle)
     if not facts:
         return None
-    title, desc, sub = _copy(ev, pname, ev["state"])
+    title, desc, sub = _copy(ev, pname, ev["state"], product_key)
     bad = lint_avoid(title, desc, sub)
     if bad:                       # 가드레일: 금지 표현 있으면 추천 자체를 만들지 않음
         return None

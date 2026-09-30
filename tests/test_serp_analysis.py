@@ -103,7 +103,7 @@ class TestRealData(unittest.TestCase):
         data = sa.load(ROOT)
         res = sa.analyze(data.get("observations", []))
         self.assertTrue(res)                       # 상품별 결과 존재
-        for pk, v in res.items():
+        for _pk, v in res.items():
             self.assertIn("common_soju", v)
             self.assertIsInstance(v["soju"], list)
             self.assertIn("monthly_diff", v)
@@ -117,7 +117,7 @@ class TestRealData(unittest.TestCase):
                          json.dumps(committed, ensure_ascii=False, sort_keys=True),
                          "serp/ad_analysis.json 이 최신이 아님 — `python3 scripts/serp_analysis.py` 재실행 필요")
         self.assertEqual(built["schema_version"], 3)
-        for pk, row in built["products"].items():
+        for _pk, row in built["products"].items():
             self.assertIn("autocomplete", row)
             self.assertIn("dom", row)
 

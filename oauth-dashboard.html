@@ -611,16 +611,21 @@
       }
     }
 
+    // AI 응답(JSON)은 외부 입력이다 — HTML로 넣기 전에 이스케이프하고, class 값은 허용 목록만 쓴다.
+    const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+    const num = value => Number.isFinite(Number(value)) ? Number(value) : 0;
+    const oneOf = (value, allowed, fallback) => allowed.includes(value) ? value : fallback;
+
     // 대시보드 렌더링
     function renderDashboard(data) {
       // KPI 렌더링
-      const kpiHtml = data.kpis.map(kpi => `
+      const kpiHtml = (data.kpis || []).map(kpi => `
         <div class="card">
-          <div class="card-title">${kpi.label}</div>
-          <div class="card-value">${kpi.value.toLocaleString()}</div>
+          <div class="card-title">${esc(kpi.label)}</div>
+          <div class="card-value">${num(kpi.value).toLocaleString()}</div>
           <div class="card-trend">
-            <span class="trend-${kpi.trend}">
-              ${kpi.trend === "up" ? "▲" : "▼"} ${kpi.change}%
+            <span class="trend-${oneOf(kpi.trend, ["up", "down"], "down")}">
+              ${kpi.trend === "up" ? "▲" : "▼"} ${num(kpi.change)}%
             </span>
           </div>
         </div>
@@ -630,10 +635,10 @@
       document.getElementById("kpi-container").style.display = "grid";
 
       // 추천사항 렌더링
-      const recommendHtml = data.recommendations.map(rec => `
+      const recommendHtml = (data.recommendations || []).map(rec => `
         <div class="recommendation-item">
           <span class="recommendation-icon">→</span>
-          <span>${rec}</span>
+          <span>${esc(rec)}</span>
         </div>
       `).join("");
 
@@ -641,12 +646,12 @@
       document.getElementById("recommendations-container").style.display = "block";
 
       // 경고 렌더링
-      const alertHtml = data.alerts.map(alert => `
-        <div class="alert-item ${alert.severity}">
+      const alertHtml = (data.alerts || []).map(alert => `
+        <div class="alert-item ${oneOf(alert.severity, ["high", "medium"], "medium")}">
           <span class="alert-icon">
             ${alert.severity === "high" ? "🔴" : "🟡"}
           </span>
-          <span>${alert.message}</span>
+          <span>${esc(alert.message)}</span>
         </div>
       `).join("");
 

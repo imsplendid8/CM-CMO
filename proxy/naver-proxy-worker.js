@@ -16,7 +16,7 @@
  *   GET  /naver/v1/search/*                → openapi.naver.com (검색: 뉴스 등)
  *   POST /naver/v1/datalab/*               → openapi.naver.com (데이터랩 트렌드)
  *   GET  /searchad/keywordstool            → api.searchad.naver.com (검색량 조회 전용, HMAC 자동 서명)
- *   POST /api/personalized-dashboard       → Claude API (팀 OAuth 대시보드, Bearer 토큰 필수)
+ *   POST /api/personalized-dashboard       → Claude API (기본 꺼짐: DASHBOARD_AI_ENABLED="1" + Cloudflare Access 필수)
  *   POST /v1/feedback                      → 비공개 D1 검수 이벤트(Cloudflare Access 필요)
  *   GET  /usage                            → 사용량(대시보드 위젯, 허용 출처만)
  *   GET  /  ·  /health                     → 상태(공개)
@@ -362,17 +362,18 @@ export default {
         let payload;
         try { payload = await req.json(); } catch (e) { return jsonFor(origin, { error: "invalid JSON" }, 400); }
 
-        const authHeader = req.headers.get("Authorization") || "";
-        const token = authHeader.split(" ")[1] || "";
-
-        if (!token) return jsonFor(origin, { error: "authorization token required" }, 401);
+        // Claude 호출은 워커 비용이 든다. 기본은 꺼 두고(DASHBOARD_AI_ENABLED="1"일 때만),
+        // 켜더라도 Cloudflare Access가 붙은 요청만 받는다. 데모 Bearer 토큰은 인증으로 보지 않는다.
+        if (env.DASHBOARD_AI_ENABLED !== "1") return jsonFor(origin, { error: "dashboard AI disabled" }, 503);
+        const actor = accessIdentity(req);
+        if (!actor) return jsonFor(origin, { error: "dashboard authentication required" }, 401);
 
         const apiKey = env.ANTHROPIC_API_KEY;
         if (!apiKey) return jsonFor(origin, { error: "Claude API not configured" }, 500);
 
-        // 기본 사용자 데이터 (실제로는 DB에서 조회해야 함)
+        // 기본 사용자 데이터 (실제로는 DB에서 조회해야 함). 이메일 원문은 응답에 싣지 않는다.
         const userPreferences = {
-          id: token.replace("demo_token_", ""),
+          id: (await sha256Hex(actor)).slice(0, 12),
           name: "팀원",
           role: "마케팅팀",
           products: ["home", "driver", "hrmf"],
@@ -419,11 +420,13 @@ export default {
               "anthropic-version": "2023-06-01"
             },
             body: JSON.stringify({
-              model: "claude-opus-5",
-              max_tokens: 1024,
+              model: "claude-opus-5-5",
+              max_tokens: 4096,
+              output_config: { effort: "low" },
               system: systemPrompt,
               messages: [{ role: "user", content: userPrompt }]
-            })
+            }),
+            signal: AbortSignal.timeout(30000)
           });
 
           if (!claudeResponse.ok) {
@@ -435,7 +438,10 @@ export default {
           }
 
           const claudeData = await claudeResponse.json();
-          const responseText = claudeData.content[0]?.text || "";
+          await bump(env, "dashboard");
+          // 사고(thinking) 블록이 먼저 올 수 있으니 text 블록만 모은다.
+          const responseText = claudeData.stop_reason === "refusal" ? ""
+            : (claudeData.content || []).filter((b) => b.type === "text").map((b) => b.text).join("");
           const jsonMatch = responseText.match(/\{[\s\S]*\}/);
 
           if (!jsonMatch) {
@@ -446,7 +452,6 @@ export default {
           }
 
           const dashboardData = JSON.parse(jsonMatch[0]);
-          await bump(env, "dashboard");
 
           return jsonFor(origin, {
             success: true,
@@ -458,10 +463,9 @@ export default {
             dashboard: dashboardData
           });
         } catch (e) {
-          // Claude API 실패 시 기본 데이터 반환
-          await bump(env, "dashboard");
+          // Claude API 실패(타임아웃·JSON 파싱) 시 기본 데이터 반환
           return jsonFor(origin, {
-            success: true,
+            success: false,
             user: {
               id: userPreferences.id,
               name: userPreferences.name,

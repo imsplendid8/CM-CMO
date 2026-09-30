@@ -11,7 +11,6 @@ clip_news.py(GitHub Actions)가 기사 페이지를 열어
 순수 함수(extract_article·summarize·sentences_from_snippet)는 테스트가 HTML fixture를 주입한다.
 """
 import re
-import time
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from html import unescape
@@ -43,6 +42,7 @@ class _ArticleParser(HTMLParser):
         self._skip = 0
         self._stack = []          # (tag, is_body)
         self._body_depth = 0
+        self._link_depth = 0      # <a> 안 텍스트 — 링크 밀도로 메뉴·관련기사 목록을 거른다(Readability·trafilatura 방식)
         self.body_parts = []
         self.all_parts = []
 
@@ -62,6 +62,8 @@ class _ArticleParser(HTMLParser):
         is_body = (a.get("id", "").lower() in BODY_IDS or a.get("itemprop", "").lower() == "articlebody"
                    or any(c.lower() in BODY_IDS for c in a.get("class", "").split()))
         self._stack.append((tag, is_body, tag in SKIP_TAGS))
+        if tag == "a":
+            self._link_depth += 1
         if tag in SKIP_TAGS:
             self._skip += 1
         if is_body:
@@ -77,7 +79,9 @@ class _ArticleParser(HTMLParser):
         # 닫는 태그와 짝이 맞는 가장 가까운 여는 태그까지 되감는다(비정형 HTML 대응)
         for i in range(len(self._stack) - 1, -1, -1):
             if self._stack[i][0] == tag:
-                for _t, is_body, skip in self._stack[i:]:
+                for opened, is_body, skip in self._stack[i:]:
+                    if opened == "a":
+                        self._link_depth -= 1
                     if skip:
                         self._skip -= 1
                     if is_body:
@@ -93,14 +97,15 @@ class _ArticleParser(HTMLParser):
             return
         if self._skip:
             return
-        self.all_parts.append(data)
+        chunk = (data, self._link_depth > 0)
+        self.all_parts.append(chunk)
         if self._body_depth:
-            self.body_parts.append(data)
+            self.body_parts.append(chunk)
 
     def _newline(self):
-        self.all_parts.append("\n")
+        self.all_parts.append(("\n", False))
         if self._body_depth:
-            self.body_parts.append("\n")
+            self.body_parts.append(("\n", False))
 
 
 # 줄 맨 앞 기자·매체 표기 — 리드 문장이 이 표기와 한 줄에 붙어 오므로 줄을 버리지 말고 표기만 뗀다
@@ -108,11 +113,27 @@ BYLINE_PREFIX = re.compile(r"^\s*(?:[\[(【<][^\])】>]{0,40}(?:기자|특파원
                            r"|[가-힣]{2,4}\s*(?:기자|특파원)\s*=\s*)+")
 
 
+LINK_DENSITY_MAX = 0.5   # 줄 글자의 절반 이상이 링크면 본문이 아니라 메뉴·관련기사 목록으로 본다
+
+
 def _lines(parts):
-    text = "".join(parts)
+    """(텍스트, 링크 여부) 조각 → 본문 줄. 링크 밀도가 높은 줄(메뉴·관련기사)과 잡음 줄은 버린다."""
+    rows, text, linked = [], [], 0
+    for chunk, in_link in list(parts) + [("\n", False)]:
+        if isinstance(chunk, str) and chunk == "\n" and not in_link:
+            rows.append(("".join(text), linked))
+            text, linked = [], 0
+            continue
+        value = str(chunk)
+        text.append(value)
+        if in_link:
+            linked += len(value.strip())
     out = []
-    for line in text.split("\n"):
-        line = BYLINE_PREFIX.sub("", re.sub(r"\s+", " ", line).strip()).strip()
+    for raw, linked_chars in rows:
+        compact = re.sub(r"\s+", " ", raw).strip()
+        if not compact or linked_chars / max(1, len(compact.replace(" ", ""))) > LINK_DENSITY_MAX:
+            continue
+        line = BYLINE_PREFIX.sub("", compact).strip()
         if line and not NOISE_LINE.search(line):
             out.append(line)
     return out

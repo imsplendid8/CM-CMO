@@ -11,7 +11,7 @@
 데이터 경로: data/google-volume.json
 """
 import os, sys, json, time
-from datetime import date, datetime, timedelta
+from datetime import date
 
 try:
     from scripts.io_utils import atomic_json_write

@@ -1,0 +1,14 @@
+# Python 정적 분석(ruff) — 실제 버그로 이어지는 규칙만 켠다. CI '정적 분석' 단계에서 실행.
+target-version = "py311"
+extend-exclude = ["node_modules", "dist"]
+
+[lint]
+select = [
+  "F",    # pyflakes: 미정의 이름·미사용 import·미사용 변수
+  "E9",   # 구문·IO 오류
+  "B",    # flake8-bugbear: 흔한 버그 패턴
+  "PLE",  # pylint error
+]
+ignore = [
+  "B905",  # zip(strict=) — 길이가 다른 것을 의도한 곳이 있다
+]

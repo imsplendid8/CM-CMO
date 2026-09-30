@@ -498,33 +498,9 @@ def _fit(options, minimum, maximum):
     return (cut if len(cut) >= minimum else value[:maximum]).rstrip(" ·,:")
 
 
-# SA 설명·추가설명은 45자 한도를 최대한 채운다(운영 기준 42~45자). 짧으면 자연스러운 부사를 넣어 맞춘다.
-SA_TEXT_MIN, SA_TEXT_MAX = 42, 45
-_SA_PADS = ("", "미리 ", "지금 바로 ", "꼭 ", "함께 ", "한 번에 ", "미리 꼭 ", "지금 미리 ")
-
-
-def _fit_sa(options, product_key, minimum=SA_TEXT_MIN, maximum=SA_TEXT_MAX):
-    """템플릿의 {pad} 자리에 부사를 넣어 42~45자를 우선 고르고, 담보명 뒤에 (특약)을 붙인다."""
-    tried = []
-    for option in options:
-        if not option:
-            continue
-        for pad in (_SA_PADS if "{pad}" in option else ("",)):
-            value = re.sub(r"\s+", " ", option.replace("{pad}", pad)).strip(" ·,:")
-            value = coverage_terms.mark_riders(value, product_key)
-            if minimum <= len(value) <= maximum:
-                return value
-            tried.append(value)
-    fitting = [value for value in tried if len(value) <= maximum]
-    if fitting:
-        return max(fitting, key=len)
-    # 모든 후보가 한도를 넘으면 문장을 중간에서 자르지 않고, 가장 짧은 후보의 상품명·수식어를 덜어낸다
-    shortest = min(tried, key=len)
-    for drop in (r"\S+보험(?:으로|을|를|의|에)?\s", r"(?:미리|꼭|지금 바로|한 번에|든든하게)\s"):
-        slim = re.sub(drop, "", shortest, count=1)
-        if len(slim) <= maximum:
-            return slim
-    return shortest[:maximum]
+def _fit_sa(options, product_key):
+    """42~45자 우선·담보명 (특약) 표기 — coverage_terms.fit_sa(이벤트 추천과 공용)."""
+    return coverage_terms.fit_sa(options, product_key)
 
 
 def _josa(value, batchim, open_value):
@@ -713,7 +689,7 @@ def _copy_for_axis(axis, product, keyword, angle, other, season):
         "official_path": ([f"{name} 온라인 가입", f"{name} 가입하기"],
                           [f"보험료 계산부터 가입까지 {_josa(name, '을', '를')} {{pad}}온라인으로 간편하게 끝낼 수 있어요",
                            f"{angle} 보장을 골라 보험료 계산부터 가입까지 {{pad}}온라인으로 끝낼 수 있어요",
-                           f"보험료 계산부터 가입까지 {{pad}}온라인으로 간편하게 끝낼 수 있어요"],
+                           "보험료 계산부터 가입까지 {pad}온라인으로 간편하게 끝낼 수 있어요"],
                           [f"원하는 {angle} 보장과 보험 기간을 {{pad}}골라 {_josa(name, '을', '를')} 직접 설계할 수 있어요",
                            "원하는 보장과 보험 기간을 {pad}골라 나에게 맞는 보험을 직접 설계할 수 있어요"],
                           ["온라인 간편 가입", "가입하기"], ["보험료계산", "보장내용", "가입조건", "가입하기"]),

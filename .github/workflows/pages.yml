@@ -40,7 +40,8 @@ jobs:
   deploy:
     # workflow_run 트리거일 때는 커밋 워크플로가 성공한 경우에만 배포(실패 실행으로 재배포 방지).
     # push·수동 dispatch 는 항상 배포.
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    # workflow_run 은 main 에서 성공한 내부 커밋 워크플로만(포크 PR·다른 브랜치 실행으로 배포되지 않게)
+    if: ${{ github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.event != 'pull_request') }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -48,6 +49,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
       - name: Setup Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
       - name: Build public site

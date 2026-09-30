@@ -23,6 +23,14 @@ class TestExtract(unittest.TestCase):
         for noise in ("홍길동 기자", "무단 전재", "많이 본 뉴스", "이용약관", "사진="):
             self.assertNotIn(noise, art["text"])
 
+    def test_link_heavy_lines_are_dropped_but_inline_links_kept(self):
+        # 본문 안 관련기사 목록(링크만 있는 줄)은 버리고, 문장 속 한 단어 링크는 본문으로 남긴다(Readability·trafilatura의 링크 밀도)
+        art = ne.extract_article(ARTICLE)
+        self.assertNotIn("보험료 인상 검토가 본격화된다", art["text"])
+        self.assertNotIn("단속이 전국으로 확대된다", art["text"])
+        self.assertIn("관련 자료는 가상보험연구원 누리집에서", art["text"])
+        self.assertNotIn("본격화된다", ne.summarize(art["title"], art["text"]))
+
     def test_title_site_suffix_removed(self):
         self.assertEqual(ne._clean_title("손보사 손해율 상승 - 가상경제"), "손보사 손해율 상승")
 

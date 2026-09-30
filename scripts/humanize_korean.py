@@ -57,7 +57,7 @@ def humanize(text, max_change=MAX_CHANGE_RATE):
         if len(matches) > 2:
             keep = 2
             seen = 0
-            def trim_connector(m):
+            def trim_connector(m, keep=keep):
                 nonlocal seen
                 seen += 1
                 return m.group(0) if seen <= keep else ""
