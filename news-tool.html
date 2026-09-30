@@ -376,7 +376,7 @@ function newsPanel(p){
   const cards=n.items.map((it,i)=>{const h=hot(it.t);return `<a class="nm-card${h?" hot":""}" href="${esc(it.url)}" target="_blank" rel="noopener">
       <div class="nm-card-h"><span class="num">${String(i+1).padStart(2,"0")}</span>${h?`<span class="hotbadge">🔥 수요 트리거</span>`:""}<span class="mt">${esc(it.src||"")} · ${esc(it.date||"")}</span></div>
       <div class="nm-card-t">${esc(it.t)}</div>
-      ${it.gist?`<div class="nm-card-g">${esc(HUMANIZE.light(it.gist))}</div>`:""}</a>`;}).join("");
+      ${(it.summary||it.gist)?`<div class="nm-card-g">${esc(HUMANIZE.light(it.summary||it.gist))}</div>`:""}</a>`;}).join("");
   const sig=(SIGNALS.triggers||{})[p.key];
   const exit=SIGNALS.exit_tour||{};
   const newreg=SIGNALS.newreg||{};
@@ -400,7 +400,7 @@ function newsPanel(p){
     return"";
   };
   const exitBanner=(p.key==="overseas"&&exit&&exit.outbound_count!=null)
-    ?`<div class="sig-live">🛫 <b>출입국관광통계</b> ${esc(exit.period||SIGNALS.asof||"")} · 수치 ${esc(exit.outbound_count)}${_trendText(exit.trend)}<span class="src">· ${esc(exit.basis||"관광 API")}</span></div>`
+    ?`<div class="sig-live">🛫 <b>출입국관광통계</b> ${esc(exit.period||SIGNALS.asof||"")} · 출국 국민 ${esc(Math.round(Number(exit.outbound_count)/10000).toLocaleString())}만 명${_trendText(exit.trend)}<span class="src">· ${esc(exit.basis||"관광 API")}</span></div>`
     :"";
   const newregBanner=(p.key==="driver"&&newreg&&newreg.count!=null)
     ?`<div class="sig-live">🚘 <b>자동차 신규등록</b> ${esc(newreg.period||SIGNALS.asof||"")} · ${Number(newreg.count).toLocaleString("ko-KR")}대${newreg.mom!=null?` <span class="src">· 전월 대비 ${newreg.mom>0?"+":""}${esc(newreg.mom)}%</span>`:""} ${_trendText(newreg.trend)}<span class="src">· ${esc(newreg.source||"공공데이터")}</span></div>`
@@ -460,7 +460,7 @@ function renderOverview(){
   // 최신순 통합 헤드라인 (상위 6)
   const all=[];PRODUCTS.forEach(p=>{const n=NEWSMON[p.key];if(n)n.items.forEach(it=>all.push(Object.assign({cat:p.name,key:p.key},it)));});
   all.sort((a,b)=>(b.date||"").localeCompare(a.date||""));
-  const top=all.slice(0,6).map(it=>`<li class="nm-item"><a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.t)}<span class="gs">${esc(it.cat)} · ${esc(HUMANIZE.light(it.gist||""))}</span></a><span class="mt">${esc(it.src||"")}<br>${esc(it.date||"")}</span></li>`).join("");
+  const top=all.slice(0,6).map(it=>`<li class="nm-item"><a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.t)}<span class="gs">${esc(it.cat)} · ${esc(HUMANIZE.light(it.summary||it.gist||""))}</span></a><span class="mt">${esc(it.src||"")}<br>${esc(it.date||"")}</span></li>`).join("");
   const ovcard=p=>{const n=NEWSMON[p.key];if(!n)return "";const s=HUMANIZE.excerpt(n.summary,96);
     const trg=(TRIGGERS[p.key]||[]).length;
     return `<div class="ov-card" data-key="${p.key}"><div class="ct">${esc(p.name)}<span style="font-size:10.5px;color:var(--nav-ink);font-weight:700">${trg?`🔥${trg} · `:""}${n.live?"실시간":n.auto?"자동 "+n.items.length:"뉴스 "+n.items.length}</span></div><div class="cs">${esc(s)}</div></div>`;};
@@ -493,7 +493,7 @@ function loadAutoClips(){
       const box=$("#autoClipBox"),lbl=$("#autoClipLbl");
       if(!j||!box||curKey!=="__all")return;                          // 화면 벗어났으면 무시
       const items=(j.summary&&j.summary.top)||[]; if(!items.length)return;
-      const li=items.slice(0,6).map(it=>`<li class="nm-item"><a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.t)}${it.gist?`<span class="gs">${esc(HUMANIZE.light(it.gist))}</span>`:""}</a><span class="mt">${esc(it.src||"")}<br>${esc(it.date||"")}</span></li>`).join("");
+      const li=items.slice(0,6).map(it=>`<li class="nm-item"><a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.t)}${(it.summary||it.gist)?`<span class="gs">${esc(HUMANIZE.light(it.summary||it.gist))}</span>`:""}</a><span class="mt">${esc(it.src||"")}<br>${esc(it.date||"")}</span></li>`).join("");
       if(lbl){lbl.textContent=`🔄 자동 수집 최신 · ${j.asof||latest} · 매일 2회 자동`;lbl.style.display="";}
       box.innerHTML=`<div class="newsmon"><div class="nm-body"><ul class="nm-list" style="margin-top:0">${li}</ul></div></div>`;
     }).catch(()=>{});
@@ -514,7 +514,7 @@ function autofillFromClips(){
       let n=0;
       Object.entries(d.categories).forEach(([key,c])=>{
         if(!NEWSMON[key]||NEWSMON[key].live)return;                  // 수동 실시간 갱신분은 보존
-        const items=(c.items||[]).slice(0,8).map(it=>({t:it.t,src:it.src,date:it.date,url:it.url,gist:it.gist})).filter(it=>it.t&&it.url);
+        const items=(c.items||[]).slice(0,8).map(it=>({t:it.t,src:it.src,date:it.date,url:it.url,gist:it.gist,summary:it.summary})).filter(it=>it.t&&it.url);
         if(!items.length)return;
         NEWSMON[key].items=items;
         NEWSMON[key].auto=d.asof||latest;                           // 자동수집 표기(수동 n.live 와 구분)
@@ -622,7 +622,7 @@ function renderClips(){
 }
 function renderClipBody(){
   const box=$("#clipBody");if(!box)return;
-  const q=clipQ.toLowerCase(),filt=it=>!q||((it.t+" "+(it.gist||"")+" "+(it.cat||"")).toLowerCase().indexOf(q)>=0);
+  const q=clipQ.toLowerCase(),filt=it=>!q||((it.t+" "+(it.summary||it.gist||"")+" "+(it.cat||"")).toLowerCase().indexOf(q)>=0);
   const myReq=++clipReq;                       // 오래된 비동기 콜백이 최신 화면을 덮어쓰지 않게
   if(clipDate==="__all"){                      // 누계 모드: 최신 일자부터 필요분만 로드 + 개수 필터
     box.innerHTML=`<div class="empty">누계 클리핑 불러오는 중…</div>`;

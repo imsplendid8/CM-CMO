@@ -46,7 +46,7 @@ Content Intelligence의 Search Console 입력은 `GSC_SITE_URL`, `GSC_CLIENT_ID`
 
 ### 예약 시각의 한계와 확인 방법
 
-GitHub Actions의 `schedule` 이벤트는 플랫폼 부하에 따라 예약 시각보다 늦게 생성될 수 있고, 정시 발송 SLA를 보장하지 않는다. 실제 지연이 코드 내부가 아닌 트리거 단계인지 구분할 수 있도록 텔레그램·이메일 실행 요약에 예약 표현과 실제 시작 시각(UTC/KST)을 기록한다. 10분 이내 정시성이 업무 요건이면 GitHub cron 대신 외부 스케줄러(예: Cloudflare Worker Cron)가 GitHub `workflow_dispatch`를 호출하는 구조가 필요하다. 수동 실행은 기존처럼 유지한다.
+GitHub Actions의 `schedule` 이벤트는 플랫폼 부하에 따라 예약 시각보다 늦게 생성될 수 있고, 정시 발송 SLA를 보장하지 않는다. 실제 지연이 코드 내부가 아닌 트리거 단계인지 구분할 수 있도록 텔레그램·이메일 실행 요약에 예약 표현과 실제 시작 시각(UTC/KST)을 기록한다. 실측 지연이 수 시간(2026-09: 오전 2~3.5시간, 오후 5~6.5시간)이라 **Cloudflare Worker Cron이 정시에 `workflow_dispatch`를 호출**한다(`proxy/naver-proxy-worker.js`의 `DISPATCH_SCHEDULE` ↔ `proxy/wrangler.toml` `[triggers]`, 시크릿 `GH_DISPATCH_TOKEN`). 수집(signals·news-clip·event-reco)도 함께 호출해 발송 시점에 당일 데이터가 준비되게 한다. GitHub cron은 예비로 남고, 발송 워크플로(daily-brief·daily-email)는 정시 호출 성공 이력이 있으면 늦은 예약 실행을 건너뛴다. 설정: `docs/daily-brief.md` "정시 발송 설정". 수동 실행은 기존처럼 유지한다.
 
 ## workflow_run — 수집 순서엔 미사용 · 배포엔 사용
 

@@ -314,10 +314,12 @@ function loadUsage(boxId){
 }
 const HEALTH_SOURCES=[
   {name:"뉴스 클리핑",file:"data/clips/index.json",field:"updated",maxAge:2},
-  {name:"수요 신호",file:"data/signals.json",field:"asof",maxAge:2},
-  {name:"출국통계",file:"data/signals.json",field:"exit_tour.period",maxAge:35},
-  {name:"기상수요",file:"data/signals.json",field:"weather.active",maxAge:2},
-  {name:"자동차등록대수",file:"data/signals.json",field:"newreg.period",maxAge:35},
+  // errorsFrom: 한 파일(signals.json)에 여러 원천이 들어 있어 항목마다 자기 오류만 본다(기상 403이 전체를 '일부 실패'로 만들지 않게).
+  // lagMonths: 월간 통계는 공표가 1~2개월 늦다 — 기준월이 (지연+1)개월보다 더 밀릴 때만 '갱신 필요'.
+  {name:"수요 신호",file:"data/signals.json",field:"asof",maxAge:2,errorsFrom:"travel"},
+  {name:"출국통계",file:"data/signals.json",field:"exit_tour.period",lagMonths:2,errorsFrom:"exit_tour"},
+  {name:"기상수요",file:"data/signals.json",field:"asof",maxAge:2,errorsFrom:"weather"},
+  {name:"자동차등록대수",file:"data/signals.json",field:"newreg.period",lagMonths:2,errorsFrom:"newreg"},
   {name:"실측 검색량",file:"data/volume.json",field:"asof",maxAge:9},
   {name:"데이터랩",file:"data/trends.json",field:"asof",maxAge:35},
   {name:"SERP",file:"serp/manifest.json",field:"asof",maxAge:9},
@@ -335,10 +337,13 @@ function healthItem(source,data){
   else if(/^\d{6}$/.test(rawStr))date=rawStr.slice(0,4)+"-"+rawStr.slice(4,6)+"-01";
   const parsed=/^\d{4}-\d{2}-\d{2}$/.test(date)?new Date(date+"T00:00:00Z"):null;
   if(!parsed||Number.isNaN(parsed.getTime()))return {...source,state:"unknown",date:"—",detail:"기준일 확인 불가"};
-  const age=Math.floor((Date.now()-parsed.getTime())/86400000),errors=dataErrors(data);
-  const state=age<0?"unknown":age>source.maxAge?"stale":errors.length?"partial":"healthy";
+  const age=Math.floor((Date.now()-parsed.getTime())/86400000),errors=dataErrors(source.errorsFrom?getField(data,source.errorsFrom):data);
+  const now=new Date(),behind=(now.getUTCFullYear()*12+now.getUTCMonth())-(parsed.getUTCFullYear()*12+parsed.getUTCMonth());
+  const late=source.lagMonths!=null?behind>source.lagMonths+1:age>source.maxAge;
+  const state=age<0?"unknown":late?"stale":errors.length?"partial":"healthy";
   const src=data.source||data._source||"자동수집";
-  return {...source,state,date:date.slice(0,7),detail:errors.length?errors.slice(0,2).join(" · "):`${src} · ${age}일 전`};
+  const when=source.lagMonths!=null?`기준월 ${date.slice(0,7)} · 공표 지연 ${source.lagMonths}개월 감안`:`${age}일 전`;
+  return {...source,state,date:date.slice(0,7),detail:errors.length?errors.slice(0,2).join(" · "):`${src} · ${when}`};
 }
 function loadDataHealth(){
   const box=document.getElementById("dataHealth");if(!box)return;

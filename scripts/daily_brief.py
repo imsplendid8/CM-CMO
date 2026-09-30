@@ -54,8 +54,10 @@ def shared_digest(clip, products, main):
     브리프 발송은 속도가 중요하므로, 기본값은 data/briefing/latest.json을 그대로 쓰고
     명시적으로 재계산이 필요할 때만 BRIEF_REFRESH_DIGEST=1 로 갱신한다.
     """
+    if os.environ.get("BRIEF_REFRESH_DIGEST") == "1":
+        return content_brief.build_digest(clip or {}, products, main)
     saved = load_opt("data/briefing/latest.json", {}) or {}
-    if saved.get("stories") and os.environ.get("BRIEF_REFRESH_DIGEST") != "1":
+    if saved.get("stories"):
         return saved
     if saved.get("date") == (clip or {}).get("date") and saved.get("stories"):
         return saved
@@ -125,9 +127,11 @@ def compute_action_lines(products, main, seasonal, signals, now):
                 outbound_num = float(str(outbound).replace(",", ""))
             except Exception:
                 outbound_num = None
-            if outbound_num is not None and outbound_num >= 100:
+            g3 = (exit_tour.get("trend") or {}).get("growth_3m")
+            # 매달 수백만 명이라 수치 자체는 신호가 아니다 — 3개월 증가세(+3% 이상)일 때만 할 일로 올린다.
+            if outbound_num is not None and isinstance(g3, (int, float)) and g3 >= 3:
                 period = str(exit_tour.get("period") or signals.get("asof") or "").strip()
-                put("overseas", 0, f"🛫 해외여행보험 출국통계 {period} 수치 {outbound_num:g}: 출국수요 점검")
+                put("overseas", 0, f"🛫 {name('overseas')} — 출국 국민 {outbound_num / 10000:,.0f}만 명({period} · 3개월 +{g3}%): 출국수요 소구 강화")
 
     # (2) 시즌 이슈, 메인 우선. span(정확 일자) 있으면 엔진과 동일 기준(일자), 없으면 월 폴백.
     today = now.date()
@@ -177,8 +181,8 @@ def build_message():
         link = f'<a href="{esc(story.get("url"))}">원문</a>' if story.get("url") else ""
         trail = " · ".join(value for value in (meta, link) if value)
         news_lines.append(
-            f"· <b>[{esc(story.get('tag'))}] {esc(story.get('title'))}</b>\n"
-            f"  {esc(hk.humanize(story.get('what', '')))}"
+            f"· <b>[{esc(story.get('tag'))}] {esc(story.get('title'))}</b>"
+            + (f"\n  {esc(hk.humanize(story['what']))}" if story.get("what") else "")
             + (f"\n  {trail}" if trail else "")
         )
 
@@ -211,56 +215,11 @@ _ES = {
 }
 
 def _trim_to_sentences(text, max_sentences=3):
-    """요약을 완전한 문장으로 1~3개 제한. 한국어 종결 기준으로 문장 판정.
-
-    불완전한 마지막 문장은 제거하고 '…'를 추가해 의미 단절을 명시한다.
-    """
-    if not text:
-        return text
-    import re
-    # 한글 종결 표현까지 감지하는 문장 분할 (마침표·느낌표·물음표 + 다·요·입니다·있다 등)
-    text = text.strip()
-    # 먼저 명백한 구분점(. ! ?)으로 분할
-    sentences = re.split(r'(?<=[.!?])\s+', text)
-
-    # 각 문장이 명확하게 종결되었는지 확인
-    def is_complete_korean_sentence(s):
-        """문장이 명확한 구두점으로 끝나는지 판정.
-
-        한국어의 경우 "다이렉트", "생각보다" 같은 단어들이 "다"로 끝나므로
-        매우 보수적으로 판정하여 명백한 문장 마침표만 완전함으로 간주한다.
-        """
-        s = s.strip()
-        if not s:
-            return False
-        # 명확한 문장 구두점으로 끝남: . ! ? …
-        if re.search(r'[.!?…]$', s):
-            return True
-        return False
-
-    result = []
-    had_incomplete = False
-    for i, sent in enumerate(sentences):
-        if i >= max_sentences:
-            break
-        if is_complete_korean_sentence(sent):
-            result.append(sent)
-        elif i < len(sentences) - 1:
-            # 마지막이 아니고 불완전하면 그냥 추가 (다음 문장이 있으므로)
-            result.append(sent)
-        else:
-            # 마지막 문장이 불완전하면 제외하고 표시
-            had_incomplete = True
-            if not result:
-                # 첫 번째 문장도 불완전한 경우 그대로라도 포함
-                result.append(sent.rstrip())
-
-    joined = ' '.join(result)
-    # 불완전한 마지막 문장을 빠뜨렸으면 '…' 추가
-    if joined and had_incomplete and not joined.endswith('…'):
-        joined = joined.rstrip() + '…'
-
-    return joined
+    """요약을 완결 문장 1~3개로 제한한다. 끝이 잘린 문장은 버리고 말줄임표를 붙이지 않는다."""
+    import news_enrich
+    parts = news_enrich.split_sentences(text)
+    done = [p for p in parts[:max_sentences] if news_enrich._complete(p)]
+    return " ".join(done)
 
 
 def render_email():
@@ -296,7 +255,7 @@ def render_email():
             source_line = " · ".join(value for value in (meta, source_link) if value)
             cards += (f'<div style="{S["card"]}">'
                       f'<span style="{tag_style}">{esc(tag)}</span>'
-                      f'{title}<div style="{S["summary"]}">{g}</div>'
+                      f'{title}' + (f'<div style="{S["summary"]}">{g}</div>' if g else '') +
                       f'<div style="{S["meta"]}">{source_line}</div></div>')
         news_body = cards
     else:
@@ -328,7 +287,8 @@ def render_email():
     for it in news:
         P.append(f"· ({it.get('tag','')}) {it.get('title','')} ({it.get('source','')}·{it.get('date','')})")
         summary = _trim_to_sentences(it.get('what',''), 3)
-        P.append(f"  {hk.humanize(summary)}")
+        if summary:
+            P.append(f"  {hk.humanize(summary)}")
         if it.get("url"):
             P.append(f"  {it['url']}")
     P += ["", f"🔭 전체 대시보드 → https://{HUB}"]

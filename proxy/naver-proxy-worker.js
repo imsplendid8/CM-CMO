@@ -255,7 +255,65 @@ async function saveFeedback(req, env, origin) {
   }
 }
 
+// ── 정시 실행 스케줄러 ──
+// GitHub Actions의 schedule(cron)은 부하가 몰리면 수 시간 늦게 시작된다(2026-09 실측: 08:00 → 10~11시, 14:00 → 18~20시).
+// Cloudflare Cron Trigger(wrangler.toml [triggers])가 정해진 시각에 GitHub workflow_dispatch를 호출해 정시성을 보장한다.
+// 수집(수요 신호·뉴스·이벤트 추천) → 발송(텔레그램·이메일) 순서. 키는 UTC cron 식(wrangler.toml과 정확히 일치해야 함).
+// 필요 시크릿: GH_DISPATCH_TOKEN(파인그레인드 PAT · 이 저장소만 · Actions: Read and write). 선택: GH_REPO(기본 imsplendid8/CM-CMO).
+// GitHub 쪽 cron은 예비로 남고, 발송 워크플로는 정시 호출이 이미 성공했으면 늦은 예약 실행을 건너뛴다(중복 발송 방지).
+const DISPATCH_SCHEDULE = {
+  "30 21 * * *": [{ workflow: "signals.yml" }],                                        // 06:30 KST
+  "20 22 * * *": [{ workflow: "news-clip.yml" }],                                      // 07:20 KST
+  "45 22 * * *": [{ workflow: "event-reco.yml" }],                                     // 07:45 KST
+  "0 23 * * *":  [{ workflow: "daily-brief.yml", inputs: { source: "scheduler", slot: "am" } }],  // 08:00 KST 텔레그램
+  "30 23 * * *": [{ workflow: "daily-email.yml", inputs: { source: "scheduler", slot: "am" } }],  // 08:30 KST 이메일
+  "20 4 * * *":  [{ workflow: "news-clip.yml" }],                                      // 13:20 KST
+  "45 4 * * *":  [{ workflow: "event-reco.yml" }],                                     // 13:45 KST
+  "0 5 * * *":   [{ workflow: "daily-brief.yml", inputs: { source: "scheduler", slot: "pm" } }],  // 14:00 KST 텔레그램
+};
+
+async function dispatchWorkflow(env, job, fetchImpl = fetch) {
+  const repo = env.GH_REPO || "imsplendid8/CM-CMO";
+  const res = await fetchImpl(`https://api.github.com/repos/${repo}/actions/workflows/${job.workflow}/dispatches`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${env.GH_DISPATCH_TOKEN}`,
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      "User-Agent": "modooflow-scheduler",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(job.inputs ? { ref: "main", inputs: job.inputs } : { ref: "main" }),
+  });
+  return { workflow: job.workflow, status: res.status, ok: res.status === 204 };
+}
+
+async function runSchedule(cron, env, fetchImpl = fetch) {
+  const jobs = DISPATCH_SCHEDULE[cron] || [];
+  if (!jobs.length) return [];
+  if (!env || !env.GH_DISPATCH_TOKEN) {
+    console.warn(`scheduler: GH_DISPATCH_TOKEN 미설정 — ${cron} 호출 생략(GitHub cron 예비 실행에 맡김)`);
+    return jobs.map(j => ({ workflow: j.workflow, status: 0, ok: false }));
+  }
+  const results = [];
+  for (const job of jobs) {
+    let r;
+    try { r = await dispatchWorkflow(env, job, fetchImpl); }
+    catch (e) { r = { workflow: job.workflow, status: 0, ok: false }; }
+    results.push(r);
+    console.log(`scheduler ${cron} → ${r.workflow}: ${r.status}`);
+  }
+  if (env.USAGE) {
+    try { await env.USAGE.put(`sched:last:${cron}`, JSON.stringify({ at: new Date().toISOString(), results }), { expirationTtl: 172800 }); } catch (e) {}
+  }
+  return results;
+}
+
 export default {
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(runSchedule(event.cron, env));
+  },
+
   async fetch(req, env) {
     const url = new URL(req.url);
     const p = url.pathname;

@@ -6,15 +6,27 @@ name: Daily Brief (Telegram)
 # 수신자는 GitHub Actions Secrets, 발송시간은 이 워크플로의 UTC cron에서만 관리한다.
 # 설정법: docs/daily-brief.md
 
+run-name: ${{ inputs.source == 'scheduler' && format('Daily Brief (Telegram) · 정시 {0}', inputs.slot) || 'Daily Brief (Telegram)' }}
+
 on:
   schedule:
     - cron: "0 23 * * *"    # 08:00 KST (오전) — news/자동화 수집 후 발송
     - cron: "0 5 * * *"    # 14:00 KST (오후) — news 13:20·자동화상태 13:40 뒤
   workflow_dispatch:
+    inputs:
+      source:
+        description: "호출 주체 — scheduler = Cloudflare Worker 정시 호출(proxy/naver-proxy-worker.js)"
+        required: false
+        default: "manual"
+      slot:
+        description: "발송 회차(am/pm)"
+        required: false
+        default: ""
 
 # 브리프는 커밋/푸시하지 않고 텔레그램만 발송 → 최소 권한(read).
 permissions:
   contents: read
+  actions: read   # 정시 호출 실행 여부 조회(중복 발송 방지)
 
 # 읽기 전용 알림은 커밋 워크플로와 분리한다. 수집 지연이 알림 시작을 막지 않으며,
 # 브리프 본문에는 원천 파일의 실제 신선도를 표시한다.
@@ -39,13 +51,34 @@ jobs:
             echo "- 실제 시작(UTC): ${now_utc}"
             echo "- 실제 시작(KST): ${now_kst}"
           } >> "$GITHUB_STEP_SUMMARY"
+      - name: Skip if the on-time scheduler already sent
+        id: guard
+        # GitHub cron은 수 시간 늦게 시작될 수 있다. Cloudflare 정시 호출이 이미 성공했으면
+        # 늦게 시작된 예약 실행은 발송하지 않는다(정시 호출이 없으면 기존처럼 이 실행이 발송).
+        if: github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW_FILE: daily-brief.yml
+        run: |
+          since=$(date -u -d '-6 hours' '+%Y-%m-%dT%H:%M:%SZ')
+          n=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/${WORKFLOW_FILE}/runs?event=workflow_dispatch&status=success&created=%3E%3D${since}&per_page=30" \
+            | python3 -c "import json,sys; print(sum(1 for r in json.load(sys.stdin).get('workflow_runs', []) if '정시' in (r.get('display_title') or '')))" \
+            || echo 0)
+          if [ "${n:-0}" -gt 0 ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "- 최근 6시간 안에 정시 호출 발송 성공 ${n}건 → 늦게 시작된 예약 실행은 건너뜀" >> "$GITHUB_STEP_SUMMARY"
+          fi
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        if: steps.guard.outputs.skip != 'true'
         with:
           ref: main
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        if: steps.guard.outputs.skip != 'true'
         with:
           python-version: "3.12"
       - name: Send daily brief
+        if: steps.guard.outputs.skip != 'true'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_IDS: ${{ secrets.TELEGRAM_CHAT_IDS }}   # 다중 수신자(콤마 구분) · 우선

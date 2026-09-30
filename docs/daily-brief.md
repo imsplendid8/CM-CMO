@@ -20,7 +20,17 @@
 ## 구성
 - 스크립트: `scripts/daily_brief.py` (표준 라이브러리만; `products.json`·`seasonal.json`·`signals.json`·`clips/` + `check_automation_health` 를 읽음)
 - 스케줄: `.github/workflows/daily-brief.yml` (cron `0 23 * * *` = 08:00 KST, 수동 실행도 가능)
-- GitHub Actions의 `schedule`은 플랫폼 부하에 따라 늦게 시작될 수 있습니다. 워크플로 실행 요약의 **예약 표현·실제 시작 시각**으로 트리거 지연과 발송 코드 지연을 구분합니다. 10분 이내 정시성이 필요하면 런북의 외부 스케줄러(Cloudflare Worker Cron → `workflow_dispatch`) 방식을 사용합니다.
+- GitHub Actions의 `schedule`은 부하가 몰리면 수 시간 늦게 시작됩니다(2026-09 실측: 08:00 → 10~11시, 14:00 → 18~20시, 이메일 08:30 → 10~11시). 그래서 **정시 발송은 Cloudflare 워커 스케줄러**가 맡습니다 — 아래 "정시 발송 설정".
+- 뉴스 요약은 기사 원문에서 고른 완결 문장 1~2개입니다(`scripts/news_enrich.py`, 뉴스 수집 때 생성). 네이버 검색 API 설명문은 중간에서 잘려 오므로, 원문을 못 읽은 기사는 설명문의 완결 문장만 쓰고 말줄임표는 붙이지 않습니다.
+
+## 정시 발송 설정 (Cloudflare 워커 스케줄러)
+1. GitHub → Settings → Developer settings → Fine-grained personal access token 생성
+   - Repository access: **imsplendid8/CM-CMO만** · Permissions: **Actions: Read and write** (그 외 없음)
+2. 워커에 토큰 등록: `cd proxy && wrangler secret put GH_DISPATCH_TOKEN`
+3. 워커 배포: `wrangler deploy` — `wrangler.toml`의 `[triggers] crons`가 등록됩니다(대시보드 Workers → 워커 → Settings → Triggers에서 확인).
+4. 동작: 06:30 수요 신호 → 07:20 뉴스 수집 → 07:45 이벤트 추천 → **08:00 텔레그램** → **08:30 이메일** / 13:20 뉴스 → 13:45 추천 → **14:00 텔레그램** (KST)
+5. 중복 방지: GitHub cron은 예비로 남습니다. 정시 호출(`실행 이름에 "정시"`)이 이미 성공했으면 늦게 시작된 예약 실행은 발송을 건너뜁니다. 토큰을 등록하기 전에는 지금처럼 GitHub cron이 발송합니다.
+6. 점검: Actions의 Daily Brief 실행 이름이 `Daily Brief (Telegram) · 정시 am`처럼 보이면 정상입니다. 검증 스크립트: `node scripts/check_worker_scheduler.mjs`.
 - 미리보기: `python3 scripts/daily_brief.py --dry` (발송 없이 메시지만 출력)
 
 ## 발송 예시

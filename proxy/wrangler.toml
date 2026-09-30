@@ -2,6 +2,12 @@ name = "modooflow-naver-proxy"
 main = "naver-proxy-worker.js"
 compatibility_date = "2024-11-01"
 
+# 정시 실행 스케줄러(UTC) — GitHub cron 지연(수 시간)을 피해 정해진 시각에 workflow_dispatch 호출.
+# 목록은 naver-proxy-worker.js의 DISPATCH_SCHEDULE 키와 정확히 같아야 한다(tests/test_proxy_security.py가 검사).
+# 필요 시크릿: wrangler secret put GH_DISPATCH_TOKEN  (파인그레인드 PAT · CM-CMO만 · Actions: Read and write)
+[triggers]
+crons = ["30 21 * * *", "20 22 * * *", "45 22 * * *", "0 23 * * *", "30 23 * * *", "20 4 * * *", "45 4 * * *", "0 5 * * *"]
+
 # API 남용 방지와 사용량 카운트를 위해 KV 네임스페이스를 'USAGE' 로 반드시 바인딩:
 #   대시보드: Workers & Pages → 워커 → Settings → Bindings → Add → KV namespace
 #            Variable name = USAGE, 새 네임스페이스(예: modooflow-usage) 생성 후 연결 → Deploy

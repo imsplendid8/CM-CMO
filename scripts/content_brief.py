@@ -14,6 +14,7 @@ import re
 from datetime import datetime, timezone, timedelta
 
 import humanize_korean as hk
+import news_enrich
 
 KST = timezone(timedelta(hours=9))
 
@@ -117,6 +118,14 @@ def concise(value, limit=180):
     return hk.humanize(picked)
 
 
+def story_summary(item):
+    """브리프 요약 — 기사 원문에서 고른 완결 문장(summary) 우선, 없으면 설명문의 완결 문장만. 말줄임표 없음."""
+    text = clean_text(item.get("summary")) if item.get("summary") else news_enrich.sentences_from_snippet(item.get("gist"))
+    if text and text[-1] not in ".!?":
+        text += "."
+    return hk.humanize(text) if text else ""
+
+
 def _fingerprint(title):
     norm = re.sub(r"[^0-9a-z가-힣]", "", clean_text(title).lower())
     return hashlib.sha1(norm.encode("utf-8")).hexdigest()[:12]
@@ -196,15 +205,15 @@ def build_digest(clip, products, main, limit=8):
     candidates.sort(key=lambda row: (row[0], row[1]), reverse=True)
 
     def as_story(score, date, key, tag, item):
-        what = concise(item.get("gist"), 190)
+        what = story_summary(item)
         why, action = _why_action(key, item.get("t", ""), item.get("gist", ""))
         return {
             "id": _fingerprint(item.get("t")), "category": key, "tag": tag,
-            "title": clean_text(item.get("t")), "source": item.get("src", ""),
+            "title": clean_text(news_enrich.tidy_title(item.get("t"))), "source": item.get("src", ""),
             "date": date, "url": item.get("url", ""), "what": what,
             "why": why, "action": action, "score": score,
-            "evidence_scope": "네이버 검색 결과 제목·설명문",
-            "confidence": "중간" if len(clean_text(item.get("gist"))) >= 70 else "낮음",
+            "evidence_scope": "기사 원문" if item.get("summary_source") == "article" else "네이버 검색 결과 제목·설명문",
+            "confidence": "높음" if item.get("summary_source") == "article" else "중간" if len(what) >= 40 else "낮음",
         }
 
     stories, seen, per_key, topic_sets, selected_titles = [], set(), {}, [], []

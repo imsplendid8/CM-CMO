@@ -106,6 +106,16 @@ def main():
         base["name"], base["q"] = v["name"], v["q"]
         merged[k] = base
 
+    # 네이버 API의 잘린 제목·설명문('...')을 기사 원문으로 보강 — 완결 문장 요약(summary)과 전체 제목.
+    # 이미 보강된 기사(오전 실행분)는 다시 받지 않는다.
+    if not sample:
+        try:
+            import news_enrich
+        except ModuleNotFoundError:
+            from scripts import news_enrich
+        ok, n = news_enrich.enrich_items([it for v in merged.values() for it in v["items"]])
+        print(f"  · 원문 보강 {ok}/{n}건 (나머지는 설명문의 완결 문장만 사용)")
+
     total = sum(len(v["items"]) for v in merged.values())
     by = {k: len(v["items"]) for k, v in merged.items() if v["items"]}
     top = sorted([it for v in merged.values() for it in v["items"]], key=lambda x: x.get("date", ""), reverse=True)[:6]

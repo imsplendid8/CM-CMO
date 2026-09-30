@@ -56,7 +56,7 @@ if not MOJ_EXIT_API_KEY:
     print(f"[DEBUG] All env keys: {', '.join(sorted([k for k in os.environ.keys() if 'MOJ' in k or 'TOUR' in k or 'API' in k]))}")
 
 # ── 엔드포인트 ─────────────────────────────
-KMA_WARN = "http://apis.data.go.kr/1360000/WthrWrnInfoService/getWthrWrnList"   # 기상청 기상특보 (JSON · data.go.kr)
+KMA_WARN = "https://apis.data.go.kr/1360000/WthrWrnInfoService/getWthrWrnList"   # 기상청 기상특보 (JSON · data.go.kr · HTTPS 우선)
 # 해외여행 수요 = 네이버 데이터랩 '여행자보험' 검색수요(openapi.naver.com · NAVER_CLIENT 키)
 # (출입국관광통계 openapi.tour.go.kr는 GitHub Actions에서 네트워크 불통 → 대체)
 
@@ -66,10 +66,37 @@ def _get(url, params, timeout=20):   # JSON 응답용(기상청)
     with urllib.request.urlopen(url + "?" + q, timeout=timeout) as r:
         return json.loads(r.read().decode("utf-8"))
 
-def fetch_weather():
-    """발효 중인 기상특보 종류 목록. 스키마: response.body.items.item[].title/other."""
+def _error_detail(e):
+    """HTTP 오류 응답 본문에서 공공데이터포털 오류 코드(returnAuthMsg 등)를 뽑아 원인을 남긴다."""
     try:
-        d = _get(KMA_WARN, {"numOfRows": 50, "pageNo": 1})
+        body = e.read().decode("utf-8", "ignore")
+    except Exception:
+        body = ""
+    code = re.search(r"<(?:returnAuthMsg|errMsg|resultMsg)>([^<]+)<", body)
+    detail = code.group(1) if code else re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", body)).strip()[:80]
+    return f"HTTP {getattr(e, 'code', '?')}" + (f" · {detail}" if detail else "")
+
+
+def fetch_weather():
+    """발효 중인 기상특보 종류 목록. 스키마: response.body.items.item[].title/other.
+
+    2026-09-08부터 http 호출이 403 — HTTPS를 먼저 쓰고, 실패하면 http로 한 번 더 시도한다.
+    실패 사유는 응답 본문의 포털 오류 코드까지 남긴다(키 미승인·만료와 접속 차단을 구분).
+    """
+    d, last_error = None, ""
+    for url in (KMA_WARN, KMA_WARN.replace("https://", "http://", 1)):
+        try:
+            d = _get(url, {"numOfRows": 50, "pageNo": 1})
+            break
+        except urllib.error.HTTPError as e:
+            last_error = _error_detail(e)
+        except ValueError:
+            last_error = "JSON 아님(포털 오류 응답) — 인증키 활용신청·만료 확인"
+        except Exception as e:
+            last_error = str(e)[:120]
+    if d is None:
+        return {"active": [], "error": last_error}
+    try:
         items = (((d or {}).get("response", {}).get("body", {}) or {}).get("items", {}) or {}).get("item", [])
         if isinstance(items, dict): items = [items]
         kinds = set()
@@ -213,67 +240,44 @@ def fetch_exit_entry_stats():
             "note": "GitHub Secrets에서 MOJ_EXIT_API_KEY 설정 필요 (data.go.kr 마이페이지 > 인증키)",
         }
 
-    # 데이터 지연(보통 1-2개월) 고려해서 최신 가용 월 계산
+    # 월별 파일(uddi)에는 과거 여러 달의 행이 누적으로 들어 있다. 예전 코드는 연·월 구분 없이 모두 더해
+    # 월 출국자 수가 1억 명대(약 45개월 누적)로 찍혔다 → 행의 년·월로 묶어 월별 값을 만든다.
+    # 가장 최근 파일 하나로 6개월 시계열을 만들고, 그 달 파일이 없으면(미공표·UUID 미등록) 한 달씩 거슬러 올라간다.
     current_month = datetime.date.today().strftime("%Y%m")
-    latest_month = _subtract_months(current_month, 2)
-    if not latest_month:
-        latest_month = current_month
-
-    # 6개월 데이터 수집 (월별 엔드포인트에서)
-    months_to_fetch = [_subtract_months(latest_month, i) for i in range(6)]
-    months_to_fetch = [m for m in months_to_fetch if m]
-    months_to_fetch.reverse()  # 오래된 순서로 정렬
-
-    series = {}
-    all_errors = []
-
-    for month in months_to_fetch:
+    candidates = [m for m in (_subtract_months(current_month, i) for i in range(1, 7)) if m]
+    all_errors, series, file_month = [], {}, None
+    for month in candidates:
         uuid = _get_moj_uuid(month)
         if not uuid:
-            all_errors.append(f"Month {month}: UUID not in map")
+            all_errors.append(f"{month}: UUID 미등록")
             continue
-
-        # data.go.kr API: /api/15099985/v1/uddi:{uuid}
         endpoint = f"https://api.odcloud.kr/api/15099985/v1/uddi:{uuid}"
-        params = {"serviceKey": MOJ_EXIT_API_KEY, "page": 1, "perPage": 1000}
-        url = endpoint + "?" + urllib.parse.urlencode(params, safe="%")
-
-        try:
-            with urllib.request.urlopen(url, timeout=20) as r:
-                payload = json.loads(r.read().decode("utf-8"))
-
-            # 응답 구조: {page, perPage, totalCount, data: [...]}
-            data_list = payload.get("data") or []
-            if isinstance(data_list, dict):
-                data_list = [data_list]
-
-            period_key = month  # YYYYMM
-            if period_key not in series:
-                series[period_key] = {"outbound_korean": 0, "inbound_foreign": 0}
-
-            for record in data_list:
-                # 필드 추출 (한글 키 - 스페이스 있음/없음 모두 지원)
-                year = record.get("년")
-                month_val = record.get("월")
-                nationality = record.get("국민외국인구분") or record.get("국민 외국인 구분", "")
-                direction = record.get("출입국구분") or record.get("출입국 구분", "")
-                count = _coerce_float(record.get("출입국자수") or record.get("출입국자 수"))
-
-                if not (year and month_val and count):
-                    continue
-
-                # 출국 국민 (해외여행보험 수요 신호)
-                if nationality == "국민" and direction == "출국":
-                    series[period_key]["outbound_korean"] += int(count)
-
-                # 입국 외국인 (외래관광 증가 신호)
-                if nationality == "외국인" and direction == "입국":
-                    series[period_key]["inbound_foreign"] += int(count)
-
-        except urllib.error.HTTPError as e:
-            all_errors.append(f"Month {month}: HTTP {e.code}")
-        except Exception as e:
-            all_errors.append(f"Month {month}: {str(e)[:60]}")
+        rows, page, failed = [], 1, None
+        while page <= 30:   # 누적 파일은 행이 많다 — totalCount까지 페이지를 넘겨 최근 달이 잘리지 않게
+            url = endpoint + "?" + urllib.parse.urlencode({"serviceKey": MOJ_EXIT_API_KEY, "page": page, "perPage": 1000}, safe="%")
+            try:
+                with urllib.request.urlopen(url, timeout=20) as r:
+                    payload = json.loads(r.read().decode("utf-8"))
+            except urllib.error.HTTPError as e:
+                failed = f"{month}: HTTP {e.code}"
+                break
+            except Exception as e:
+                failed = f"{month}: {str(e)[:60]}"
+                break
+            chunk = payload.get("data") or []
+            rows += [chunk] if isinstance(chunk, dict) else chunk
+            total = int(payload.get("totalCount") or payload.get("matchCount") or 0)
+            if not chunk or len(rows) >= total:
+                break
+            page += 1
+        if failed and not rows:
+            all_errors.append(failed)
+            continue
+        series = moj_series_from_rows(rows)
+        if series:
+            file_month = month
+            break
+        all_errors.append(f"{month}: 행 없음")
 
     if not series:
         return {
@@ -283,34 +287,41 @@ def fetch_exit_entry_stats():
             "debug": " | ".join(all_errors[-3:]) if all_errors else "No data",
         }
 
-    # 최신 월 데이터
-    latest_data = series.get(latest_month)
-    if not latest_data:
-        latest_month = sorted(series.keys())[-1] if series else None
-        latest_data = series.get(latest_month) if latest_month else {}
-
-    outbound = latest_data.get("outbound_korean", 0)
-    inbound_foreign = latest_data.get("inbound_foreign", 0)
-
-    # 트렌드 계산 (출국 국민 기준)
-    trend_series = [
-        {"period": m, "count": series[m].get("outbound_korean", 0)}
-        for m in sorted(series.keys())
-    ]
-    trend = _calculate_trend(trend_series) if trend_series else {}
-
+    months = sorted(series)[-6:]
+    latest_month = months[-1]
+    trend_series = [{"period": m, "count": series[m]["outbound_korean"]} for m in months]
     return {
-        "outbound_count": outbound,
-        "inbound_foreign": inbound_foreign,
+        "outbound_count": series[latest_month]["outbound_korean"],
+        "inbound_foreign": series[latest_month]["inbound_foreign"],
         "period": latest_month,
         "source": "moj-exit-api",
         "basis": "법무부 출입국심사 월별 통계",
-        "trend": trend,
-        "series": [
-            {"period": m, "outbound_korean": series[m].get("outbound_korean", 0)}
-            for m in sorted(series.keys())
-        ],
+        "file_month": file_month,
+        "trend": _calculate_trend(trend_series),
+        "series": [{"period": m, "outbound_korean": series[m]["outbound_korean"]} for m in months],
     }
+
+
+def moj_series_from_rows(rows):
+    """출입국심사 행 → {YYYYMM: {outbound_korean, inbound_foreign}}. 행의 년·월로 묶는다(누적 파일 대응)."""
+    series = {}
+    for record in rows or []:
+        if not isinstance(record, dict):
+            continue
+        year = str(record.get("년") or "").strip()
+        month = str(record.get("월") or "").strip()
+        nationality = record.get("국민외국인구분") or record.get("국민 외국인 구분", "")
+        direction = record.get("출입국구분") or record.get("출입국 구분", "")
+        count = _coerce_float(record.get("출입국자수") or record.get("출입국자 수"))
+        if not (re.fullmatch(r"\d{4}", year) and re.fullmatch(r"\d{1,2}", month) and count):
+            continue
+        key = f"{year}{int(month):02d}"
+        row = series.setdefault(key, {"outbound_korean": 0, "inbound_foreign": 0})
+        if nationality == "국민" and direction == "출국":
+            row["outbound_korean"] += int(count)
+        elif nationality == "외국인" and direction == "입국":
+            row["inbound_foreign"] += int(count)
+    return {k: v for k, v in series.items() if v["outbound_korean"] or v["inbound_foreign"]}
 
 def fetch_tour_exit():
     """출입국관광통계 통합 진입점. 법무부 API 우선 사용, 없으면 기존 TOUR_API_URL 폴백."""
@@ -712,7 +723,11 @@ def fetch_car_newreg():
         status, message = _extract_status(payload)
         series = _extract_molit_series(payload)
         latest = series[-1] if series else None
-        count = latest["count"] if latest else _extract_molit_count(payload)
+        # 월별 표(series)를 못 찾으면 응답의 '숫자처럼 보이는 첫 값'으로 메우지 않는다.
+        # (2026-09 실측: 이 추측값 6,777,673이 매번 같은 값으로 '신규등록 대수'처럼 표시됐다)
+        # 단, 한 달만 요청한 경우(시작월=종료월)의 합계 값은 그 달의 값으로 볼 수 있어 허용한다.
+        single_period = bool(start_dt) and start_dt == end_dt
+        count = latest["count"] if latest else (_extract_molit_count(payload) if single_period else None)
         period = latest["period"] if latest else (end_dt or TODAY)
         mom = None
         if len(series) >= 2 and series[-2]["count"]:
@@ -725,7 +740,7 @@ def fetch_car_newreg():
                 "mom": mom,
                 "trend": trend,
                 "source": "data.go.kr" if data_go else "stat.molit",
-                "error": "신규등록정보 응답에서 수치 파싱 실패",
+                "error": "신규등록정보 응답에서 월별 신규등록 수를 찾지 못함(raw_hint로 응답 구조 확인)",
                 "status_code": status,
                 "message": message,
                 "request": {"protocol": "data.go.kr" if data_go else "stat.molit", "form_id": CAR_NEWREG_FORM_ID or None, "style_num": CAR_NEWREG_STYLE_NUM or None, "start_dt": start_dt, "end_dt": end_dt},
@@ -768,12 +783,14 @@ def build_triggers(weather, travel, exit_tour=None, newreg=None):
     lr, avg = travel.get("overseas_ratio"), travel.get("avg") or 0
     if lr is not None and avg and (lr >= avg * 1.15 or lr >= 75):
         trg["overseas"] = {"level": "high", "note": f"‘여행자보험’ 검색수요 상승({travel.get('period','')} 지수 {lr}/평균 {avg}) → 성수기 해외여행보험 대응"}
+    # 출국 국민 수는 매달 수백만 명이라 '있다/없다'가 아니라 증가세(3개월 +3% 이상)일 때만 신호로 본다.
     if exit_tour and exit_tour.get("outbound_count") is not None:
         count = exit_tour.get("outbound_count")
-        if isinstance(count, (int, float)) and count >= 100:
+        g3 = (exit_tour.get("trend") or {}).get("growth_3m")
+        if isinstance(count, (int, float)) and isinstance(g3, (int, float)) and g3 >= 3:
             trg["overseas"] = {
                 "level": "high",
-                "note": f"출국통계({exit_tour.get('period','')}) 수치 {count} → 해외여행보험 출국수요 모니터링",
+                "note": f"출국 국민 {count / 10000:,.0f}만 명({exit_tour.get('period','')} · 3개월 +{g3}%) → 해외여행보험 출국수요 대응",
                 "basis": exit_tour.get("basis", "출입국관광통계 API"),
             }
     if newreg and newreg.get("count") is not None:
