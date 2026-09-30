@@ -63,6 +63,32 @@ class TestNormalize(unittest.TestCase):
         self.assertIn("상품권", out[1]["promo"])
 
 
+class TestRealCaptureQuirks(unittest.TestCase):
+    """2026-09-30 첫 실제 캡쳐에서 드러난 문제(가상 재현)."""
+
+    def test_badge_link_title_is_replaced_by_line_after_domain(self):
+        row = ad(1, "가상손해보험다이렉트", "direct.example.co.kr", "네이버 아이디 하나로 간편구매 Naver Pay 서비스 보기",
+                 "가을철 화재사고에 대비해 가상다이렉트 주택화재보험으로 보장받으세요",
+                 ["공식 가상 주택화재보험 임시거주비 보장 (특약)", "보험료계산"])
+        row["lines"] = ["네이버 로그인", "가상손해보험다이렉트", "direct.example.co.kr/", "공식 가상 주택화재보험 임시거주비 보장 (특약)",
+                        "가을철 화재사고에 대비해 가상다이렉트 주택화재보험으로 보장받으세요", "보험료계산"]
+        out = agent.normalize_rows([row], PRODUCTS)[0]
+        self.assertEqual(out["title"], "공식 가상 주택화재보험 임시거주비 보장 (특약)")
+        self.assertNotIn(out["title"], out["extensions"]["sitelinks"], "제목이 확장소재로 중복되면 안 됨")
+
+    def test_missing_brand_comes_from_line_before_domain(self):
+        row = ad(1, "", "b.example.com", "가상 운전자보험 다이렉트", "벌금까지 챙기는 가상 운전자보험 설명 문구입니다")
+        row["lines"] = ["가상화재", "b.example.com", "가상 운전자보험 다이렉트", "벌금까지 챙기는 가상 운전자보험 설명 문구입니다"]
+        self.assertEqual(agent.normalize_rows([row], PRODUCTS)[0]["brand"], "가상화재")
+
+    def test_doubled_title_and_number_commas(self):
+        row = ad(1, "가상", "c.example.com", "7개 운전자보험 보험료 확인 7개 운전자보험 보험료 확인",
+                 "가상 운전자보험 월 9,000원 이상 가입 시 상품권 최대 3만원 증정")
+        out = agent.normalize_rows([row], PRODUCTS)[0]
+        self.assertEqual(out["title"], "7개 운전자보험 보험료 확인")
+        self.assertIn("9,000원", out["promo"], "숫자 속 쉼표에서 문장을 자르면 안 됨")
+
+
 class TestMerge(unittest.TestCase):
     def test_refresh_replaces_only_same_capture_auto_rows(self):
         seed = {"product": "driver", "date": "2026-07-26", "rank": 1, "brand": "초기 샘플"}

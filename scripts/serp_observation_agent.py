@@ -33,6 +33,8 @@ COMMON_COVERS = [
     "임플란트", "크라운", "보철", "스케일링", "홀인원", "배상책임", "풍수재", "누수", "임시거주비", "도난",
     "실손", "휴대품", "항공기지연", "태아", "선천이상", "간편심사", "12대중과실",
 ]
+# 네이버페이·로그인 배지 안내문 — 링크라서 제목으로 잘못 잡히던 문구
+BADGE_TEXT = re.compile(r"네이버 아이디|naver ?pay|npay 서비스|서비스 (보기|자세히)|네이버 로그인", re.I)
 CTA_MAP = [("가입", "가입"), ("계산", "견적"), ("견적", "견적"), ("보험료", "견적"), ("비교", "비교"), ("상담", "상담")]
 
 
@@ -86,7 +88,8 @@ def _covers(text, special):
 
 
 def _promo(text):
-    for part in re.split(r"[.!?,·|\n]", text):
+    # 숫자 속 쉼표·마침표(9,000원 · 3.5.5)에서는 자르지 않는다
+    for part in re.split(r"(?<!\d)[.,](?!\d)|[!?·|\n]", text):
         part = _clean(part)
         if part and PROMO_WORDS.search(part):
             return part[:40]
@@ -101,12 +104,38 @@ def _cta(text):
     return "/".join(out)
 
 
+def _undouble(text):
+    """'제목 제목'처럼 같은 문구가 두 번 붙은 경우 한 번만."""
+    half = len(text) // 2
+    if len(text) > 8 and text[:half].strip() == text[half:].strip():
+        return text[:half].strip()
+    return text
+
+
+def _from_lines(lines, domain):
+    """광고 원문 줄은 [광고주] → [도메인] → [제목] → [설명] 순서 — 도메인 줄 기준으로 광고주·제목을 읽는다."""
+    lines = [_clean(x) for x in lines or [] if _clean(x) and not BADGE_TEXT.search(_clean(x))]
+    idx = next((i for i, t in enumerate(lines) if domain and domain in t.lower()), -1)
+    if idx < 0:
+        return "", ""
+    brand = lines[idx - 1] if idx > 0 else ""
+    title = lines[idx + 1] if idx + 1 < len(lines) and len(lines[idx + 1]) >= 5 else ""
+    return brand, title
+
+
 def normalize_ad(row, product, date, keyword, special):
-    brand = _clean(row.get("brand"))
-    domain = _clean(row.get("domain")).lower()
+    domain = _clean(row.get("domain")).lower().rstrip("/")
+    line_brand, line_title = _from_lines(row.get("lines"), domain)
+    brand = _clean(row.get("brand")) or line_brand
     title = _clean(row.get("title"))
+    if line_title and (not title or BADGE_TEXT.search(title)):
+        title = line_title
+    if BADGE_TEXT.search(title):
+        title = ""
+    title = _undouble(title)
     desc = _clean(row.get("desc"))
-    ext = [_clean(x) for x in row.get("extensions") or [] if _clean(x)]
+    ext = [_clean(x) for x in row.get("extensions") or []
+           if _clean(x) and _clean(x) != title and not BADGE_TEXT.search(_clean(x))]
     if not (title or desc) or OWN_BRAND.search(f"{brand} {domain}"):
         return None
     text = " ".join([title, desc] + ext)

@@ -8,6 +8,8 @@ export async function extractPowerLinks(page) {
     const DOMAIN=/^(?:https?:\/\/)?(?:[a-z0-9-]+\.)+(?:co\.kr|or\.kr|ne\.kr|kr|com|net|co|biz|io)(?:\/\S*)?$/i;
     const NOISE=/^(광고|도움말|이미지|신고하기|이미지 더보기|n ?pay|네이버페이|등록 안내|이 광고가 표시된 이유|정보확인.*|문서 저장하기|keep.*|·)$/i;
     const clean=s=>String(s||"").replace(/\s+/g," ").trim();
+    // 네이버페이·로그인 배지 안내문(링크) — 제목으로 잡히면 안 된다
+    const BADGE=/네이버 아이디|naver ?pay|npay 서비스|서비스 (보기|자세히)|네이버 로그인/i;
     const root=document.querySelector("#main_pack")||document.querySelector("#ct")||document.body;
     const domainLeaves=scope=>[...scope.querySelectorAll("a,span,cite,em,div")].filter(el=>!el.querySelector("a,span,cite,em,div")&&DOMAIN.test(clean(el.innerText)));
     // 광고 표식: '광고' 배지 또는 네이버 광고 클릭 링크(adcr/ader). 자연 검색결과가 광고로 섞이지 않게 항목마다 확인한다.
@@ -38,13 +40,16 @@ export async function extractPowerLinks(page) {
       if(seen.has(item)||!isAd(item))continue;
       seen.add(item);
       const domain=clean(leaf.innerText).replace(/^https?:\/\//,"").replace(/\/.*$/,"").toLowerCase();
-      const lines=(item.innerText||"").split(/\n+/).map(clean).filter(t=>t&&!NOISE.test(t));
+      const lines=(item.innerText||"").split(/\n+/).map(clean).filter(t=>t&&!NOISE.test(t)&&!BADGE.test(t));
       // 광고주명: 도메인 요소 직전의 텍스트 요소
-      const texts=[...item.querySelectorAll("a,span,strong,em,div,p")].filter(el=>!el.querySelector("a,span,strong,em,div,p")).map(el=>clean(el.innerText)).filter(t=>t&&!NOISE.test(t));
+      const texts=[...item.querySelectorAll("a,span,strong,em,div,p")].filter(el=>!el.querySelector("a,span,strong,em,div,p")).map(el=>clean(el.innerText)).filter(t=>t&&!NOISE.test(t)&&!BADGE.test(t));
       const di=texts.findIndex(t=>DOMAIN.test(t));
       const brand=di>0?texts[di-1]:"";
-      const anchors=[...item.querySelectorAll("a")].map(a=>clean(a.innerText)).filter(t=>t&&!NOISE.test(t)&&t!==brand&&!DOMAIN.test(t));
-      const title=anchors.find(t=>t.length>=8)||"";
+      const anchors=[...item.querySelectorAll("a")].map(a=>clean(a.innerText)).filter(t=>t&&!NOISE.test(t)&&!BADGE.test(t)&&t!==brand&&!DOMAIN.test(t));
+      // 광고 원문은 [광고주] → [도메인] → [제목] → [설명] 순서 — 도메인 다음 줄을 제목으로 우선 사용
+      const li=lines.findIndex(t=>t.toLowerCase().includes(domain));
+      const lineTitle=li>=0&&lines[li+1]&&lines[li+1].length>=5?lines[li+1]:"";
+      const title=lineTitle||anchors.find(t=>t.length>=8)||"";
       const rest=lines.filter(t=>t!==title&&t!==brand&&!DOMAIN.test(t)&&!t.includes(domain));
       const desc=rest.filter(t=>t.length>=20).sort((a,b)=>b.length-a.length)[0]||"";
       // 확장소재·하위링크는 링크 단위로(붙어 있는 칩이 한 줄로 합쳐지지 않게), 링크가 없으면 짧은 줄로 대체
