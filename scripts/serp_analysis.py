@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """SERP 관측 소재 분석 — serp/ad_observations.json → serp/ad_analysis.json.
 
-캡쳐(serp/*.png)에서 사람이 확인한 경쟁사 공개 광고 요소(관측 소재)를 상품별로 집계해
+주간 자동 캡쳐의 파워링크 광고를 serp_observation_agent.py가 정규화한 경쟁사 공개 광고 요소(관측 소재)를 상품별로 집계해
 '경쟁 공통 소구(회피/차별 대상)·프로모션 유형·가격 신호·CTA 패턴'을 산출한다. 규칙 기반·결정론.
 serp-tool(소재분석)과 adcopy-tool(문구 근거)이 이 산출물을 공유한다.
 

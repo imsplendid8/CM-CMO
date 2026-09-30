@@ -22,7 +22,7 @@ CM-CMO의 데이터 수집·브리프 워크플로 **실행 순서와 충돌 방
 
 > **자동화 상태**: `automation-status.yml`(07:40·13:40, 수집 뒤·브리프 전)이 `scripts/check_automation_health.py`를 실행해 **Run 요약에 표시**한다(커밋 없음·읽기 전용). 브리프(텔레그램/이메일)도 발송 직전 `check_automation_health`로 **원천 파일 신선도를 실시간 재계산**한다(P0-1, healthy/stale/missing/unknown 분리). 저장 스냅샷(`data/automation_health.json`)은 만들지 않는다(저장 요약 미신뢰).
 
-Content Intelligence의 Search Console 입력은 `GSC_SITE_URL`, `GSC_CLIENT_ID`, `GSC_CLIENT_SECRET`, `GSC_REFRESH_TOKEN` Secret이 모두 있을 때만 수집한다. 원본 `data/search-console.json`은 커밋하지 않는다. SERP DOM 추출값은 구조 변경 가능성이 있으므로 `serp/dom_observations.json`에 `needs_review`로 저장하고 승인된 `ad_observations.json`과 자동 병합하지 않는다.
+Content Intelligence의 Search Console 입력은 `GSC_SITE_URL`, `GSC_CLIENT_ID`, `GSC_CLIENT_SECRET`, `GSC_REFRESH_TOKEN` Secret이 모두 있을 때만 수집한다. 원본 `data/search-console.json`은 커밋하지 않는다. SERP Capture(주간)는 파워링크 광고를 1건씩 구조화해 `serp/dom_observations.json`에 저장하고(`scripts/serp_powerlink_extract.mjs`), 같은 실행에서 `scripts/serp_observation_agent.py`가 자사 광고를 뺀 경쟁사 관측으로 `serp/ad_observations.json`에 자동 병합한 뒤 `serp_analysis.py`로 `serp/ad_analysis.json`을 다시 만든다. 네이버 마크업이 바뀌어 0건이 추출되면 워크플로 경고가 뜨고, 데일리 브리프 데이터 상태에 `경쟁사 광고 관측`이 지연으로 표시된다. 이때는 `tests/fixtures/naver_powerlink.html`을 새 구조에 맞춰 고치고 `node scripts/check_serp_powerlink.mjs`로 검증한다.
 
 ## 실행 순서 (수집 → 브리프)
 
