@@ -16,11 +16,20 @@ def load(root=ROOT):
     return _CACHE[root]
 
 
-def missing_rider_marks(text, product_key, root=ROOT):
-    """(특약) 표기 없이 쓰인 담보명 목록. 긴 이름부터 맞추고, 이미 맞춘 구간과 상품명 안의 단어는 건너뛴다."""
+_BOJANG = re.compile(r" 보장(?![되하해받])")
+
+
+def _scan(text, product_key, root=ROOT, bare=True):
+    """담보명 표기 위치 스캔 → [(term, ok, op)]. op는 (특약)을 바른 자리에 두는 편집(시작, 끝, 대체 문자열).
+
+    - 'X 보장' → 보장까지가 담보명: '보장' 바로 뒤. 'X(특약) 보장'은 자리가 틀린 것으로 본다.
+    - 'X 특약' → 'X(특약)'.
+    - 그 밖의 단독 언급은 terms만, bare=True일 때만 담보명 바로 뒤를 요구한다.
+    """
     cfg = load(root)
     suffix = cfg.get("suffix", "(특약)")
-    terms = sorted(cfg.get("terms", {}).get(product_key, []), key=len, reverse=True)
+    terms = set(cfg.get("terms", {}).get(product_key, []))
+    phrases = set(cfg.get("phrases", {}).get(product_key, []))
     text = str(text or "")
     covered = [False] * len(text)
     for name in cfg.get("exclude_product_names", []):
@@ -29,46 +38,44 @@ def missing_rider_marks(text, product_key, root=ROOT):
             for i in range(start, start + len(name)):
                 covered[i] = True
             start = text.find(name, start + 1)
-    missing = []
-    for term in terms:
+    hits = []
+    for term in sorted(terms | phrases, key=len, reverse=True):
         start = text.find(term)
         while start >= 0:
             end = start + len(term)
             if not any(covered[start:end]):
-                for i in range(start, end):
-                    covered[i] = True
-                if not text.startswith(suffix, end):
-                    missing.append(term)
+                rest = text[end:]
+                hit = None
+                if _BOJANG.match(rest):
+                    anchor = end + 3
+                    hit = (term, text.startswith(suffix, anchor), (anchor, anchor, suffix))
+                elif rest.startswith(suffix) and _BOJANG.match(rest[len(suffix):]):
+                    anchor = end + len(suffix) + 3
+                    fixed = "" if text.startswith(suffix, anchor) else suffix
+                    hit = (term, False, (end, anchor, " 보장" + fixed))
+                elif rest.startswith(" 특약"):
+                    hit = (term, False, (end, end + 3, suffix))
+                elif term in terms and (bare or rest.startswith(suffix)):
+                    hit = (term, rest.startswith(suffix), (end, end, suffix))
+                if hit:
+                    for i in range(start, end):
+                        covered[i] = True
+                    hits.append(hit)
             start = text.find(term, start + 1)
-    return missing
+    return hits
 
 
-def mark_riders(text, product_key, root=ROOT):
-    """(특약) 표기가 빠진 담보명 바로 뒤에 '(특약)'을 붙인다(자동 생성 문구용)."""
-    cfg = load(root)
-    suffix = cfg.get("suffix", "(특약)")
-    terms = sorted(cfg.get("terms", {}).get(product_key, []), key=len, reverse=True)
+def missing_rider_marks(text, product_key, root=ROOT, bare=True):
+    """(특약) 표기가 없거나 자리가 틀린 담보명 목록."""
+    return [term for term, ok, _ in _scan(text, product_key, root, bare) if not ok]
+
+
+def mark_riders(text, product_key, root=ROOT, bare=True):
+    """(특약)을 담보명의 바른 자리에 둔다(자동 생성 문구용). 'X 보장' → 'X 보장(특약)', 'X 특약' → 'X(특약)'."""
     text = str(text or "")
-    covered = [False] * len(text)
-    for name in cfg.get("exclude_product_names", []):
-        start = text.find(name)
-        while start >= 0:
-            for i in range(start, start + len(name)):
-                covered[i] = True
-            start = text.find(name, start + 1)
-    inserts = []
-    for term in terms:
-        start = text.find(term)
-        while start >= 0:
-            end = start + len(term)
-            if not any(covered[start:end]):
-                for i in range(start, end):
-                    covered[i] = True
-                if not text.startswith(suffix, end):
-                    inserts.append(end)
-            start = text.find(term, start + 1)
-    for pos in sorted(inserts, reverse=True):
-        text = text[:pos] + suffix + text[pos:]
+    ops = sorted({op for _, ok, op in _scan(text, product_key, root, bare) if not ok}, reverse=True)
+    for start, end, repl in ops:
+        text = text[:start] + repl + text[end:]
     return text
 
 

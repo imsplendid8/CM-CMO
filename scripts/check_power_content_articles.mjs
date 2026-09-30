@@ -23,24 +23,29 @@ const GUIDANCE = /확인하세요|확인해 보세요|확인합니다|살펴보�
 const BENEFIT = /보상해요|보장해요|보상받(?:을 수 있어요|아요)|대비(?:할 수 있어요|해요)|준비(?:할 수 있어요|해요)|덜어 줘요|덜 수 있어요|(?:보상|보장)하는 특약/g;
 // 승인 전 수치 표현(심급 1심·2심은 허용)
 const AMOUNT = /\d[\d,.]*\s*(만\s*원|원|%|퍼센트|회|배)(?![가-힣]*심)/;
-// 담보명 바로 뒤 (특약) — 문단(필드)마다 첫 언급에 붙인다. 긴 이름 우선, 상품명 안의 단어·공식 괄호 표기·'벌금형'은 제외.
-// 같은 문단의 두 번째 언급(예: '벌금(특약)은 벌금대로')은 보험금 자체를 가리킬 수 있어 강제하지 않는다.
+// 담보명 (특약) 표기 — scripts/coverage_terms.py와 같은 규칙(파워콘텐츠는 bare=False).
+// 'X 보장'은 보장까지가 담보명이라 '보장' 바로 뒤, 'X 특약'은 'X(특약)'. 비용·보험금 자체를 가리키는 단독 언급은 강제하지 않는다.
 function missingRider(text, key) {
   const suffix = coverage.suffix || "(특약)";
-  const terms = [...(coverage.terms?.[key] || [])].sort((a, b) => b.length - a.length);
+  const terms = new Set(coverage.terms?.[key] || []), phrases = new Set(coverage.phrases?.[key] || []);
+  const BOJANG = /^ 보장(?![되하해받])/;
   const covered = new Array(text.length).fill(false);
   const mark = (s, e) => { for (let i = s; i < e; i++) covered[i] = true; };
   for (const name of coverage.exclude_product_names || []) for (let i = text.indexOf(name); i >= 0; i = text.indexOf(name, i + 1)) mark(i, i + name.length);
   const out = [];
-  for (const term of terms) {
-    let first = true;
+  for (const term of [...new Set([...terms, ...phrases])].sort((a, b) => b.length - a.length)) {
     for (let i = text.indexOf(term); i >= 0; i = text.indexOf(term, i + 1)) {
       const end = i + term.length;
       if (covered.slice(i, end).some(Boolean)) continue;
+      const rest = text.slice(end);
+      let ok = null;
+      if (BOJANG.test(rest)) ok = text.startsWith(suffix, end + 3);
+      else if (rest.startsWith(suffix) && BOJANG.test(rest.slice(suffix.length))) ok = false;  // 'X(특약) 보장' — 자리 틀림
+      else if (rest.startsWith(" 특약")) ok = false;
+      else if (terms.has(term) && rest.startsWith(suffix)) ok = true;
+      if (ok === null) continue;
       mark(i, end);
-      const next = text.slice(end);
-      if (first && !next.startsWith(suffix) && !next.startsWith("(") && !next.startsWith("형")) out.push(term);
-      first = false;
+      if (!ok) out.push(term);
     }
   }
   return out;
