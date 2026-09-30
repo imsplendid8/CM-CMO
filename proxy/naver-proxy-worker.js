@@ -257,20 +257,28 @@ async function saveFeedback(req, env, origin) {
 
 // ── 정시 실행 스케줄러 ──
 // GitHub Actions의 schedule(cron)은 부하가 몰리면 수 시간 늦게 시작된다(2026-09 실측: 08:00 → 10~11시, 14:00 → 18~20시).
-// Cloudflare Cron Trigger(wrangler.toml [triggers])가 정해진 시각에 GitHub workflow_dispatch를 호출해 정시성을 보장한다.
-// 수집(수요 신호·뉴스·이벤트 추천) → 발송(텔레그램·이메일) 순서. 키는 UTC cron 식(wrangler.toml과 정확히 일치해야 함).
+// Cloudflare Cron Trigger 하나("*/5 * * * *", 5분마다)가 워커를 깨우고, 지금이 아래 시각(UTC "HH:MM")이면
+// GitHub workflow_dispatch를 호출해 정시성을 보장한다. 무료 요금제의 Cron Trigger 개수 제한(5개) 안에 들도록 1개만 쓴다.
+// 수집(수요 신호·뉴스·이벤트 추천) → 발송(텔레그램·이메일) 순서. 시각은 모두 5분 단위여야 한다.
 // 필요 시크릿: GH_DISPATCH_TOKEN(파인그레인드 PAT · 이 저장소만 · Actions: Read and write). 선택: GH_REPO(기본 imsplendid8/CM-CMO).
 // GitHub 쪽 cron은 예비로 남고, 발송 워크플로는 정시 호출이 이미 성공했으면 늦은 예약 실행을 건너뛴다(중복 발송 방지).
+const SCHEDULER_CRON = "*/5 * * * *";
 const DISPATCH_SCHEDULE = {
-  "30 21 * * *": [{ workflow: "signals.yml" }],                                        // 06:30 KST
-  "20 22 * * *": [{ workflow: "news-clip.yml" }],                                      // 07:20 KST
-  "45 22 * * *": [{ workflow: "event-reco.yml" }],                                     // 07:45 KST
-  "0 23 * * *":  [{ workflow: "daily-brief.yml", inputs: { source: "scheduler", slot: "am" } }],  // 08:00 KST 텔레그램
-  "30 23 * * *": [{ workflow: "daily-email.yml", inputs: { source: "scheduler", slot: "am" } }],  // 08:30 KST 이메일
-  "20 4 * * *":  [{ workflow: "news-clip.yml" }],                                      // 13:20 KST
-  "45 4 * * *":  [{ workflow: "event-reco.yml" }],                                     // 13:45 KST
-  "0 5 * * *":   [{ workflow: "daily-brief.yml", inputs: { source: "scheduler", slot: "pm" } }],  // 14:00 KST 텔레그램
+  "21:30": [{ workflow: "signals.yml" }],                                         // 06:30 KST 수요 신호
+  "22:20": [{ workflow: "news-clip.yml" }],                                       // 07:20 KST 뉴스
+  "22:45": [{ workflow: "event-reco.yml" }],                                      // 07:45 KST 이벤트 추천
+  "23:00": [{ workflow: "daily-brief.yml", inputs: { source: "scheduler", slot: "am" } }],  // 08:00 KST 텔레그램
+  "23:30": [{ workflow: "daily-email.yml", inputs: { source: "scheduler", slot: "am" } }],  // 08:30 KST 이메일
+  "04:20": [{ workflow: "news-clip.yml" }],                                       // 13:20 KST 뉴스
+  "04:45": [{ workflow: "event-reco.yml" }],                                      // 13:45 KST 이벤트 추천
+  "05:00": [{ workflow: "daily-brief.yml", inputs: { source: "scheduler", slot: "pm" } }],  // 14:00 KST 텔레그램
 };
+
+// 트리거 시각(ms) → 5분 단위로 내린 UTC "HH:MM" (Cron 실행이 몇 초 늦어도 같은 칸으로 본다)
+function scheduleSlot(scheduledTime) {
+  const d = new Date(Math.floor(Number(scheduledTime) / 300000) * 300000);
+  return `${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}`;
+}
 
 async function dispatchWorkflow(env, job, fetchImpl = fetch) {
   const repo = env.GH_REPO || "imsplendid8/CM-CMO";
@@ -288,11 +296,11 @@ async function dispatchWorkflow(env, job, fetchImpl = fetch) {
   return { workflow: job.workflow, status: res.status, ok: res.status === 204 };
 }
 
-async function runSchedule(cron, env, fetchImpl = fetch) {
-  const jobs = DISPATCH_SCHEDULE[cron] || [];
+async function runSchedule(slot, env, fetchImpl = fetch) {
+  const jobs = DISPATCH_SCHEDULE[slot] || [];
   if (!jobs.length) return [];
   if (!env || !env.GH_DISPATCH_TOKEN) {
-    console.warn(`scheduler: GH_DISPATCH_TOKEN 미설정 — ${cron} 호출 생략(GitHub cron 예비 실행에 맡김)`);
+    console.warn(`scheduler: GH_DISPATCH_TOKEN 미설정 — ${slot} UTC 호출 생략(GitHub cron 예비 실행에 맡김)`);
     return jobs.map(j => ({ workflow: j.workflow, status: 0, ok: false }));
   }
   const results = [];
@@ -301,17 +309,17 @@ async function runSchedule(cron, env, fetchImpl = fetch) {
     try { r = await dispatchWorkflow(env, job, fetchImpl); }
     catch (e) { r = { workflow: job.workflow, status: 0, ok: false }; }
     results.push(r);
-    console.log(`scheduler ${cron} → ${r.workflow}: ${r.status}`);
+    console.log(`scheduler ${slot} UTC → ${r.workflow}: ${r.status}`);
   }
   if (env.USAGE) {
-    try { await env.USAGE.put(`sched:last:${cron}`, JSON.stringify({ at: new Date().toISOString(), results }), { expirationTtl: 172800 }); } catch (e) {}
+    try { await env.USAGE.put(`sched:last:${slot}`, JSON.stringify({ at: new Date().toISOString(), results }), { expirationTtl: 172800 }); } catch (e) {}
   }
   return results;
 }
 
 export default {
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(runSchedule(event.cron, env));
+    ctx.waitUntil(runSchedule(scheduleSlot(event.scheduledTime), env));
   },
 
   async fetch(req, env) {

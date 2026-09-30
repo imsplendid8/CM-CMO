@@ -23,15 +23,39 @@
 - GitHub Actions의 `schedule`은 부하가 몰리면 수 시간 늦게 시작됩니다(2026-09 실측: 08:00 → 10~11시, 14:00 → 18~20시, 이메일 08:30 → 10~11시). 그래서 **정시 발송은 Cloudflare 워커 스케줄러**가 맡습니다 — 아래 "정시 발송 설정".
 - 뉴스 요약은 기사 원문에서 고른 완결 문장 1~2개입니다(`scripts/news_enrich.py`, 뉴스 수집 때 생성). 네이버 검색 API 설명문은 중간에서 잘려 오므로, 원문을 못 읽은 기사는 설명문의 완결 문장만 쓰고 말줄임표는 붙이지 않습니다.
 
-## 정시 발송 설정 (Cloudflare 워커 스케줄러)
-1. GitHub → Settings → Developer settings → Fine-grained personal access token 생성
-   - Repository access: **imsplendid8/CM-CMO만** · Permissions: **Actions: Read and write** (그 외 없음)
-2. 워커에 토큰 등록: `cd proxy && wrangler secret put GH_DISPATCH_TOKEN`
-3. 워커 배포: `wrangler deploy` — `wrangler.toml`의 `[triggers] crons`가 등록됩니다(대시보드 Workers → 워커 → Settings → Triggers에서 확인).
-4. 동작: 06:30 수요 신호 → 07:20 뉴스 수집 → 07:45 이벤트 추천 → **08:00 텔레그램** → **08:30 이메일** / 13:20 뉴스 → 13:45 추천 → **14:00 텔레그램** (KST)
-5. 중복 방지: GitHub cron은 예비로 남습니다. 정시 호출(`실행 이름에 "정시"`)이 이미 성공했으면 늦게 시작된 예약 실행은 발송을 건너뜁니다. 토큰을 등록하기 전에는 지금처럼 GitHub cron이 발송합니다.
-6. 점검: Actions의 Daily Brief 실행 이름이 `Daily Brief (Telegram) · 정시 am`처럼 보이면 정상입니다. 검증 스크립트: `node scripts/check_worker_scheduler.mjs`.
-- 미리보기: `python3 scripts/daily_brief.py --dry` (발송 없이 메시지만 출력)
+## 정시 발송 설정 (Cloudflare 워커 스케줄러 · 웹 화면에서 클릭만)
+워커가 5분마다 깨어나 정해진 시각이면 GitHub에 "지금 실행해" 요청을 보낸다. 요청하려면 GitHub 열쇠(토큰)가 필요하다.
+
+**A. GitHub에서 열쇠(토큰) 만들기**
+1. github.com 로그인 → 오른쪽 위 프로필 사진 → **Settings**
+2. 왼쪽 메뉴 맨 아래 **Developer settings** → **Personal access tokens** → **Fine-grained tokens** → **Generate new token**
+3. 입력: Token name `modooflow-scheduler` · Expiration 가능한 가장 긴 기간(만료되면 이 절차로 다시 발급)
+4. **Repository access** → **Only select repositories** → `CM-CMO` 선택
+5. **Permissions** → Repository permissions → **Actions** → **Read and write** (다른 권한은 건드리지 않음)
+6. 맨 아래 **Generate token** → `github_pat_…`로 시작하는 값을 복사(이 화면을 벗어나면 다시 볼 수 없음)
+
+**B. Cloudflare에 열쇠 저장**
+1. dash.cloudflare.com → **Workers & Pages** → `modooflow-naver-proxy`
+2. **Settings** → **Variables and Secrets** → **Add**
+3. Type **Secret** · Variable name `GH_DISPATCH_TOKEN` · Value에 A-6에서 복사한 값 → **Deploy**(또는 Save)
+
+**C. 워커 코드 교체**
+1. 같은 워커 화면 오른쪽 위 **Edit code**
+2. 저장소의 `proxy/naver-proxy-worker.js` 내용을 전부 복사(GitHub에서 파일 열기 → **Raw** → 전체 선택·복사)
+3. 편집기에서 기존 코드를 전체 선택(Ctrl+A) → 붙여넣기 → 오른쪽 위 **Deploy**
+   - 저장소 파일이 원본이다. 대시보드에서 직접 고친 부분이 있었다면 먼저 저장소에 반영한 뒤 교체한다.
+
+**D. 5분 타이머 등록**
+1. 워커 화면 **Settings** → **Trigger Events**(또는 Triggers) → **Add** → **Cron Triggers**
+2. 식 `*/5 * * * *` 입력(= 5분마다) → **Add**
+   - 무료 요금제는 Cron Trigger가 5개까지라 1개만 쓴다.
+
+**확인**: 다음 발송 시각(08:00·08:30·14:00 KST) 뒤 GitHub **Actions**에서 실행 이름이
+`Daily Brief (Telegram) · 정시 am`처럼 "정시"가 붙어 있으면 성공. 붙어 있지 않으면 B(열쇠)·D(타이머)를 확인한다.
+
+**동작 시각(KST)**: 06:30 수요 신호 → 07:20 뉴스 → 07:45 이벤트 추천 → **08:00 텔레그램** → **08:30 이메일** / 13:20 뉴스 → 13:45 추천 → **14:00 텔레그램**.
+GitHub 자체 예약은 예비로 남고, 정시 실행이 이미 성공했으면 늦게 시작된 예약 실행은 발송하지 않는다(중복 방지). 설정 전에는 지금처럼 GitHub 예약이 발송한다.
+검증 스크립트: `node scripts/check_worker_scheduler.mjs`.
 
 ## 발송 예시
 ```
