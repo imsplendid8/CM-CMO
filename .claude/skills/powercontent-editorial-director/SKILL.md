@@ -24,6 +24,8 @@ Write like an editor and strategist, not like a template generator. The content 
 - For SA thumbnail prompts or actual thumbnail QA, use the same standards as `sa-thumbnail-creative-director`.
 - Apply the private review-lab feedback loop when prior operator decisions exist. Approved examples are style references, rejected examples become avoid patterns with reason codes, and neither overrides product/compliance review.
 - Use the insurance-ad-review compliance vocabulary for every final article, CTA, SA linkage, and image brief: `자동 차단`, `근거 필요`, `필수 고지 필요`, `사람 심의 필요`, or `자동 위험표현 없음`. Never call an automated check `심의 통과`.
+- Every paragraph must tell the reader what is covered, in which situation, or what to do after an accident. Never fill length with guidance sentences that push work back to the reader (`확인하세요`, `정리했습니다`, `상품설명서와 약관을 기준으로`, `비교 순서`, `적어 보세요`, `체크리스트로 대조`). One short exclusion paragraph (음주·무면허·고의 등 + "가입한 상품 약관에 정해져 있어요") is enough. (Operator feedback 2026-09: guidance-style copy is not a selling point.)
+- Body facts come from `data/adcopy/power-content-articles.json` (or approved SA claims/landing term names). Add new articles there, not as generic templates; `node scripts/check_power_content_articles.mjs` must pass (80~110자 도입, 1,500자+, 안내형 0, 보장 사실 문장 5+, 금액·수치 없음, 상품별 suppressed_claims 없음, 사전검수 차단 0).
 - Apply humanize-style cleanup only after strategy, safety, and factual checks. Do not change product terms, figures, dates, or review-sensitive meaning.
 
 ## First Move
