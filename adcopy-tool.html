@@ -367,15 +367,15 @@ function planningIssues(p){
 function genSeasonTitles(p,iss){
   const sw=shortWord(iss.tag), a=al(p);
   // 이미 '보험'이 들어간 키워드에 상품명을 덧붙이면 '홀인원보험 골프보험'처럼 겹친다.
-  const pool=[...iss.kws, ...iss.kws.map(k=>/보험/.test(k)?k:`${k} ${a}`), `${sw} ${a}`, `${sw} 대비 ${a}`, `${sw} 전 보장 점검`];
-  return wrap(pool,2,SPEC.titleMax,true);
+  const pool=[...iss.kws.filter(k=>/보험/.test(k)), ...iss.kws.map(k=>/보험/.test(k)?k:`${k} ${a}`), `${sw} ${a}`, `${sw} 대비 ${a}`, `${sw} 전 보장 점검`];
+  // '추석'·'귀성' 같은 2~3자 단어 단독은 광고 제목으로 쓸 수 없어 6자 이상만 남긴다.
+  return wrap(pool,6,SPEC.titleMax,true);
 }
 function genSeasonDescs(p,iss){
   // 시즌 문구를 대표 담보(covers[0])에 억지로 묶으면 '장마 → 화재'처럼 어긋나므로 시즌 키워드에서 관심사를 가져온다.
-  const sw=shortWord(iss.tag), n=p.name, a=al(p), kw=(iss.kws||[]).find(k=>!/보험/.test(k))||p.covers[0];
+  const sw=shortWord(iss.tag), n=p.name, a=al(p);
   const pool=[
     `${josa(sw,"을","를")} 앞두고 ${josa(n,"을","를")} 미리 준비해요`,
-    `${sw}에 필요한 ${kw} 관련 보장을 ${josa(a,"으로","로")} 챙겨요`,
     `${sw}에 필요한 보장만 골라 ${a} 보험료를 계산해요`,
     `꼭 필요한 보장만 골라 ${sw} 전에 ${josa(a,"을","를")} 준비해요`,
   ];
@@ -437,17 +437,10 @@ function josa(w,c,v){const ch=String(w).trim().slice(-1),code=ch.charCodeAt(0);c
 // 인접 중복/접두 단어 정리("다이렉트 다이렉트로"→"다이렉트로")
 function dw(s){const out=[];for(const t of String(s).split(" ")){const p=out[out.length-1];if(p&&(p===t||t.startsWith(p)||p.startsWith(t))){if(t.length>p.length)out[out.length-1]=t;continue;}out.push(t);}return out.join(" ");}
 const wrap=(arr,mn,mx,ss)=>uniq(arr.map(x=>dw(HUMANIZE.light(x)))).map(x=>({tx:x,len:clen(x),ban:lintBan(x),ss:!!ss})).filter(o=>o.len>=mn&&o.len<=mx&&!o.ban.length);
-/* 기존 심의안 문구는 검토 초안에 보존하되, 현재 근거가 필요한 표현은 별도 표시한다. */
-const wrapReference=(arr,mn,mx)=>uniq(arr.map(x=>dw(HUMANIZE.light(x)))).map(x=>({tx:x,len:clen(x),ban:lintBan(x),reference:true})).filter(o=>o.len>=mn&&o.len<=mx);
-
 /* ① 광고 제목 (브랜드형, ≤15자) — 실제 시트 2번 컬럼 */
 const BRANDS=["한화손보 다이렉트","한화다이렉트 대표","한화다이렉트 공식","한화손보 공식","한화 다이렉트","한화손보"];
-const REVIEW_REFERENCE={
-  driver:{source:"20260730 한화CM 검색광고 운전자보험 심의안",brand:["한화손보캐롯 운전자보험(무)","한화 운전자보험 다이렉트","한화손보 공식 운전자보험"],additionalTitles:["비탑승중에도 보장해요","간편한 보험료 계산","24시간 간편 가입","내 보험료 바로 확인","복잡한 전화 없이 간편하게","기다림 없이 바로 확인"],descriptions:["심급별자동차사고변호사선임비용(실손,운전자용,비탑승중포함) 특약 지금 확인해보세요","비탑승중 발생한 우연한 자동차 사고도 대인형사합의금 실손보상 해드려요! (특약)","남의 일 같지 않은 보복 운전의 위협! 보복운전피해보장 특약으로 대비할 수 있어요","예고없는 급발진, 급발진변호사선임비용(실손,운전자용)부터 형사합의금까지 특약 보장"],promotions:["전화 없이 24시간 가입","간편한 보험료 계산"],sublinks:["24시간가입","내보험료계산","특약내용확인","보장내용확인"]}
-};
 function genBrandTitles(p){
   const a=al(p);
-  if(REVIEW_REFERENCE[p.key])return wrapReference(REVIEW_REFERENCE[p.key].brand,4,SPEC.titleMax);
   if(p.cat==="사이트")return wrap(BRANDS,4,SPEC.titleMax);
   const pool=[...BRANDS.map(b=>`${b} ${a}`), ...BRANDS.map(b=>`${b} ${p.name}`)];
   return wrap(pool,4,SPEC.titleMax);
@@ -455,7 +448,6 @@ function genBrandTitles(p){
 /* ② 추가제목 롤링 (소구형, ≤15자) — 실제 고객 검색 의도 */
 function genSubTitles(p){
   const a=al(p), c0=p.covers[0];
-  if(REVIEW_REFERENCE[p.key])return wrapReference(REVIEW_REFERENCE[p.key].additionalTitles,4,SPEC.additionalTitleMax);
   if(p.cat==="사이트")return wrap(["공식 다이렉트보험","보험료 바로 계산","전화 없이 간편가입","상품별 온라인 가입"],4,SPEC.titleMax);
   const byProduct={
     driver:["운전자보험 보험료 계산","비탑승 중에도 보장","벌금·변호사선임 특약","보복운전 피해도 대비","형사합의금 실손 보장"],
@@ -479,7 +471,6 @@ function genSubTitles(p){
 /* ③ 설명 롤링 (20~45자) — 실제 검색 의도·비교 포인트 */
 function genDescs(p){
   const a=al(p), c0=p.covers[0], c1=p.covers[p.covers.length-1];
-  if(REVIEW_REFERENCE[p.key])return wrapReference(REVIEW_REFERENCE[p.key].descriptions,SPEC.descMin,SPEC.descMax);
   if(p.cat==="사이트")return wrap(["한화손보 다이렉트 공식 사이트에서 상품별 보험료 계산","필요한 보험상품을 고르고 온라인 설계 조건 확인"],SPEC.descMin,SPEC.descMax);
   const byProduct={
     driver:["벌금·변호사선임비용 특약만 골라 담고 내 보험료를 바로 계산해요","차에서 내린 뒤 일어난 자동차 사고도 대인 형사합의금을 보장해요(특약)","사고 뒤 벌금부터 변호사선임비용까지 한 번에 대비할 수 있어요(특약)","남의 일 같지 않은 보복운전, 보복운전피해보장 특약으로 대비해요","대인 사고로 형사합의가 필요할 때 드는 합의금을 실손으로 보장해요(특약)"],
@@ -536,7 +527,6 @@ function genAdditionalDescs(p){
 }
 /* ⑤ 홍보문구 (≤14자) — 차별점·고객 관심사 중심 */
 function genPromos(p){
-  if(REVIEW_REFERENCE[p.key])return wrapReference(REVIEW_REFERENCE[p.key].promotions,2,SPEC.promoMax);
   if(p.cat==="사이트")return wrap(["공식 사이트","보험료 계산"],2,SPEC.promoMax);
   const byProduct={
     driver:["특약 골라 가입하기","비탑승 중에도 보장"],
@@ -558,7 +548,6 @@ function genPromos(p){
 /* ⑥ 서브링크 (≤6자) — 고객의 실제 클릭 포인트 */
 function genSubs(p){
   const short=s=>String(s).replace(/\s/g,"").slice(0,SPEC.subMax);
-  if(REVIEW_REFERENCE[p.key])return wrapReference(REVIEW_REFERENCE[p.key].sublinks,2,SPEC.subMax);
   if(p.cat==="사이트")return wrap(["보험료","상품","가입"],2,SPEC.subMax);
   const byProduct={
     driver:["경상기준","보험료","보장","비탑승"],
@@ -583,9 +572,8 @@ function serpIdeas(p){
   const a=AD_ANALYSIS[p.key]||{}, common=a.common_soju||[];
   const overlaps=x=>common.some(c=>x.includes(c)||c.includes(x));
   const own=(p.covers||[]).filter(x=>!overlaps(x));
-  const fallbackAngle=own[0]||(p.short||[]).find(x=>!overlaps(x))||"가입 전 확인";
+  const fallbackAngle=own[0]||(p.short||[]).find(x=>!overlaps(x))||(p.covers||[])[0]||al(p);
   const demand=(((typeof topVol==="function"?topVol(p.key,3):[])[0])||{}).kw||al(p);
-  const hasEvidence=p.cat!=="사이트"&&Boolean((a.observed_ads||[]).length||a.n);
   const title=(preferred,fallback)=>clen(preferred)<=SPEC.titleMax?preferred:fallback;
   const agent=SERP_AGENT[p.key]||{},blocked=p.blocked||[],requestedAngle=String(agent.selected_angle||fallbackAngle);
   const selectedAngle=requestedAngle&&clen(requestedAngle)<=14&&!blocked.some(term=>requestedAngle.replace(/\s/g,"").includes(term.replace(/\s/g,"")))&&!lintBan(requestedAngle).length?requestedAngle:fallbackAngle;
@@ -594,18 +582,17 @@ function serpIdeas(p){
   const observedBrands=(a.observed_ads||[]).map(x=>x.brand).filter(Boolean).slice(0,2).join("·")||"경쟁사";
   const lastCover=(p.covers||[])[(p.covers||[]).length-1]||selectedAngle;
   const monitoring=agent.monitoring||{},market=agent.market_patterns||{},basis=`${agent.latest_date||a.latest_date||AD_META.asof||"기준일 없음"} · ${observedBrands} 관측`;
-  const serp_angle=agent.serp_angle||"",serp_coverage=agent.serp_coverage||"",serp_gap=agent.serp_gap||"",serp_pain=agent.serp_pain||"";
-  const enhanced=serp_angle?[
-    {strategy:"차별 각도형",title:title(`${serp_angle.split("→")[0]}만 우리가 다루는 이유`,serp_angle),desc:`${serp_angle.split("→")[0]}은 경쟁사와 달리 ${serp_coverage||selectedAngle}부터 정리`,why:`SERP: ${serp_gap||"차별점 공백"}을 우리 보장으로 채우는 전략`},
-    {strategy:"고객 질문 답변형",title:serp_pain?title(`${serp_pain.split(": ")[0]}? 보장하나요`,selectedAngle):title(`${selectedDemand} 검색 뒤 나오는 질문`,`${selectedAngle} 확인`),desc:`"${serp_pain||selectedDemand}" 검색자가 묻는 것을 상품 안내에서 답하기`,why:`실제 고객 질문 중심의 소재 · ${basis}`},
-    {strategy:"보장 범위 명확화형",title:title(`${serp_coverage}의 범위: ${selectedAngle}은 O, ${lastCover}은 X`,`${selectedAngle}·${lastCover} 경계`),desc:`${serp_coverage}은 이것까지만, ${lastCover}은 그 이상. 경계를 명확히 구분`,why:`고객의 경계 혼동(${selectedAngle} vs ${lastCover})을 선제적으로 해결`},
-  ]:[];
-  const fallback=hasEvidence?[
-    {strategy:"검색 수요형",title:title(`${selectedDemand}와 ${selectedAngle}`,`${al(p)} 검색 수요`),desc:`"${selectedDemand}" 검색자가 찾는 것은 ${selectedAngle} 여부. 경쟁사 설명과 달리 우리의 답`,why:`${basis} · 실제 검색 행동에 기반한 차별화`},
-    {strategy:"상품 범위형",title:title(`${selectedAngle}는 어디까지`,`${al(p)} 보장 범위`),desc:`${selectedAngle}은 이것까지, ${lastCover}은 저것까지. 상품 선택 기준 한눈에`,why:`고객 혼동 지점(${selectedAngle}·${lastCover} 경계)을 상품 설명으로 해결`},
-    {strategy:"특약·보험료형",title:title(`${selectedAngle}는 기본, 추가 특약은`,`${al(p)} 특약·보험료`),desc:`기본 보장인 ${selectedAngle}부터 선택·보험료 예시까지 한 페이지`,why:`SERP 상위권 상품은 기본+선택 2단계로 설명하는 경향 반영`},
-  ]:[];
-  const raw=(agent.sa_recommendations?.length?agent.sa_recommendations.map(x=>({...x,desc:x.description||x.desc})):(enhanced.length?enhanced:fallback));
+  /* 주간 Agent 추천(sa_recommendations)이 없을 때만 쓰는 폴백 — 안내형이 아니라 고객이 얻는 혜택으로 쓴다. */
+  const n=al(p),angle=selectedAngle,edge=lastCover!==angle?lastCover:(p.covers||[])[0]||angle;
+  const fallback=p.cat==="사이트"?[]:[
+    {strategy:"검색 수요형",title:title(`${n} 보험료 계산`,`${n} 보험료`),desc:`필요한 보장만 골라 ${n} 보험료를 바로 계산해요`,why:`검색어 "${selectedDemand}" 수요 · ${basis}`},
+    {strategy:"고객 질문 답변형",title:title(`${angle}도 보장`,`${n} 보장`),desc:`${josa(angle,"이","가")} 필요한 순간 ${josa(n,"으로","로")} 보장받을 수 있어요`,why:"고객이 가장 먼저 묻는 보장을 제목으로"},
+    {strategy:"보장 범위 명확화형",title:title(`${angle}·${edge} 보장`,`${angle} 보장`),desc:`${angle}부터 ${edge}까지 필요한 보장을 골라 담을 수 있어요`,why:"보장 폭을 한 문장에 담아 선택 이유를 제시"},
+    {strategy:"상품 범위형",title:title(`${edge}까지 대비`,`${n} 대비`),desc:`${josa(edge,"이","가")} 걱정될 때도 ${n} 하나로 미리 대비해요`,why:"걱정 상황을 혜택으로 연결"},
+    {strategy:"차별 각도형",title:title(`${angle} 골라 담기`,`${n} 보장 선택`),desc:`다른 보장은 줄이고 ${angle} 보장은 꼭 챙길 수 있어요`,why:`경쟁 공통 소구(${common.slice(0,2).join("·")||"없음"})와 겹치지 않는 보장`},
+    {strategy:"특약·보험료형",title:title("필요한 특약만 골라",`${n} 특약`),desc:`꼭 필요한 특약만 남겨 내 상황에 맞는 ${josa(n,"을","를")} 만들어요`,why:"특약 선택권을 혜택으로"},
+  ];
+  const raw=agent.sa_recommendations?.length?agent.sa_recommendations.map(x=>({...x,desc:x.description||x.desc})):fallback;
   const candidates=raw.map(x=>({...x,title:dw(HUMANIZE.light(x.title)),desc:dw(HUMANIZE.light(x.desc))}))
     .filter(x=>clen(x.title)>=4&&clen(x.title)<=SPEC.titleMax&&clen(x.desc)>=SPEC.descMin&&clen(x.desc)<=SPEC.descMax&&!lintBan(x.title+x.desc).length)
     .filter(inScope)
@@ -634,10 +621,14 @@ function buildSheet(p){
   issues.forEach(o=>{genSeasonTitles(p,o).forEach(x=>sT.push(x));genSeasonDescs(p,o).forEach(x=>sD.push(x));});
   const dd=arr=>{const m=new Map();arr.forEach(o=>{if(!m.has(o.tx))m.set(o.tx,o);});return [...m.values()];};
   const serp=serpIdeas(p);
-  return { issues,serp,
+  // 주간 Agent 추천이 5건 이상이면 그것이 기준(authoritative) — 도구 안 상품별 문구는 Agent 자료가 부족할 때만 보충
+  const authoritative=serp.candidates.length>=5;
+  const baseTitles=authoritative?serp.titles:[...serp.titles,...genSubTitles(p)];
+  const baseDescs=authoritative?serp.descs:[...serp.descs,...genDescs(p)];
+  return { issues,serp,authoritative,
     brand: genBrandTitles(p),
-    subt:  dd([...serp.titles, ...genSubTitles(p), ...sT]).slice(0,SPEC.additionalTitleGroupMax), // SERP 검색 의도 + 상품 마스터 + 시즌·뉴스
-    desc:  dd([...serp.descs, ...genDescs(p), ...sD]),
+    subt:  dd([...baseTitles, ...sT]).slice(0,SPEC.additionalTitleGroupMax), // Agent/상품 마스터 + 시즌·뉴스
+    desc:  dd([...baseDescs, ...sD]),
     additionalDesc: dd([...serp.additionalDescs,...genAdditionalDescs(p)]).slice(0,SPEC.additionalDescGroupMax),
     promo: dd([...serp.promos,...genPromos(p)]).slice(0,SPEC.promoGroupMax),
     sub:   dd([...serp.subs,...genSubs(p)]).slice(0,SPEC.subSiteMax) };
@@ -645,7 +636,7 @@ function buildSheet(p){
 /* 시트형 표 (문구 | 글자수) — 심의안 초안으로 내보내며 개별 복사는 제공하지 않는다. */
 function tbl(rows,max){
   return `<div class="tblwrap"><table class="sheet"><thead><tr><th>문구</th><th class="c">글자수 <small>≤${max}</small></th></tr></thead><tbody>${
-    rows.length?rows.map(o=>`<tr class="${o.ss?"ss":""}"><td>${esc(o.tx)}${o.ss?'<span class="ssb">시즌·뉴스</span>':""}${o.serp?'<span class="source-pill">SERP 분석 반영</span>':""}${o.reference?'<span class="source-pill">기존 심의안 참고</span>':""}${o.ban?.length?'<span class="source-pill">내용 재확인</span>':""}</td><td class="c mono">${o.len}</td></tr>`).join("")
+    rows.length?rows.map(o=>`<tr class="${o.ss?"ss":""}"><td>${esc(o.tx)}${o.ss?'<span class="ssb">시즌·뉴스</span>':""}${o.serp?'<span class="source-pill">SERP 분석 반영</span>':""}${o.ban?.length?'<span class="source-pill">내용 재확인</span>':""}</td><td class="c mono">${o.len}</td></tr>`).join("")
       :`<tr><td colspan="2" class="c muted">규격에 맞는 후보 없음</td></tr>`}</tbody></table></div>`;
 }
 function block(lbl,rows,max,ss){
@@ -785,9 +776,9 @@ function redrawThumbnails(p){
   if(THUMB_STATE.packUrl){URL.revokeObjectURL(THUMB_STATE.packUrl);THUMB_STATE.packUrl="";}const pack=$("#thumbAll");if(pack){pack.href="#";pack.dataset.ready="0";pack.setAttribute("aria-disabled","true");pack.textContent="ZIP 준비 중";}
   concepts.forEach((concept,i)=>{const file=$("#thumbFile"+i);if(file){file.textContent=concept.file;file.title=concept.file;}});
   const drawAll=images=>{if(token!==THUMB_STATE.renderToken||curKey!==p.key)return;canvases.forEach(canvas=>{const i=Number(canvas.dataset.thumbIndex);drawThumbnail(canvas,concepts[i],images[i]);refreshThumbnailMeta(canvas,i);});prepareThumbnailPack(p,token);};
-  const loadImage=src=>new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src=src;});
+  const loadImage=src=>new Promise(resolve=>{if(!src){resolve(null);return;}const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src=src;});
   const sources=concepts.map(concept=>custom&&concept.kind==="power"?custom.url:concept.asset);
-  Promise.all(sources.map(loadImage)).then(images=>{drawAll(images);if(images.some(x=>!x))toast(custom?"승인 이미지를 읽지 못했습니다":"일부 애니메이션 이미지를 읽지 못했습니다");});
+  Promise.all(sources.map(loadImage)).then(images=>{drawAll(images);if(images.some((x,i)=>!x&&sources[i]))toast(custom?"승인 이미지를 읽지 못했습니다":"일부 애니메이션 이미지를 읽지 못했습니다");});
 }
 function saveCanvasPng(canvas,file){
   return new Promise(resolve=>canvas.toBlob(blob=>{if(!blob){resolve(false);return;}const a=document.createElement("a");a.hidden=true;a.href=URL.createObjectURL(blob);a.download=file;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1200);resolve(true);},"image/png"));
@@ -830,7 +821,7 @@ function exportXls(p){
     +`<tr><th colspan="${span}" class="section" style="text-align:left">1. 썸네일 이미지</th></tr><tr><td colspan="${span}" class="placeholder">검색광고 소재 화면에서 생성한 PNG 삽입<br><b>${eX(imageConcepts[0].file)}</b> · ${SPEC.image.width}×${SPEC.image.height}px</td></tr>`
     +`<tr><th colspan="${span}" style="text-align:left">[운영 소재 문구] <span style="color:#e02020">빨간 글씨 = 신규 T&amp;D</span></th></tr>${head}${body}`
     +`<tr><th colspan="${span}" class="section" style="text-align:left">7. 이미지형 서브링크 (아래 중 3개씩 노출)</th></tr><tr>${imageSlots}</tr>`
-    +`<tr><td colspan="${span}">SERP 기준: ${eX(visual.latest||"기준일 없음")} · 주요 검색어 ${eX(visual.keyword)} · 추천 소구 ${eX(visual.angle)} · 이미지 장면 ${eX(visual.scene)}<br>초안 기준: ${eX(REVIEW_REFERENCE[p.key]?.source||"SERP 검색 의도 + 상품 마스터")} · 생성일 ${todayStr()} · 상품자료·약관·준법·손해보험협회 심의 전</td></tr></table></body></html>`;
+    +`<tr><td colspan="${span}">SERP 기준: ${eX(visual.latest||"기준일 없음")} · 주요 검색어 ${eX(visual.keyword)} · 추천 소구 ${eX(visual.angle)} · 이미지 장면 ${eX(visual.scene)}<br>초안 기준: 구조화 랜딩·심의 초안·운영 자료 + 월간 SERP · 생성일 ${todayStr()} · 상품자료·약관·준법·손해보험협회 심의 전</td></tr></table></body></html>`;
   const blob=new Blob(["﻿"+html],{type:"application/vnd.ms-excel;charset=utf-8"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`${p.name}_SA_심의안초안_${todayStr()}.xls`;a.click();
   setTimeout(()=>URL.revokeObjectURL(a.href),1500);
@@ -1016,15 +1007,17 @@ const WEATHER=[
  {k:"폭염",ico:"🔥",prods:["hrmf"],why:"폭염 = 에어컨·전기과부하 화재 위험",
    t:"폭염철 전기 화재 대비",d:"에어컨·전기 과부하로 생길 수 있는 화재를 주택화재보험으로 대비해요"},
  {k:"한파",ico:"❄️",prods:["hrmf","driver"],why:"한파 = 동파·난방기구 화재 / 빙판 사고",
-   t:"한파 동파·난방화재 대비",d:"한파에 배관이 얼어 물이 새거나 난방기구 화재가 나도 대비할 수 있어요"},
+   t:"한파 동파·난방화재 대비",d:"한파에 배관이 얼어 물이 새거나 난방기구 화재가 나도 대비할 수 있어요",
+   byProduct:{driver:{why:"한파 = 빙판길·블랙아이스 사고",t:"빙판길 사고 대비",d:"한파로 얼어붙은 빙판길 사고 뒤 벌금·변호사선임비용까지 대비해요"}}},
  {k:"대설",ico:"🌨",prods:["driver","hrmf"],why:"대설 = 빙판·눈길 사고 / 지붕 적설",
-   t:"눈길 사고 대비",d:"눈길·빙판길 사고 뒤 벌금·변호사선임비용까지 운전자보험으로 대비해요"},
+   t:"눈길 사고 대비",d:"눈길·빙판길 사고 뒤 벌금·변호사선임비용까지 운전자보험으로 대비해요",
+   byProduct:{hrmf:{why:"대설 = 적설 하중·풍수재 피해",t:"대설 풍수재 대비",d:"폭설로 생긴 풍수재 피해를 주택화재보험 특약으로 대비해요"}}},
  {k:"강풍",ico:"💨",prods:["driver"],why:"강풍 = 운전 중 사고 위험",
    t:"강풍 운전 사고 대비",d:"강풍 속 운전 중 사고에도 운전자보험 특약으로 대비할 수 있어요"},
 ];
 const wxActive=k=>((SIG.weather&&SIG.weather.active)||[]).includes(k);
 function weatherSection(p){
-  const rows=WEATHER.filter(w=>w.prods.includes(p.key));
+  const rows=WEATHER.filter(w=>w.prods.includes(p.key)).map(w=>({...w,...(w.byProduct?.[p.key]||{})}));
   if(!rows.length)return "";
   const anyActive=rows.some(w=>wxActive(w.k));
   const cards=rows.map(w=>{

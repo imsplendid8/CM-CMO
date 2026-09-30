@@ -35,6 +35,7 @@ class TestNormalize(unittest.TestCase):
         self.assertEqual([o["rank"] for o in out], [1, 2], "자사 제외 후 경쟁사 순위")
         first, second = out
         self.assertEqual(first["covers"][:2], ["변호사선임", "형사합의금"])
+        self.assertNotIn("운전자보험", first["covers"], "상품명은 소구(보장 항목)가 아님")
         self.assertEqual(first["price"], "5% 할인")
         self.assertIn("가입", first["cta"])
         self.assertIn("견적", first["cta"])
@@ -85,6 +86,25 @@ class TestMerge(unittest.TestCase):
         self.assertEqual(n_auto, 1)
         self.assertEqual(result["asof"], "2026-10-04")
         self.assertEqual(len(result["observations"]), 2)
+
+
+class TestDomSignal(unittest.TestCase):
+    def test_summarizes_latest_capture_domains_and_changes(self):
+        import serp_analysis
+        dom = {"source": "playwright-powerlink", "observations": [
+            {"product": "driver", "date": "2026-09-20", "kind": "powerlink", "domain": "a.example.com"},
+            {"product": "driver", "date": "2026-09-20", "kind": "powerlink", "domain": "b.example.com"},
+            {"product": "driver", "date": "2026-09-27", "kind": "powerlink", "domain": "a.example.com"},
+            {"product": "driver", "date": "2026-09-27", "kind": "powerlink", "domain": "c.example.com"},
+            {"product": "driver", "date": "2026-09-27", "text": "운전자보험 관련 광고"},  # 이전 추출기 머리글 행
+            {"product": "cncr", "date": "2026-09-27", "kind": "powerlink", "domain": "z.example.com"},
+        ]}
+        sig = serp_analysis._dom_signal("driver", dom)
+        self.assertEqual(sig["latest"], "2026-09-27")
+        self.assertEqual(sig["ads"], 2)
+        self.assertEqual(sig["domains"], ["a.example.com", "c.example.com"])
+        self.assertEqual(sig["new_domains"], ["c.example.com"])
+        self.assertEqual(sig["dropped_domains"], ["b.example.com"])
 
 
 if __name__ == "__main__":

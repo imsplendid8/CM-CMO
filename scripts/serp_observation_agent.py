@@ -136,7 +136,7 @@ def normalize_ad(row, product, date, keyword, special):
 
 def normalize_rows(dom_rows, products):
     """dom_observations 행 → 경쟁사 관측 행. (상품, 날짜) 안에서 같은 광고(광고주·제목·설명)는 1건만."""
-    special = {p.get("key"): list(p.get("special") or []) + list(p.get("core") or []) for p in products}
+    special = {p.get("key"): list(p.get("special") or []) for p in products}  # 상품명(core)은 소구가 아님
     out, seen = [], set()
     for row in dom_rows or []:
         if row.get("kind") != "powerlink":

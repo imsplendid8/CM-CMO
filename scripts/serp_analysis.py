@@ -99,22 +99,28 @@ def _autocomplete_signal(product_key, autocomplete):
 
 
 def _dom_signal(product_key, dom_review):
-    obs = []
-    for row in (dom_review or {}).get("observations") or []:
-        if str(row.get("product") or "") != product_key:
-            continue
-        obs.append({
-            "keyword": str(row.get("keyword") or "").strip(),
-            "domain": str(row.get("domain") or row.get("host") or row.get("landing") or "").strip(),
-            "kind": str(row.get("kind") or row.get("type") or "review_queue").strip(),
-            "status": str(row.get("status") or row.get("decision") or "needs_review").strip(),
-            "note": str(row.get("note") or row.get("why") or "").strip(),
-        })
+    """파워링크 자동 수집(serp/dom_observations.json) 요약 — 최신 캡쳐의 광고 도메인과 직전 캡쳐 대비 진입·이탈."""
+    rows = [r for r in (dom_review or {}).get("observations") or []
+            if str(r.get("product") or "") == product_key and r.get("kind") == "powerlink"]
+    by_date = defaultdict(list)
+    for r in rows:
+        by_date[str(r.get("date") or "")[:10]].append(r)
+    dates = sorted(d for d in by_date if d)
+    latest = dates[-1] if dates else ""
+    previous = dates[-2] if len(dates) > 1 else ""
+
+    def domains(date):
+        return _dedupe_keep_order(str(r.get("domain") or "").strip() for r in by_date.get(date, []) if r.get("domain"))
+
+    now, before = domains(latest), domains(previous)
     return {
         "source": dom_review.get("source", "") if isinstance(dom_review, dict) else "",
-        "asof": dom_review.get("asof", "") if isinstance(dom_review, dict) else "",
-        "observations": obs,
-        "domains": _dedupe_keep_order([row["domain"] for row in obs if row["domain"]]),
+        "latest": latest,
+        "previous": previous,
+        "ads": len(by_date.get(latest, [])),
+        "domains": now,
+        "new_domains": [d for d in now if previous and d not in before],
+        "dropped_domains": [d for d in before if d not in now],
     }
 
 

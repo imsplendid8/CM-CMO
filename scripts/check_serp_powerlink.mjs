@@ -21,8 +21,10 @@ try {
 
   await page.goto(fixture("naver_powerlink.html"));
   const ads = await extractPowerLinks(page);
-  assert.equal(ads.length, 3, "광고 3건(자사 포함)이 각각 분리돼야 함");
-  assert.deepEqual(ads.map(a => a.brand), ["가상손해보험다이렉트", "샘플화재다이렉트", "한화손보다이렉트"]);
+  assert.equal(ads.length, 4, "상단 3건(자사 포함) + 하단 영역 1건이 각각 분리돼야 함");
+  assert.deepEqual(ads.map(a => a.brand), ["가상손해보험다이렉트", "샘플화재다이렉트", "한화손보다이렉트", "예시생명다이렉트"]);
+  assert.ok(!ads.some(a => a.domain === "blog.example.com"), "자연 검색결과(블로그)는 광고가 아님");
+  assert.ok(!ads.some(a => /인기보험/.test(a.title)), "네이버페이 보험 박스는 파워링크가 아님");
   assert.equal(ads[0].domain, "direct.example-ins.co.kr");
   assert.equal(ads[0].title, "가상다이렉트 공식 운전자보험 · 450만의 선택");
   assert.match(ads[0].desc, /^형사합의금·변호사선임비용 보장/);

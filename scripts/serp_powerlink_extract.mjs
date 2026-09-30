@@ -9,23 +9,33 @@ export async function extractPowerLinks(page) {
     const NOISE=/^(광고|도움말|이미지|신고하기|이미지 더보기|n ?pay|네이버페이|등록 안내|이 광고가 표시된 이유|정보확인.*|문서 저장하기|keep.*|·)$/i;
     const clean=s=>String(s||"").replace(/\s+/g," ").trim();
     const root=document.querySelector("#main_pack")||document.querySelector("#ct")||document.body;
-    const head=[...root.querySelectorAll("h2,h3,strong,span,div")].find(el=>{const t=clean(el.innerText);return t.length<=40&&/관련\s*광고/.test(t)});
     const domainLeaves=scope=>[...scope.querySelectorAll("a,span,cite,em,div")].filter(el=>!el.querySelector("a,span,cite,em,div")&&DOMAIN.test(clean(el.innerText)));
-    if(!head)return [];
-    let section=head;
-    while(section&&section!==root&&domainLeaves(section).length<2)section=section.parentElement;
-    if(!section||domainLeaves(section).length<2){
+    // 광고 표식: '광고' 배지 또는 네이버 광고 클릭 링크(adcr/ader). 자연 검색결과가 광고로 섞이지 않게 항목마다 확인한다.
+    const isAd=el=>/(^|\s)광고(\s|$)/.test(clean(el.innerText))||Boolean(el.querySelector('a[href*="adcr.naver"],a[href*="ader.naver"]'));
+    // 파워링크 영역 머리글("○○ 관련 광고") — 상단·하단 영역 모두. '보험관련 광고이 정보가…' 같은 다른 박스는 제외
+    const heads=[...root.querySelectorAll("h2,h3,strong,span,div")].filter(el=>{const t=clean(el.innerText);return t.length<=40&&/관련\s*광고(\s|$)/.test(t)});
+    if(!heads.length)return [];
+    const sections=[];
+    for(const head of heads){
+      let section=head;
+      // 머리글에서 가장 가까운, 광고 도메인을 품은 조상 = 영역(광고 1건뿐인 하단 영역도 잡힌다)
+      while(section&&section!==root&&!domainLeaves(section).length)section=section.parentElement;
+      if(!section||section===root)continue;
+      if(sections.some(x=>x.contains(section)||section.contains(x)))continue;
+      sections.push(section);
+    }
+    if(!sections.length){
       // 도메인이 광고주명과 한 텍스트에 붙어 있는 마크업 — 영역 원문 줄을 넘기고 Python 쪽에서 광고별로 나눈다.
-      let box=head;
+      let box=heads[0];
       while(box.parentElement&&box.parentElement!==root&&clean(box.innerText).length<300)box=box.parentElement;
       const lines=(box.innerText||"").split(/\n+/).map(clean).filter(t=>t&&!NOISE.test(t));
       return lines.length?[{kind:"powerlink",rank:0,raw:true,lines:lines.slice(0,200)}]:[];
     }
-    const leaves=domainLeaves(section),ads=[],seen=new Set();
-    for(const leaf of leaves){
+    const ads=[],seen=new Set();
+    for(const section of sections)for(const leaf of domainLeaves(section)){
       let item=leaf;
       while(item.parentElement&&item.parentElement!==section&&domainLeaves(item.parentElement).length===1)item=item.parentElement;
-      if(seen.has(item))continue;
+      if(seen.has(item)||!isAd(item))continue;
       seen.add(item);
       const domain=clean(leaf.innerText).replace(/^https?:\/\//,"").replace(/\/.*$/,"").toLowerCase();
       const lines=(item.innerText||"").split(/\n+/).map(clean).filter(t=>t&&!NOISE.test(t));
@@ -42,7 +52,7 @@ export async function extractPowerLinks(page) {
       const extensions=[...new Set(shortAnchors.length?shortAnchors:rest.filter(t=>t!==desc&&t.length>=2&&t.length<=40))].slice(0,12);
       if(!title&&!desc)continue;
       ads.push({kind:"powerlink",rank:ads.length+1,brand,domain,title,desc,extensions,lines:lines.slice(0,20),hasImage:Boolean(item.querySelector("img"))});
-      if(ads.length===15)break;
+      if(ads.length===20)break;
     }
     return ads;
   });
