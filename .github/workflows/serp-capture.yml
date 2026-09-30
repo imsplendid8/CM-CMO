@@ -34,6 +34,16 @@ jobs:
       - name: Capture competitor brand searches (PC + mobile)
         run: node scripts/capture_brand.mjs
 
+      - name: Normalize competitor power-link ads → ad_observations / ad_analysis
+        run: |
+          node scripts/check_serp_powerlink.mjs
+          python3 scripts/serp_observation_agent.py | tee observation.log
+          python3 scripts/serp_analysis.py
+          if grep -q "자동 관측 0건" observation.log; then
+            echo "::warning::파워링크 광고가 0건 추출됨 — 네이버 마크업 변경 가능성. serp/dom_observations.json 확인"
+          fi
+          rm -f observation.log
+
       - name: Commit new captures
         run: |
           git config user.name  "github-actions[bot]"

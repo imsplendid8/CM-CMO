@@ -69,3 +69,5 @@ jobs:
           node --check scripts/capture_naver_autocomplete.mjs
           node --check scripts/keyword_autocomplete_core.mjs
           node scripts/check_keyword_autocomplete.mjs
+      - name: SERP 파워링크 추출기 문법 검사
+        run: node --check scripts/serp_powerlink_extract.mjs && node --check scripts/capture_serp.mjs && node --check scripts/check_serp_powerlink.mjs

@@ -422,7 +422,8 @@ function analysisSection(p){
   if(!a&&!obs.length)return "";
   const chips=arr=>(arr&&arr.length)?arr.map(x=>`<span class="kwchip">${esc(x)}</span>`).join(" "):"<span style='color:var(--muted)'>관측 없음</span>";
   const pairs=arr=>(arr&&arr.length)?arr.map(x=>`${esc(x[0])}${x[1]>1?` ×${x[1]}`:""}`).join(" · "):"—";
-  const rows=obs.map(o=>`<tr><td class="who">${esc(o.brand||"")}</td><td>${esc(o.title||"")}</td><td>${esc(o.desc||"")}</td><td>${esc(o.promo||"")}</td></tr>`).join("");
+  const latest=obs.reduce((m,o)=>String(o.date||"")>m?String(o.date||""):m,"");
+  const rows=obs.filter(o=>String(o.date||"")===latest).map(o=>`<tr><td class="who">${esc(o.brand||"")}</td><td>${esc(o.title||"")}</td><td>${esc(o.desc||"")}</td><td>${esc(o.promo||"")}</td></tr>`).join("");
   return `<div class="sec">
     <div class="sec-h"><span class="t">경쟁사 광고 요약</span></div>
     <div class="sec-b">
@@ -430,7 +431,7 @@ function analysisSection(p){
       <div class="box"><span class="lb">관측 프로모션</span>${pairs(a.promos)}</div>
       <div class="box"><span class="lb">관측 가격 신호</span>${(a.prices&&a.prices.length)?a.prices.map(esc).join(" · "):"—"}</div>
       <div class="box"><span class="lb">CTA 패턴</span>${pairs(a.cta)}</div>`:""}
-      ${rows?`<table><thead><tr><th>브랜드</th><th>관측 제목</th><th>관측 설명</th><th>프로모션</th></tr></thead><tbody>${rows}</tbody></table>`:""}
+      ${rows?`<table><thead><tr><th>브랜드${latest?` <small>(${esc(latest)})</small>`:""}</th><th>관측 제목</th><th>관측 설명</th><th>프로모션</th></tr></thead><tbody>${rows}</tbody></table>`:""}
     </div></div>`;
 }
 function renderProduct(){

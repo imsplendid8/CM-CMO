@@ -14,6 +14,7 @@ import { chromium } from "playwright";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { extractPowerLinks } from "./serp_powerlink_extract.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "serp");
@@ -25,32 +26,6 @@ const today = new Date().toISOString().slice(0, 10);
 const naverUrl = kw => "https://search.naver.com/search.naver?query=" + encodeURIComponent(kw);
 const safe = s => String(s).replace(/[^a-zA-Z0-9_-]/g, "");
 const RETRIES = Number(process.env.CAPTURE_RETRIES || 1); // 실패(빈 화면/오류) 시 추가 재캡쳐 횟수
-
-async function extractDomCandidates(page) {
-  return page.evaluate(() => {
-    const root=document.querySelector("#main_pack")||document.querySelector("#ct")||document.body;
-    const seen=new Set(),rows=[];
-    for(const a of root.querySelectorAll("a[href]")){
-      let block=a;
-      for(let depth=0;depth<6&&block?.parentElement;depth++){
-        const parent=block.parentElement,text=(parent.innerText||"").replace(/\s+/g," ").trim();
-        if(text.length>700)break;
-        block=parent;
-        if(text.length>=40&&/(광고|파워링크|adcr|sponsored)/i.test(`${text} ${a.href} ${block.className||""}`))break;
-      }
-      const text=(block?.innerText||a.innerText||"").replace(/\s+/g," ").trim();
-      if(text.length<20||text.length>500||seen.has(text))continue;
-      const adSignal=/(광고|파워링크|adcr|sponsored)/i.test(`${text} ${a.href} ${block?.className||""}`);
-      if(!adSignal)continue;
-      const linkTexts=[...block.querySelectorAll("a")].map(x=>(x.innerText||"").replace(/\s+/g," ").trim()).filter(x=>x.length>=2&&x.length<=60).slice(0,12);
-      const features=[];
-      [["insurance_quote",/보험료|견적|계산/],["easy_join",/간편|바로|즉시|24\s*시간|온라인|다이렉트/],["coverage",/보장|특약|담보|진단비|치료비|합의금|벌금/],["promotion",/이벤트|증정|할인|페이|상품권|쿠폰/],["trust",/공식|전문가|상담|선택|1위/]].forEach(([name,pattern])=>{if(pattern.test(text))features.push(name)});
-      seen.add(text);rows.push({text,linkTexts,features,hasImage:Boolean(block.querySelector("img")),confidence:"needs_review"});
-      if(rows.length===10)break;
-    }
-    return rows;
-  });
-}
 
 fs.mkdirSync(OUT, { recursive: true });
 
@@ -118,9 +93,9 @@ async function main() {
         { path: path.join(OUT, file), clip: { x: 0, y: 0, width: 1280, height: 1600 } },
         p.key,
       );
-      const domCandidates=await extractDomCandidates(page);
+      const domCandidates=await extractPowerLinks(page);
       results.push({ key: p.key, name: p.name, kw, file, date: today, status: res.status, domCandidates });
-      console.log(`✓ ${p.key.padEnd(10)} "${kw}" → serp/${file}${res.attempt ? ` (재캡쳐 ${res.attempt}회)` : ""}${res.rendered ? "" : " ⚠ 렌더 미완"}`);
+      console.log(`✓ ${p.key.padEnd(10)} "${kw}" → serp/${file} · 파워링크 ${domCandidates.length}건${res.attempt ? ` (재캡쳐 ${res.attempt}회)` : ""}${res.rendered ? "" : " ⚠ 렌더 미완"}`);
     } catch (e) {
       console.error(`✗ ${p.key} "${kw}" — ${e.message}`);
       results.push({ key: p.key, name: p.name, kw, file: null, date: today, error: e.message });
@@ -147,11 +122,12 @@ async function main() {
   const ok = results.filter(r => r.file).length;
   fs.writeFileSync(mfPath, JSON.stringify({ source: "playwright-naver", asof: today, updated: ok, shots }, null, 2));
   const domPath=path.join(OUT,"dom_observations.json");
-  let dom={source:"playwright-dom-review-queue",asof:today,observations:[]};
+  let dom={source:"playwright-powerlink",asof:today,observations:[]};
   try{dom=JSON.parse(fs.readFileSync(domPath,"utf-8"));}catch{}
-  dom.asof=today;dom.observations=(dom.observations||[]).filter(x=>x.date!==today);
+  // 이전 추출기가 남긴 영역 머리글(kind 없음) 행은 광고가 아니므로 정리
+  dom.source="playwright-powerlink";dom.asof=today;dom.observations=(dom.observations||[]).filter(x=>x.date!==today&&x.kind==="powerlink");
   for(const r of results)for(const c of (r.domCandidates||[]))dom.observations.push({product:r.key,keyword:r.kw,date:r.date,capture:r.file,...c});
-  dom.observations=dom.observations.slice(-500);
+  dom.observations=dom.observations.slice(-1500); // 상품 14 × 최대 15건 × 약 7주
   fs.writeFileSync(domPath,JSON.stringify(dom,null,2));
   console.log(`\nmanifest: serp/manifest.json · 이번 실행 ${ok}/${results.length}건 캡쳐`);
   if (ok === 0) process.exitCode = 1;

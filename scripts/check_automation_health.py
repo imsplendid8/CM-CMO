@@ -32,6 +32,7 @@ AUTOMATIONS = [
     ("실측 검색량",     "data/volume.json",      "asof",    9),   # searchad: 주간
     ("데이터랩 트렌드", "data/trends.json",      "asof",    35),  # trends: 월간
     ("SERP 캡쳐",       "serp/manifest.json",    "asof",    9),   # serp-capture: 주간
+    ("경쟁사 광고 관측", "serp/ad_observations.json", "asof", 9),  # serp-capture → serp_observation_agent: 주간
 ]
 
 STATES = ("healthy", "stale", "missing", "unknown")

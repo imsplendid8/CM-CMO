@@ -320,7 +320,12 @@ class TestFaqOpportunityAgent(unittest.TestCase):
         self.assertIn("scripts/fetch_search_console.py", workflow)
         self.assertIn("GSC_REFRESH_TOKEN", workflow)
         self.assertIn("dom_observations.json", capture)
-        self.assertIn('confidence:"needs_review"', capture)
+        # 파워링크 광고를 1건씩 구조화 → 경쟁사 관측 자동 정규화 → 분석까지 캡쳐 워크플로에서 연결
+        self.assertIn("extractPowerLinks(page)", capture)
+        serp_capture = (ROOT / ".github/workflows/serp-capture.yml").read_text(encoding="utf-8")
+        self.assertIn("scripts/check_serp_powerlink.mjs", serp_capture)
+        self.assertIn("scripts/serp_observation_agent.py", serp_capture)
+        self.assertIn("scripts/serp_analysis.py", serp_capture)
 
     def test_material_generation_guide_gate_runs_before_data_commit(self):
         workflow = (ROOT / ".github/workflows/content-intelligence.yml").read_text(encoding="utf-8")
