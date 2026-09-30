@@ -4,6 +4,7 @@ import vm from "node:vm";
 const html = fs.readFileSync(new URL("../adcopy-tool.html", import.meta.url), "utf8");
 const materialSpecs = fs.readFileSync(new URL("../shared/naver-material-specs.js", import.meta.url), "utf8");
 const insuranceAdReview = fs.readFileSync(new URL("../shared/insurance-ad-review.js", import.meta.url), "utf8");
+const coverageTerms = fs.readFileSync(new URL("../data/adcopy/coverage-terms.json", import.meta.url), "utf8");
 const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
 const appScript = scripts.find((source) => source.includes("function buildNaverRows"));
 
@@ -17,12 +18,13 @@ vm.createContext(context);
 vm.runInContext(materialSpecs, context, { filename: "shared/naver-material-specs.js" });
 vm.runInContext(insuranceAdReview, context, { filename: "shared/insurance-ad-review.js" });
 vm.runInContext(
-  `${pureSection}\n;globalThis.__AD_CHECK__={PRODUCTS,buildSheet,buildNaverRows,validateNaverRow,setPlanMonth:(month)=>{PLANM=month;}};`,
+  `${pureSection}\n;COVERAGE=${coverageTerms};globalThis.__AD_CHECK__={PRODUCTS,buildSheet,buildNaverRows,validateNaverRow,riderMissing,setPlanMonth:(month)=>{PLANM=month;}};`,
   context,
   { filename: "adcopy-tool.html" },
 );
 
-const { PRODUCTS, buildSheet, buildNaverRows, validateNaverRow, setPlanMonth } = context.__AD_CHECK__;
+const { PRODUCTS, buildSheet, buildNaverRows, validateNaverRow, riderMissing, setPlanMonth } = context.__AD_CHECK__;
+const clen = (s) => [...String(s ?? "").trim()].length;
 if (PRODUCTS.length !== 12) {
   throw new Error(`상품 수 불일치: ${PRODUCTS.length}개 (기대 12개)`);
 }
@@ -58,6 +60,13 @@ for (const product of PRODUCTS) {
     }
     if (/갑작스러운|미리 대비하세요|든든하게 대비|보장 여부와 가입 조건을 확인하세요/.test(generatedCopy)) {
       throw new Error(`${product.name}: 반복형 일반 문구 잔존 '${generatedCopy}'`);
+    }
+    // 설명·추가설명은 45자 한도를 최대한 채우고(42~45자), 담보명 바로 뒤에 (특약)을 붙인다
+    for (const [field, text] of [["설명", row.description], ["추가설명", row.additionalDescription]]) {
+      if (!text) continue;
+      if (clen(text) < 42 || clen(text) > 45) throw new Error(`${product.name}: ${field} ${clen(text)}자(42~45) '${text}'`);
+      const missing = riderMissing(text, product.key);
+      if (missing.length) throw new Error(`${product.name}: ${field} 담보명 뒤 (특약) 누락 ${missing.join(",")} '${text}'`);
     }
     const signature = [
       row.campaignName,

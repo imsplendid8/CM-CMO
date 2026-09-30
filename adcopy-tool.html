@@ -169,7 +169,7 @@ table.sheet .cp:hover{border-color:var(--brand);color:var(--brand-600);}
 .serp-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 15px;box-shadow:var(--sh);}
 .serp-card h3{font-size:13px;margin-bottom:8px;}.serp-card p{font-size:11.5px;color:var(--ink-2);line-height:1.65;}
 .serp-ad{padding:8px 0;border-top:1px solid var(--line-2);}.serp-ad:first-of-type{border-top:0;}.serp-ad b{font-size:11px}.serp-ad small{display:block;color:var(--muted);margin-top:2px;}
-.source-pill{display:inline-block;font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:99px;background:var(--brand-50);color:var(--brand-600);margin-left:5px;}
+.source-pill{display:inline-block;font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:99px;background:var(--brand-50);color:var(--brand-600);margin-left:5px;}.source-pill.warn{background:var(--bad-bg,#fdecec);color:var(--bad,#b42318);}
 .stale{color:var(--bad);font-weight:800}.fresh{color:var(--good);font-weight:800}
 .strategy-section{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:16px;overflow:hidden;}
 .strategy-intro{padding:16px 20px;border-bottom:1px solid var(--line-2);background:var(--surface-2);}
@@ -373,11 +373,13 @@ function genSeasonTitles(p,iss){
 }
 function genSeasonDescs(p,iss){
   // 시즌 문구를 대표 담보(covers[0])에 억지로 묶으면 '장마 → 화재'처럼 어긋나므로 시즌 키워드에서 관심사를 가져온다.
-  const sw=shortWord(iss.tag), n=p.name, a=al(p);
+  // 설명은 45자 한도를 최대한 채우고(42~45자) 담보명 뒤에 (특약)을 붙인다. 담보는 시즌 사유에 나온 것을 우선한다.
+  const sw=shortWord(iss.tag), n=p.name, a=al(p), terms=COVERAGE.terms?.[p.key]||[], hint=`${iss.tag} ${iss.why||""} ${(iss.kws||[]).join(" ")}`;
+  const t0=terms.find(t=>hint.includes(t.replace(/(손해|비용|진단비|치료비)$/,"")))||terms[0]||p.covers[0], t1=terms.find(t=>t!==t0)||p.covers[1]||t0;
   const pool=[
-    `${josa(sw,"을","를")} 앞두고 ${josa(n,"을","를")} 미리 준비해요`,
-    `${sw}에 필요한 보장만 골라 ${a} 보험료를 계산해요`,
-    `꼭 필요한 보장만 골라 ${sw} 전에 ${josa(a,"을","를")} 준비해요`,
+    fitSa([`${josa(sw,"을","를")} 앞두고 ${t0} 보장을 ${josa(a,"으로","로")} {pad}준비할 수 있어요`,`${josa(sw,"을","를")} 앞두고 ${t0} 보장까지 ${josa(a,"으로","로")} {pad}챙겨 두면 든든해요`,`${josa(sw,"을","를")} 앞두고 ${t0} 보장을 {pad}준비할 수 있어요`,`${josa(sw,"을","를")} 앞두고 ${t0} 보장을 {pad}준비해요`],p.key),
+    fitSa([`${sw}에 필요한 ${t0}·${t1} 보장만 골라 ${a} 보험료를 {pad}계산해요`,`${sw}에 필요한 ${t0} 보장만 골라 ${a} 보험료를 {pad}계산해요`,`${sw}에 필요한 보장만 골라 ${a} 보험료를 {pad}계산해요`],p.key),
+    fitSa([`꼭 필요한 ${t0} 보장만 골라 ${sw} 전에 ${josa(a,"을","를")} {pad}준비할 수 있어요`,`꼭 필요한 보장만 골라 ${sw} 전에 ${josa(a,"을","를")} {pad}준비할 수 있어요`],p.key),
   ];
   return wrap(pool,SPEC.descMin,SPEC.descMax,true);
 }
@@ -425,6 +427,13 @@ const EVIDENCE={
 let curKey=PRODUCTS[0].key;
 let AD_ANALYSIS={},AD_META={asof:"",window_days:35}; // 실측 관측 소재 분석(serp/ad_analysis.json · serp-tool과 공유)
 let SERP_AGENT={}; // SERP diff·검색량·상품 마스터를 결합한 주간 분석 산출물
+/* 담보명 바로 뒤 '(특약)' 표기(data/adcopy/coverage-terms.json · 에이전트와 같은 목록) + 설명 42~45자 맞춤 */
+let COVERAGE={suffix:"(특약)",exclude_product_names:[],terms:{}};
+const SA_TEXT={min:42,max:45},SA_PADS=["","미리 ","지금 바로 ","꼭 ","함께 ","한 번에 ","미리 꼭 ","지금 미리 "];
+function riderScan(text,key){const suffix=COVERAGE.suffix||"(특약)",value=String(text||""),covered=new Array(value.length).fill(false),hits=[];(COVERAGE.exclude_product_names||[]).forEach(name=>{let i=value.indexOf(name);while(i>=0){for(let j=i;j<i+name.length;j++)covered[j]=true;i=value.indexOf(name,i+1)}});[...(COVERAGE.terms?.[key]||[])].sort((a,b)=>b.length-a.length).forEach(term=>{let i=value.indexOf(term);while(i>=0){const end=i+term.length;if(!covered.slice(i,end).some(Boolean)){for(let j=i;j<end;j++)covered[j]=true;if(!value.startsWith(suffix,end))hits.push({term,end})}i=value.indexOf(term,i+1)}});return hits}
+function riderMissing(text,key){return riderScan(text,key).map(x=>x.term)}
+function markRiders(text,key){const suffix=COVERAGE.suffix||"(특약)";let value=String(text||"");riderScan(value,key).map(x=>x.end).sort((a,b)=>b-a).forEach(end=>{value=value.slice(0,end)+suffix+value.slice(end)});return value}
+function fitSa(options,key){const tried=[];for(const option of options.filter(Boolean)){for(const pad of(option.includes("{pad}")?SA_PADS:[""])){const value=markRiders(option.replace("{pad}",pad).replace(/\s+/g," ").trim(),key);if(clen(value)>=SA_TEXT.min&&clen(value)<=SA_TEXT.max)return value;tried.push(value)}}const fitting=tried.filter(v=>clen(v)<=SA_TEXT.max).sort((a,b)=>clen(b)-clen(a));return fitting[0]||tried.sort((a,b)=>clen(a)-clen(b))[0]||""}
 let MATERIAL_GUIDE={}; // 첨부 소재생성가이드에서 도출한 공통 규칙
 let RECO={recommendations:[],asof:""};       // 근거 기반 추천 소재(event_engine.py 산출물 · 연간플랜에서 병합)
 const MAIN=["driver","hrmf","golf"];        // 메인 3종(운전자·주택화재·골프)
@@ -471,27 +480,27 @@ function genSubTitles(p){
 /* ③ 설명 롤링 (20~45자) — 실제 검색 의도·비교 포인트 */
 function genDescs(p){
   const a=al(p), c0=p.covers[0], c1=p.covers[p.covers.length-1];
-  if(p.cat==="사이트")return wrap(["한화손보 다이렉트 공식 사이트에서 상품별 보험료 계산","필요한 보험상품을 고르고 온라인 설계 조건 확인"],SPEC.descMin,SPEC.descMax);
+  if(p.cat==="사이트")return wrap(["한화손보 다이렉트 공식 사이트에서 필요한 상품을 골라 보험료를 바로 계산해요","운전자·주택화재·골프보험까지 필요한 상품을 골라 온라인으로 바로 가입해요"],SPEC.descMin,SPEC.descMax);
   const byProduct={
-    driver:["벌금·변호사선임비용 특약만 골라 담고 내 보험료를 바로 계산해요","차에서 내린 뒤 일어난 자동차 사고도 대인 형사합의금을 보장해요(특약)","사고 뒤 벌금부터 변호사선임비용까지 한 번에 대비할 수 있어요(특약)","남의 일 같지 않은 보복운전, 보복운전피해보장 특약으로 대비해요","대인 사고로 형사합의가 필요할 때 드는 합의금을 실손으로 보장해요(특약)"],
-    hrmf:["아파트·빌라·오피스텔, 우리 집 유형에 맞춰 보험료를 바로 계산해요","집 안 누수부터 태풍·호우 피해까지 물로 생긴 손해를 보장해요","화재로 집에 머물 수 없을 때 임시로 지낼 곳의 비용을 보장해요","우리 집 누수로 아랫집에 피해를 줬다면 일상배상책임으로 대비해요","집에 도둑이 들어 물건을 잃었을 때 도난 손해도 보장받아요"],
-    golf:["라운딩 일정에 맞춰 필요한 보장만 골라 골프보험료를 계산해요","필드는 물론 스크린에서 나온 홀인원도 축하비용을 보장받아요","홀인원 뒤 한턱내는 축하 비용을 골프보험으로 준비해요","타구 사고로 다른 사람이 다쳤을 때 골프 배상책임으로 대비해요","라운딩 중 골프채가 부러졌을 때 골프용품 손해를 보장받아요"],
-    cncr:["진단비·치료비 중 필요한 보장만 직접 골라 나만의 암보험을 만들어요","암 진단 때 받는 진단비와 치료 과정의 치료비를 따로 골라 담아요","일반암뿐 아니라 유사암 진단비도 함께 준비할 수 있어요","비용 부담이 큰 표적항암약물 치료비를 따로 보장받을 수 있어요","진단부터 표적항암·항암방사선 치료까지 암보험 하나로 대비해요"],
-    dntl:["임플란트·크라운 등 필요한 치료 보장을 골라 보험료를 계산해요","빠진 치아를 대신하는 임플란트와 틀니 치료비를 보장받아요","정기 스케일링부터 충치 치료까지 일상적인 치과 치료도 챙겨요","충치가 깊어져 씌우는 크라운 치료비를 치아보험으로 준비해요","충치가 생겼을 때 받는 충전치료 비용을 치아보험으로 보장받아요"],
-    woman:["여성암부터 여성 질환까지 필요한 보장을 골라 보험료를 계산해요","여성암 진단비와 자궁·난소 질환 보장을 함께 준비해요","임신과 출산 전후에 생길 수 있는 질환을 미리 보장으로 준비해요","20대·30대·40대, 생애 단계마다 달라지는 여성 보장을 골라 담아요","자궁·난소 질환 치료에 필요한 보장을 여성건강보험으로 준비해요"],
-    overseas:["여행 일정과 국가만 입력하면 개인정보 없이 보험료가 바로 나와요","비행기가 지연되거나 짐이 늦게 도착해 생긴 비용을 보장해요","여행 중 휴대품이 파손되거나 도난당했을 때 손해를 보장받아요","여행지에서 다치거나 아파 병원에 가도 의료비를 보장받아요","공항 가기 전 휴대폰으로 가입하고 여행 중 사고에 대비해요"],
-    overseaslong:["유학·워홀·주재원, 체류 목적과 기간에 맞춰 맞춤 플랜을 만들어요","현지 병원 치료비는 물론 귀국 뒤 국내 치료비까지 보장받아요","긴 유학 생활 중 다치거나 아플 때를 대비해 유학생 보험을 준비해요","현지에서 큰 사고로 이송이나 귀국이 필요할 때 드는 비용을 보장해요","워킹홀리데이와 해외 주재원처럼 긴 체류에 맞는 보장을 담아요"],
-    holeinone:["라운딩 인원과 일정만 넣으면 홀인원 보험료가 바로 나와요","함께 라운딩하는 동반 플레이어와 한 번에 홀인원보험을 준비해요","홀인원 뒤 축하 식사와 기념품 비용을 홀인원보험으로 보장받아요","함께 라운딩하는 동반자에게 홀인원보험을 선물할 수 있어요","매일이 아니라 라운딩하는 날에 맞춰 짧게 가입할 수 있어요"],
-    birth:["태아 때 미리 가입해 필요한 보장을 골라 보험료를 계산해요","선천이상이나 미숙아로 태어났을 때 필요한 치료를 보장받아요","태아보험은 출산 전에 가입해야 태아 때부터 보장받을 수 있어요","임신·출산 중 산모에게 생길 수 있는 질환까지 함께 대비해요","태아 때 가입해 신생아 시기까지 이어지는 보장을 준비해요"],
-    event:["행사 종류와 규모만 입력하면 행사배상책임보험료를 계산해요","행사 중 관람객이 다치거나 물건이 파손됐을 때 배상책임을 보장해요","공연부터 체육대회까지 행사 유형에 맞는 배상책임을 준비해요","불꽃놀이·수상활동처럼 사고 위험이 큰 행사도 배상책임을 준비해요","축제·행사 준비 단계에서 배상책임보험까지 함께 챙겨요"],
-    chronic:["고혈압·당뇨가 있어도 간편심사로 보험료를 계산할 수 있어요","몇 가지 질문에만 답하는 간편심사로 보험 가입을 준비해요","고혈압이나 당뇨로 치료 중이어도 간편심사로 가입을 준비할 수 있어요","지병이 있어도 병원 치료비를 실손으로 준비할 수 있어요","지병이 있는 부모님을 위해 간편심사 보험을 준비해 드려요"],
+    driver:["벌금(특약)·변호사선임비용(특약)만 골라 담고 운전자보험 보험료를 바로 계산해요","차에서 내린 뒤 일어난 자동차 사고도 대인 형사합의금(특약)을 실손으로 보장해요","사고 뒤 벌금(특약)부터 변호사선임비용(특약)까지 운전자보험 하나로 대비해요","남의 일 같지 않은 보복운전 피해, 보복운전피해보장(특약)으로 미리 대비해요","대인 사고로 형사합의가 필요할 때 드는 합의금을 형사합의금(특약)으로 보장해요"],
+    hrmf:["아파트·빌라·오피스텔, 집 유형에 맞춰 화재손해(특약) 보험료를 바로 계산해요","배관 누수는 급배수시설누수손해(특약)로, 태풍·호우는 풍수재(특약)로 보장해요","화재로 집에 머물 수 없을 때 임시로 지낼 곳 비용을 임시거주비(특약)로 보장해요","우리 집 누수로 아랫집 천장이 젖었다면 일상배상책임(특약)으로 배상을 대비해요","집에 도둑이 들어 가재도구를 잃었을 때 도난손해(특약)로 잃은 손해를 보장받아요"],
+    golf:["라운딩 일정에 맞춰 홀인원비용(특약)·골프배상책임(특약)을 골라 보험료를 계산해요","필드는 물론 골프존 스크린골프장 홀인원도 스크린홀인원비용(특약)으로 보장받아요","홀인원 뒤 동반자와 나누는 축하 식사·기념품 비용을 홀인원비용(특약)으로 준비해요","타구 사고로 다른 사람이 다쳤을 때 골프배상책임(특약)으로 배상 비용을 대비해요","라운딩 중 골프채가 부러졌을 때 골프용품손해(특약)로 장비 손해를 보장받아요"],
+    cncr:["암진단비(특약)·암치료비(특약) 중 필요한 보장만 골라 나만의 암보험을 만들어요","암 진단 때 받는 암진단비(특약)와 치료 과정의 암치료비(특약)를 따로 담아요","일반암뿐 아니라 유사암진단비(특약)까지 함께 담아 암 진단에 폭넓게 대비해요","비용 부담이 큰 표적항암약물치료비(특약)를 따로 담아 새로운 치료까지 대비해요","진단부터 표적항암약물치료비(특약)·항암방사선치료비(특약)까지 하나로 대비해요"],
+    dntl:["임플란트(특약)·크라운(특약) 등 필요한 치료만 담고 치아보험료를 바로 계산해요","빠진 치아를 대신하는 임플란트(특약)와 틀니(특약) 치료비를 보장받을 수 있어요","정기 스케일링(특약)부터 충치 치료까지 자주 받는 치과 치료비를 미리 챙겨요","충치가 깊어져 치아를 씌우는 크라운(특약) 치료비를 치아보험으로 미리 준비해요","충치가 생겼을 때 받는 충전치료(특약) 비용을 치아보험으로 보장받아 부담을 덜어요"],
+    woman:["여성암진단비(특약)부터 자궁·난소 질환까지 필요한 보장만 골라 보험료를 계산해요","여성암진단비(특약)와 자궁·난소 질환 수술비(특약)를 여성건강보험 하나로 준비해요","임신과 출산 전후에 생길 수 있는 질환을 임신출산질환(특약)으로 미리 준비해요","20대·30대·40대, 생애 단계마다 여성암진단비(특약) 등 필요한 보장을 골라요","자궁·난소 질환으로 수술받을 때 자궁난소질환수술비(특약)로 치료비 부담을 덜어요"],
+    overseas:["여행 일정과 국가만 입력하면 해외의료비(특약) 등 여행자보험 보험료가 바로 나와요","비행기가 지연되거나 짐이 늦게 와 생긴 비용을 항공기지연비용(특약)으로 보장해요","여행 중 휴대품이 파손되거나 도난당했을 때 휴대품손해(특약)로 손해를 보장받아요","여행지에서 다치거나 아파 병원에 가도 해외의료비(특약)로 현지 병원비를 보장받아요","공항 가기 전 휴대폰으로 가입하고 해외의료비(특약)·휴대품손해(특약)로 대비해요"],
+    overseaslong:["유학·워홀·주재원, 체류 목적과 기간에 맞춰 해외의료비(특약) 플랜을 만들어요","현지 병원비는 해외의료비(특약)로, 귀국 뒤 치료비는 국내의료비(특약)로 보장해요","긴 유학 생활 중 다치거나 아플 때를 해외의료비(특약)로 대비하는 유학생 보험","현지 사고로 이송이나 귀국이 필요할 때 드는 비용을 구조송환비용(특약)으로 보장","워킹홀리데이와 해외 주재원처럼 긴 체류에 맞춰 해외의료비(특약) 보장을 담아요"],
+    holeinone:["라운딩 인원과 일정만 넣으면 홀인원비용(특약)을 담은 보험료가 바로 계산돼요","함께 라운딩하는 동반 플레이어와 홀인원비용(특약)을 한 번에 준비할 수 있어요","홀인원 뒤 축하 식사와 기념품 비용을 홀인원보험의 홀인원비용(특약)으로 보장해요","함께 라운딩하는 동반자에게 홀인원비용(특약)을 담은 홀인원보험을 선물할 수 있어요","매일이 아니라 라운딩하는 날에 맞춰 홀인원비용(특약)을 짧게 준비할 수 있어요"],
+    birth:["태아 때 미리 가입해 선천이상(특약) 등 필요한 보장을 골라 태아보험료를 계산해요","선천이상(특약)이나 미숙아(특약)로 태어났을 때 필요한 치료를 보장받을 수 있어요","태아보험은 출산 전에 가입해야 선천이상(특약) 등을 태아 때부터 보장받아 든든해요","임신·출산 중 산모에게 생길 수 있는 질환까지 임신출산질환(특약)으로 대비해요","태아 때 가입해 선천이상(특약) 등 신생아 시기까지 이어지는 보장을 준비해요"],
+    event:["행사 종류와 규모만 입력하면 행사배상책임(특약)을 담은 행사보험료를 바로 계산해요","행사 중 관람객이 다치거나 물건이 파손됐을 때 행사배상책임(특약)으로 보장해요","공연부터 체육대회까지 행사 유형에 맞춰 행사배상책임(특약)을 준비할 수 있어요","불꽃놀이·수상활동처럼 사고 위험이 큰 행사도 행사배상책임(특약)으로 미리 준비해요","축제·행사 준비 단계에서 관람객 사고에 대비해 행사배상책임(특약)까지 챙겨요"],
+    chronic:["고혈압·당뇨가 있어도 간편심사로 입원비(특약)·수술비(특약) 보험료를 계산해요","몇 가지 질문에만 답하는 간편심사로 입원비(특약)·수술비(특약)를 미리 준비해요","고혈압이나 당뇨로 치료 중이어도 간편심사로 수술비(특약) 보장을 준비할 수 있어요","지병이 있어도 병원 치료비를 간편심사 실손의료비(특약)로 미리 준비할 수 있어요","지병이 있는 부모님을 위해 간편심사로 입원비(특약)·수술비(특약)를 준비해 드려요"],
   };
   const pair=c1&&c1!==c0?`${josa(c0,"과","와")} ${c1}`:c0;
   const defaults=byProduct[p.key]||[
-    `${pair} 보장을 필요한 만큼 골라 담을 수 있어요`,
-    `필요한 보장만 골라 ${a} 보험료를 바로 계산해요`,
-    `필요 없는 보장은 빼고 꼭 필요한 ${a} 보장만 남겨요`,
-    `${josa(c0,"이","가")} 필요한 순간 ${josa(a,"으로","로")} 보장받을 수 있어요`,
+    fitSa([`${pair} 보장을 필요한 만큼 골라 ${josa(a,"으로","로")} {pad}담을 수 있어요`],p.key),
+    fitSa([`필요한 보장만 골라 담고 내 ${a} 보험료를 {pad}계산할 수 있어요`],p.key),
+    fitSa([`필요 없는 보장은 빼고 꼭 필요한 ${a} 보장만 {pad}남길 수 있어요`],p.key),
+    fitSa([`${c0} 보장이 필요한 순간이 와도 ${josa(a,"으로","로")} {pad}보장받을 수 있어요`],p.key),
   ];
   return wrap(defaults,SPEC.descMin,SPEC.descMax);
 }
@@ -499,29 +508,29 @@ function genDescs(p){
 function genAdditionalDescs(p){
   const a=al(p), c0=p.covers[0], c1=p.covers[p.covers.length-1];
   if(p.cat==="사이트")return wrap([
-    "한화손보 다이렉트 공식 사이트에서 상품별 보험료를 계산해 보세요.",
-    "전화 상담 없이 필요한 보험상품을 고르고 온라인으로 가입하세요.",
+    "한화손보 다이렉트 공식 사이트에서 상품별 보험료를 한 번에 바로 계산할 수 있어요",
+    "전화 상담 없이 필요한 보험상품을 골라 온라인으로 편하게 가입할 수 있어요",
   ],2,SPEC.additionalDescMax);
   const caseByProduct={
-    driver:["꼭 필요한 특약만 남겨 나에게 맞는 운전자보험을 만들어요","보복운전·급발진 대비 특약까지 함께 골라 담을 수 있어요","재판이 이어져도 심급별 변호사선임비용 특약으로 대비해요","예고 없는 급발진 사고엔 급발진 변호사선임비용 특약이 있어요","사고 뒤 합의금 마련까지 운전자보험으로 미리 준비해요"],
-    hrmf:["집주인도 세입자도 우리 집에 필요한 보장만 골라 담아요","장마철 빗물 피해도 풍수재 보장으로 대비할 수 있어요","집을 고치는 동안 지낼 곳의 비용까지 챙겨요","이웃에게 물어줘야 할 배상 비용까지 한 번에 준비해요","화재·누수·도난·배상책임, 필요한 보장만 골라 담아요"],
-    golf:["필드든 스크린이든 자주 치는 곳에 맞춰 보장을 골라요","첫 홀인원의 기쁨, 축하 비용까지 골프보험으로 챙겨요","축하 식사와 기념품 비용까지 골프보험으로 챙겨요","캐디가 다친 경우까지 배상책임으로 대비할 수 있어요","아끼는 장비 손해까지 골프보험 하나로 대비해요"],
-    cncr:["이미 가진 보장은 빼고 부족한 부분만 채울 수 있어요","치료가 길어져도 이어지는 치료비 보장을 더할 수 있어요","유사암·소액암까지 진단비 보장을 더할 수 있어요","항암방사선 치료비 보장도 함께 골라 담아요","진단비·치료비 조합을 내 상황에 맞게 직접 골라요"],
-    dntl:["앞으로 받을 치과 치료에 맞춰 보장을 골라요","크라운 같은 보철치료 비용까지 함께 대비해요","자주 받는 치료부터 큰 치료까지 한 번에 대비해요","비용이 큰 보철치료까지 미리 대비해 두세요","작은 충치 치료부터 치아보험으로 챙겨요"],
-    woman:["지금 나의 생애 단계에 맞는 보장만 골라 담아요","여성 질환 보장까지 한 보험으로 챙겨요","임신 계획이 있다면 출산 전후 보장을 미리 챙겨요","지금 나에게 필요한 보장부터 먼저 담을 수 있어요","여성암과 여성 질환을 한 보험에서 함께 챙겨요"],
-    overseas:["여행 기간만큼만 필요한 보장을 골라 가입해요","공항에서 발이 묶여도 추가로 드는 비용을 덜 수 있어요","여행 가방 속 소지품 사고까지 대비할 수 있어요","낯선 곳에서 아플 때 병원비까지 여행자보험으로 대비해요","여행 일정에 맞춰 필요한 기간만 가입할 수 있어요"],
-    overseaslong:["머무는 기간만큼 필요한 보장을 골라 담아요","잠시 귀국해 받는 치료도 보장이 이어져요","학교·비자 일정에 맞춰 보험 기간을 정할 수 있어요","먼 타국에서 위급한 순간이 와도 대비할 수 있어요","배상책임과 휴대품 손해 보장까지 함께 골라 담아요"],
-    holeinone:["원하는 날짜를 골라 필요한 만큼만 가입해요","라운딩 인원에 맞춰 함께 가입할 수 있어요","기다리던 홀인원, 축하 비용까지 미리 챙겨요","라운딩 앞둔 친구에게 특별한 선물로 마음을 전해요","원하는 라운딩 일정을 골라 필요한 만큼만 준비해요"],
-    birth:["아이가 태어나기 전부터 필요한 보장을 준비해요","태어나자마자 필요한 치료비까지 미리 준비해요","임신 소식을 들었다면 가입 시기를 미리 챙겨요","아이와 엄마의 보장을 한 번에 준비할 수 있어요","출산 뒤에도 아이의 보장이 이어지도록 준비해요"],
-    event:["공연·체육행사·축제 등 행사 성격에 맞게 골라요","주최자가 물어줘야 할 배상 비용까지 미리 대비해요","작은 동네 행사부터 큰 공연까지 규모에 맞게 가입해요","특별한 행사일수록 사고에 미리 대비해요","행사 일정에 맞춰 필요한 기간만 가입할 수 있어요"],
-    chronic:["지병 때문에 미뤄 둔 보험 가입, 간편심사로 다시 준비해요","긴 건강 질문지 대신 간편심사로 준비해요","꾸준히 관리 중인 만성질환이 있다면 간편보험을 알아봐요","병원 갈 일이 잦아도 실손 보장으로 치료비를 대비해요","나이와 건강 상태에 맞는 보장을 골라 담아요"],
+    driver:["꼭 필요한 특약만 남겨 내 운전 습관에 맞는 운전자보험을 직접 만들 수 있어요","보복운전피해보장(특약)과 급발진 변호사선임비용(특약)까지 함께 골라 담아 대비해요","재판이 2심·3심으로 이어져도 심급별 변호사선임비용(특약)으로 단계마다 대비해요","예고 없는 급발진 의심 사고엔 급발진 변호사선임비용(특약)으로 대비할 수 있어요","사고 뒤 급하게 필요한 합의금 마련까지 교통사고처리지원금(특약)으로 준비해요"],
+    hrmf:["집주인도 세입자도 화재손해(특약)부터 배상책임(특약)까지 필요한 보장만 골라요","장마철 창틈으로 들이친 빗물 피해도 풍수재(특약) 보장으로 미리 대비할 수 있어요","집을 고치는 동안 가족이 지낼 숙소 비용까지 임시거주비(특약)로 미리 챙겨요","이웃에게 물어 줘야 할 수리비까지 이웃집 배상책임(특약)으로 한 번에 준비해요","화재·누수·도난까지 도난손해(특약) 등 우리 집에 필요한 보장만 골라 담아요"],
+    golf:["필드든 스크린이든 자주 치는 곳에 맞춰 홀인원비용(특약)을 골라 담을 수 있어요","첫 홀인원의 기쁨, 축하 식사와 기념품 비용까지 홀인원비용(특약)으로 챙겨요","기념식수와 캐디 축하금까지 홀인원비용(특약)으로 홀인원의 기쁨을 온전히 누려요","내가 친 공에 캐디가 다친 경우까지 골프배상책임(특약)으로 대비할 수 있어요","골프채와 골프가방처럼 아끼는 장비 손해까지 골프용품손해(특약)로 대비할 수 있어요"],
+    cncr:["이미 가진 보장은 빼고 부족한 암진단비(특약)만 골라 채울 수 있어 부담이 적어요","치료가 길어져도 이어지는 치료비를 암치료비(특약)로 더해 끝까지 대비할 수 있어요","갑상선암 같은 유사암도 유사암진단비(특약)로 진단비 보장을 함께 더할 수 있어요","항암방사선치료비(특약)도 함께 골라 담아 치료 방법에 맞춰 대비할 수 있어요","암진단비(특약)와 치료비 조합을 내 상황과 가족력에 맞춰 골라 담을 수 있어요"],
+    dntl:["앞으로 받을 치과 치료에 맞춰 보존치료(특약)·보철치료(특약)를 골라 담아요","씌우는 크라운(특약) 같은 보철치료(특약) 비용까지 치아보험 하나로 대비해요","자주 받는 치료부터 비용이 큰 임플란트(특약)까지 치아보험으로 한 번에 대비해요","비용 부담이 큰 보철치료(특약)까지 치아보험으로 미리 대비해 두면 마음이 든든해요","작은 충치 치료부터 신경치료까지 보존치료(특약) 비용을 치아보험으로 함께 챙겨요"],
+    woman:["지금 나의 생애 단계에 맞춰 여성암진단비(특약) 등 필요한 보장만 골라 담아요","유방암·자궁암 같은 여성암까지 여성암진단비(특약)로 한 보험에서 함께 챙겨요","임신 계획이 있다면 출산 전후 보장을 임신출산질환(특약)으로 미리 챙겨 두세요","지금 나에게 가장 필요한 보장부터 여성암진단비(특약)로 먼저 담을 수 있어요","여성암진단비(특약)와 자궁·난소 질환 수술비(특약)를 한 보험에서 함께 챙겨요"],
+    overseas:["여행 기간만큼만 해외의료비(특약)·휴대품손해(특약) 등 필요한 보장을 골라요","공항에서 발이 묶여도 식사·숙박 비용을 항공기지연비용(특약)으로 덜 수 있어요","여행 가방 속 카메라·휴대폰 사고까지 휴대품손해(특약)로 미리 대비할 수 있어요","낯선 곳에서 갑자기 아플 때 병원비까지 해외의료비(특약)로 여행 중에 대비해요","여행 일정에 맞춰 필요한 기간만 해외의료비(특약)를 담아 휴대폰으로 가입해요"],
+    overseaslong:["머무는 기간만큼 해외의료비(특약)·배상책임(특약) 등 필요한 보장을 골라 담아요","잠시 귀국해 받는 치료도 국내의료비(특약)로 보장이 이어져 치료비 걱정을 덜어요","학교·비자 일정에 맞춰 해외의료비(특약) 보험 기간을 원하는 만큼 정할 수 있어요","먼 타국에서 위급한 순간이 와도 구조송환비용(특약)으로 가족 걱정을 덜 수 있어요","배상책임(특약)과 휴대품손해(특약)까지 긴 체류 생활에 맞게 함께 골라 담아요"],
+    holeinone:["원하는 라운딩 날짜를 골라 홀인원비용(특약)을 필요한 기간만큼 준비할 수 있어요","라운딩 인원에 맞춰 동반자와 함께 홀인원비용(특약)을 담아 가입할 수 있어요","기다리던 홀인원의 순간, 축하 자리 비용까지 홀인원비용(특약)으로 미리 챙겨요","라운딩 앞둔 친구에게 홀인원비용(특약)을 담은 홀인원보험으로 축하 마음을 전해요","원하는 라운딩 일정만 골라 홀인원비용(특약)을 필요한 만큼만 준비할 수 있어요"],
+    birth:["아이가 태어나기 전부터 선천이상(특약)·미숙아(특약) 보장을 미리 준비해 두세요","태어나자마자 필요한 치료비까지 선천이상(특약) 보장으로 미리 준비할 수 있어요","임신 소식을 들었다면 선천이상(특약) 보장을 위해 가입 시기를 미리 챙겨 두세요","아이의 선천이상(특약)과 엄마의 임신출산질환(특약)을 한 번에 준비할 수 있어요","출산 뒤에도 아이의 선천이상(특약) 보장이 이어지도록 태아 때 미리 준비해요"],
+    event:["공연·체육행사·축제 등 행사 성격에 맞게 행사배상책임(특약) 보장을 골라 담아요","주최자가 물어 줘야 할 배상 비용까지 행사배상책임(특약)으로 대비할 수 있어요","작은 동네 행사부터 큰 공연까지 규모에 맞춰 행사배상책임(특약)을 담아 가입해요","특별한 행사일수록 관람객 사고에 대비해 행사배상책임(특약)을 미리 챙겨 두세요","행사 일정에 맞춰 필요한 기간만 행사배상책임(특약)을 담아 간편하게 가입해요"],
+    chronic:["지병 때문에 미뤄 둔 보험, 간편심사로 입원비(특약)·수술비(특약)를 준비해요","긴 건강 질문지 대신 간편심사로 입원비(특약)와 수술비(특약)를 간편하게 준비해요","꾸준히 관리 중인 만성질환이 있다면 간편심사로 입원비(특약) 보장을 알아보세요","병원 갈 일이 잦은 지병이 있어도 실손의료비(특약)로 병원 치료비 부담을 덜어요","나이와 건강 상태에 맞춰 간편심사로 입원비(특약) 등 필요한 보장만 골라 담아요"],
   };
   const pair=c1&&c1!==c0?`${josa(c0,"과","와")} ${c1}`:c0;
   const defaults=caseByProduct[p.key]||[
-    `${pair}, 필요한 보장만 골라 담을 수 있어요`,
-    `꼭 필요한 보장만 남겨 나에게 맞는 ${josa(a,"을","를")} 만들어요`,
-    `${josa(c0,"이","가")} 필요한 순간을 ${josa(a,"으로","로")} 미리 준비해요`,
-    `보험료 계산부터 가입까지 온라인으로 이어서 진행해요`,
+    fitSa([`${pair}, 필요한 보장만 ${josa(a,"으로","로")} {pad}골라 담을 수 있어요`],p.key),
+    fitSa([`꼭 필요한 보장만 남겨 나에게 맞는 ${josa(a,"을","를")} {pad}직접 만들 수 있어요`],p.key),
+    fitSa([`${c0} 보장이 필요한 순간까지 ${josa(a,"으로","로")} {pad}준비할 수 있어요`],p.key),
+    fitSa([`보험료 계산부터 가입까지 ${josa(a,"을","를")} {pad}온라인으로 이어서 진행해요`],p.key),
   ];
   return wrap(defaults,2,SPEC.additionalDescMax);
 }
@@ -585,13 +594,16 @@ function serpIdeas(p){
   /* 주간 Agent 추천(sa_recommendations)이 없을 때만 쓰는 폴백 — 안내형이 아니라 고객이 얻는 혜택으로 쓴다. */
   const n=al(p),angle=selectedAngle,edge=lastCover!==angle?lastCover:(p.covers||[])[0]||angle;
   const fallback=p.cat==="사이트"?[]:[
-    {strategy:"검색 수요형",title:title(`${n} 보험료 계산`,`${n} 보험료`),desc:`필요한 보장만 골라 ${n} 보험료를 바로 계산해요`,why:`검색어 "${selectedDemand}" 수요 · ${basis}`},
-    {strategy:"고객 질문 답변형",title:title(`${angle}도 보장`,`${n} 보장`),desc:`${josa(angle,"이","가")} 필요한 순간 ${josa(n,"으로","로")} 보장받을 수 있어요`,why:"고객이 가장 먼저 묻는 보장을 제목으로"},
-    {strategy:"보장 범위 명확화형",title:title(`${angle}·${edge} 보장`,`${angle} 보장`),desc:`${angle}부터 ${edge}까지 필요한 보장을 골라 담을 수 있어요`,why:"보장 폭을 한 문장에 담아 선택 이유를 제시"},
-    {strategy:"상품 범위형",title:title(`${edge}까지 대비`,`${n} 대비`),desc:`${josa(edge,"이","가")} 걱정될 때도 ${n} 하나로 미리 대비해요`,why:"걱정 상황을 혜택으로 연결"},
-    {strategy:"차별 각도형",title:title(`${angle} 골라 담기`,`${n} 보장 선택`),desc:`다른 보장은 줄이고 ${angle} 보장은 꼭 챙길 수 있어요`,why:`경쟁 공통 소구(${common.slice(0,2).join("·")||"없음"})와 겹치지 않는 보장`},
-    {strategy:"특약·보험료형",title:title("필요한 특약만 골라",`${n} 특약`),desc:`꼭 필요한 특약만 남겨 내 상황에 맞는 ${josa(n,"을","를")} 만들어요`,why:"특약 선택권을 혜택으로"},
+    {strategy:"검색 수요형",title:title(`${n} 보험료 계산`,`${n} 보험료`),desc:fitSa([`${angle} 보장처럼 필요한 보장만 골라 담고 ${n} 보험료를 {pad}계산해요`,`필요한 보장만 골라 담고 내 ${n} 보험료를 {pad}계산할 수 있어요`],p.key),why:`검색어 "${selectedDemand}" 수요 · ${basis}`},
+    {strategy:"고객 질문 답변형",title:title(`${angle}도 보장`,`${n} 보장`),desc:fitSa([`${angle} 보장이 필요한 순간이 와도 ${josa(n,"으로","로")} {pad}보장받을 수 있어요`,`${angle} 보장이 필요한 순간, ${josa(n,"으로","로")} {pad}보장받을 수 있어요`],p.key),why:"고객이 가장 먼저 묻는 보장을 제목으로"},
+    {strategy:"보장 범위 명확화형",title:title(`${angle}·${edge} 보장`,`${angle} 보장`),desc:fitSa([`${angle}부터 ${edge}까지 필요한 보장을 ${josa(n,"으로","로")} {pad}골라 담을 수 있어요`,`${angle}부터 ${edge}까지 필요한 보장을 {pad}골라 담을 수 있어요`],p.key),why:"보장 폭을 한 문장에 담아 선택 이유를 제시"},
+    {strategy:"상품 범위형",title:title(`${edge}까지 대비`,`${n} 대비`),desc:fitSa([`${edge} 보장이 걱정될 때도 ${n} 하나로 {pad}대비할 수 있어요`,`${edge} 걱정까지 ${n} 하나로 {pad}대비할 수 있어요`],p.key),why:"걱정 상황을 혜택으로 연결"},
+    {strategy:"차별 각도형",title:title(`${angle} 골라 담기`,`${n} 보장 선택`),desc:fitSa([`다른 보장은 줄이고 ${angle} 보장은 ${josa(n,"으로","로")} {pad}챙길 수 있어요`,`다른 보장은 줄이고 ${angle} 보장은 {pad}챙길 수 있어요`],p.key),why:`경쟁 공통 소구(${common.slice(0,2).join("·")||"없음"})와 겹치지 않는 보장`},
+    {strategy:"특약·보험료형",title:title("필요한 특약만 골라",`${n} 특약`),desc:fitSa([`꼭 필요한 특약만 남겨 내 상황에 맞는 ${josa(n,"을","를")} {pad}직접 만들어요`,`꼭 필요한 특약만 남겨 나에게 맞는 ${josa(n,"을","를")} {pad}만들 수 있어요`],p.key),why:"특약 선택권을 혜택으로"},
   ];
+  // 예비 전략의 설명은 42~45자로 다듬은 상품별 문구를 우선 쓴다(조립 문장은 상품별 문구가 없을 때만)
+  const bank=p.cat==="사이트"?[]:genDescs(p).map(o=>o.tx);
+  fallback.forEach((row,i)=>{if(bank.length)row.desc=bank[i%bank.length]});
   const raw=agent.sa_recommendations?.length?agent.sa_recommendations.map(x=>({...x,desc:x.description||x.desc})):fallback;
   const candidates=raw.map(x=>({...x,title:dw(HUMANIZE.light(x.title)),desc:dw(HUMANIZE.light(x.desc))}))
     .filter(x=>clen(x.title)>=4&&clen(x.title)<=SPEC.titleMax&&clen(x.desc)>=SPEC.descMin&&clen(x.desc)<=SPEC.descMax&&!lintBan(x.title+x.desc).length)
@@ -634,9 +646,10 @@ function buildSheet(p){
     sub:   dd([...serp.subs,...genSubs(p)]).slice(0,SPEC.subSiteMax) };
 }
 /* 시트형 표 (문구 | 글자수) — 심의안 초안으로 내보내며 개별 복사는 제공하지 않는다. */
+function copyWarnings(o,max){const w=[];if(max===SPEC.descMax||max===SPEC.additionalDescMax){if(o.len<SA_TEXT.min)w.push(`${SA_TEXT.min}자 미만`);if(riderMissing(o.tx,curKey).length)w.push("(특약) 표기 누락")}return w}
 function tbl(rows,max){
   return `<div class="tblwrap"><table class="sheet"><thead><tr><th>문구</th><th class="c">글자수 <small>≤${max}</small></th></tr></thead><tbody>${
-    rows.length?rows.map(o=>`<tr class="${o.ss?"ss":""}"><td>${esc(o.tx)}${o.ss?'<span class="ssb">시즌·뉴스</span>':""}${o.serp?'<span class="source-pill">SERP 분석 반영</span>':""}${o.ban?.length?'<span class="source-pill">내용 재확인</span>':""}</td><td class="c mono">${o.len}</td></tr>`).join("")
+    rows.length?rows.map(o=>`<tr class="${o.ss?"ss":""}"><td>${esc(o.tx)}${o.ss?'<span class="ssb">시즌·뉴스</span>':""}${o.serp?'<span class="source-pill">SERP 분석 반영</span>':""}${o.ban?.length?'<span class="source-pill">내용 재확인</span>':""}${copyWarnings(o,max).map(w=>`<span class="source-pill warn">${esc(w)}</span>`).join("")}</td><td class="c mono">${o.len}</td></tr>`).join("")
       :`<tr><td colspan="2" class="c muted">규격에 맞는 후보 없음</td></tr>`}</tbody></table></div>`;
 }
 function block(lbl,rows,max,ss){
@@ -882,7 +895,7 @@ function buildNaverRows(p,target=50){
     const need=perStrategy+(si<extra?1:0);let made=0;
     const pool=strategyPools[strategy.key]||{titles,descs,subt,additionalDescs,promos};
     // 문구가 부족하면 전체 풀 사용
-    const safeDescs=pool.descs.length>2?pool.descs:descs;
+    const safeDescs=pool.descs.length>3?pool.descs:descs; // 전략별 설명이 3개 이하면 조합이 모자라 전체 문구 사용
     const variantGroups=generateStrategyVariants(strategy.key,{titles:pool.titles,descs:safeDescs,subt:pool.subt,additionalDescs:pool.additionalDescs,promos:pool.promos,extraSubs});
     for(let vi=0;vi<variantGroups.length&&made<need;vi++){
       const variant=variantGroups[vi];
@@ -999,21 +1012,21 @@ function loadSignals(){return fetch("data/signals.json",{cache:"no-store"}).then
 // 기상특보 → 상품 날씨 대응 소구(제목 ≤15 · 설명 20~45)
 const WEATHER=[
  {k:"건조",ico:"🌤",prods:["hrmf"],why:"건조한 날씨 = 전선·콘센트 발화·산불 위험↑(봄·가을 건조기)",
-   t:"건조한 날 화재 대비",d:"건조한 계절 전선·콘센트 화재까지 주택화재보험으로 대비해요"},
+   t:"건조한 날 화재 대비",d:"건조한 계절 전선·콘센트에서 난 불로 생긴 집 손해를 화재손해(특약)로 대비해요"},
  {k:"호우",ico:"🌧",prods:["hrmf"],why:"장마·집중호우 = 누수·침수·풍수재 피해",
-   t:"장마철 누수 보장",d:"장마·집중호우로 생긴 누수와 풍수재 피해를 주택화재보험으로 보장받아요"},
+   t:"장마철 누수 보장",d:"장마·집중호우로 들이친 빗물 피해를 풍수재(특약)로 주택화재보험에서 보장받아요"},
  {k:"태풍",ico:"🌀",prods:["hrmf"],why:"태풍 = 풍수재·낙하물·누수 피해",
-   t:"태풍 풍수재 보장",d:"태풍으로 생긴 풍수재·누수 피해를 주택화재보험으로 보장받아요"},
+   t:"태풍 풍수재 보장",d:"태풍과 강풍으로 창문이 깨지고 물이 들어온 피해를 풍수재(특약)로 보장받아요"},
  {k:"폭염",ico:"🔥",prods:["hrmf"],why:"폭염 = 에어컨·전기과부하 화재 위험",
-   t:"폭염철 전기 화재 대비",d:"에어컨·전기 과부하로 생길 수 있는 화재를 주택화재보험으로 대비해요"},
+   t:"폭염철 전기 화재 대비",d:"에어컨을 오래 켜 전기 과부하로 불이 났을 때 화재손해(특약)로 미리 대비해요"},
  {k:"한파",ico:"❄️",prods:["hrmf","driver"],why:"한파 = 동파·난방기구 화재 / 빙판 사고",
-   t:"한파 동파·난방화재 대비",d:"한파에 배관이 얼어 물이 새거나 난방기구 화재가 나도 대비할 수 있어요",
-   byProduct:{driver:{why:"한파 = 빙판길·블랙아이스 사고",t:"빙판길 사고 대비",d:"한파로 얼어붙은 빙판길 사고 뒤 벌금·변호사선임비용까지 대비해요"}}},
+   t:"한파 동파·난방화재 대비",d:"한파에 배관이 얼어 터진 누수는 급배수시설누수손해(특약)로 미리 대비할 수 있어요",
+   byProduct:{driver:{why:"한파 = 빙판길·블랙아이스 사고",t:"빙판길 사고 대비",d:"한파로 얼어붙은 빙판길 사고 뒤 벌금(특약)·변호사선임비용(특약)까지 대비해요"}}},
  {k:"대설",ico:"🌨",prods:["driver","hrmf"],why:"대설 = 빙판·눈길 사고 / 지붕 적설",
-   t:"눈길 사고 대비",d:"눈길·빙판길 사고 뒤 벌금·변호사선임비용까지 운전자보험으로 대비해요",
-   byProduct:{hrmf:{why:"대설 = 적설 하중·풍수재 피해",t:"대설 풍수재 대비",d:"폭설로 생긴 풍수재 피해를 주택화재보험 특약으로 대비해요"}}},
+   t:"눈길 사고 대비",d:"눈길 교통사고 뒤 벌금(특약)·변호사선임비용(특약)까지 운전자보험으로 대비해요",
+   byProduct:{hrmf:{why:"대설 = 적설 하중·풍수재 피해",t:"대설 풍수재 대비",d:"폭설에 지붕과 창이 부서져 생긴 피해를 풍수재(특약)로 주택화재보험에서 대비해요"}}},
  {k:"강풍",ico:"💨",prods:["driver"],why:"강풍 = 운전 중 사고 위험",
-   t:"강풍 운전 사고 대비",d:"강풍 속 운전 중 사고에도 운전자보험 특약으로 대비할 수 있어요"},
+   t:"강풍 운전 사고 대비",d:"강풍 속 운전 중 사고가 나도 형사합의금(특약)·벌금(특약)으로 대비할 수 있어요"},
 ];
 const wxActive=k=>((SIG.weather&&SIG.weather.active)||[]).includes(k);
 function weatherSection(p){
@@ -1268,6 +1281,7 @@ render();
 Promise.all([loadBrandManifest(),loadVolume(),loadSignals(),loadSeasonal()]).then(()=>{renderSidebar();render();}); // 경쟁사 브랜드검색 + 실측 검색량 + 기상특보 + 연간플랜
 // 실측 관측 소재 분석(있으면) — 생성 문구의 경쟁 공통 소구 회피·차별 근거
 fetch("serp/ad_analysis.json").then(r=>r.ok?r.json():null).then(d=>{if(d&&d.products){AD_META={asof:d.asof||"",window_days:d.window_days||35};AD_ANALYSIS=d.products;render();}}).catch(()=>{});
+fetch("data/adcopy/coverage-terms.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.terms){COVERAGE=d;render();}}).catch(()=>{});
 fetch("data/adcopy/serp-candidates.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{
   if(d&&d.products){SERP_AGENT=Object.fromEntries(d.products.map(x=>[x.product_key,x]));SERP_AGENT.__planningMonth=d.planning_month||"";render();}
 }).catch(()=>{});

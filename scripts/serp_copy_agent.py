@@ -15,6 +15,11 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 
 try:
+    import coverage_terms
+except ModuleNotFoundError:  # python -m scripts.serp_copy_agent
+    from scripts import coverage_terms
+
+try:
     from scripts.io_utils import atomic_json_write
 except ModuleNotFoundError:  # python scripts/serp_copy_agent.py
     from io_utils import atomic_json_write
@@ -116,68 +121,68 @@ STRATEGY_LABELS = {
 FALLBACK_SA_BLUEPRINTS = {
     "birth": [
         {"message_axis": "search_action", "title": "태아보험 보험료 계산",
-         "description": "태아 때 미리 가입해 필요한 보장을 골라 보험료를 계산해요",
-         "additional_description": "아이가 태어나기 전부터 필요한 보장을 준비해요",
+         "description": "태아 때 미리 가입해 선천이상(특약) 등 필요한 보장을 골라 태아보험료를 계산해요",
+         "additional_description": "아이가 태어나기 전부터 선천이상(특약)·미숙아(특약) 보장을 미리 준비해 두세요",
          "promo": "태아보험료 계산", "sublinks": ["보험료계산", "가입시기", "보장내용", "가입하기"]},
         {"message_axis": "scope_compare", "title": "선천이상·미숙아 보장",
-         "description": "선천이상이나 미숙아로 태어났을 때 필요한 치료를 보장받아요",
-         "additional_description": "태어나자마자 필요한 치료비까지 미리 준비해요",
+         "description": "선천이상(특약)이나 미숙아(특약)로 태어났을 때 필요한 치료를 보장받을 수 있어요",
+         "additional_description": "태어나자마자 필요한 치료비까지 선천이상(특약) 보장으로 미리 준비할 수 있어요",
          "promo": "신생아 보장", "sublinks": ["선천이상", "미숙아", "보험료", "가입하기"]},
         {"message_axis": "decision_detail", "title": "출산 전 가입 적기",
-         "description": "태아보험은 출산 전에 가입해야 태아 때부터 보장받을 수 있어요",
-         "additional_description": "임신 소식을 들었다면 가입 시기를 미리 챙겨요",
+         "description": "태아보험은 출산 전에 가입해야 선천이상(특약) 등을 태아 때부터 보장받아 든든해요",
+         "additional_description": "임신 소식을 들었다면 선천이상(특약) 보장을 위해 가입 시기를 미리 챙겨 두세요",
          "promo": "가입 시기 챙기기", "sublinks": ["가입시기", "보장내용", "보험료", "가입하기"]},
         {"message_axis": "serp_whitespace", "title": "산모 질환도 함께 대비",
-         "description": "임신·출산 중 산모에게 생길 수 있는 질환까지 함께 대비해요",
-         "additional_description": "아이와 엄마의 보장을 한 번에 준비할 수 있어요",
+         "description": "임신·출산 중 산모에게 생길 수 있는 질환까지 임신출산질환(특약)으로 대비해요",
+         "additional_description": "아이의 선천이상(특약)과 엄마의 임신출산질환(특약)을 한 번에 준비할 수 있어요",
          "promo": "산모 보장", "sublinks": ["산모", "출산", "보험료", "가입하기"]},
         {"message_axis": "terms_navigation", "title": "태아부터 신생아까지",
-         "description": "태아 때 가입해 신생아 시기까지 이어지는 보장을 준비해요",
-         "additional_description": "출산 뒤에도 아이의 보장이 이어지도록 준비해요",
+         "description": "태아 때 가입해 선천이상(특약) 등 신생아 시기까지 이어지는 보장을 준비해요",
+         "additional_description": "출산 뒤에도 아이의 선천이상(특약) 보장이 이어지도록 태아 때 미리 준비해요",
          "promo": "태아보험 가입", "sublinks": ["태아", "신생아", "보험료", "가입하기"]},
     ],
     "event": [
         {"message_axis": "search_action", "title": "행사보험 보험료 계산",
-         "description": "행사 종류와 규모만 입력하면 행사배상책임보험료를 계산해요",
-         "additional_description": "공연·체육행사·축제 등 행사 성격에 맞게 골라요",
+         "description": "행사 종류와 규모만 입력하면 행사배상책임(특약)을 담은 행사보험료를 바로 계산해요",
+         "additional_description": "공연·체육행사·축제 등 행사 성격에 맞게 행사배상책임(특약) 보장을 골라 담아요",
          "promo": "행사 보험료 계산", "sublinks": ["보험료계산", "행사유형", "보장내용", "가입하기"]},
         {"message_axis": "decision_detail", "title": "관람객 사고 배상책임",
-         "description": "행사 중 관람객이 다치거나 물건이 파손됐을 때 배상책임을 보장해요",
-         "additional_description": "주최자가 물어줘야 할 배상 비용까지 미리 대비해요",
+         "description": "행사 중 관람객이 다치거나 물건이 파손됐을 때 행사배상책임(특약)으로 보장해요",
+         "additional_description": "주최자가 물어 줘야 할 배상 비용까지 행사배상책임(특약)으로 대비할 수 있어요",
          "promo": "배상책임 보장", "sublinks": ["배상책임", "관람객", "보험료", "가입하기"]},
         {"message_axis": "scope_compare", "title": "공연·체육행사 보장",
-         "description": "공연부터 체육대회까지 행사 유형에 맞는 배상책임을 준비해요",
-         "additional_description": "작은 동네 행사부터 큰 공연까지 규모에 맞게 가입해요",
+         "description": "공연부터 체육대회까지 행사 유형에 맞춰 행사배상책임(특약)을 준비할 수 있어요",
+         "additional_description": "작은 동네 행사부터 큰 공연까지 규모에 맞춰 행사배상책임(특약)을 담아 가입해요",
          "promo": "행사 유형별 보장", "sublinks": ["공연행사", "체육행사", "보험료", "가입하기"]},
         {"message_axis": "serp_whitespace", "title": "불꽃놀이·수상행사 보장",
-         "description": "불꽃놀이·수상활동처럼 사고 위험이 큰 행사도 배상책임을 준비해요",
-         "additional_description": "특별한 행사일수록 사고에 미리 대비해요",
+         "description": "불꽃놀이·수상활동처럼 사고 위험이 큰 행사도 행사배상책임(특약)으로 미리 준비해요",
+         "additional_description": "특별한 행사일수록 관람객 사고에 대비해 행사배상책임(특약)을 미리 챙겨 두세요",
          "promo": "특수 행사 보장", "sublinks": ["불꽃놀이", "수상활동", "보험료", "가입하기"]},
         {"message_axis": "terms_navigation", "title": "축제 준비와 함께 가입",
-         "description": "축제·행사 준비 단계에서 배상책임보험까지 함께 챙겨요",
-         "additional_description": "행사 일정에 맞춰 필요한 기간만 가입할 수 있어요",
+         "description": "축제·행사 준비 단계에서 관람객 사고에 대비해 행사배상책임(특약)까지 챙겨요",
+         "additional_description": "행사 일정에 맞춰 필요한 기간만 행사배상책임(특약)을 담아 간편하게 가입해요",
          "promo": "행사보험 가입", "sublinks": ["가입하기", "보장내용", "행사유형", "보험료"]},
     ],
     "chronic": [
         {"message_axis": "search_action", "title": "간편보험 보험료 계산",
-         "description": "고혈압·당뇨가 있어도 간편심사로 보험료를 계산할 수 있어요",
-         "additional_description": "지병 때문에 미뤄 둔 보험 가입, 간편심사로 다시 준비해요",
+         "description": "고혈압·당뇨가 있어도 간편심사로 입원비(특약)·수술비(특약) 보험료를 계산해요",
+         "additional_description": "지병 때문에 미뤄 둔 보험, 간편심사로 입원비(특약)·수술비(특약)를 준비해요",
          "promo": "간편보험료 계산", "sublinks": ["보험료계산", "간편심사", "보장내용", "가입하기"]},
         {"message_axis": "decision_detail", "title": "몇 가지 질문으로 가입",
-         "description": "몇 가지 질문에만 답하는 간편심사로 보험 가입을 준비해요",
-         "additional_description": "긴 건강 질문지 대신 간편심사로 준비해요",
+         "description": "몇 가지 질문에만 답하는 간편심사로 입원비(특약)·수술비(특약)를 미리 준비해요",
+         "additional_description": "긴 건강 질문지 대신 간편심사로 입원비(특약)와 수술비(특약)를 간편하게 준비해요",
          "promo": "간편심사 가입", "sublinks": ["간편심사", "고지항목", "보험료", "가입하기"]},
         {"message_axis": "scope_compare", "title": "고혈압·당뇨 간편심사",
-         "description": "고혈압이나 당뇨로 치료 중이어도 간편심사로 가입을 준비할 수 있어요",
-         "additional_description": "꾸준히 관리 중인 만성질환이 있다면 간편보험을 알아봐요",
+         "description": "고혈압이나 당뇨로 치료 중이어도 간편심사로 수술비(특약) 보장을 준비할 수 있어요",
+         "additional_description": "꾸준히 관리 중인 만성질환이 있다면 간편심사로 입원비(특약) 보장을 알아보세요",
          "promo": "만성질환 가입", "sublinks": ["고혈압", "당뇨", "보험료", "가입하기"]},
         {"message_axis": "serp_whitespace", "title": "유병력자 실손 보장",
-         "description": "지병이 있어도 병원 치료비를 실손으로 준비할 수 있어요",
-         "additional_description": "병원 갈 일이 잦아도 실손 보장으로 치료비를 대비해요",
+         "description": "지병이 있어도 병원 치료비를 간편심사 실손의료비(특약)로 미리 준비할 수 있어요",
+         "additional_description": "병원 갈 일이 잦은 지병이 있어도 실손의료비(특약)로 병원 치료비 부담을 덜어요",
          "promo": "실손 보장", "sublinks": ["유병실손", "보장내용", "보험료", "가입하기"]},
         {"message_axis": "terms_navigation", "title": "부모님 보험 준비",
-         "description": "지병이 있는 부모님을 위해 간편심사 보험을 준비해 드려요",
-         "additional_description": "나이와 건강 상태에 맞는 보장을 골라 담아요",
+         "description": "지병이 있는 부모님을 위해 간편심사로 입원비(특약)·수술비(특약)를 준비해 드려요",
+         "additional_description": "나이와 건강 상태에 맞춰 간편심사로 입원비(특약) 등 필요한 보장만 골라 담아요",
          "promo": "부모님 보험 알아보기", "sublinks": ["부모님", "보장내용", "보험료", "가입하기"]},
     ],
 }
@@ -493,6 +498,35 @@ def _fit(options, minimum, maximum):
     return (cut if len(cut) >= minimum else value[:maximum]).rstrip(" ·,:")
 
 
+# SA 설명·추가설명은 45자 한도를 최대한 채운다(운영 기준 42~45자). 짧으면 자연스러운 부사를 넣어 맞춘다.
+SA_TEXT_MIN, SA_TEXT_MAX = 42, 45
+_SA_PADS = ("", "미리 ", "지금 바로 ", "꼭 ", "함께 ", "한 번에 ", "미리 꼭 ", "지금 미리 ")
+
+
+def _fit_sa(options, product_key, minimum=SA_TEXT_MIN, maximum=SA_TEXT_MAX):
+    """템플릿의 {pad} 자리에 부사를 넣어 42~45자를 우선 고르고, 담보명 뒤에 (특약)을 붙인다."""
+    tried = []
+    for option in options:
+        if not option:
+            continue
+        for pad in (_SA_PADS if "{pad}" in option else ("",)):
+            value = re.sub(r"\s+", " ", option.replace("{pad}", pad)).strip(" ·,:")
+            value = coverage_terms.mark_riders(value, product_key)
+            if minimum <= len(value) <= maximum:
+                return value
+            tried.append(value)
+    fitting = [value for value in tried if len(value) <= maximum]
+    if fitting:
+        return max(fitting, key=len)
+    # 모든 후보가 한도를 넘으면 문장을 중간에서 자르지 않고, 가장 짧은 후보의 상품명·수식어를 덜어낸다
+    shortest = min(tried, key=len)
+    for drop in (r"\S+보험(?:으로|을|를|의|에)?\s", r"(?:미리|꼭|지금 바로|한 번에|든든하게)\s"):
+        slim = re.sub(drop, "", shortest, count=1)
+        if len(slim) <= maximum:
+            return slim
+    return shortest[:maximum]
+
+
 def _josa(value, batchim, open_value):
     text = str(value or "")
     if not text:
@@ -620,52 +654,86 @@ def _copy_for_axis(axis, product, keyword, angle, other, season):
     pair = f"{_josa(angle, '과', '와')} {other}"
     if axis == "seasonal_scene" and event:
         short = re.split(r"[·,(]", event)[0].strip()
-        focus = f"{name} 보장" if angle.replace(" ", "") in event.replace(" ", "") else f"{angle} 보장"
+        # 시즌 이름에 이미 들어간 단어(불꽃놀이 등)나 상품명을 두 번 쓰지 않는다 — 도구가 반복 단어를 지워 길이가 줄어든다
+        rider = next(iter(coverage_terms.load().get("terms", {}).get(product["key"], [])), "")
+        focus = f"{angle} 보장" if angle.replace(" ", "") not in event.replace(" ", "") else (f"{rider} 보장" if rider else "필요한 보장")
         return {
             "strategy": "시즌 장면형",
             "title": _fit([f"{short} 대비 {name}", f"{short} 전 {angle} 보장", f"{name} 시즌 보장"], 4, 15),
-            "description": _fit([f"{_josa(event, '을', '를')} 앞두고 {_josa(focus, '을', '를')} 미리 준비해요",
-                                  f"{event} 시기에 필요한 {pair} 보장을 골라 담아요"], 20, 45),
-            "additional_description": _fit([f"{_josa(event, '을', '를')} 앞두고 필요한 보장만 골라 담아요",
-                                             "꼭 필요한 보장만 골라 담을 수 있어요"], 2, 45),
+            "description": _fit_sa([f"{_josa(event, '을', '를')} 앞두고 {_josa(focus, '을', '를')} {name}으로 필요한 만큼 {{pad}}챙겨 두세요",
+                                     f"{event} 시기에 필요한 {pair} 보장을 {name}으로 {{pad}}챙겨 두세요",
+                                     f"{_josa(event, '을', '를')} 앞두고 {_josa(focus, '을', '를')} {name}으로 {{pad}}챙겨 두세요",
+                                     f"{_josa(event, '을', '를')} 앞두고 {_josa(focus, '을', '를')} {{pad}}챙겨 두세요",
+                                     f"{event} 시기에 필요한 {pair} 보장을 {{pad}}챙겨 두세요"], product["key"]),
+            "additional_description": _fit_sa([f"{_josa(event, '을', '를')} 앞두고 {name}에 꼭 필요한 보장만 나에게 맞게 {{pad}}골라 담을 수 있어요",
+                                                f"{event} 일정에 맞춰 {pair} 보장을 {name}으로 {{pad}}골라 담을 수 있어요",
+                                                f"{_josa(event, '을', '를')} 앞두고 {name}에 필요한 보장만 {{pad}}골라 담을 수 있어요",
+                                                f"{event} 일정에 맞춰 {pair} 보장을 {{pad}}골라 담을 수 있어요"], product["key"]),
             "promo": _fit([f"{angle} 보장", "필요한 보장 선택"], 2, 14),
             "sublinks": ["보험료계산", "보장내용", "가입조건", "가입하기"],
         }
     templates = {
         "search_action": ([f"{name} 보험료 계산", f"{name} 보험료"],
-                          [f"{pair} 중 필요한 보장만 골라 보험료를 계산해요", f"필요한 보장만 골라 {name} 보험료를 계산해요"],
-                          ["필요 없는 보장은 빼고 꼭 필요한 보장만 남길 수 있어요"],
+                          [f"{pair} 중 필요한 보장만 골라 담고 {name} 보험료를 {{pad}}계산해요",
+                           f"{angle} 보장처럼 필요한 보장만 골라 담고 {name} 보험료를 {{pad}}계산해요",
+                           f"필요한 보장만 골라 담고 내 {name} 보험료를 온라인으로 {{pad}}계산해요",
+                           f"필요한 보장만 골라 담고 내 {name} 보험료를 {{pad}}계산해요"],
+                          [f"필요 없는 보장은 빼고 {angle}처럼 필요한 보장만 {{pad}}남길 수 있어요",
+                           "필요 없는 보장은 빼고 꼭 필요한 보장만 남겨 나에게 맞게 {pad}준비해요"],
                           ["내 보험료 바로 계산", "보험료 계산"], ["보험료계산", "보장선택", "보장내용", "가입하기"]),
         "decision_detail": ([f"{angle}도 보장", f"{angle} 보장 받기"],
-                            [f"{_josa(angle, '이', '가')} 필요한 순간, {name}으로 보장받을 수 있어요",
-                             f"{_josa(angle, '이', '가')} 필요할 때 {name}으로 보장받아요"],
-                            [f"{other} 보장까지 함께 골라 담을 수 있어요"],
+                            [f"{angle} 보장이 필요한 순간이 와도 {name} 하나로 {{pad}}걱정 없이 보장받아요",
+                             f"{angle} 보장이 필요한 순간이 와도 {name}으로 {{pad}}보장받아요",
+                             f"{angle} 보장이 필요한 순간, {name}으로 {{pad}}보장받아요",
+                             f"{angle} 보장이 필요할 때 {name}으로 {{pad}}보장받아요"],
+                            [f"{angle}에 더해 {other} 보장까지 {name}으로 {{pad}}함께 골라 담을 수 있어요",
+                             f"{angle} 보장과 함께 {other} 보장까지 {name}으로 {{pad}}골라 담아요",
+                             f"{other} 보장까지 {name}으로 {{pad}}함께 골라 담을 수 있어요"],
                             [f"{angle} 보장", "보장 골라 담기"], ["보장내용", "보장선택", "보험료", "가입하기"]),
         "scope_compare": ([f"{angle}·{other} 보장", f"{name} 보장 비교"],
-                          [f"{pair}, 필요한 보장을 골라 한 번에 담아요", f"{pair} 보장을 골라 한 번에 준비해요"],
-                          [f"{angle}부터 {other}까지 나에게 맞게 골라요"],
+                          [f"{pair}, 필요한 보장을 {name}으로 {{pad}}나에게 맞게 골라 담아요",
+                           f"{pair} 보장을 {name}으로 {{pad}}나에게 맞게 골라 담아요",
+                           f"{pair} 보장을 {name}으로 {{pad}}골라 담아요",
+                           f"{pair} 보장을 {{pad}}나에게 맞게 골라 담아요",
+                           f"{pair} 보장을 {{pad}}골라 담아요"],
+                          [f"{angle} 보장부터 {other} 보장까지 {name}을 나에게 맞게 {{pad}}골라 담아요",
+                           f"{angle}부터 {other}까지 {name} 보장을 나에게 맞게 {{pad}}골라 담아요",
+                           f"{angle}부터 {other}까지 나에게 맞게 {{pad}}골라 담을 수 있어요"],
                           ["보장 골라 담기", "필요한 보장 선택"], ["보장선택", "보장내용", "보험료", "가입하기"]),
         "terms_navigation": ([f"{name} 보장 구성", f"{angle} 보장 준비"],
-                             [f"{angle}부터 {other}까지 {name} 하나로 대비해요",
-                              f"{angle}부터 {other}까지 한 번에 대비해요"],
-                             ["꼭 필요한 보장만 남겨 나에게 맞게 준비해요"],
+                             [f"{angle} 보장부터 {other} 보장까지 필요한 만큼 골라 {name} 하나로 {{pad}}대비해요",
+                              f"{angle}부터 {other}까지 필요한 보장을 골라 {name} 하나로 {{pad}}대비해요",
+                              f"{angle} 보장부터 {other} 보장까지 {name} 하나로 {{pad}}대비해요",
+                              f"{angle}부터 {other}까지 필요한 보장을 {name} 하나로 {{pad}}대비해요",
+                              f"{angle}부터 {other}까지 {name} 하나로 {{pad}}대비해요",
+                              f"{angle}부터 {other}까지 필요한 보장을 {{pad}}대비해요"],
+                             [f"꼭 필요한 {angle} 보장만 남겨 {name}을 나에게 맞게 {{pad}}준비해요",
+                              "꼭 필요한 보장만 남겨 나에게 맞는 보험을 {pad}직접 준비할 수 있어요"],
                              ["필요한 보장 선택", "보장 골라 담기"], ["보장내용", "보장선택", "보험료", "가입하기"]),
         "official_path": ([f"{name} 온라인 가입", f"{name} 가입하기"],
-                          [f"보험료 계산부터 가입까지 {_josa(name, '을', '를')} 온라인으로 간편하게 끝내요",
-                           "보험료 계산부터 가입까지 온라인으로 간편하게 끝내요"],
-                          ["원하는 보장과 기간을 골라 직접 설계해요"],
+                          [f"보험료 계산부터 가입까지 {_josa(name, '을', '를')} {{pad}}온라인으로 간편하게 끝낼 수 있어요",
+                           f"{angle} 보장을 골라 보험료 계산부터 가입까지 {{pad}}온라인으로 끝낼 수 있어요",
+                           f"보험료 계산부터 가입까지 {{pad}}온라인으로 간편하게 끝낼 수 있어요"],
+                          [f"원하는 {angle} 보장과 보험 기간을 {{pad}}골라 {_josa(name, '을', '를')} 직접 설계할 수 있어요",
+                           "원하는 보장과 보험 기간을 {pad}골라 나에게 맞는 보험을 직접 설계할 수 있어요"],
                           ["온라인 간편 가입", "가입하기"], ["보험료계산", "보장내용", "가입조건", "가입하기"]),
     }
     if axis not in templates:  # serp_whitespace
         templates[axis] = ([f"{angle} 보장도 준비", f"{name} {angle} 보장"],
-                           [f"{_josa(angle, '이', '가')} 필요한 상황까지 {name}으로 미리 준비해요",
-                            f"{angle} 보장까지 {name}으로 미리 준비해요"],
-                           [f"{angle} 보장을 더해 나에게 맞게 준비해요"],
+                           [f"{angle} 보장이 필요한 상황이 와도 {name}으로 {{pad}}빈틈없이 준비할 수 있어요",
+                            f"{angle} 보장이 필요한 상황까지 {name}으로 {{pad}}준비할 수 있어요",
+                            f"{angle} 보장이 필요한 상황이 와도 {name}으로 {{pad}}준비할 수 있어요",
+                            f"{angle} 보장까지 {name}으로 {{pad}}빈틈없이 준비할 수 있어요",
+                            f"{angle} 보장까지 {name}으로 {{pad}}준비할 수 있어요"],
+                           [f"{angle} 보장을 더해 {_josa(name, '을', '를')} 나에게 맞게 {{pad}}준비할 수 있어요",
+                            f"{angle} 보장과 {other} 보장까지 더해 {_josa(name, '을', '를')} 나에게 맞게 {{pad}}준비해요",
+                            f"{angle} 보장과 {other} 보장을 더해 {_josa(name, '을', '를')} {{pad}}준비할 수 있어요",
+                            f"{angle} 보장을 더해 나에게 맞게 {{pad}}준비할 수 있어요"],
                            [f"{angle} 보장", "보장 더하기"], ["보장내용", "보험료계산", "보장선택", "가입하기"])
     titles, descriptions, additions, promos, sublinks = templates[axis]
     return {"strategy": STRATEGY_LABELS.get(axis, "SERP 공백형"),
-            "title": _fit(titles, 4, 15), "description": _fit(descriptions, 20, 45),
-            "additional_description": _fit(additions, 2, 45), "promo": _fit(promos, 2, 14),
+            "title": _fit(titles, 4, 15), "description": _fit_sa(descriptions, product["key"]),
+            "additional_description": _fit_sa(additions, product["key"]), "promo": _fit(promos, 2, 14),
             "sublinks": list(sublinks)}
 
 

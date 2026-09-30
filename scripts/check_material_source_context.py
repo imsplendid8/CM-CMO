@@ -11,6 +11,10 @@ import json
 import re
 from pathlib import Path
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import coverage_terms  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[1]
 CONTEXT = ROOT / "data/adcopy/material-source-context.json"
 OUTPUT = ROOT / "data/adcopy/serp-candidates.json"
@@ -21,6 +25,23 @@ GUIDANCE_COPY = re.compile(
     r"안내해|안내합|안내$|알려드|정리했|정리해|한눈에 (비교|정리)|나눠서|약관 기준|상품설명서"
     r"|지급 (기준|조건)|보장하지 않는 경우|적용 조건|알기 쉽게|확인할 수 있|읽어보|읽기|대조|기록"
     r"|확인해 보세요|살펴보세요")
+
+
+# SA 설명·추가설명은 45자 한도를 최대한 채운다(운영 기준 42~45자) · 담보명 바로 뒤에 '(특약)'
+SA_TEXT_MIN, SA_TEXT_MAX = 42, 45
+GENERATED_TEXT_FLOOR = 40   # 에이전트 자동 문구는 40자 미만만 실패, 42자 미만은 경고(주간 자동화 보호)
+
+
+def sa_text_problems(key, row, minimum):
+    problems = []
+    for field in ("description", "additional_description"):
+        text = row.get(field) or ""
+        if not (minimum <= len(text) <= SA_TEXT_MAX):
+            problems.append(f"{field} {len(text)}자({minimum}~{SA_TEXT_MAX}) → {text}")
+        missing = coverage_terms.missing_rider_marks(text, key)
+        if missing:
+            problems.append(f"{field} 담보명 뒤 (특약) 누락 {missing} → {text}")
+    return problems
 
 
 def fail(message):
@@ -83,10 +104,8 @@ def main() -> int:
                     fail(f"{key}: SA 블루프린트 {field}가 고객 소구가 아닌 안내형 문구 → {row.get(field)}")
             if not (4 <= len(row.get("title") or "") <= 15):
                 fail(f"{key}: SA 제목 길이 오류")
-            if not (20 <= len(row.get("description") or "") <= 45):
-                fail(f"{key}: SA 설명 길이 오류")
-            if not (2 <= len(row.get("additional_description") or "") <= 45):
-                fail(f"{key}: SA 추가설명 길이 오류")
+            for problem in sa_text_problems(key, row, SA_TEXT_MIN):
+                fail(f"{key}: SA 블루프린트 {problem}")
             if not (2 <= len(row.get("promo") or "") <= 14):
                 fail(f"{key}: SA 홍보문구 길이 오류")
             if len(row.get("sublinks") or []) != 4 or any(not 2 <= len(value) <= 6 for value in row.get("sublinks") or []):
@@ -115,6 +134,11 @@ def main() -> int:
                 fail(f"{key}: SA 사전검수 상태 누락")
             if set(row.get("source_grounding", {}).get("source_ids") or []) != set(product.get("source_ids") or []):
                 fail(f"{key}: SA 후보에 자료 source id가 전달되지 않았습니다")
+            for problem in sa_text_problems(key, row, GENERATED_TEXT_FLOOR):
+                fail(f"{key}: 생성된 SA {problem}")
+            for field in ("description", "additional_description"):
+                if len(row.get(field) or "") < SA_TEXT_MIN:
+                    print(f"WARN {key}: 생성된 SA {field} {len(row.get(field) or '')}자 — 42~45자 권장")
             direct_copy = " ".join(str(row.get(field) or "") for field in ("title", "description", "additional_description", "promo"))
             if GUIDANCE_COPY.search(direct_copy):
                 fail(f"{key}: 생성된 SA가 고객 소구가 아닌 안내형 문구를 포함 → {direct_copy}")
@@ -123,6 +147,17 @@ def main() -> int:
         for row in result.get("power_content_topics") or []:
             if set(row.get("source_grounding", {}).get("source_ids") or []) != set(product.get("source_ids") or []):
                 fail(f"{key}: 파워콘텐츠 후보에 자료 source id가 전달되지 않았습니다")
+
+    # 자료 기반 블루프린트가 없는 상품(예비 문구)과 모든 생성 결과도 같은 SA 문구 기준을 적용한다
+    import serp_copy_agent  # noqa: E402
+    for key, rows in serp_copy_agent.FALLBACK_SA_BLUEPRINTS.items():
+        for row in rows:
+            for problem in sa_text_problems(key, row, SA_TEXT_MIN):
+                fail(f"{key}: 예비 SA 블루프린트 {problem}")
+    for key, result in generated.items():
+        for row in result.get("sa_recommendations") or []:
+            for problem in sa_text_problems(key, row, GENERATED_TEXT_FLOOR):
+                fail(f"{key}: 생성된 SA {problem}")
 
     serialized = json.dumps(output, ensure_ascii=False)
     copied = [title for title in competitor_titles if title and title in serialized]

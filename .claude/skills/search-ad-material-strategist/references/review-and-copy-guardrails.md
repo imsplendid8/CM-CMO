@@ -68,3 +68,12 @@ Mark as review needed:
 - channel claims: `전화 없이`, `상담 없이`;
 - amount, limit, refund, savings, or price claims;
 - terms that depend on current policy wording.
+
+
+## Length And Rider Marks (operator feedback 2026-09)
+
+- 설명·추가설명(최대 45자)은 한도를 최대한 채워 **42~45자**로 쓴다. 25~35자 문구는 쓰지 않는다.
+- 담보명은 **바로 뒤에 `(특약)`**을 붙인다: `벌금(특약)·변호사선임비용(특약)`, `풍수재(특약)`, `홀인원비용(특약)`. 문장 끝에 한 번 붙이는 방식은 쓰지 않는다.
+- 담보명 목록은 `data/adcopy/coverage-terms.json`(상품별). 새 담보를 쓰면 목록에 먼저 추가한다.
+- 같은 단어를 한 문장에 두 번 쓰지 않는다(도구가 반복 단어를 지워 42자 미만이 된다).
+- 검사: `python3 scripts/check_material_source_context.py`(원천·예비·생성), `node scripts/check_adcopy_export.mjs`(엑셀 600행). 자동 생성 문구는 `serp_copy_agent._fit_sa`가 (특약)을 붙이고 42~45자를 우선 고른다.
