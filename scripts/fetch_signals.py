@@ -545,6 +545,31 @@ def _extract_molit_series(payload):
         unique[(row["period"], row["count"])] = row
     return sorted(unique.values(), key=lambda row: row["period"])
 
+def _molit_form_stock(payload):
+    """통계누리 '자동차등록대수현황' formList(행=시도×월, 열='차종>용도') → 월별 전국 등록대수(누적).
+
+    각 행에서 '>계' 열(차종별 합계)만 더해 용도별 중복 합산을 피하고, 같은 월의 시도 행을 합친다.
+    """
+    data = payload.get("result_data") if isinstance(payload, dict) else None
+    rows = data.get("formList") if isinstance(data, dict) else None
+    if not isinstance(rows, list):
+        return [], ""
+    totals = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        period = re.sub(r"[^0-9]", "", str(row.get("date") or ""))[:6]
+        if len(period) != 6:
+            continue
+        subtotal = [_coerce_float(v) for k, v in row.items() if str(k).endswith(">계")]
+        subtotal = [v for v in subtotal if v is not None]
+        if not subtotal:
+            continue
+        totals[period] = totals.get(period, 0) + sum(subtotal)
+    series = [{"period": k, "count": int(v)} for k, v in sorted(totals.items())]
+    return series, str(data.get("formName") or "")
+
+
 def _calculate_trend(series):
     """시계열 데이터로부터 성장률과 방향성을 계산한다.
     입력: [{"period": "202607", "count": 12000}, {"period": "202608", "count": 13200}, ...]
@@ -717,7 +742,8 @@ def fetch_car_newreg():
             except Exception:
                 payload = {"raw": text[:2000]}
         status, message = _extract_status(payload)
-        series = _extract_molit_series(payload)
+        stock_series, form_name = ([], "") if data_go else _molit_form_stock(payload)
+        series = stock_series or _extract_molit_series(payload)
         latest = series[-1] if series else None
         # 월별 표(series)를 못 찾으면 응답의 '숫자처럼 보이는 첫 값'으로 메우지 않는다.
         # (2026-09 실측: 이 추측값 6,777,673이 매번 같은 값으로 '신규등록 대수'처럼 표시됐다)
@@ -729,6 +755,23 @@ def fetch_car_newreg():
         if len(series) >= 2 and series[-2]["count"]:
             mom = round((series[-1]["count"] - series[-2]["count"]) / series[-2]["count"] * 100, 2)
         trend = _calculate_trend(series) if series else {}
+        if stock_series and count is not None:
+            # 등록대수(누적) 표는 신규등록이 아니다 — 전월 대비 증감(순증)을 함께 남기고 그대로 표시한다.
+            net = series[-1]["count"] - series[-2]["count"] if len(series) >= 2 else None
+            return {
+                "count": count,
+                "period": period,
+                "mom": mom,
+                "net_change": net,
+                "kind": "stock",
+                "trend": {},
+                "source": "stat.molit",
+                "basis": f"{form_name or '자동차등록대수현황'}(누적·시도 합계)",
+                "status_code": status,
+                "message": message,
+                "request": {"protocol": "stat.molit", "form_id": CAR_NEWREG_FORM_ID or None, "style_num": CAR_NEWREG_STYLE_NUM or None, "start_dt": start_dt, "end_dt": end_dt},
+                "series": series[-24:],
+            }
         if count is None:
             return {
                 "count": None,
@@ -789,7 +832,20 @@ def build_triggers(weather, travel, exit_tour=None, newreg=None):
                 "note": f"출국 국민 {count / 10000:,.0f}만 명({exit_tour.get('period','')} · 3개월 +{g3}%) → 해외여행보험 출국수요 대응",
                 "basis": exit_tour.get("basis", "출입국관광통계 API"),
             }
-    if newreg and newreg.get("count") is not None:
+    if newreg and newreg.get("count") is not None and newreg.get("kind") == "stock":
+        net = newreg.get("net_change")
+        net_str = f" · 전월 대비 {net:+,}대" if isinstance(net, int) else ""
+        note = f"자동차 등록대수(누적, {newreg.get('period','')}) {newreg['count']:,}대{net_str} → 운전자보험 잠재 수요 참고"
+        if "driver" in trg and isinstance(trg["driver"], dict):
+            prev = str(trg["driver"].get("note") or "").strip()
+            trg["driver"]["note"] = prev + (" / " if prev else "") + note
+            basis = trg["driver"].setdefault("basis", [])
+            if not isinstance(basis, list):
+                trg["driver"]["basis"] = basis = [str(basis)]
+            basis.append(newreg.get("basis"))
+        else:
+            trg["driver"] = {"level": "medium", "note": note, "basis": [newreg.get("basis")]}
+    elif newreg and newreg.get("count") is not None:
         count = newreg.get("count")
         if isinstance(count, (int, float)) and count >= 1000:
             trend = newreg.get("trend", {})
