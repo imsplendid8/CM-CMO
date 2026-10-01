@@ -1,0 +1,1796 @@
+{
+  "schema_version": 1,
+  "planning_month": "2026-10",
+  "asof": "2026-09-30",
+  "refresh_cadence": "monthly",
+  "products": [
+    {
+      "product_key": "hrmf",
+      "keyword": "주택화재보험",
+      "selected_angle": "누수·풍수재",
+      "image_plan": {
+        "set_id": "hrmf-2026-10",
+        "planning_month": "2026-10",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "new_generation_required": 4,
+        "style_family": "premium_3d_animation_v4",
+        "selection": "least_recently_used_product_pool_then_new_generation"
+      },
+      "image_directions": [
+        {
+          "proposal_id": "hrmf-2026-10-bec083-01",
+          "concept_id": "50843613a7ec67cf",
+          "role": "파워링크 대표",
+          "scene": "천장 누수 흔적을 확인하는 가족",
+          "reference_scene": "천장 누수 흔적을 확인하는 가족",
+          "asset": "assets/insurance/home-leak-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "주택화재보험 검색 맥락을 ‘천장 누수 흔적을 확인하는 가족’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 선택 기준 구체화 · SERP 보장·특약 제시 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "hrmf-2026-10-bec083-02",
+          "concept_id": "031c49d37f62884a",
+          "role": "보험료 탐색",
+          "scene": "비 오는 날 집 안 누수 위험을 점검하는 장면",
+          "reference_scene": "비 오는 날 집 안 누수 위험을 점검하는 장면",
+          "asset": "assets/insurance/home-weather-3d.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "주택화재보험 검색 맥락을 ‘비 오는 날 집 안 누수 위험을 점검하는 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 선택 기준 구체화 · SERP 보장·특약 제시 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "hrmf-2026-10-bec083-03",
+          "concept_id": "0a8d0b9fc9d2c07f",
+          "role": "보장내용 탐색",
+          "scene": "주택 외부 설비의 화재를 발견한 가족",
+          "reference_scene": "주택 외부 설비의 화재를 발견한 가족",
+          "asset": "assets/insurance/home-fire-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "주택화재보험 검색 맥락을 ‘주택 외부 설비의 화재를 발견한 가족’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 선택 기준 구체화 · SERP 보장·특약 제시 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "hrmf-2026-10-bec083-04",
+          "concept_id": "367ca2f2038485a1",
+          "role": "가입안내 탐색",
+          "scene": "아파트 주방 천장 누수를 발견한 가족",
+          "reference_scene": "아파트 주방 천장 누수를 발견한 가족",
+          "asset": "",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": false,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "주택화재보험 검색 맥락을 ‘아파트 주방 천장 누수를 발견한 가족’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 선택 기준 구체화 · SERP 보장·특약 제시 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        }
+      ]
+    },
+    {
+      "product_key": "golf",
+      "keyword": "골프보험",
+      "selected_angle": "필드 홀인원",
+      "image_plan": {
+        "set_id": "golf-2026-10",
+        "planning_month": "2026-10",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "new_generation_required": 4,
+        "style_family": "premium_3d_animation_v4",
+        "selection": "least_recently_used_product_pool_then_new_generation"
+      },
+      "image_directions": [
+        {
+          "proposal_id": "golf-2026-10-c97da0-01",
+          "concept_id": "31d30917ef320373",
+          "role": "파워링크 대표",
+          "scene": "가을 골프 성수기 일정에 맞춰 티박스에서 골프백과 클럽을 준비하는 장면",
+          "reference_scene": "티박스에서 골프백과 클럽을 준비하는 장면",
+          "asset": "assets/insurance/golf-tee-bag-animation-v1.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "골프보험 검색 맥락을 ‘가을 골프 성수기 일정에 맞춰 티박스에서 골프백과 클럽을 준비하는 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 실제 시즌 장면 · SERP 가입 편의 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "golf-2026-10-c97da0-02",
+          "concept_id": "8ff36e6ed4fa5409",
+          "role": "보험료 탐색",
+          "scene": "라운드 전 장비와 빈 체크카드를 확인하는 장면",
+          "reference_scene": "라운드 전 장비와 빈 체크카드를 확인하는 장면",
+          "asset": "assets/insurance/golf-checklist-animation-v1.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "골프보험 검색 맥락을 ‘라운드 전 장비와 빈 체크카드를 확인하는 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 실제 시즌 장면 · SERP 가입 편의 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "golf-2026-10-c97da0-03",
+          "concept_id": "56183da8199b33fd",
+          "role": "보장내용 탐색",
+          "scene": "그린 위 홀인원 순간을 기뻐하는 골퍼",
+          "reference_scene": "그린 위 홀인원 순간을 기뻐하는 골퍼",
+          "asset": "assets/insurance/golf-hole-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "골프보험 검색 맥락을 ‘그린 위 홀인원 순간을 기뻐하는 골퍼’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 실제 시즌 장면 · SERP 가입 편의 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "golf-2026-10-c97da0-04",
+          "concept_id": "0c3ffdae44313b07",
+          "role": "가입안내 탐색",
+          "scene": "깃대와 공이 보이는 홀인원 장면",
+          "reference_scene": "깃대와 공이 보이는 홀인원 장면",
+          "asset": "assets/insurance/golf-holeinone-3d.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "골프보험 검색 맥락을 ‘깃대와 공이 보이는 홀인원 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 실제 시즌 장면 · SERP 가입 편의 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        }
+      ]
+    },
+    {
+      "product_key": "cncr",
+      "keyword": "암보험",
+      "selected_angle": "진단비",
+      "image_plan": {
+        "set_id": "cncr-2026-10",
+        "planning_month": "2026-10",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "new_generation_required": 4,
+        "style_family": "premium_3d_animation_v4",
+        "selection": "least_recently_used_product_pool_then_new_generation"
+      },
+      "image_directions": [
+        {
+          "proposal_id": "cncr-2026-10-73f31c-01",
+          "concept_id": "e9beef3d9a44835c",
+          "role": "파워링크 대표",
+          "scene": "암보험 상담 전 건강자료와 빈 기록지를 차분히 확인하는 장면",
+          "reference_scene": "암보험 상담 전 건강자료와 빈 기록지를 차분히 확인하는 장면",
+          "asset": "assets/insurance/cancer-consult-animation-v1.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "암보험 검색 맥락을 ‘암보험 상담 전 건강자료와 빈 기록지를 차분히 확인하는 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 경쟁 소재 공백 · SERP 보장·특약 제시 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "cncr-2026-10-73f31c-02",
+          "concept_id": "9d06e4917d6f1c6c",
+          "role": "보험료 탐색",
+          "scene": "일상에서 건강 상태를 확인하는 성인",
+          "reference_scene": "일상에서 건강 상태를 확인하는 성인",
+          "asset": "assets/insurance/health-check-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "암보험 검색 맥락을 ‘일상에서 건강 상태를 확인하는 성인’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 경쟁 소재 공백 · SERP 보장·특약 제시 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "cncr-2026-10-73f31c-03",
+          "concept_id": "69899e25dede5104",
+          "role": "보장내용 탐색",
+          "scene": "건강검진 결과와 체크리스트를 보는 장면",
+          "reference_scene": "건강검진 결과와 체크리스트를 보는 장면",
+          "asset": "assets/insurance/health-review-3d.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "암보험 검색 맥락을 ‘건강검진 결과와 체크리스트를 보는 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 경쟁 소재 공백 · SERP 보장·특약 제시 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "cncr-2026-10-73f31c-04",
+          "concept_id": "9a70c0271850d337",
+          "role": "가입안내 탐색",
+          "scene": "건강검진 결과를 차분히 확인하는 성인",
+          "reference_scene": "건강검진 결과를 차분히 확인하는 성인",
+          "asset": "",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": false,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "암보험 검색 맥락을 ‘건강검진 결과를 차분히 확인하는 성인’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 경쟁 소재 공백 · SERP 보장·특약 제시 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        }
+      ]
+    },
+    {
+      "product_key": "dntl",
+      "keyword": "치아보험",
+      "selected_angle": "스케일링",
+      "image_plan": {
+        "set_id": "dntl-2026-10",
+        "planning_month": "2026-10",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "new_generation_required": 4,
+        "style_family": "premium_3d_animation_v4",
+        "selection": "least_recently_used_product_pool_then_new_generation"
+      },
+      "image_directions": [
+        {
+          "proposal_id": "dntl-2026-10-9a5a36-01",
+          "concept_id": "8f9f199019491217",
+          "role": "파워링크 대표",
+          "scene": "치아 모형을 보며 상담하는 장면",
+          "reference_scene": "치아 모형을 보며 상담하는 장면",
+          "asset": "assets/insurance/dental-consult-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "치아보험 검색 맥락을 ‘치아 모형을 보며 상담하는 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 항목 간 비교 · SERP 가입 편의 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "dntl-2026-10-9a5a36-02",
+          "concept_id": "207ee97fee781336",
+          "role": "보험료 탐색",
+          "scene": "치과 상담실에서 치료 계획을 확인하는 장면",
+          "reference_scene": "치과 상담실에서 치료 계획을 확인하는 장면",
+          "asset": "assets/insurance/dental-consult-3d.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "치아보험 검색 맥락을 ‘치과 상담실에서 치료 계획을 확인하는 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 항목 간 비교 · SERP 가입 편의 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "dntl-2026-10-9a5a36-03",
+          "concept_id": "3b290d43b18b4d24",
+          "role": "보장내용 탐색",
+          "scene": "치아 모형과 빈 상담 카드를 놓고 치료 항목을 확인하는 장면",
+          "reference_scene": "치아 모형과 빈 상담 카드를 놓고 치료 항목을 확인하는 장면",
+          "asset": "assets/insurance/dental-model-animation-v1.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "치아보험 검색 맥락을 ‘치아 모형과 빈 상담 카드를 놓고 치료 항목을 확인하는 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 항목 간 비교 · SERP 가입 편의 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "dntl-2026-10-9a5a36-04",
+          "concept_id": "64256f3ce915cf6b",
+          "role": "가입안내 탐색",
+          "scene": "치과 상담실에서 치아 모형을 보는 환자",
+          "reference_scene": "치과 상담실에서 치아 모형을 보는 환자",
+          "asset": "",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": false,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "치아보험 검색 맥락을 ‘치과 상담실에서 치아 모형을 보는 환자’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 항목 간 비교 · SERP 가입 편의 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        }
+      ]
+    },
+    {
+      "product_key": "driver",
+      "keyword": "운전자보험",
+      "selected_angle": "비용 항목",
+      "image_plan": {
+        "set_id": "driver-2026-10",
+        "planning_month": "2026-10",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "new_generation_required": 3,
+        "style_family": "premium_3d_animation_v4",
+        "selection": "least_recently_used_product_pool_then_new_generation"
+      },
+      "image_directions": [
+        {
+          "proposal_id": "driver-2026-10-9506b5-01",
+          "concept_id": "faf60b851a7ddd04",
+          "role": "파워링크 대표",
+          "scene": "스쿨존 횡단보도 앞에서 감속하는 운전자",
+          "reference_scene": "스쿨존 횡단보도 앞에서 감속하는 운전자",
+          "asset": "assets/insurance/driver-schoolzone-animation-v4.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": false,
+          "repeated_reference_in_month": false,
+          "generation_required": false,
+          "reference_only": false,
+          "refresh_action": "reuse_approved_asset",
+          "generation_brief": "운전자보험 검색 맥락을 ‘스쿨존 횡단보도 앞에서 감속하는 운전자’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 선택 기준 구체화 · SERP 보장·특약 제시 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "driver-2026-10-9506b5-02",
+          "concept_id": "068355fee8f83851",
+          "role": "보험료 탐색",
+          "scene": "비 오는 저녁 도로에서 방어운전하는 운전자",
+          "reference_scene": "비 오는 저녁 도로에서 방어운전하는 운전자",
+          "asset": "assets/insurance/driver-rain-animation-v4.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "운전자보험 검색 맥락을 ‘비 오는 저녁 도로에서 방어운전하는 운전자’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 선택 기준 구체화 · SERP 보장·특약 제시 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "driver-2026-10-9506b5-03",
+          "concept_id": "5514882b45473fcd",
+          "role": "보장내용 탐색",
+          "scene": "도심 도로에서 안전운전하는 운전자",
+          "reference_scene": "도심 도로에서 안전운전하는 운전자",
+          "asset": "assets/insurance/driver-safe-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "운전자보험 검색 맥락을 ‘도심 도로에서 안전운전하는 운전자’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 선택 기준 구체화 · SERP 보장·특약 제시 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "driver-2026-10-9506b5-04",
+          "concept_id": "2d8f2d52689305d3",
+          "role": "가입안내 탐색",
+          "scene": "교차로 신호와 앞차를 확인하는 운전자",
+          "reference_scene": "교차로 신호와 앞차를 확인하는 운전자",
+          "asset": "assets/insurance/driver-traffic-3d.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "운전자보험 검색 맥락을 ‘교차로 신호와 앞차를 확인하는 운전자’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 선택 기준 구체화 · SERP 보장·특약 제시 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        }
+      ]
+    },
+    {
+      "product_key": "woman",
+      "keyword": "한화시그니처여성보험",
+      "selected_angle": "임신·출산",
+      "image_plan": {
+        "set_id": "woman-2026-10",
+        "planning_month": "2026-10",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "new_generation_required": 4,
+        "style_family": "premium_3d_animation_v4",
+        "selection": "least_recently_used_product_pool_then_new_generation"
+      },
+      "image_directions": [
+        {
+          "proposal_id": "woman-2026-10-0e8397-01",
+          "concept_id": "77d47ff9e12bf1c6",
+          "role": "파워링크 대표",
+          "scene": "유방암 예방의 달(핑크리본) 일정에 맞춰 여성 건강 상담 전 빈 폴더를 들고 대기하는 장면",
+          "reference_scene": "여성 건강 상담 전 빈 폴더를 들고 대기하는 장면",
+          "asset": "assets/insurance/woman-clinic-lounge-animation-v1.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "여성건강보험 검색 맥락을 ‘유방암 예방의 달(핑크리본) 일정에 맞춰 여성 건강 상담 전 빈 폴더를 들고 대기하는 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 실제 시즌 장면 · SERP 보장·특약 제시 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "woman-2026-10-0e8397-02",
+          "concept_id": "1d57c342c5b8daa6",
+          "role": "보험료 탐색",
+          "scene": "여성 건강 상담 전 노트와 생활용품을 정돈하는 장면",
+          "reference_scene": "여성 건강 상담 전 노트와 생활용품을 정돈하는 장면",
+          "asset": "assets/insurance/woman-wellness-desk-animation-v1.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "여성건강보험 검색 맥락을 ‘여성 건강 상담 전 노트와 생활용품을 정돈하는 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 실제 시즌 장면 · SERP 보장·특약 제시 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "woman-2026-10-0e8397-03",
+          "concept_id": "f796d2f5f36ca3e9",
+          "role": "보장내용 탐색",
+          "scene": "여성 건강관리 일정을 빈 플래너로 정리하는 장면",
+          "reference_scene": "여성 건강관리 일정을 빈 플래너로 정리하는 장면",
+          "asset": "assets/insurance/woman-health-planner-animation-v1.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "여성건강보험 검색 맥락을 ‘여성 건강관리 일정을 빈 플래너로 정리하는 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 실제 시즌 장면 · SERP 보장·특약 제시 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "woman-2026-10-0e8397-04",
+          "concept_id": "440acbc826900cd5",
+          "role": "가입안내 탐색",
+          "scene": "건강검진 일정을 확인하는 여성",
+          "reference_scene": "건강검진 일정을 확인하는 여성",
+          "asset": "",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": false,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "여성건강보험 검색 맥락을 ‘건강검진 일정을 확인하는 여성’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 실제 시즌 장면 · SERP 보장·특약 제시 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        }
+      ]
+    },
+    {
+      "product_key": "birth",
+      "keyword": "태아보험",
+      "selected_angle": "선천이상",
+      "image_plan": {
+        "set_id": "birth-2026-10",
+        "planning_month": "2026-10",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "new_generation_required": 4,
+        "style_family": "premium_3d_animation_v4",
+        "selection": "least_recently_used_product_pool_then_new_generation"
+      },
+      "image_directions": [
+        {
+          "proposal_id": "birth-2026-10-0401a7-01",
+          "concept_id": "8a08dcd767e87b47",
+          "role": "파워링크 대표",
+          "scene": "예비 부모가 출산 준비물을 확인하는 장면",
+          "reference_scene": "예비 부모가 출산 준비물을 확인하는 장면",
+          "asset": "assets/insurance/family-pregnancy-3d.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "임신·출산(태아)보험 검색 맥락을 ‘예비 부모가 출산 준비물을 확인하는 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 검색 직후 행동 · SERP 보험료·견적 확인 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "birth-2026-10-0401a7-02",
+          "concept_id": "b3d97f2d8b02dc6a",
+          "role": "보험료 탐색",
+          "scene": "아기방과 출산 준비물을 정리하는 장면",
+          "reference_scene": "아기방과 출산 준비물을 정리하는 장면",
+          "asset": "assets/insurance/birth-nursery-prep-animation-v1.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "임신·출산(태아)보험 검색 맥락을 ‘아기방과 출산 준비물을 정리하는 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 검색 직후 행동 · SERP 보험료·견적 확인 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "birth-2026-10-0401a7-03",
+          "concept_id": "685eeb40c513117c",
+          "role": "보장내용 탐색",
+          "scene": "빈 산모 플래너와 아기용품을 함께 확인하는 장면",
+          "reference_scene": "빈 산모 플래너와 아기용품을 함께 확인하는 장면",
+          "asset": "assets/insurance/birth-planner-animation-v1.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "임신·출산(태아)보험 검색 맥락을 ‘빈 산모 플래너와 아기용품을 함께 확인하는 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 검색 직후 행동 · SERP 보험료·견적 확인 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "birth-2026-10-0401a7-04",
+          "concept_id": "b77cc6820477daaf",
+          "role": "가입안내 탐색",
+          "scene": "아기와 가족이 함께 건강을 준비하는 장면",
+          "reference_scene": "아기와 가족이 함께 건강을 준비하는 장면",
+          "asset": "assets/insurance/family-baby-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "임신·출산(태아)보험 검색 맥락을 ‘아기와 가족이 함께 건강을 준비하는 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 검색 직후 행동 · SERP 보험료·견적 확인 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        }
+      ]
+    },
+    {
+      "product_key": "overseas",
+      "keyword": "해외여행보험",
+      "selected_angle": "항공 지연",
+      "image_plan": {
+        "set_id": "overseas-2026-10",
+        "planning_month": "2026-10",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "new_generation_required": 4,
+        "style_family": "premium_3d_animation_v4",
+        "selection": "least_recently_used_product_pool_then_new_generation"
+      },
+      "image_directions": [
+        {
+          "proposal_id": "overseas-2026-10-4adb32-01",
+          "concept_id": "b703205d26448853",
+          "role": "파워링크 대표",
+          "scene": "여권과 여행 가방을 챙기는 출국 장면",
+          "reference_scene": "여권과 여행 가방을 챙기는 출국 장면",
+          "asset": "assets/insurance/travel-airport-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "해외여행보험 검색 맥락을 ‘여권과 여행 가방을 챙기는 출국 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 검색 직후 행동 · SERP 가입 편의 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "overseas-2026-10-4adb32-02",
+          "concept_id": "90acbf99d6d65677",
+          "role": "보험료 탐색",
+          "scene": "공항에서 출국 준비물을 확인하는 여행자",
+          "reference_scene": "공항에서 출국 준비물을 확인하는 여행자",
+          "asset": "assets/insurance/travel-airport-3d.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "해외여행보험 검색 맥락을 ‘공항에서 출국 준비물을 확인하는 여행자’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 검색 직후 행동 · SERP 가입 편의 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "overseas-2026-10-4adb32-03",
+          "concept_id": "87abad9a548f3c5f",
+          "role": "보장내용 탐색",
+          "scene": "해외 캠퍼스에 도착한 유학생",
+          "reference_scene": "해외 캠퍼스에 도착한 유학생",
+          "asset": "assets/insurance/student-campus-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "해외여행보험 검색 맥락을 ‘해외 캠퍼스에 도착한 유학생’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 검색 직후 행동 · SERP 가입 편의 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "overseas-2026-10-4adb32-04",
+          "concept_id": "63a391e6b309bfc9",
+          "role": "가입안내 탐색",
+          "scene": "공항 출국장 앞에서 여권과 짐을 확인하는 여행자",
+          "reference_scene": "공항 출국장 앞에서 여권과 짐을 확인하는 여행자",
+          "asset": "",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": false,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "해외여행보험 검색 맥락을 ‘공항 출국장 앞에서 여권과 짐을 확인하는 여행자’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 검색 직후 행동 · SERP 가입 편의 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        }
+      ]
+    },
+    {
+      "product_key": "overseaslong",
+      "keyword": "유학생보험",
+      "selected_angle": "체류 목적",
+      "image_plan": {
+        "set_id": "overseaslong-2026-10",
+        "planning_month": "2026-10",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "new_generation_required": 4,
+        "style_family": "premium_3d_animation_v4",
+        "selection": "least_recently_used_product_pool_then_new_generation"
+      },
+      "image_directions": [
+        {
+          "proposal_id": "overseaslong-2026-10-0340bc-01",
+          "concept_id": "1975710cbd119bdd",
+          "role": "파워링크 대표",
+          "scene": "해외 캠퍼스에 도착한 유학생",
+          "reference_scene": "해외 캠퍼스에 도착한 유학생",
+          "asset": "assets/insurance/student-campus-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "해외장기체류보험 검색 맥락을 ‘해외 캠퍼스에 도착한 유학생’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 선택 기준 구체화 · SERP 가입 편의 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "overseaslong-2026-10-0340bc-02",
+          "concept_id": "df5e3f406cfde37f",
+          "role": "보험료 탐색",
+          "scene": "장기 체류용 짐과 서류를 준비하는 학생",
+          "reference_scene": "장기 체류용 짐과 서류를 준비하는 학생",
+          "asset": "assets/insurance/student-overseas-3d.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "해외장기체류보험 검색 맥락을 ‘장기 체류용 짐과 서류를 준비하는 학생’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 선택 기준 구체화 · SERP 가입 편의 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "overseaslong-2026-10-0340bc-03",
+          "concept_id": "86d82cc07abfa406",
+          "role": "보장내용 탐색",
+          "scene": "여권과 여행 가방을 챙기는 출국 장면",
+          "reference_scene": "여권과 여행 가방을 챙기는 출국 장면",
+          "asset": "assets/insurance/travel-airport-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "해외장기체류보험 검색 맥락을 ‘여권과 여행 가방을 챙기는 출국 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 선택 기준 구체화 · SERP 가입 편의 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "overseaslong-2026-10-0340bc-04",
+          "concept_id": "e0bd45aa5e19d51b",
+          "role": "가입안내 탐색",
+          "scene": "해외 캠퍼스에 도착한 유학생",
+          "reference_scene": "해외 캠퍼스에 도착한 유학생",
+          "asset": "",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": false,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "해외장기체류보험 검색 맥락을 ‘해외 캠퍼스에 도착한 유학생’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 선택 기준 구체화 · SERP 가입 편의 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        }
+      ]
+    },
+    {
+      "product_key": "holeinone",
+      "keyword": "홀인원보험",
+      "selected_angle": "홀인원 비용",
+      "image_plan": {
+        "set_id": "holeinone-2026-10",
+        "planning_month": "2026-10",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "new_generation_required": 4,
+        "style_family": "premium_3d_animation_v4",
+        "selection": "least_recently_used_product_pool_then_new_generation"
+      },
+      "image_directions": [
+        {
+          "proposal_id": "holeinone-2026-10-3cd300-01",
+          "concept_id": "30295fb7014b8882",
+          "role": "파워링크 대표",
+          "scene": "가을 골프 성수기 일정에 맞춰 라운드 전 장비와 빈 체크카드를 확인하는 장면",
+          "reference_scene": "라운드 전 장비와 빈 체크카드를 확인하는 장면",
+          "asset": "assets/insurance/golf-checklist-animation-v1.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "홀인원보험 검색 맥락을 ‘가을 골프 성수기 일정에 맞춰 라운드 전 장비와 빈 체크카드를 확인하는 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 실제 시즌 장면 · SERP 보험료·견적 확인 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "holeinone-2026-10-3cd300-02",
+          "concept_id": "cdd5683a0c5ccdfb",
+          "role": "보험료 탐색",
+          "scene": "그린 위 홀인원 순간을 기뻐하는 골퍼",
+          "reference_scene": "그린 위 홀인원 순간을 기뻐하는 골퍼",
+          "asset": "assets/insurance/golf-hole-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "홀인원보험 검색 맥락을 ‘그린 위 홀인원 순간을 기뻐하는 골퍼’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 실제 시즌 장면 · SERP 보험료·견적 확인 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "holeinone-2026-10-3cd300-03",
+          "concept_id": "053ccfca66cb62e7",
+          "role": "보장내용 탐색",
+          "scene": "깃대와 공이 보이는 홀인원 장면",
+          "reference_scene": "깃대와 공이 보이는 홀인원 장면",
+          "asset": "assets/insurance/golf-holeinone-3d.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "홀인원보험 검색 맥락을 ‘깃대와 공이 보이는 홀인원 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 실제 시즌 장면 · SERP 보험료·견적 확인 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "holeinone-2026-10-3cd300-04",
+          "concept_id": "8da6c4da0702d127",
+          "role": "가입안내 탐색",
+          "scene": "티박스에서 골프백과 클럽을 준비하는 장면",
+          "reference_scene": "티박스에서 골프백과 클럽을 준비하는 장면",
+          "asset": "assets/insurance/golf-tee-bag-animation-v1.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "홀인원보험 검색 맥락을 ‘티박스에서 골프백과 클럽을 준비하는 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 실제 시즌 장면 · SERP 보험료·견적 확인 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        }
+      ]
+    },
+    {
+      "product_key": "event",
+      "keyword": "행사보험",
+      "selected_angle": "공연행사",
+      "image_plan": {
+        "set_id": "event-2026-10",
+        "planning_month": "2026-10",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "new_generation_required": 4,
+        "style_family": "premium_3d_animation_v4",
+        "selection": "least_recently_used_product_pool_then_new_generation"
+      },
+      "image_directions": [
+        {
+          "proposal_id": "event-2026-10-2ce50e-01",
+          "concept_id": "edc2b43d24a5ebdb",
+          "role": "파워링크 대표",
+          "scene": "가을 불꽃축제·지역행사 일정에 맞춰 행사 현장의 시설과 동선을 확인하는 운영자",
+          "reference_scene": "행사 현장의 시설과 동선을 확인하는 운영자",
+          "asset": "assets/insurance/event-safety-3d.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "행사배상책임보험 검색 맥락을 ‘가을 불꽃축제·지역행사 일정에 맞춰 행사 현장의 시설과 동선을 확인하는 운영자’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 실제 시즌 장면 · SERP 보험료·견적 확인 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "event-2026-10-2ce50e-02",
+          "concept_id": "81095708ad0121c9",
+          "role": "보험료 탐색",
+          "scene": "행사장 동선과 안전 구역을 사전에 점검하는 장면",
+          "reference_scene": "행사장 동선과 안전 구역을 사전에 점검하는 장면",
+          "asset": "assets/insurance/event-venue-flow-animation-v1.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "행사배상책임보험 검색 맥락을 ‘행사장 동선과 안전 구역을 사전에 점검하는 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 실제 시즌 장면 · SERP 보험료·견적 확인 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "event-2026-10-2ce50e-03",
+          "concept_id": "b1bf3a5b32c170c1",
+          "role": "보장내용 탐색",
+          "scene": "공연 시작 전 안전을 점검하는 스태프",
+          "reference_scene": "공연 시작 전 안전을 점검하는 스태프",
+          "asset": "assets/insurance/event-safety-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "행사배상책임보험 검색 맥락을 ‘공연 시작 전 안전을 점검하는 스태프’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 실제 시즌 장면 · SERP 보험료·견적 확인 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "event-2026-10-2ce50e-04",
+          "concept_id": "75054e810be45e0b",
+          "role": "가입안내 탐색",
+          "scene": "공연 시작 전 무대와 관객 동선을 점검하는 스태프",
+          "reference_scene": "공연 시작 전 무대와 관객 동선을 점검하는 스태프",
+          "asset": "",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": false,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "행사배상책임보험 검색 맥락을 ‘공연 시작 전 무대와 관객 동선을 점검하는 스태프’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 실제 시즌 장면 · SERP 보험료·견적 확인 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        }
+      ]
+    },
+    {
+      "product_key": "chronic",
+      "keyword": "유병자보험",
+      "selected_angle": "고혈압",
+      "image_plan": {
+        "set_id": "chronic-2026-10",
+        "planning_month": "2026-10",
+        "refresh_cadence": "monthly",
+        "slot_count": 4,
+        "unique_asset_count": 4,
+        "new_generation_required": 4,
+        "style_family": "premium_3d_animation_v4",
+        "selection": "least_recently_used_product_pool_then_new_generation"
+      },
+      "image_directions": [
+        {
+          "proposal_id": "chronic-2026-10-2dc121-01",
+          "concept_id": "eb51ab5a9a59180c",
+          "role": "파워링크 대표",
+          "scene": "건강검진 결과와 체크리스트를 보는 장면",
+          "reference_scene": "건강검진 결과와 체크리스트를 보는 장면",
+          "asset": "assets/insurance/health-review-3d.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "유병자 간편보험 검색 맥락을 ‘건강검진 결과와 체크리스트를 보는 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 검색 직후 행동 · SERP 가입 편의 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "chronic-2026-10-2dc121-02",
+          "concept_id": "d49b142da53f9492",
+          "role": "보험료 탐색",
+          "scene": "복용약과 건강기록을 함께 정리하는 장면",
+          "reference_scene": "복용약과 건강기록을 함께 정리하는 장면",
+          "asset": "assets/insurance/chronic-health-record-animation-v1.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "유병자 간편보험 검색 맥락을 ‘복용약과 건강기록을 함께 정리하는 장면’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 검색 직후 행동 · SERP 가입 편의 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "chronic-2026-10-2dc121-03",
+          "concept_id": "1250cea244ebbd96",
+          "role": "보장내용 탐색",
+          "scene": "일상에서 건강 상태를 확인하는 성인",
+          "reference_scene": "일상에서 건강 상태를 확인하는 성인",
+          "asset": "assets/insurance/health-check-animation-v3.png",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": true,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "유병자 간편보험 검색 맥락을 ‘일상에서 건강 상태를 확인하는 성인’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 검색 직후 행동 · SERP 가입 편의 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        },
+        {
+          "proposal_id": "chronic-2026-10-2dc121-04",
+          "concept_id": "3c8598bf4733a09f",
+          "role": "가입안내 탐색",
+          "scene": "복용약과 건강기록을 정리하는 성인",
+          "reference_scene": "복용약과 건강기록을 정리하는 성인",
+          "asset": "",
+          "composition": "핵심 인물·사물을 중앙에 크게 두고 작은 화면에서도 상황이 바로 보이는 정사각 구도",
+          "style": "친근하지만 유아틱하지 않은 프리미엄 3D 애니메이션, 현실적인 생활 공간과 부드러운 조명",
+          "style_family": "premium_3d_animation_v4",
+          "text_overlay": false,
+          "refresh_cadence": "monthly",
+          "planning_month": "2026-10",
+          "reused_from_previous_month": false,
+          "repeated_reference_in_month": false,
+          "generation_required": true,
+          "reference_only": true,
+          "refresh_action": "new_image_generation_required",
+          "generation_brief": "유병자 간편보험 검색 맥락을 ‘복용약과 건강기록을 정리하는 성인’으로 표현. 한국 성인 캐릭터, 자연스러운 비율, 텍스트·숫자·로고 없는 정사각형 프리미엄 3D 애니메이션. 이전 월과 인물·구도·배경을 반복하지 않는다.",
+          "why": "2026-10 월간 SERP · 캡처 2026-09-30 · 패턴 2026-09-30 · 최근 35일 5회 · 검색 직후 행동 · SERP 가입 편의 변화에서 장면 역할을 도출",
+          "guide_quality": {
+            "guide_version": "2026-09-02-derived-2",
+            "product_fit_required": true,
+            "text_overlay": false,
+            "duplicate_source_in_set": false,
+            "variation_required": true
+          },
+          "review_lab_feedback": {
+            "applied_rules_version": 2,
+            "rejected_reference": false,
+            "reason_code": null
+          }
+        }
+      ]
+    }
+  ]
+}
