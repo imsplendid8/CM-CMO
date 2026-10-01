@@ -22,8 +22,23 @@ class TestRiderMarks(unittest.TestCase):
         self.assertEqual(ct.missing_rider_marks("행사배상책임보험 보험료를 계산해요", "event"), [])
 
     def test_mark_riders_inserts_suffix(self):
-        self.assertEqual(ct.mark_riders("풍수재와 임시거주비 보장", "hrmf"), "풍수재(특약)와 임시거주비(특약) 보장")
-        self.assertEqual(ct.mark_riders("풍수재(특약) 보장", "hrmf"), "풍수재(특약) 보장")
+        self.assertEqual(ct.mark_riders("풍수재와 임시거주비 보장", "hrmf"), "풍수재(특약)와 임시거주비 보장(특약)")
+        self.assertEqual(ct.mark_riders("풍수재 보장(특약)", "hrmf"), "풍수재 보장(특약)")
+
+    def test_bojang_phrase_is_the_coverage_name(self):
+        # 'X 보장'은 보장까지가 담보명 → 보장 뒤에 붙인다. 자리가 틀린 'X(특약) 보장'은 옮긴다.
+        self.assertEqual(ct.mark_riders("풍수재(특약) 보장을 담아요", "hrmf"), "풍수재 보장(특약)을 담아요")
+        self.assertEqual(ct.missing_rider_marks("풍수재(특약) 보장을 담아요", "hrmf"), ["풍수재"])
+        self.assertEqual(ct.mark_riders("스크린 홀인원 보장이 있어요", "golf"), "스크린 홀인원 보장(특약)이 있어요")
+        self.assertEqual(ct.mark_riders("임시거주비는 어떻게 보장될까", "hrmf", bare=False), "임시거주비는 어떻게 보장될까")
+
+    def test_teukyak_word_becomes_mark(self):
+        self.assertEqual(ct.mark_riders("벌금 특약과 변호사선임비용 특약", "driver"), "벌금(특약)과 변호사선임비용(특약)")
+        self.assertEqual(ct.mark_riders("급배수시설 누수 손해 특약에 가입", "hrmf"), "급배수시설 누수 손해(특약)에 가입")
+
+    def test_bare_mentions_optional_for_power_content(self):
+        # 파워콘텐츠 본문의 비용·보험금 자체 언급('형사합의금을 실손으로')은 담보명이 아니다
+        self.assertEqual(ct.missing_rider_marks("지급한 형사합의금을 실손으로 보상해요", "driver", bare=False), [])
 
 
 class TestGeneratedSaLength(unittest.TestCase):

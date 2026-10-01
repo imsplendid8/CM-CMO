@@ -10,6 +10,7 @@ import vm from "node:vm";
 const read = rel => fs.readFileSync(new URL(`../${rel}`, import.meta.url), "utf8");
 const data = JSON.parse(read("data/adcopy/power-content-articles.json"));
 const context = JSON.parse(read("data/adcopy/material-source-context.json"));
+const coverage = JSON.parse(read("data/adcopy/coverage-terms.json"));
 const sandbox = {};
 vm.createContext(sandbox);
 vm.runInContext(read("shared/insurance-ad-review.js"), sandbox);
@@ -22,6 +23,33 @@ const GUIDANCE = /확인하세요|확인해 보세요|확인합니다|살펴보�
 const BENEFIT = /보상해요|보장해요|보상받(?:을 수 있어요|아요)|대비(?:할 수 있어요|해요)|준비(?:할 수 있어요|해요)|덜어 줘요|덜 수 있어요|(?:보상|보장)하는 특약/g;
 // 승인 전 수치 표현(심급 1심·2심은 허용)
 const AMOUNT = /\d[\d,.]*\s*(만\s*원|원|%|퍼센트|회|배)(?![가-힣]*심)/;
+// 담보명 (특약) 표기 — scripts/coverage_terms.py와 같은 규칙(파워콘텐츠는 bare=False).
+// 'X 보장'은 보장까지가 담보명이라 '보장' 바로 뒤, 'X 특약'은 'X(특약)'. 비용·보험금 자체를 가리키는 단독 언급은 강제하지 않는다.
+function missingRider(text, key) {
+  const suffix = coverage.suffix || "(특약)";
+  const terms = new Set(coverage.terms?.[key] || []), phrases = new Set(coverage.phrases?.[key] || []);
+  const BOJANG = /^ 보장(?![되하해받])/;
+  const covered = new Array(text.length).fill(false);
+  const mark = (s, e) => { for (let i = s; i < e; i++) covered[i] = true; };
+  for (const name of coverage.exclude_product_names || []) for (let i = text.indexOf(name); i >= 0; i = text.indexOf(name, i + 1)) mark(i, i + name.length);
+  const out = [];
+  for (const term of [...new Set([...terms, ...phrases])].sort((a, b) => b.length - a.length)) {
+    for (let i = text.indexOf(term); i >= 0; i = text.indexOf(term, i + 1)) {
+      const end = i + term.length;
+      if (covered.slice(i, end).some(Boolean)) continue;
+      const rest = text.slice(end);
+      let ok = null;
+      if (BOJANG.test(rest)) ok = text.startsWith(suffix, end + 3);
+      else if (rest.startsWith(suffix) && BOJANG.test(rest.slice(suffix.length))) ok = false;  // 'X(특약) 보장' — 자리 틀림
+      else if (rest.startsWith(" 특약")) ok = false;
+      else if (terms.has(term) && rest.startsWith(suffix)) ok = true;
+      if (ok === null) continue;
+      mark(i, end);
+      if (!ok) out.push(term);
+    }
+  }
+  return out;
+}
 const errors = [];
 const fail = (where, msg) => errors.push(`${where}: ${msg}`);
 let count = 0;
@@ -55,6 +83,10 @@ for (const [key, articles] of Object.entries(data.articles || {})) {
     for (const [field, text] of [["제목", a.title], ["도입", a.intro], ...(a.sections || []).map((s, i) => [`본문${i + 1}`, `${s.heading} ${s.body}`]), ...(a.faq || []).map((f, i) => [`FAQ${i + 1}`, `${f.q} ${f.a}`]), ["CTA", a.cta], ["배너", `${a.banner?.headline} ${a.banner?.subline}`]]) {
       const r = review.review(text, { channel: "power_content" });
       if (r.generationBlocking) fail(where, `${field} 사전검수 차단: ${r.findings.filter(f => f.generationBlocking).map(f => f.ruleId).join(",")}`);
+    }
+    for (const [field, text] of [["제목", a.title], ["도입", a.intro], ...(a.summary || []).map((t, i) => [`요약${i + 1}`, t]), ...(a.sections || []).flatMap((s, i) => [[`소제목${i + 1}`, s.heading], [`본문${i + 1}`, s.body]]), ...(a.faq || []).flatMap((f, i) => [[`FAQ${i + 1} 질문`, f.q], [`FAQ${i + 1} 답변`, f.a]]), ["CTA", a.cta], ["배너", `${a.banner?.headline} ${a.banner?.subline}`]]) {
+      const miss = missingRider(String(text || ""), key);
+      if (miss.length) fail(where, `${field} 담보명 뒤 (특약) 누락: ${miss.join(", ")}`);
     }
     if (a.review_status !== "사람 심의 필요") fail(where, "review_status는 '사람 심의 필요'");
   }
