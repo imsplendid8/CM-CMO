@@ -1,6 +1,6 @@
 {
  "_comment": "경쟁사 SERP(네이버 PC 파워링크) 관측 소재 — 주간 자동 캡쳐(capture_serp.mjs)의 광고 DOM을 serp_observation_agent.py가 정규화(source=auto-dom). 자사 광고 제외. 경쟁사 공개 광고 문구만 담으며 PII·영업비밀 없음. 문구는 패턴 분석 근거로만 쓰고 복제하지 않는다. serp_analysis.py의 입력.",
- "asof": "2026-09-30",
+ "asof": "2026-10-04",
  "schema": "product·brand·keyword·date·device·rank·title·desc·promo·covers[]·price·cta·landing·domain·extensions·source",
  "observations": [
   {
@@ -3072,6 +3072,2729 @@
    "cta": "가입",
    "landing": "KB손해보험다이렉트 공식",
    "domain": "kbdirect-insure.com",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "autoins",
+   "brand": "DB손해보험다이렉트",
+   "keyword": "자동차보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 1,
+   "title": "DB다이렉트자동차보험 2026년 내차보험료 확인!",
+   "desc": "이번달 만기라면?고민할필요없이 DB다이렉트 자동차보험 1분 계산후 가입!",
+   "promo": "할인 특약할인 적용한 보험료는",
+   "covers": [
+    "특약"
+   ],
+   "price": "",
+   "cta": "가입/견적",
+   "landing": "directdb.co.kr",
+   "domain": "directdb.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "자동차보험",
+     "이륜차보험",
+     "법인차보험"
+    ],
+    "promotions": [
+     "할인 특약할인 적용한 보험료는?"
+    ]
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "autoins",
+   "brand": "메리츠화재공식사이트",
+   "keyword": "자동차보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 2,
+   "title": "메리츠화재 다이렉트자동차보험",
+   "desc": "T-MAP 운전점수 86점이상 최대 14% 할인! 나의 특약할인 바로확인. 필요한 보장만 쏙쏙 골라 내가 직접 설계부터 가입까지! 다이렉트라서 가능한 이야기",
+   "promo": "T-MAP 운전점수 86점이상 최대 14% 할인",
+   "covers": [
+    "특약"
+   ],
+   "price": "14% 할인",
+   "cta": "가입/견적",
+   "landing": "store.meritzfire.com",
+   "domain": "store.meritzfire.com",
+   "extensions": {
+    "sitelinks": [
+     "보험료계산",
+     "신규고객",
+     "카드결제혜택"
+    ],
+    "promotions": [
+     "특약할인"
+    ]
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "autoins",
+   "brand": "KB손해보험다이렉트",
+   "keyword": "자동차보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 3,
+   "title": "KB다이렉트자동차보험 나의 일상과 바로 연결 24시간 가입",
+   "desc": "자동차보험은 바로 여기서! 나의 일상과 바로 연결, KB다이렉트 24365",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "가입",
+   "landing": "KB손해보험다이렉트 공식",
+   "domain": "direct.kbinsure.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "전기자동차보험도 KB에서",
+     "공식사이트",
+     "자동차보험",
+     "정승제 KB"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "autoins",
+   "brand": "AXA손해보험",
+   "keyword": "자동차보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 4,
+   "title": "AXA 다이렉트자동차보험 보험료 24시간 간편계산 보험료 1분 확인",
+   "desc": "10월 만기라면? AXA 다이렉트자동차보험에서 내 차 보험료 계산해보세요! 최대 3만원 결제혜택도 확인해보세요 (30만원이상/ 인터넷결제시)",
+   "promo": "",
+   "covers": [],
+   "price": "최대 3만원",
+   "cta": "가입/견적",
+   "landing": "AXA손해보험 공식",
+   "domain": "axa.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "공식홈페이지에서 계산",
+     "자동차가입",
+     "결제혜택",
+     "보험료확인",
+     "간편종합보험"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "autoins",
+   "brand": "KB손해보험다이렉트",
+   "keyword": "자동차보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 5,
+   "title": "KB다이렉트 공식 자동차보험",
+   "desc": "복잡한 내차보험료 계산, KB다이렉트에선 맞춤형특약 한번에 비교하고 간편확인가능 아무리 비교해도 자동차보험은 결국 KB! 나만의 맞춤할인특약으로 실속있게 가입!",
+   "promo": "나만의 맞춤할인특약으로 실속있게 가입",
+   "covers": [
+    "특약"
+   ],
+   "price": "",
+   "cta": "가입/견적/비교",
+   "landing": "KB손해보험다이렉트 공식",
+   "domain": "direct.kbcarinsure.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "1분간편계산",
+     "카드결제혜택",
+     "갱신만기고객"
+    ],
+    "promotions": [
+     "할인특약"
+    ]
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "autoins",
+   "brand": "흥국화재다이렉트",
+   "keyword": "자동차보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 6,
+   "title": "흥국화재 다이렉트 자동차보험 10~11월 만기라면 확인! 보험가입시 자동차정비 쿠폰북",
+   "desc": "신차 구매했다면 자동차보험도 꼼꼼하게! 내 차에 맞는 보험료 간편하게 확인해보세요",
+   "promo": "할인 신규 첨단안전장치 할인특약",
+   "covers": [
+    "특약"
+   ],
+   "price": "",
+   "cta": "가입/견적",
+   "landing": "direct.heungkukfire.co.kr",
+   "domain": "direct.heungkukfire.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "보험료계산",
+     "신규고객",
+     "갱신고객"
+    ],
+    "promotions": [
+     "할인 신규 첨단안전장치 할인특약",
+     "이벤트확인"
+    ]
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "autoins",
+   "brand": "하나손해보험",
+   "keyword": "자동차보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 7,
+   "title": "하나 다이렉트 자동차보험 커넥트카 안전운전 할인특약 마일리지 할인특약",
+   "desc": "차보험료 부담되시죠? 커넥트데이로 매월 운전한 날짜만큼만 내세요! 주차장에 묶인 내 차, 운전한 날짜만큼만 차보험료 내세요!",
+   "promo": "하나 다이렉트 자동차보험 커넥트카 안전운전 할인특약 마일리지 할인특약",
+   "covers": [
+    "특약"
+   ],
+   "price": "",
+   "cta": "가입/견적",
+   "landing": "hanainsure.co.kr",
+   "domain": "hanainsure.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "보험료조회",
+     "3만원 혜택",
+     "신규가입",
+     "원데이보험"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "autoins",
+   "brand": "AXA손해보험",
+   "keyword": "자동차보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 8,
+   "title": "AXA 다이렉트자동차보험 10월 최대 3만원 결제혜택 토스페이 3만P",
+   "desc": "커넥티드카 안전운전점수 95점 이상이라면! 24% 할인 자동차 보험료 1분만에 간편확인",
+   "promo": "24% 할인 자동차 보험료 1분만에 간편확인",
+   "covers": [],
+   "price": "최대 3만원",
+   "cta": "견적",
+   "landing": "axakorea.com",
+   "domain": "axakorea.com",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "autoins",
+   "brand": "흥국화재다이렉트",
+   "keyword": "자동차보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 9,
+   "title": "흥국화재 다이렉트 자동차보험 최대 3만원 카드결제혜택! 주행거리특약 할인율 확대",
+   "desc": "가격은 가볍게, 보장은 든든하게! 특약+카드혜택으로 똑똑한 자동차보험 선택해보세요",
+   "promo": "주행거리특약 할인율 확대",
+   "covers": [
+    "특약"
+   ],
+   "price": "최대 3만원",
+   "cta": "",
+   "landing": "eyoudirect.co.kr",
+   "domain": "eyoudirect.co.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "birth",
+   "brand": "현대해상공식상품몰",
+   "keyword": "태아보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 1,
+   "title": "공식 현대해상 어린이보험 신생아 3명 중 2명이 가입 보험료 계산",
+   "desc": "신생아 3명 중 2명이 가입!어린이보험은 현대해상(2023.07~2025.06) 어린이보험은 역시 현대해상",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "가입/견적/상담",
+   "landing": "현대해상공식상품몰 공식",
+   "domain": "hi.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "임신 및 출산 보장확인",
+     "보험료 계산",
+     "상담신청",
+     "보장내용확인"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "birth",
+   "brand": "현대태아가입보험",
+   "keyword": "태아보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 2,
+   "title": "현대해상 태아가입보험 굿리치 비갱신형 보험",
+   "desc": "다양한 특약과 합리적인 보험료! 내아이를 위해 준비하세요. 상담시 선물을 드립니다",
+   "promo": "사은품확인",
+   "covers": [
+    "태아"
+   ],
+   "price": "",
+   "cta": "가입/견적/상담",
+   "landing": "hd-insu.co.kr",
+   "domain": "hd-insu.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "무료상담신청",
+     "보험료계산",
+     "무료견적신청"
+    ],
+    "promotions": [
+     "사은품확인"
+    ]
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "birth",
+   "brand": "현대해상다이렉트",
+   "keyword": "태아보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 3,
+   "title": "현대해상 다이렉트 어린이보험 태아플랜 가입(출생후 보장)",
+   "desc": "1년 이내 출산 및 육아휴직 중이라면? 보험료 2% 할인받고 저렴하게 가입!",
+   "promo": "보험료 2% 할인받고 저렴하게 가입",
+   "covers": [
+    "태아"
+   ],
+   "price": "2% 할인",
+   "cta": "가입/견적",
+   "landing": "direct.hi.co.kr",
+   "domain": "direct.hi.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "예비부모",
+     "우리아이보험",
+     "간편가입"
+    ],
+    "promotions": [
+     "이벤트 가입시 Npay 최대3만원"
+    ]
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "birth",
+   "brand": "KB손해보험다이렉트",
+   "keyword": "태아보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 4,
+   "title": "KB다이렉트 공식 자녀보험 신세계상품권 최대 3만원증정 월 9,000원이상 가입시",
+   "desc": "설계사 수수료 없이 합리적인 보험료! 부담 줄이고 필요한 보장 든든하게!",
+   "promo": "KB다이렉트 공식 자녀보험 신세계상품권 최대 3만원증정 월 9,000원이",
+   "covers": [
+    "태아",
+    "실손"
+   ],
+   "price": "최대 3만원",
+   "cta": "가입/견적",
+   "landing": "KB손해보험다이렉트 공식",
+   "domain": "direct.kbinsure.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "어린이보험",
+     "태아플랜",
+     "치아보험",
+     "실손보험"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "birth",
+   "brand": "뱅크샐러드",
+   "keyword": "태아보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 5,
+   "title": "태아보험, 어디가 저렴할까 태아보험은 타이밍이 생명 30개사 보험 빠르게 비교",
+   "desc": "30개 제휴 보험사 상품 중 내게 맞는 보험으로 간편하게 알아보세요!",
+   "promo": "",
+   "covers": [
+    "태아"
+   ],
+   "price": "",
+   "cta": "비교",
+   "landing": "banksalad.com",
+   "domain": "banksalad.com",
+   "extensions": {
+    "sitelinks": [
+     "보험 전문가가 도와드려요",
+     "내 보험조회",
+     "보험분석",
+     "전문가 카톡",
+     "보험살펴보기"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "birth",
+   "brand": "현대해상태아보험",
+   "keyword": "태아보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 6,
+   "title": "현대해상 태아가입보험 굿리치",
+   "desc": "다양한 특약과 합리적인 보험료, 내 아이를 위해 준비하세요. 상담시 선물증정",
+   "promo": "상담시 선물증정",
+   "covers": [
+    "태아"
+   ],
+   "price": "",
+   "cta": "가입/견적/상담",
+   "landing": "hd-insu.co.kr",
+   "domain": "hd-insu.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "신상품 아프고 다쳐도 든든(특약)",
+     "상담신청",
+     "보험료계산"
+    ],
+    "promotions": [
+     "사은품 받기"
+    ]
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "birth",
+   "brand": "DB손해보험",
+   "keyword": "태아보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 7,
+   "title": "DB손해보험 공식 어린이보험 합리적인 보험료로 준비! 10월 보험료 계산",
+   "desc": "소중한 우리 아이 10년 후에도 든든하게! DB손해보험 자녀보험 선물은 어떠세요?",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "견적",
+   "landing": "DB손해보험 공식",
+   "domain": "dbinsure.co.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "birth",
+   "brand": "삼성화재다이렉트",
+   "keyword": "태아보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 8,
+   "title": "삼성화재 임산부아기보험 어린이보험과 차이점 알아보기 다이렉트로 간편하고 저렴하게",
+   "desc": "똑똑한 예비 엄마라면? 다이렉트로 간편하게 육아휴직시 1년간 보험료 할인 (특약) 다이렉트로 보험료 부담은 낮추고 쉽고 간편하게 가입하기!",
+   "promo": "다이렉트로 간편하게 육아휴직시 1년간 보험료 할인 (특약) 다이렉트로 보",
+   "covers": [],
+   "price": "",
+   "cta": "가입/견적",
+   "landing": "direct.samsungfire.com",
+   "domain": "direct.samsungfire.com",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "chronic",
+   "brand": "KB손해보험다이렉트",
+   "keyword": "유병자보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 1,
+   "title": "KB다이렉트 유병자보험",
+   "desc": "필요에 맞춘 보험 선택! 유병자도 가입 OK, 내게 맞는 KB다이렉트 유병자보험",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "가입/견적",
+   "landing": "direct.kbinsure.co.kr",
+   "domain": "direct.kbinsure.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "새로워진KB유병자355",
+     "간편계산",
+     "보험료계산",
+     "보장내역",
+     "유병자보험"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "chronic",
+   "brand": "유병자보험마켓",
+   "keyword": "유병자보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 2,
+   "title": "유병자보험 3초 견적 비교",
+   "desc": "혹시 모를 미래 대비, 유병자 보험 하나면 충분합니다 유병자 보험 찾고 있다면? 지금 바로 만나보세요",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "견적/비교/상담",
+   "landing": "insu-effect.com",
+   "domain": "insu-effect.com",
+   "extensions": {
+    "sitelinks": [
+     "보험료계산",
+     "맞춤상담신청",
+     "보장내용확인"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "chronic",
+   "brand": "DB손해보험",
+   "keyword": "유병자보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 3,
+   "title": "DB손해보험 공식 건강보험 처음 보험료 변함없이 그대로 합리적인 보험료로 준비!",
+   "desc": "골든타임이 중요한 심,뇌혈관질환! 2대질병 주요치료비보장으로 대비하세요!(특약) 9월 보험가입 아직도 고민하고 있다면? DB손해보험에서 즉시 상담하세요!",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "가입/견적/상담",
+   "landing": "DB손해보험 공식",
+   "domain": "dbinsure.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "24시 보험료 조회 가능!",
+     "종합건강보험",
+     "간병인보험",
+     "건강보험"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "chronic",
+   "brand": "현대해상공식상품몰",
+   "keyword": "유병자보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 4,
+   "title": "공식 현대해상 유병자건강보험",
+   "desc": "유병자도 4가지 질문만 통과하면 간편가입 OK! 3N PASS! 각종 암수술, 질병수술 든든보장 (특약)",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "가입/견적/상담",
+   "landing": "현대해상공식상품몰 공식",
+   "domain": "hi.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "실버보험, 부모님보험 가입",
+     "보험료 확인",
+     "보장내용확인",
+     "무료가입상담",
+     "즉시 계산"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "chronic",
+   "brand": "라이나생명공식사이트",
+   "keyword": "유병자보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 5,
+   "title": "라이나생명 공식 종합건강보험 지금 보험료 간편하게 확인 심뇌혈관질환 수술비도(특약)",
+   "desc": "암보험만큼 중요한 심장질환보험, 라이나에서 진단비, 수술비 꼼꼼하게 보장(특약) 늦기전에 진단비,치료비 집중 대비(특약)",
+   "promo": "",
+   "covers": [
+    "진단비",
+    "수술비"
+   ],
+   "price": "",
+   "cta": "견적",
+   "landing": "라이나생명공식사이트 공식",
+   "domain": "direct.e-lina.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "내 보험료 확인하기"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "chronic",
+   "brand": "moneykiwoom.com",
+   "keyword": "유병자보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 6,
+   "title": "키움에셋 간편건강보험 상담 보험 전문가 필요하시다면? 키움에셋플래너 보험 상담",
+   "desc": "보험가입 잘하려면 비교는 필수! 하지만 시간이 부족할땐? 간편보험 전문가 상담하기",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "가입/견적/비교/상담",
+   "landing": "moneykiwoom.com",
+   "domain": "moneykiwoom.com",
+   "extensions": {
+    "sitelinks": [
+     "보장분석 맞춤견적 무료상담",
+     "보험료비교",
+     "간편보험비교",
+     "무료맞춤견적",
+     "전문가상담"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "chronic",
+   "brand": "라이나생명",
+   "keyword": "유병자보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 7,
+   "title": "라이나생명 간병인보험 고령자도 유병자도 가입 가능 간편심사로 가입 가능!",
+   "desc": "가족력 때문에 보험 가입 고민중이라면? 늦기전에 라이나생명 건강보험으로 준비하기! 보험가입 고민? 9년연속 민원최저(17~25 금융감독원) 라이나생명과 상담하세요",
+   "promo": "",
+   "covers": [
+    "간편심사"
+   ],
+   "price": "",
+   "cta": "가입/상담",
+   "landing": "lina.co.kr",
+   "domain": "lina.co.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "chronic",
+   "brand": "보험플랫폼",
+   "keyword": "유병자보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 8,
+   "title": "유병자보험 유병력자보험플랫폼",
+   "desc": "유병자보험상담, 유병자암보험, 간편가입건강보험, 보험간편고지, 간편심사보험가입.",
+   "promo": "",
+   "covers": [
+    "간편심사"
+   ],
+   "price": "",
+   "cta": "가입/상담",
+   "landing": "insuangel.net",
+   "domain": "insuangel.net",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "chronic",
+   "brand": "보험클릭",
+   "keyword": "유병자보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 9,
+   "title": "유병자보험상담 보험Click",
+   "desc": "유병력자실손보험, 보험회사별 유병자보험비교사이트, 유병자보험 가격비교, 친절상담.",
+   "promo": "",
+   "covers": [
+    "실손"
+   ],
+   "price": "",
+   "cta": "비교/상담",
+   "landing": "cancerok.kr",
+   "domain": "cancerok.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "cncr",
+   "brand": "현대해상다이렉트",
+   "keyword": "암보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 1,
+   "title": "현대해상 다이렉트 건강보험 가입시 네이버페이 최대3만원 내게 필요한 보장만 쏙쏙",
+   "desc": "암보험 알아보고 있다면? 다이렉트 건강보험 암플랜으로 저렴하게 가입하세요!",
+   "promo": "이벤트 가입시 Npay 최대3만원",
+   "covers": [],
+   "price": "최대3만원",
+   "cta": "가입/견적",
+   "landing": "direct.hi.co.kr",
+   "domain": "direct.hi.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "보험료 확인",
+     "다이렉트가입",
+     "보장내용확인"
+    ],
+    "promotions": [
+     "이벤트 가입시 Npay 최대3만원",
+     "가입 이벤트"
+    ]
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "cncr",
+   "brand": "라이나생명공식사이트",
+   "keyword": "암보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 2,
+   "title": "라이나생명 공식 암보험 지금 보험료 간편하게 확인 첫날부터 100% 보장 개시",
+   "desc": "면책/감액기간 없이 가입 첫날부터 100% 암 진단비, 직접치료비(특약) 보장 아직도 암보험 고민중이라면? 라이나는 표적항암치료비(특약)도 더욱 든든하게 보장!",
+   "promo": "",
+   "covers": [
+    "진단비",
+    "표적항암"
+   ],
+   "price": "",
+   "cta": "가입/견적/상담",
+   "landing": "라이나생명공식사이트 공식",
+   "domain": "direct.e-lina.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "내 보험료 확인하기",
+     "보험료 확인",
+     "첫날부터보장",
+     "맞춤상담신청"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "cncr",
+   "brand": "DB손해보험",
+   "keyword": "암보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 3,
+   "title": "DB다이렉트 공식 암보험 필요한 부위 선택 강화 가능 DB손해보험 공식 암보험",
+   "desc": "내가 걱정되는 암 부위 선택해서 대비! 최대 100세까지 보장 (특약)",
+   "promo": "",
+   "covers": [
+    "실손"
+   ],
+   "price": "",
+   "cta": "",
+   "landing": "DB손해보험 공식",
+   "domain": "directdb.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "필요한 보장 확인하기",
+     "실손+암플랜",
+     "보장내용확인",
+     "암보험"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "cncr",
+   "brand": "AIA생명암보험",
+   "keyword": "암보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 4,
+   "title": "AIA생명보험 공식 암보험 암진단금 최대8회보장(특약)",
+   "desc": "통합암 최대8회 보장으로 최초,전이 그리고 재발까지 걱정끝(특약,보장별최초1회한)",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "견적/상담",
+   "landing": "AIA생명암보험 공식",
+   "domain": "direct.aia.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "보험료 계산",
+     "전문가 상담",
+     "보장내용확인",
+     "보험문의하기"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "cncr",
+   "brand": "현대해상공식상품몰",
+   "keyword": "암보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 5,
+   "title": "공식 현대해상 암보험 가입기간내 재진단암 계속보장",
+   "desc": "높아지는 기대수명, 암보장 한번만으론 불안하다면? 가입기간중 재진단암 계속 보장! 재진단암 치료비도 이제 걱정없이 대비하세요.",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "가입/견적/상담",
+   "landing": "현대해상공식상품몰 공식",
+   "domain": "hi.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "항암방사선치료 보장(특약)",
+     "내보험료계산",
+     "상담신청",
+     "암보험",
+     "보장내용"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "cncr",
+   "brand": "라이나생명다이렉트",
+   "keyword": "암보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 6,
+   "title": "라이나다이렉트 공식 암보험 가입 시 할인혜택제공(특약) 진단비부터 치료비까지 보장",
+   "desc": "치료부터 진단까지 비갱신암보험으로 든든 대비!(특약) 기계약자면 10% 추가할인!",
+   "promo": "(특약) 기계약자면 10% 추가할인",
+   "covers": [
+    "진단비"
+   ],
+   "price": "최대3만원",
+   "cta": "가입",
+   "landing": "라이나생명다이렉트 공식",
+   "domain": "direct.lina.co.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": [
+     "이벤트 신세계상품권 최대3만원지급"
+    ]
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "cncr",
+   "brand": "KB손해보험다이렉트",
+   "keyword": "암보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 7,
+   "title": "KB다이렉트 내맘대로암보험 신세계상품권 최대 3만원증정 월 9,000원 이상 가입시",
+   "desc": "뇌,허혈심장 주요치료비 특약 매회 보장으로 강화! KB암보험으로 든든하게 대비 고혈압, 고지혈증, 당뇨병이 있어도 가입 가능! (인수심사 통과 시)",
+   "promo": "가입이벤트",
+   "covers": [],
+   "price": "최대 3만원",
+   "cta": "가입/견적",
+   "landing": "direct.kbinsure.co.kr",
+   "domain": "direct.kbinsure.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "DIY암보험",
+     "보험료계산",
+     "다이렉트가입"
+    ],
+    "promotions": [
+     "가입이벤트"
+    ]
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "cncr",
+   "brand": "하나손해보험",
+   "keyword": "암보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 8,
+   "title": "하나손보 비갱신 암보험 26년 04월 출시 통합암 최대 9회 보장특약",
+   "desc": "전이암도 걱정없이 최대 9회 지급하는 하나손해보험으로 든든하게 대비 (특약)",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "",
+   "landing": "hanains-online.co.kr",
+   "domain": "hanains-online.co.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "cncr",
+   "brand": "라이나생명",
+   "keyword": "암보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 9,
+   "title": "라이나생명 공식 암보험 언제나 암보험료 간단 확인",
+   "desc": "병원비로 계획 없던 지출 걱정되신다면, 암보험만큼은 든든하게 대비하세요",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "견적",
+   "landing": "라이나생명 공식",
+   "domain": "lina.co.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "dntl",
+   "brand": "라이나생명공식사이트",
+   "keyword": "치아보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 1,
+   "title": "라이나생명 리셋형 치아보험 지금 보험료 간편하게 확인",
+   "desc": "낮아진 보험료로 새롭게 출시! (자사상품대비) 충전,크라운,보철특약 보장은 그대로",
+   "promo": "",
+   "covers": [
+    "보철",
+    "크라운"
+   ],
+   "price": "",
+   "cta": "견적/상담",
+   "landing": "direct.e-lina.co.kr",
+   "domain": "direct.e-lina.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "내 보험료 확인하기",
+     "보험료계산",
+     "보장한도리셋",
+     "맞춤상담신청"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "dntl",
+   "brand": "라이나생명다이렉트",
+   "keyword": "치아보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 2,
+   "title": "라이나생명 다이렉트 치아보험 최대 3만원 상품권 증정",
+   "desc": "고물가 시대 치료비 부담된다면? 라이나는 크라운,브릿지,틀니까지 든든 보장(특약)",
+   "promo": "이벤트 최대 3만원 상품권 증정",
+   "covers": [
+    "크라운"
+   ],
+   "price": "최대 3만원",
+   "cta": "가입/견적",
+   "landing": "direct.lina.co.kr",
+   "domain": "direct.lina.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "보험료확인",
+     "24시간가입"
+    ],
+    "promotions": [
+     "이벤트 최대 3만원 상품권 증정",
+     "다이렉트할인"
+    ]
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "dntl",
+   "brand": "현대해상공식상품몰",
+   "keyword": "치아보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 3,
+   "title": "현대해상 밝게웃는얼굴치아보험",
+   "desc": "밝은 얼굴과 튼튼한 치아를 위한 선택! 이목구비 질환(특약)도 보장하는 현대해상 치아보험도 든든하게 현대해상",
+   "promo": "",
+   "covers": [
+    "임플란트"
+   ],
+   "price": "",
+   "cta": "견적/상담",
+   "landing": "hi.co.kr",
+   "domain": "hi.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "보험료계산",
+     "상담신청",
+     "임플란트특약",
+     "치아질환특약"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "dntl",
+   "brand": "하나손해보험",
+   "keyword": "치아보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 4,
+   "title": "하나손해보험 치아보험 개수제한없는치아플랜",
+   "desc": "치료비 부담되는 임플란트, 크라운, 충전치료 연간 개수제한없이 보장(특약)",
+   "promo": "",
+   "covers": [
+    "임플란트",
+    "크라운"
+   ],
+   "price": "",
+   "cta": "상담",
+   "landing": "hanains-online.co.kr",
+   "domain": "hanains-online.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "신상품 전문가 맞춤설계 간편상담"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "dntl",
+   "brand": "라이나생명다이렉트",
+   "keyword": "치아보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 5,
+   "title": "라이나생명 다이렉트 치아보험 공식 홈페이지",
+   "desc": "간편하고 실속있는 치아보험 찾는다면? 다이렉트로 간편가입하고 최대 3만원 혜택까지",
+   "promo": "",
+   "covers": [],
+   "price": "최대 3만원",
+   "cta": "가입",
+   "landing": "라이나생명다이렉트 공식",
+   "domain": "linadirect.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "dntl",
+   "brand": "라이나생명",
+   "keyword": "치아보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 6,
+   "title": "라이나생명 공식 치아보험 지금 보험료 간편하게 확인",
+   "desc": "9년연속 민원최저 보험사 라이나생명! (17~25년 금융감독원) 치아보험 알아보기 충치부터 임플란트까지 첫 보험료 그대로 10년 보장(특약)",
+   "promo": "",
+   "covers": [
+    "임플란트",
+    "충치"
+   ],
+   "price": "",
+   "cta": "견적",
+   "landing": "라이나생명 공식",
+   "domain": "lina.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "내 보험료 확인하기",
+     "보험료계산",
+     "보장내용확인",
+     "상품더보기"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "dntl",
+   "brand": "DB손해보험",
+   "keyword": "치아보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 7,
+   "title": "DB손해보험 공식 치아보험 9월 보험료 계산 치아보험 가입할 땐!",
+   "desc": "부담되는 치과 치료! 치아보험으로 임플란트, 브릿지, 크라운 치료 보장(특약)",
+   "promo": "",
+   "covers": [
+    "임플란트",
+    "크라운"
+   ],
+   "price": "",
+   "cta": "가입/견적/상담",
+   "landing": "DB손해보험 공식",
+   "domain": "dbinsure.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "치아보험",
+     "보장내용확인",
+     "채팅상담",
+     "내보험료확인"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "dntl",
+   "brand": "KB손해보험다이렉트",
+   "keyword": "치아보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 8,
+   "title": "KB다이렉트 공식 치아보험 신세계상품권 최대 3만원증정 월 9,000원이상 가입시",
+   "desc": "대면 상담 없는 다이렉트 구조로, 내게 필요한 보장을 합리적으로 준비하세요!",
+   "promo": "KB다이렉트 공식 치아보험 신세계상품권 최대 3만원증정 월 9,000원이",
+   "covers": [],
+   "price": "최대 3만원",
+   "cta": "가입/상담",
+   "landing": "KB손해보험다이렉트 공식",
+   "domain": "direct.kbinsure.co.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "dntl",
+   "brand": "삼성화재다이렉트",
+   "keyword": "치아보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 9,
+   "title": "삼성화재 다이렉트 치아보험 다이렉트에서만 판매수수료0원 온가족 치아보험",
+   "desc": "판매 수수료 없어 저렴한 삼성화재 다이렉트, 합리적인 가격으로 지금 만나보세요 나이들수록 하나 둘 늘어나는 치과 방문, 삼성화재 다이렉트 치아보험으로 미리 대비",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "",
+   "landing": "direct.samsungfire.com",
+   "domain": "direct.samsungfire.com",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "dntl",
+   "brand": "DB생명보험",
+   "keyword": "치아보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 10,
+   "title": "DB생명 공식 치아보험 다이렉트로 더 저렴하게!",
+   "desc": "비싼 치과 치료와 다양한 치아 질환들이 걱정된다면? e로운 치아보험을 추천 드려요",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "",
+   "landing": "DB생명보험 공식",
+   "domain": "direct.idblife.com",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "driver",
+   "brand": "삼성화재다이렉트",
+   "keyword": "운전자보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 1,
+   "title": "삼성화재 다이렉트 운전자보험 보험료 계산 운전자보험료가 궁금하다면?",
+   "desc": "형사처벌 위기 속 든든한 내 편! 변호사선임비용으로 경찰조사 단계부터 대비(특약) 고물가 시대! 알뜰하게 보험 가입하고 싶다면? 삼성화재 다이렉트",
+   "promo": "",
+   "covers": [
+    "변호사선임"
+   ],
+   "price": "",
+   "cta": "가입/견적",
+   "landing": "direct.samsungfire.com",
+   "domain": "direct.samsungfire.com",
+   "extensions": {
+    "sitelinks": [
+     "24시간 계산, 가입 가능",
+     "24시간가입",
+     "보험료계산",
+     "보장내용확인"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "driver",
+   "brand": "DB손해보험다이렉트",
+   "keyword": "운전자보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 2,
+   "title": "DB다이렉트 공식 운전자보험 453만의 선택, 운전자보험 25년 1월 기준 가입 고객",
+   "desc": "DB손해보험은 운전 중에도, 운전 후 비탑승 상태도 형사책임 비용 보장 (특약)",
+   "promo": "",
+   "covers": [
+    "변호사선임"
+   ],
+   "price": "",
+   "cta": "가입/견적",
+   "landing": "DB손해보험다이렉트 공식",
+   "domain": "directidb.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "변호사선임비용 심급별 보장",
+     "24시간가입",
+     "보장내용확인",
+     "간편계산",
+     "365일무휴"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "driver",
+   "brand": "현대해상다이렉트",
+   "keyword": "운전자보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 3,
+   "title": "현대해상 다이렉트 운전자보험",
+   "desc": "12대 중과실 교통사고, 혹시 모를 사고 대비는 현대해상다이렉트. 지금 가입하면 네이버페이 포인트 최대 3만원 증정!",
+   "promo": "지금 가입하면 네이버페이 포인트 최대 3만원 증정",
+   "covers": [
+    "교통사고",
+    "12대중과실"
+   ],
+   "price": "최대 3만원",
+   "cta": "가입/견적",
+   "landing": "direct.hi.co.kr",
+   "domain": "direct.hi.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "운전자보험",
+     "간편가입",
+     "보험료확인"
+    ],
+    "promotions": [
+     "할인 자동차보험 고객 7% 할인",
+     "가입이벤트"
+    ]
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "driver",
+   "brand": "현대해상공식상품몰",
+   "keyword": "운전자보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 4,
+   "title": "공식 현대해상 운전자보험 스쿨존 사고 보장 확대",
+   "desc": "교통사고 경찰조사단계에서도 변호사선임비용 보장! (특약) 언제나 든든한 현대해상",
+   "promo": "",
+   "covers": [
+    "변호사선임",
+    "교통사고"
+   ],
+   "price": "",
+   "cta": "견적/상담",
+   "landing": "현대해상공식상품몰 공식",
+   "domain": "hi.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "내보험료계산",
+     "상담신청",
+     "운전자보험",
+     "보장내용"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "driver",
+   "brand": "KB손해보험다이렉트",
+   "keyword": "운전자보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 5,
+   "title": "KB다이렉트 공식 운전자보험 신세계상품권 최대 3만원증정 월 9,000원이상 가입시",
+   "desc": "KB다이렉트 운전자보험에서 24시간 365일 언제나! 변호사선임비용 특약 확인",
+   "promo": "KB다이렉트 공식 운전자보험 신세계상품권 최대 3만원증정 월 9,000원",
+   "covers": [
+    "변호사선임"
+   ],
+   "price": "최대 3만원",
+   "cta": "가입",
+   "landing": "KB손해보험다이렉트 공식",
+   "domain": "direct.kbinsure.co.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "driver",
+   "brand": "DB손해보험다이렉트",
+   "keyword": "운전자보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 6,
+   "title": "DB다이렉트 공식 운전자보험",
+   "desc": "젖은 낙엽과 짙은 안개가 걱정되는 가을길, DB손해보험 다이렉트와 안전운전 준비 선선한 가을 나들이, 익숙하지 않은 도로에서도 운전자보험 보장내용 확인",
+   "promo": "",
+   "covers": [
+    "변호사선임"
+   ],
+   "price": "",
+   "cta": "가입/견적",
+   "landing": "DB손해보험다이렉트 공식",
+   "domain": "directidb.kr",
+   "extensions": {
+    "sitelinks": [
+     "변호사선임비용 심급별 보장",
+     "24시간가입",
+     "보장내용확인",
+     "간편계산",
+     "365일무휴"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "driver",
+   "brand": "픽앤플랜",
+   "keyword": "운전자보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 7,
+   "title": "믿고 맡기는 운전자보험 보험 픽앤플랜 공식 사이트 제안서 받고 똑똑하게 가입",
+   "desc": "전화번호 노출 없이 간편하게, 딱 맞는 보험 찾아주는 픽앤플랜 언제 어디서나 만나는 보험 컨설팅, 픽앤플랜",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "가입/견적/비교",
+   "landing": "픽앤플랜 공식",
+   "domain": "picknplan.com",
+   "extensions": {
+    "sitelinks": [
+     "보험Q&A",
+     "플래너문의",
+     "보험료비교"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "driver",
+   "brand": "키움에셋플래너",
+   "keyword": "운전자보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 8,
+   "title": "키움에셋 운전자보험 알아보기 최적가 확인과 보장 점검 운전자보험 비교는 키움에서",
+   "desc": "출발 전 운전자 보험 확인하고, 키움과 함께 예기치 못한 사고 관련 보장 살펴보기 일상부터 장거리 운전까지, 예기치 못한 순간에도 든든함을 더하는 키움에셋플래너",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "비교",
+   "landing": "kiwoomapmall.com",
+   "domain": "kiwoomapmall.com",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "driver",
+   "brand": "KB손해보험다이렉트",
+   "keyword": "운전자보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 9,
+   "title": "KB다이렉트 운전자보험 신세계상품권 최대 3만원증정 월 9,000원 이상 가입시",
+   "desc": "KB다이렉트 운전자보험으로 24시간 언제 어디서든 쉽고 간편하게 가입하세요",
+   "promo": "KB다이렉트 운전자보험 신세계상품권 최대 3만원증정 월 9,000원 이상",
+   "covers": [],
+   "price": "최대 3만원",
+   "cta": "가입",
+   "landing": "kbdirect-insure.com",
+   "domain": "kbdirect-insure.com",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "driver",
+   "brand": "KB손해보험",
+   "keyword": "운전자보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 10,
+   "title": "KB 손해보험 다이렉트 안전한 운전, KB와 함께 365일 24시간 간편가입",
+   "desc": "가을 드라이브 낯선 초행길 걱정된다면? KB다이렉트 변호사선임비용 특약 확인!",
+   "promo": "",
+   "covers": [
+    "변호사선임"
+   ],
+   "price": "",
+   "cta": "가입",
+   "landing": "kbinsdirect.com",
+   "domain": "kbinsdirect.com",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "event",
+   "brand": "온인스",
+   "keyword": "행사보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 1,
+   "title": "행사보험은 삼성화재X온인스",
+   "desc": "연중무휴 24시간! 행사보험 보험 가입 가능. 단 5분! 손쉽게 가입해보세요. 비가 와서 행사 취소? 걱정 마세요 온인스는 직전이라면 가입 취소가 가능해요!",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "가입/상담",
+   "landing": "onins.kr",
+   "domain": "onins.kr",
+   "extensions": {
+    "sitelinks": [
+     "24시간가입",
+     "즉시결제",
+     "연중무휴상담"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "event",
+   "brand": "evins",
+   "keyword": "행사보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 2,
+   "title": "3개 보험사 비교견적!",
+   "desc": "안심되는 행사 보험, 간편한 보험 가입! 놓치지 마세요",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "가입/견적/비교",
+   "landing": "evins.creatorlink.net",
+   "domain": "evins.creatorlink.net",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "event",
+   "brand": "KB손해보험다이렉트",
+   "keyword": "행사보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 3,
+   "title": "KB다이렉트 공식 운전자보험 신세계상품권 최대 3만원증정 월 9,000원이상 가입시",
+   "desc": "운전중이 아닐 때 발생하는 교통사고까지 보장하는 KB다이렉트 운전자보험!",
+   "promo": "KB다이렉트 공식 운전자보험 신세계상품권 최대 3만원증정 월 9,000원",
+   "covers": [],
+   "price": "최대 3만원",
+   "cta": "가입/견적",
+   "landing": "KB손해보험다이렉트 공식",
+   "domain": "direct.kbinsure.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "다이렉트가입",
+     "보험료계산",
+     "자동차보험"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "event",
+   "brand": "투어밸리여행자보험",
+   "keyword": "행사보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 4,
+   "title": "행사보험 당일견적, 투어밸리 완벽한 행사파트너",
+   "desc": "성공적인 행사 개최를 위한 행사 보험 상품",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "견적",
+   "landing": "tourvalley.net",
+   "domain": "tourvalley.net",
+   "extensions": {
+    "sitelinks": [
+     "홈페이지",
+     "행사빠른견적",
+     "행사보장내용",
+     "고객센터"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "event",
+   "brand": "중소기업보험",
+   "keyword": "행사보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 5,
+   "title": "행사보험 당일 비교견적",
+   "desc": "경쟁력 있는 보험료, 행사보험 전문인력 TFT 운영으로 계약부터 보상까지",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "견적/비교",
+   "landing": "tpakorea.com",
+   "domain": "tpakorea.com",
+   "extensions": {
+    "sitelinks": [
+     "빠른 견적",
+     "낮은 보험료",
+     "안정적 운영"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "event",
+   "brand": "보험회사별보험료비교",
+   "keyword": "행사보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 6,
+   "title": "암보험 상담 인슈엔젤보험닷컴",
+   "desc": "보험회사별 암보험료 비교, 어린이암보험, 여성암보험, 손해보험, 생명보험 종합상담",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "견적/비교/상담",
+   "landing": "insuangel.kr",
+   "domain": "insuangel.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "event",
+   "brand": "DB손해보험",
+   "keyword": "행사보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 7,
+   "title": "DB손해보험 아이러브건강보험 내 아이를 위한 보험추천! 10월 보험료 계산",
+   "desc": "유행성 독감으로 우리아이 걱정된다면? 독감(인플루엔자)항바이러스제치료비 특약보장! 9월 보험가입 아직도 고민하고 있다면? DB손해보험에서 즉시 상담하세요!",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "가입/견적/상담",
+   "landing": "dbinsure.co.kr",
+   "domain": "dbinsure.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "24시 보험료 조회 가능!"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "event",
+   "brand": "jehu.cancerok.com",
+   "keyword": "행사보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 8,
+   "title": "보험비교사이트상담 보험클릭",
+   "desc": "손해보험, 생명보험, 암보험, 종합건강보험, 암뇌심3대진단비보험, 어린이보험 상담",
+   "promo": "",
+   "covers": [
+    "진단비"
+   ],
+   "price": "",
+   "cta": "비교/상담",
+   "landing": "jehu.cancerok.com",
+   "domain": "jehu.cancerok.com",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "event",
+   "brand": "중앙기업보험",
+   "keyword": "행사보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 9,
+   "title": "CGL보험",
+   "desc": "삼성화재/CHUBB에이스/AIG 비교견적/1:1실시간카톡상담/CGL보험",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "견적/비교/상담",
+   "landing": "ccmarine.co.kr",
+   "domain": "ccmarine.co.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "event",
+   "brand": "ABL인터넷보험",
+   "keyword": "행사보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 10,
+   "title": "우리WON인터넷보너스저축보험 연복리로 목돈 마련!!",
+   "desc": "계약자적립액 공시이율 적용에 최저보증이율 기본 보장! 저축보험 시작해보세요",
+   "promo": "계약자적립액 공시이율 적용에 최저보증이율 기본 보장",
+   "covers": [],
+   "price": "",
+   "cta": "",
+   "landing": "online.abllife.co.kr",
+   "domain": "online.abllife.co.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "golf",
+   "brand": "뱅크샐러드",
+   "keyword": "골프보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 1,
+   "title": "골프보험, 어디가 저렴할까 필요한 날, 필요한 보장만! 30개 보험사 한 번에 비교",
+   "desc": "30개 제휴 보험사 상품 중 내게 맞는 보험으로 간편하게 알아보세요!",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "비교",
+   "landing": "banksalad.com",
+   "domain": "banksalad.com",
+   "extensions": {
+    "sitelinks": [
+     "보험 전문가가 도와드려요",
+     "내 보험조회",
+     "보험분석",
+     "전문가 카톡",
+     "보험살펴보기"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "golf",
+   "brand": "투어밸리여행자보험",
+   "keyword": "골프보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 2,
+   "title": "골프보험 투어밸리 법인단체 여행보험센터",
+   "desc": "현장체험, 수련회,야외행사 등 법인단체 여행자보험 전문, 24시간 실시간 간편가입",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "가입/견적",
+   "landing": "tourvalley.net",
+   "domain": "tourvalley.net",
+   "extensions": {
+    "sitelinks": [
+     "18년경력의 보험파트너!",
+     "빠른견적",
+     "단체여행보험",
+     "고객센터"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "golf",
+   "brand": "jehu.cancerok.com",
+   "keyword": "골프보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 3,
+   "title": "보험비교사이트상담 보험닷컴",
+   "desc": "손해보험, 생명보험, 암보험, 종합건강보험, 암뇌심3대진단비보험, 어린이보험 상담",
+   "promo": "",
+   "covers": [
+    "진단비"
+   ],
+   "price": "",
+   "cta": "비교/상담",
+   "landing": "jehu.cancerok.com",
+   "domain": "jehu.cancerok.com",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "golf",
+   "brand": "DB손해보험다이렉트",
+   "keyword": "골프보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 4,
+   "title": "DB다이렉트 골프보험 24시간 간편가입",
+   "desc": "원데이로 저렴한 골프보험! 홀인원 축하금/배상책임/골프용품 파손/상해보상 (특약)",
+   "promo": "",
+   "covers": [
+    "홀인원",
+    "배상책임"
+   ],
+   "price": "",
+   "cta": "가입/견적",
+   "landing": "directdb.co.kr",
+   "domain": "directdb.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "간편계산",
+     "간편가입",
+     "보장내용",
+     "원데이보험"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "golf",
+   "brand": "KB손해보험다이렉트",
+   "keyword": "골프보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 5,
+   "title": "KB다이렉트 공식 골프보험 365일 24시간 간편가입",
+   "desc": "잘못 날린 공에 타인이 다쳤다면?치료비부터 합의금까지 KB골프보험으로대비(특약) 자사 오프라인대비 10%저렴",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "가입",
+   "landing": "KB손해보험다이렉트 공식",
+   "domain": "direct.kbinsure.co.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "holeinone",
+   "brand": "뱅크샐러드",
+   "keyword": "홀인원보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 1,
+   "title": "홀인원보험, 어디가 저렴할까 필요한 날, 필요한 보장만! 30개 보험사 한 번에 비교",
+   "desc": "30개 제휴 보험사 상품 중 내게 맞는 보험으로 간편하게 알아보세요!",
+   "promo": "",
+   "covers": [
+    "홀인원"
+   ],
+   "price": "",
+   "cta": "비교",
+   "landing": "banksalad.com",
+   "domain": "banksalad.com",
+   "extensions": {
+    "sitelinks": [
+     "보험 전문가가 도와드려요",
+     "내 보험조회",
+     "보험분석",
+     "전문가 카톡",
+     "보험살펴보기"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "holeinone",
+   "brand": "DB손해보험다이렉트",
+   "keyword": "홀인원보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 2,
+   "title": "DB다이렉트 골프보험 24시간 간편가입",
+   "desc": "원데이로 저렴한 골프보험! 홀인원 축하금/배상책임/골프용품 파손/상해보상 (특약)",
+   "promo": "",
+   "covers": [
+    "홀인원",
+    "배상책임"
+   ],
+   "price": "",
+   "cta": "가입/견적",
+   "landing": "directdb.co.kr",
+   "domain": "directdb.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "간편계산",
+     "간편가입",
+     "보장내용",
+     "원데이보험"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "hrmf",
+   "brand": "KB손해보험다이렉트",
+   "keyword": "주택화재보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 1,
+   "title": "KB다이렉트 주택화재보험 월 9,000원이상 가입시 화재사고 대비는 KB",
+   "desc": "가을철 빈번한 화재사고! 예상치못한 화재손해 KB다이렉트로 든든하게 보장받으세요! 예상하지 못한 사고로 우리집에 불난다면? 다이렉트 주택화재보험으로 걱정 해결!",
+   "promo": "이벤트 신세계 상품권 최대 3만원",
+   "covers": [
+    "누수"
+   ],
+   "price": "월 9,000원",
+   "cta": "가입",
+   "landing": "direct.kbinsure.co.kr",
+   "domain": "direct.kbinsure.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "주택화재대비",
+     "누수피해대비",
+     "사업장화재"
+    ],
+    "promotions": [
+     "이벤트 신세계 상품권 최대 3만원"
+    ]
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "hrmf",
+   "brand": "현대해상다이렉트",
+   "keyword": "주택화재보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 2,
+   "title": "현대해상 주택화재보험 인터넷으로 간편가입 주거방식 맞춤 보장",
+   "desc": "화재 위험 높은 가을, 주택화재보험은 준비하셨나요? 화재손해, 배상책임 특약보장. 고민 말고 현대해상 다이렉트로 든든하게!",
+   "promo": "이벤트 가입시 Npay 최대3만원",
+   "covers": [
+    "배상책임"
+   ],
+   "price": "최대3만원",
+   "cta": "가입",
+   "landing": "direct.hi.co.kr",
+   "domain": "direct.hi.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "주택화재보험",
+     "아파트화재",
+     "세입자가입",
+     "집주인가입"
+    ],
+    "promotions": [
+     "이벤트 가입시 Npay 최대3만원"
+    ]
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "hrmf",
+   "brand": "현대해상공식상품몰",
+   "keyword": "주택화재보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 3,
+   "title": "공식 현대해상 생활보장보험 도난,풍수재손해 보장(특약)",
+   "desc": "예기치못한 사고로인한 주택 화재손해, 현대해상 생활보장보험으로 안심하고 지내세요! 급배수설비 누출로인한 손해 보장 (특약)",
+   "promo": "",
+   "covers": [
+    "풍수재",
+    "도난"
+   ],
+   "price": "",
+   "cta": "견적/상담",
+   "landing": "현대해상공식상품몰 공식",
+   "domain": "hi.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "보험료계산",
+     "상담신청",
+     "화재사고대비",
+     "가전수리특약"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "hrmf",
+   "brand": "DB손해보험",
+   "keyword": "주택화재보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 4,
+   "title": "365일 가입 가능한 보험 다이렉트로 간편하고 저렴하게 DB다이렉트 주택화재보험",
+   "desc": "가을철 태풍 대비, 예상치 못한 주택 피해까지 꼼꼼하게 준비",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "가입/견적",
+   "landing": "directdb.co.kr",
+   "domain": "directdb.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "보장 범위 확인하기",
+     "365일무휴",
+     "24시간가입",
+     "간편계산",
+     "즉시가입"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "hrmf",
+   "brand": "KB손해보험다이렉트",
+   "keyword": "주택화재보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 5,
+   "title": "KB다이렉트 공식 주택보험 신세계상품권 최대 3만원증정 누수/방수 피해 보상(특약)",
+   "desc": "손해보장은 기본, 임시거주비 최대 90일까지 모두 보장 (특약) 집 안에서도, 집 밖에서도 안심하는 이유? KB다이렉트 주택화재보험이 있으니까!",
+   "promo": "이벤트 신세계 상품권 최대 3만원",
+   "covers": [
+    "임시거주비",
+    "누수"
+   ],
+   "price": "최대 3만원",
+   "cta": "",
+   "landing": "KB손해보험다이렉트 공식",
+   "domain": "kbinsurance.co.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": [
+     "이벤트 신세계 상품권 최대 3만원"
+    ]
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "hrmf",
+   "brand": "보험료비교사이트",
+   "keyword": "주택화재보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 6,
+   "title": "최적가 주택화재보험료 비교 내 보험료 알아보기",
+   "desc": "큰 사고로 일상이 흔들리지 않도록! 주택화재보험으로 우리집화재 걱정없이 든든 대비 가을철 화재 위험부터 우리 집 피해까지 꼼꼼하게 대비!",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "견적/비교",
+   "landing": "a.allbohum.kr",
+   "domain": "a.allbohum.kr",
+   "extensions": {
+    "sitelinks": [
+     "주택화재보험",
+     "보험사별비교",
+     "보험료확인",
+     "보장내용확인"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "hrmf",
+   "brand": "삼성화재",
+   "keyword": "주택화재보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 7,
+   "title": "삼성화재 주택상해보험 맞춤형 주택상해 플랜확인! 주택화재복구비용 지원(특약)",
+   "desc": "건조한 가을철 화재사고, 더든든 우리집행복지킴이로 든든 대비! (특약) 급배수시설누출손해(특약) 사고 발생시 손해액범위 내 보상(자기부담금10%)",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "",
+   "landing": "samsungfire-partner.co.kr",
+   "domain": "samsungfire-partner.co.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "hrmf",
+   "brand": "신한EZ손해보험",
+   "keyword": "주택화재보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 8,
+   "title": "신한EZ 주택화재보험 신한은행 계좌이체 5% 할인",
+   "desc": "이웃집 배상책임, 화재벌금, 주택복구비용 및 임시거주비까지 보상해드려요 (특약) 신규 보험 가입 시 네이버페이 최대 3만P 증정",
+   "promo": "주택복구비용 및 임시거주비까지 보상해드려요 (특약) 신규 보험 가입 시 ",
+   "covers": [
+    "임시거주비",
+    "벌금",
+    "배상책임"
+   ],
+   "price": "5% 할인",
+   "cta": "가입",
+   "landing": "shinhanez.co.kr",
+   "domain": "shinhanez.co.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "hrmf",
+   "brand": "키움에셋플래너",
+   "keyword": "주택화재보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 9,
+   "title": "키움에셋 주택화재보험 상담",
+   "desc": "키움에셋플래너와 함께 주택화재보험의 가입 조건과 보장 범위를 자세히 살펴보기 일상 속 화재 위험을 생각하고 우리 집에 필요한 보장 내용을 전문가와 함께 확인",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "가입/상담",
+   "landing": "kiwoomapmall.com",
+   "domain": "kiwoomapmall.com",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "overseas",
+   "brand": "트래블로버",
+   "keyword": "해외여행보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 1,
+   "title": "트래블로버 여행자보험 전문",
+   "desc": "갑작스런 항공기 결항/지연 최대 100만원,휴대품 손해 최대 200만원 한도 보장 (여행 당일에도 간편 가입)",
+   "promo": "이벤트 1인부터 최대 10% 할인",
+   "covers": [
+    "휴대품"
+   ],
+   "price": "최대 100만원",
+   "cta": "가입",
+   "landing": "direct.travelover.co.kr",
+   "domain": "direct.travelover.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "청구대행",
+     "제휴혜택"
+    ],
+    "promotions": [
+     "이벤트 1인부터 최대 10% 할인",
+     "할인프로모션"
+    ]
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "overseas",
+   "brand": "삼성화재다이렉트",
+   "keyword": "해외여행보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 2,
+   "title": "삼성화재다이렉트 해외여행보험 둘만 모여도 10% 할인 간편하게 24시간 당일가입",
+   "desc": "여행시 혹시 모를 현지감염 걱정될땐?특정감염병보상금 특약으로 안심!",
+   "promo": "동반가입할인",
+   "covers": [
+    "항공기지연"
+   ],
+   "price": "10% 할인",
+   "cta": "가입",
+   "landing": "direct.samsungfire.com",
+   "domain": "direct.samsungfire.com",
+   "extensions": {
+    "sitelinks": [
+     "신상품 항공기지연 보험금 지급특약",
+     "24시간가입"
+    ],
+    "promotions": [
+     "동반가입할인",
+     "재가입할인"
+    ]
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "overseas",
+   "brand": "현대해상다이렉트",
+   "keyword": "해외여행보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 3,
+   "title": "현대해상 다이렉트 여행자보험 휴대품손해 특약보장",
+   "desc": "즐거운 여행 중 발생한 상해, 현대해상 여행자보험이 든든하게 지켜드릴게요 (특약)",
+   "promo": "할인 함께 가입시 10%특약할인",
+   "covers": [
+    "휴대품"
+   ],
+   "price": "",
+   "cta": "가입/견적",
+   "landing": "direct.hi.co.kr",
+   "domain": "direct.hi.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "24시간가입",
+     "해외여행보험",
+     "간편계산",
+     "보험료확인"
+    ],
+    "promotions": [
+     "할인 함께 가입시 10%특약할인"
+    ]
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "overseas",
+   "brand": "DB손해보험다이렉트",
+   "keyword": "해외여행보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 4,
+   "title": "DB다이렉트 공식 여행자보험 여행중 휴대품손해 특약보장 휴대품 도난,파손 특약보장!",
+   "desc": "잦은 수하물 분실사고! 수하물 6시간이내 미도착 시 손해보장! (특약) 가족 여행 시 믿음직한 DB다이렉트로 15인까지 동시가입 가능!",
+   "promo": "",
+   "covers": [
+    "휴대품",
+    "도난"
+   ],
+   "price": "",
+   "cta": "가입",
+   "landing": "DB손해보험다이렉트 공식",
+   "domain": "directdb.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "해외여행보험",
+     "장기체류보험",
+     "다이렉트가입",
+     "보장내용확인"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "overseas",
+   "brand": "KB손해보험다이렉트",
+   "keyword": "해외여행보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 5,
+   "title": "KB다이렉트 해외여행보험 이른 아침에도 간편가입",
+   "desc": "해외여행보험 비교 중이라면? 해외여행중 식중독입원일당(4일이상 120일한도) 보장",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "가입/비교",
+   "landing": "direct.kbinsure.co.kr",
+   "domain": "direct.kbinsure.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "해외여행보험",
+     "출국전가입",
+     "단체가입가능",
+     "해외장기체류"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "overseas",
+   "brand": "Chubb여행자보험",
+   "keyword": "해외여행보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 6,
+   "title": "라이나 해외여행, 유학생보험",
+   "desc": "국내, 해외여행보험, 유학생보험, 생년월일로 가입, 항공지연과 수화물지연도 보상됨",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "가입",
+   "landing": "chubbseoul.co.kr",
+   "domain": "chubbseoul.co.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "overseas",
+   "brand": "ta.toursafe.co.kr",
+   "keyword": "해외여행보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 7,
+   "title": "해외여행은 보험가격 비교부터",
+   "desc": "해외여행 출국 전 간편 가입하고 든든하게 준비하세요",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "가입/비교",
+   "landing": "ta.toursafe.co.kr",
+   "domain": "ta.toursafe.co.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "overseas",
+   "brand": "롯데손해보험",
+   "keyword": "해외여행보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 8,
+   "title": "여행 떠나기 전 체크리스트! ALICE 해외여행보험 친구, 가족과 동반 가입가능",
+   "desc": "해외여행 중 항공기/수하물 지연비용 지급(특약, 시간별 상이) 여권 분실 시 해외여행증명서 발급비용, 여권재발급 비용 지급(특약)",
+   "promo": "",
+   "covers": [
+    "여권분실"
+   ],
+   "price": "",
+   "cta": "가입",
+   "landing": "alice.lotteins.co.kr",
+   "domain": "alice.lotteins.co.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "overseas",
+   "brand": "DB손해보험다이렉트",
+   "keyword": "해외여행보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 9,
+   "title": "DB다이렉트 해외여행보험 해외여행보험도 DB다이렉트!",
+   "desc": "국내&해외 치료비 모두 보장(특약) 식중독/전염병/중단사고 보장(특약)",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "",
+   "landing": "blog.naver.com",
+   "domain": "blog.naver.com",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "overseaslong",
+   "brand": "현대해상다이렉트",
+   "keyword": "유학생보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 1,
+   "title": "현대해상 다이렉트 주재원보험 24시간 우리말 상담",
+   "desc": "막막한 해외 장기 출장! 현대해상 다이렉트 해외장기체류보험으로 미리 대비하세요!",
+   "promo": "할인 자사오프라인대비 15%저렴",
+   "covers": [
+    "유학",
+    "장기체류",
+    "주재원"
+   ],
+   "price": "",
+   "cta": "상담",
+   "landing": "direct.hi.co.kr",
+   "domain": "direct.hi.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "유학생",
+     "주재원",
+     "워킹홀리데이"
+    ],
+    "promotions": [
+     "할인 자사오프라인대비 15%저렴"
+    ]
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "overseaslong",
+   "brand": "KB손해보험다이렉트",
+   "keyword": "유학생보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 2,
+   "title": "KB손해보험 유학생보험 자사 오프라인대비 25%저렴",
+   "desc": "오르는 환율에 부담되는 유학 비용? 자사 오프라인 대비 25% 저렴하게 가입",
+   "promo": "",
+   "covers": [
+    "유학",
+    "주재원"
+   ],
+   "price": "",
+   "cta": "가입",
+   "landing": "direct.kbinsure.co.kr",
+   "domain": "direct.kbinsure.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "출국 직전 간편하게 가입",
+     "유학생보험",
+     "주재원보험",
+     "교환학생준비"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "overseaslong",
+   "brand": "신한EZ손해보험",
+   "keyword": "유학생보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 3,
+   "title": "신한 유학생보험 출국 당일 공항에서 가입가능 현지 재가입도 OK!",
+   "desc": "무슨 일이 일어날지 모르니까! 해외 상해/질병 의료비(특약)도 든든하게 보장",
+   "promo": "할인 신한카드 결제 10% 할인",
+   "covers": [
+    "유학"
+   ],
+   "price": "10% 할인",
+   "cta": "가입/견적",
+   "landing": "shinhanez.co.kr",
+   "domain": "shinhanez.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "보험료조회"
+    ],
+    "promotions": [
+     "할인 신한카드 결제 10% 할인",
+     "가입이벤트",
+     "보험료할인",
+     "신한카드할인"
+    ]
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "overseaslong",
+   "brand": "DB손해보험다이렉트",
+   "keyword": "유학생보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 4,
+   "title": "DB다이렉트 해외장기체류보험 체류 중 24시간 한국어상담 가입즉시 증서발급",
+   "desc": "자녀 유학길 안전하게, 해외 상해/질병 보장(특약) 연중무휴 보상상담 지원 시차가 큰 나라에서도 안심! 365일 24시간 해외긴급지원 서비스 제공",
+   "promo": "",
+   "covers": [
+    "유학",
+    "장기체류"
+   ],
+   "price": "",
+   "cta": "가입/상담",
+   "landing": "directdb.co.kr",
+   "domain": "directdb.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "장기체류보험",
+     "해외여행보험",
+     "다이렉트가입",
+     "보장내용확인"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "overseaslong",
+   "brand": "트래블로버",
+   "keyword": "유학생보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 5,
+   "title": "트래블로버 여행자보험 전문 해외에서도 24시 상담! 24시 사고처리/청구대행",
+   "desc": "장기여행 고혈압, 당뇨 유병자도 가입 가능해요! 상해사망 최대 3억원 보장",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "가입/견적/상담",
+   "landing": "direct.travelover.co.kr",
+   "domain": "direct.travelover.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "회원가입없이 1분 간편가입",
+     "보험료계산",
+     "상품안내",
+     "24시 상담",
+     "청구대행"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "overseaslong",
+   "brand": "인슈플러스여행자보험",
+   "keyword": "유학생보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 6,
+   "title": "인슈플러스 유학생보험 365일 응급의학과 즉시상담",
+   "desc": "유학 중 감기, 복통, 살까짐 등 애매할때도 24시간 한국의료진이 바로 연결",
+   "promo": "",
+   "covers": [
+    "유학"
+   ],
+   "price": "",
+   "cta": "가입/견적/상담",
+   "landing": "insuplus.co.kr",
+   "domain": "insuplus.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "간편가입",
+     "보험료계산",
+     "보장내용확인",
+     "유학/출장"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "overseaslong",
+   "brand": "카카오페이손해보험",
+   "keyword": "유학생보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 7,
+   "title": "카카오페이손보해외장기체류보험",
+   "desc": "해외에서도 연속해서 재가입 가능! (보험 만기 1개월 이내 재가입 시)",
+   "promo": "",
+   "covers": [
+    "장기체류"
+   ],
+   "price": "",
+   "cta": "가입",
+   "landing": "kakaopayinscorp.co.kr",
+   "domain": "kakaopayinscorp.co.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "overseaslong",
+   "brand": "Chubb여행자보험",
+   "keyword": "유학생보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 8,
+   "title": "라이나장기체류자보험",
+   "desc": "유학생보험, 교환교수보험, 장기체류자보험 해외여행자 국내여행자보험 24시간 온라인가입",
+   "promo": "",
+   "covers": [
+    "유학",
+    "장기체류"
+   ],
+   "price": "",
+   "cta": "가입",
+   "landing": "chubbseoul.co.kr",
+   "domain": "chubbseoul.co.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "overseaslong",
+   "brand": "shinhanez.udirect.co.kr",
+   "keyword": "유학생보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 9,
+   "title": "해외 장기체류자 무료견적센터",
+   "desc": "3개월 이상 해외체류 시 필요한 보장과 보험료 간편 비교! 유학/워홀/장기체류까지 해외 장기체류에 맞춘 여행자보험 상담",
+   "promo": "",
+   "covers": [
+    "유학",
+    "장기체류",
+    "워홀"
+   ],
+   "price": "",
+   "cta": "견적/비교/상담",
+   "landing": "shinhanez.udirect.co.kr",
+   "domain": "shinhanez.udirect.co.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "woman",
+   "brand": "AIA생명종합보험",
+   "keyword": "여성건강보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 1,
+   "title": "AIA생명 종합보험 상담 필요한 보장으로 맞춤형가입!",
+   "desc": "나이 들수록 대비가 필요한 3대질병과 치매! 종합보험으로 미리 대비! 특약",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "가입/견적/상담",
+   "landing": "direct.aia.co.kr",
+   "domain": "direct.aia.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "보험료 계산",
+     "전문가 상담",
+     "보장내용확인",
+     "보험문의하기"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "woman",
+   "brand": "라이나생명다이렉트",
+   "keyword": "여성건강보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 2,
+   "title": "라이나생명 다이렉트 건강보험 최대 3만원 상품권 증정",
+   "desc": "언제 찾아올지 모르는 뇌심질환 대비하셨나요? 뇌출혈,심근경색 진단치료 보장(특약)",
+   "promo": "이벤트 최대 3만원 상품권 증정",
+   "covers": [],
+   "price": "최대 3만원",
+   "cta": "가입/견적",
+   "landing": "direct.lina.co.kr",
+   "domain": "direct.lina.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "치아보험",
+     "암보험",
+     "내보험료확인"
+    ],
+    "promotions": [
+     "이벤트 최대 3만원 상품권 증정",
+     "가입이벤트"
+    ]
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "woman",
+   "brand": "하나손해보험",
+   "keyword": "여성건강보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 3,
+   "title": "하나손보 여성암 하트 플랜 26년 04월 출시 통합암 최대 14회 보장특약",
+   "desc": "여성암 특화 부위별 세분화로, 진단부터 치료까지 암 케어를 더 디테일하게 (특약)",
+   "promo": "",
+   "covers": [
+    "여성암"
+   ],
+   "price": "",
+   "cta": "상담",
+   "landing": "hanains-online.co.kr",
+   "domain": "hanains-online.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "무료 전화상담 신청"
+    ],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "woman",
+   "brand": "삼성생명다이렉트",
+   "keyword": "여성건강보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 4,
+   "title": "삼성 팩 건강보험 종합팩 핵심 보장만 담은 건강보험 복잡함은 빼고 보장은 꽉",
+   "desc": "10년 내 수술, 입원하지 않았다면? 보험료 할인 혜택도 받을 수 있어요!",
+   "promo": "보험료 할인 혜택도 받을 수 있어요",
+   "covers": [],
+   "price": "",
+   "cta": "견적",
+   "landing": "direct.samsunglife.com",
+   "domain": "direct.samsunglife.com",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "woman",
+   "brand": "KB손해보험다이렉트",
+   "keyword": "여성건강보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 5,
+   "title": "KB다이렉트 건강맞춤보장보험 신세계상품권 최대 3만원증정 2회차 정상납입 및 유지시",
+   "desc": "KB의 든든한 보장으로 부모님 건강 빈틈없이 대비! 꼼꼼한 내가 선택한 이유 신세계 상품권 최대 3만원 증정 (2회차 정상납입 및 유지시)",
+   "promo": "꼼꼼한 내가 선택한 이유 신세계 상품권 최대 3만원 증정 (2회차 정상납",
+   "covers": [
+    "실손"
+   ],
+   "price": "최대 3만원",
+   "cta": "견적",
+   "landing": "direct.kbinsure.co.kr",
+   "domain": "direct.kbinsure.co.kr",
+   "extensions": {
+    "sitelinks": [
+     "암보험",
+     "실손보험",
+     "종합플랜",
+     "보험료계산"
+    ],
+    "promotions": [
+     "이벤트 신세계상품권 최대3만원증정"
+    ]
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "woman",
+   "brand": "라이나생명공식사이트",
+   "keyword": "여성건강보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 6,
+   "title": "라이나생명 공식 간병인보험 지금 보험료 간편하게 확인 부모님 건강보험 선물하기",
+   "desc": "가족에게 짐이 되지 않도록, 하루만 입원해도 상급종합병원 간병비 정액 보장(특약) 간병인 사용일당 보장(특약)",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "견적",
+   "landing": "라이나생명공식사이트 공식",
+   "domain": "direct.e-lina.co.kr",
+   "extensions": {
+    "sitelinks": [],
+    "promotions": []
+   },
+   "source": "auto-dom"
+  },
+  {
+   "product": "woman",
+   "brand": "DB생명보험",
+   "keyword": "여성건강보험",
+   "date": "2026-10-04",
+   "device": "pc",
+   "rank": 7,
+   "title": "DB생명 내가 고른 건강보험 DB생명 공식 건강보험 원하는 보장만 선택 가능!",
+   "desc": "특약도 종신까지 보험료 인상 없이(일부 특약 제외, 종신 가입 시)",
+   "promo": "",
+   "covers": [],
+   "price": "",
+   "cta": "가입/견적",
+   "landing": "DB생명보험 공식",
+   "domain": "direct.idblife.com",
    "extensions": {
     "sitelinks": [],
     "promotions": []
