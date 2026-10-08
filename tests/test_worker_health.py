@@ -21,6 +21,12 @@ class TestWorkerHealth(unittest.TestCase):
         self.assertIn("GH_DISPATCH_TOKEN", out[0])
         self.assertIn("토큰 만료", out[1])
 
+    def test_token_expiry_warning(self):
+        import datetime
+        h = {"missing": [], "scheduler": None, "token_expires": "2026-10-20 09:00:00 +0900"}
+        self.assertEqual(cwh.problems(h, today=datetime.date(2026, 9, 1)), [])
+        self.assertIn("만료 12일 전", cwh.problems(h, today=datetime.date(2026, 10, 8))[0])
+
     def test_outdated_worker_code(self):
         self.assertIn("최신이 아님", cwh.problems({"ok": True, "service": "modooflow-naver-proxy"})[0])
 

@@ -8,6 +8,7 @@
 
 환경변수: WORKER_URL(기본 DEFAULT_PROXY), GITHUB_TOKEN·GITHUB_REPOSITORY(이슈), TELEGRAM_BOT_TOKEN·TELEGRAM_CHAT_IDS(선택)
 """
+import datetime
 import json
 import os
 import sys
@@ -27,7 +28,19 @@ HOW_TO = {
 }
 
 
-def problems(health):
+TOKEN_WARN_DAYS = 14
+
+
+def _token_days_left(text, today=None):
+    """'2027-10-08 09:00:00 +0900' → 남은 일수(파싱 실패 시 None)."""
+    try:
+        exp = datetime.datetime.strptime(str(text).strip(), "%Y-%m-%d %H:%M:%S %z").date()
+    except ValueError:
+        return None
+    return (exp - (today or datetime.date.today())).days
+
+
+def problems(health, today=None):
     """/health 응답 → 사람이 읽을 문제 목록(빈 목록이면 정상)."""
     if not isinstance(health, dict):
         return ["워커 /health 응답을 읽지 못함"]
@@ -45,6 +58,9 @@ def problems(health):
         else:
             why = f"HTTP {r.get('status')}"
         out.append(f"정시 호출 실패 {sched.get('slot')} UTC `{r.get('workflow')}` — {why} → GitHub 예비 실행으로 늦게 발송")
+    left = _token_days_left(health.get("token_expires"), today) if health.get("token_expires") else None
+    if left is not None and left <= TOKEN_WARN_DAYS:
+        out.append(f"GH_DISPATCH_TOKEN 만료 {max(left, 0)}일 전({health['token_expires'][:10]}) — 새 토큰 발급 후 워커 Secret Rotate")
     return out
 
 

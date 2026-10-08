@@ -293,7 +293,9 @@ async function dispatchWorkflow(env, job, fetchImpl = fetch) {
     },
     body: JSON.stringify(job.inputs ? { ref: "main", inputs: job.inputs } : { ref: "main" }),
   });
-  return { workflow: job.workflow, status: res.status, ok: res.status === 204 };
+  // GitHub는 fine-grained 토큰 응답에 만료 시각 헤더를 준다 → /health에서 만료 2주 전 경고에 쓴다.
+  const expires = res.headers && typeof res.headers.get === "function" ? res.headers.get("github-authentication-token-expiration") : null;
+  return { workflow: job.workflow, status: res.status, ok: res.status === 204, ...(expires ? { token_expires: expires } : {}) };
 }
 
 async function runSchedule(slot, env, fetchImpl = fetch) {
@@ -324,6 +326,8 @@ async function recordSchedule(env, slot, results) {
   try {
     await env.USAGE.put(`sched:last:${slot}`, rec, { expirationTtl: 172800 });
     await env.USAGE.put("sched:last", rec, { expirationTtl: 172800 });
+    const exp = (results.find((r) => r.token_expires) || {}).token_expires;
+    if (exp) await env.USAGE.put("sched:token_expires", exp);
   } catch (e) {}
 }
 
@@ -339,7 +343,11 @@ async function healthReport(env) {
     scheduler = { slot: scheduler.slot, at: scheduler.at, ok: scheduler.results.every((r) => r.ok),
       results: scheduler.results.map((r) => ({ workflow: r.workflow, status: r.status, ok: r.ok, reason: r.reason })) };
   }
-  return { ok: missing.length === 0 && (!scheduler || scheduler.ok), service: "modooflow-naver-proxy", missing, scheduler };
+  let tokenExpires = null;
+  if (env && env.USAGE) {
+    try { tokenExpires = await env.USAGE.get("sched:token_expires"); } catch (e) {}
+  }
+  return { ok: missing.length === 0 && (!scheduler || scheduler.ok), service: "modooflow-naver-proxy", missing, scheduler, token_expires: tokenExpires };
 }
 
 export default {

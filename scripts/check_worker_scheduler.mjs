@@ -65,3 +65,14 @@ console.log(`✔ 정시 스케줄러: Cron 1개(${SCHEDULER_CRON}) · 호출 시
   assert.ok(!JSON.stringify(h).includes("secret-value"), "/health에 시크릿 값이 실리면 안 됨");
   console.log("✔ /health: 누락 설정 이름·최근 정시 호출 결과(값 비노출)");
 }
+
+// 토큰 만료 헤더 → /health token_expires
+{
+  const kv = new Map();
+  const USAGE = { put: async (k, v) => kv.set(k, v), get: async (k) => kv.get(k) ?? null };
+  const withExp = async () => ({ status: 204, headers: new Map([["github-authentication-token-expiration", "2027-10-08 09:00:00 +0900"]]) });
+  await runSchedule("23:00", { USAGE, GH_DISPATCH_TOKEN: "t" }, withExp);
+  const h = await healthReport({ USAGE });
+  assert.equal(h.token_expires, "2027-10-08 09:00:00 +0900");
+  console.log("✔ /health: GH 토큰 만료 시각 기록");
+}
