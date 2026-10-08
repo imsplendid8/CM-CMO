@@ -3,7 +3,7 @@
  * capture_brand.mjs — 타사 브랜드검색 모니터링 (PC + 모바일 자동 캡쳐)
  *
  * 경쟁사(삼성·KB·현대·DB) 다이렉트 + 상품명 검색결과를 매주 캡쳐 → serp/brand/
- *   파일: <경쟁사>-<상품>-<pc|mo>-<YYYY-MM-DD>.png · 인덱스: serp/brand/manifest.json
+ *   파일: <경쟁사>-<상품>-<pc|mo>-<YYYY-MM-DD>.jpg · 인덱스: serp/brand/manifest.json
  *   브랜드검색(브랜드 전용 광고 영역)·파워링크 구성·소구 문구를 PC/모바일로 비교.
  *
  * - 네이버 검색결과(공개) → PII 없음, 캡쳐 커밋 가능.
@@ -93,11 +93,11 @@ async function main() {
       for (const [dev, cfg] of Object.entries(DEVICES)) {
         const ctx = await browser.newContext({ viewport: cfg.viewport, deviceScaleFactor: dev === "mo" ? 2 : 1.5, locale: "ko-KR", userAgent: cfg.ua });
         const page = await ctx.newPage();
-        const file = `${b.key}-${pk}-${dev}-${today}.png`;
+        const file = `${b.key}-${pk}-${dev}-${today}.jpg`;
         try {
           const res = await gotoAndShoot(
             page, naverUrl(query),
-            { path: path.join(OUT, file), clip: { x: 0, y: 0, width: cfg.viewport.width, height: cfg.viewport.height } },
+            { path: path.join(OUT, file), type: "jpeg", quality: 80, clip: { x: 0, y: 0, width: cfg.viewport.width, height: cfg.viewport.height } },
             `${b.key}/${pk}/${dev}`,
           );
           shots.push({ co: b.key, coName: b.name, prod, prodKey: pk, dev, query, file, date: today });

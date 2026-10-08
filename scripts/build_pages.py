@@ -2,6 +2,8 @@
 """GitHub Pages에 필요한 공개 파일만 별도 디렉터리로 구성한다."""
 from __future__ import annotations
 
+import datetime
+import json
 import shutil
 from pathlib import Path
 
@@ -38,6 +40,48 @@ FORBIDDEN_PARTS = {".github", "scripts", "docs", "handoff", "evidence"}
 FORBIDDEN_NAMES = {"search-console.json", "search-console.example.json", "copy_history.json", "state_history.json"}
 
 
+# SERP 캡처는 저장소에 누적되지만 공개 사이트에는 최근 4주치만 싣는다(Pages 1GB 한도·배포 시간).
+PAGES_SERP_DAYS = 28
+
+
+def _recent_captures(manifest: dict, days: int = PAGES_SERP_DAYS) -> tuple[dict, set[str]]:
+    """manifest의 captures 목록을 asof 기준 최근 N일로 줄이고, 남은 파일 이름 집합을 돌려준다."""
+    try:
+        asof = datetime.date.fromisoformat(str(manifest.get("asof"))[:10])
+    except ValueError:
+        asof = datetime.date.today()
+    cutoff = (asof - datetime.timedelta(days=days)).isoformat()
+    keep: set[str] = set()
+
+    def walk(node):
+        if isinstance(node, dict):
+            out = {}
+            for key, value in node.items():
+                if key == "captures" and isinstance(value, list):
+                    value = [c for c in value if isinstance(c, dict) and str(c.get("date") or "") >= cutoff]
+                    keep.update(c["file"] for c in value if c.get("file"))
+                out[key] = walk(value)
+            return out
+        if isinstance(node, list):
+            return [walk(v) for v in node]
+        return node
+
+    return walk(manifest), keep
+
+
+def copy_recent_serp(root: Path, destination: Path, folder: str) -> None:
+    source = root / folder / "manifest.json"
+    if not source.exists():
+        return
+    trimmed, keep = _recent_captures(json.loads(source.read_text(encoding="utf-8")))
+    target = destination / folder / "manifest.json"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps(trimmed, ensure_ascii=False), encoding="utf-8")
+    for name in sorted(keep):
+        if (root / folder / name).exists():
+            copy_file(root, destination, f"{folder}/{name}")
+
+
 def copy_file(root: Path, destination: Path, relative: str | Path) -> None:
     source = root / relative
     if not source.exists():
@@ -68,10 +112,8 @@ def build(root: Path = ROOT, destination: Path = DEST) -> list[Path]:
         copy_file(root, destination, relative)
     for source in (root / "data/clips").glob("*.json"):
         copy_file(root, destination, source.relative_to(root))
-    for source in (root / "serp").glob("*.png"):
-        copy_file(root, destination, source.relative_to(root))
-    for source in (root / "serp/brand").glob("*.png"):
-        copy_file(root, destination, source.relative_to(root))
+    for folder in ("serp", "serp/brand"):
+        copy_recent_serp(root, destination, folder)
 
     files = [path for path in destination.rglob("*") if path.is_file()]
     for path in files:

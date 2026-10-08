@@ -3,7 +3,7 @@
  * capture_serp.mjs — 상품별 네이버 PC 검색결과(SERP) 자동 스크린샷 아카이브
  *
  * data/products.json 의 serpKw 로 네이버 통합검색(PC)을 열어 상단 화면을 캡쳐하고
- * serp/<key>-<YYYY-MM-DD>.png 로 저장 + serp/manifest.json 갱신.
+ * serp/<key>-<YYYY-MM-DD>.jpg 로 저장 + serp/manifest.json 갱신.
  *
  *  - SERP 는 공개 검색결과 → PII 없음 → 캡쳐본 커밋 가능(원본 캡쳐 금지 원칙 위배 아님)
  *  - 이 환경(샌드박스)은 외부망이 막혀 있어 동작 안 함 → GitHub Actions(serp-capture.yml)
@@ -84,13 +84,13 @@ async function main() {
     const kw = p.serpKw || p.name;
     if (!kw) continue;
     if (only.length && !only.includes(p.key)) continue;
-    const file = `${safe(p.key)}-${today}.png`;
+    const file = `${safe(p.key)}-${today}.jpg`;
     const page = await ctx.newPage();
     try {
       // 상단 통합검색 영역만 (파워링크·브랜드검색·플레이스 노출 구간) · 빈 화면이면 재캡쳐
       const res = await gotoAndShoot(
         page, naverUrl(kw),
-        { path: path.join(OUT, file), clip: { x: 0, y: 0, width: 1280, height: 1600 } },
+        { path: path.join(OUT, file), type: "jpeg", quality: 80, clip: { x: 0, y: 0, width: 1280, height: 1600 } },
         p.key,
       );
       const domCandidates=await extractPowerLinks(page);
