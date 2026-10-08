@@ -43,7 +43,7 @@ jobs:
     if: ${{ github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.event != 'pull_request') }}
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -60,4 +60,14 @@ jobs:
           path: dist
       - name: Deploy
         id: deployment
+        # 업로드 직후 아티팩트 조회가 간헐적으로 비어 실패한다(2026-10-08 실측 "No artifacts named github-pages").
+        # 한 번 실패하면 잠시 기다렸다가 같은 아티팩트로 재배포한다.
+        continue-on-error: true
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+      - name: Wait before retry
+        if: ${{ steps.deployment.outcome == 'failure' }}
+        run: sleep 30
+      - name: Deploy (retry)
+        id: deployment_retry
+        if: ${{ steps.deployment.outcome == 'failure' }}
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
