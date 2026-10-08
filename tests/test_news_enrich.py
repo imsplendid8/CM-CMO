@@ -80,5 +80,15 @@ class TestEnrich(unittest.TestCase):
         self.assertEqual(items[0]["summary"], "이미 있는 요약이다.")
 
 
+
+class TestUiNoise(unittest.TestCase):
+    def test_timestamp_and_ai_summary_button_dropped(self):
+        text = ("치료비 쓰면 10년 뒤 다시 채운다…삼성화재 '온통보장' 들어보니 2026-10-08 08:00:00 close AI로 요약! "
+                "삼성화재는 치료비 지급 후 남은 금액을 상해사망 보장에 활용하고 10년마다 보장 금액을 복원하는 '온통보장'을 판매 중이다.")
+        out = ne.summarize("삼성화재 온통보장 들어보니", text)
+        self.assertNotIn("AI로 요약", out)
+        self.assertNotIn("08:00:00", out)
+        self.assertIn("온통보장", out)
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

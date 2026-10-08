@@ -78,7 +78,41 @@ class TestActionLines(unittest.TestCase):
             datetime(2026, 8, 18, tzinfo=timezone.utc),
         )
 
-        self.assertGreaterEqual(len(lines), 1)
+        self.assertEqual(lines, [])   # 깨진 입력이어도 예외 없이 빈 목록(화요일 — 주간 SERP 점검 없음)
+
+    PRODUCTS = {"hrmf": {"name": "주택화재보험"}, "golf": {"name": "골프보험"},
+                "driver": {"name": "운전자보험"}, "overseas": {"name": "해외여행보험"}}
+
+    def test_afternoon_does_not_repeat_morning_plan(self):
+        lines = db.compute_action_lines(self.PRODUCTS, ["hrmf"], {"hrmf": [{"m": [8], "tag": "여름 위험"}]},
+                                        {"triggers": {"overseas": {"level": "high"}}},
+                                        datetime(2026, 8, 18, 14))
+        self.assertEqual(lines, [])
+
+    def test_trigger_label_uses_signal_basis_not_search_demand(self):
+        signals = {"triggers": {
+            "overseas": {"level": "high", "note": "출국 국민 242만 명(202607 · 3개월 +11.3%) → 해외여행보험 출국수요 대응"},
+            "driver_newreg_issue": {"level": "medium", "note": "자동차 신규등록 API 확인 필요"}}}
+        lines = db.compute_action_lines(self.PRODUCTS, ["hrmf"], {}, signals, datetime(2026, 8, 17, 8))
+        self.assertTrue(any("출국 국민 242만 명" in x and "입찰 조정 검토" in x for x in lines), lines)
+        self.assertFalse(any("검색수요" in x or "입찰 강화" in x or "newreg" in x for x in lines), lines)
+
+    def test_medium_signal_only_on_monday_and_thursday(self):
+        signals = {"triggers": {"driver": {"level": "medium", "note": "자동차 등록대수 → 참고"}}}
+        tue = db.compute_action_lines(self.PRODUCTS, ["hrmf"], {}, signals, datetime(2026, 8, 18, 8))
+        thu = db.compute_action_lines(self.PRODUCTS, ["hrmf"], {}, signals, datetime(2026, 8, 20, 8))
+        self.assertFalse(any("등록대수" in x for x in tue))
+        self.assertTrue(any("등록대수" in x for x in thu))
+
+    def test_afternoon_message_is_update_only(self):
+        afternoon = datetime(2026, 8, 18, 14)
+        context = (self.PRODUCTS, list(self.PRODUCTS), ["hrmf"], {},
+                   {"triggers": {"overseas": {"level": "high"}}}, None, afternoon)
+        with mock.patch.object(db, "_load_context", return_value=context), \
+                mock.patch.object(db.cah, "compute_health", side_effect=RuntimeError):
+            message = db.build_message()
+        self.assertIn("오후 업데이트", message)
+        self.assertNotIn("오늘 할 일 (우선순위)", message)
 
     def test_unchanged_season_tasks_rotate_instead_of_all_repeating_daily(self):
         products = {

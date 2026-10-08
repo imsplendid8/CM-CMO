@@ -26,7 +26,9 @@ BODY_IDS = {"dic_area", "newsct_article", "articlebodycontents", "articlebody", 
 SKIP_TAGS = {"script", "style", "noscript", "nav", "header", "footer", "aside", "form", "button", "figcaption", "select"}
 VOID_TAGS = {"br", "img", "hr", "input", "meta", "link", "source", "wbr", "area", "base", "col", "embed", "param", "track"}
 BLOCK_TAGS = {"p", "div", "br", "li", "section", "article", "h1", "h2", "h3", "h4", "tr", "td", "table", "ul", "ol", "blockquote"}
-NOISE_LINE = re.compile(r"기자\s*[=\]]|기자$|@[\w.-]+\.\w+|무단\s*전재|재배포\s*금지|copyright|ⓒ|©|사진\s*=|\[사진|▶|☞|구독|좋아요|댓글|관련\s*기사", re.I)
+NOISE_LINE = re.compile(r"기자\s*[=\]]|기자$|@[\w.-]+\.\w+|무단\s*전재|재배포\s*금지|copyright|ⓒ|©|사진\s*=|\[사진|▶|☞|구독|좋아요|댓글|관련\s*기사"
+                        # 기사 화면 UI 조각(입력 시각·AI 요약 버튼·글자 크기) — 2026-10 실측 '08:00:00 close AI로 요약!'
+                        r"|\d{4}[-.]\d{2}[-.]\d{2}\.?\s+\d{1,2}:\d{2}(?::\d{2})?|AI\s*로?\s*요약|요약\s*보기|글자\s*크기|본문\s*듣기", re.I)
 STOPWORDS = {"보험", "관련", "위해", "대한", "통해", "이번", "지난", "올해", "오늘", "기자", "뉴스", "단독", "속보", "종합"}
 ELLIPSIS = re.compile(r"(\.\.\.|…)\s*$")
 

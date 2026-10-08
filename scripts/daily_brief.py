@@ -83,7 +83,17 @@ def _load_context():
 
 
 def compute_action_lines(products, main, seasonal, signals, now):
-    """오늘 할 일(우선순위) 텍스트 목록 산출 — 번호 없이 반환(채널별로 번호 부여)."""
+    """오전 계획형 할 일(우선순위) — 번호 없이 반환(채널별로 번호 부여).
+
+    오후(12시 이후)는 오전 계획을 반복하지 않는다(빈 목록). 같은 근거가 매일 반복되지 않게
+    medium 신호는 월·목, 주간 SERP 점검은 월요일, 다음 달 준비는 매월 20일에만 올린다.
+    """
+    if now.hour >= 12:
+        return []
+    weekday = now.weekday()
+    medium_review = weekday in (0, 3)   # 월·목
+    weekly_review = weekday == 0        # 월
+    next_month_review = now.day == 20
     m = now.month
     nm = m % 12 + 1  # 다음 달
     def name(k):
@@ -104,10 +114,13 @@ def compute_action_lines(products, main, seasonal, signals, now):
         if not isinstance(t, dict):
             continue
         lv = t.get("level")
-        if lv in ("high", "medium"):
+        if key.endswith("_issue"):      # 수집 오류 알림(예: driver_newreg_issue)은 할 일이 아니라 데이터 상태
+            continue
+        if lv == "high" or (lv == "medium" and medium_review):
             icon = "🔥" if lv == "high" else "🌡"
-            word = "급등" if lv == "high" else "상승"
-            put(key, 0, f"{icon} {name(key)} — 검색수요 {word}: 소재·입찰 강화 + 랜딩 점검")
+            # 근거 문구는 신호 원문(출국 통계·등록대수 등)을 그대로 — '검색수요'로 뭉뚱그리지 않는다.
+            basis = str(t.get("note") or "").split("→")[0].strip() or ("수요 급등" if lv == "high" else "수요 상승")
+            put(key, 0, f"{icon} {name(key)} — {basis}: 근거 확인 후 소재·랜딩·입찰 조정 검토")
     weather = signals.get("weather") or {}
     active_weather = weather.get("active", []) if isinstance(weather, dict) else []
     if not isinstance(active_weather, list):
@@ -143,20 +156,21 @@ def compute_action_lines(products, main, seasonal, signals, now):
                 if st in ("active", "cooling"):
                     pri = 1 if key in main else 2
                     put(key, pri, f"{'★' if key in main else '·'} {name(key)} — {w['tag']}(진행 중): 시즌 소재 등록·랜딩 점검")
-                elif st in ("emerging", "upcoming") and key in main:
+                elif st in ("emerging", "upcoming") and key in main and next_month_review:
                     put(key, 3, f"★ {name(key)} — {w['tag']}(대비): 시즌 소재 미리 준비")
             else:
                 if m in w["m"]:
                     pri = 1 if key in main else 2
                     put(key, pri, f"{'★' if key in main else '·'} {name(key)} — {w['tag']}(이번 달): 시즌 소재 등록·랜딩 점검")
-                elif nm in w["m"] and key in main:
+                elif nm in w["m"] and key in main and next_month_review:
                     put(key, 3, f"★ {name(key)} — {w['tag']}(다음 달): 시즌 소재 미리 준비")
 
-    # (3) SERP 상위노출 갭 — 메인 중 요일 순환 1건
-    gaps = ["hrmf", "golf", "driver", "overseas"]
-    g = gaps[now.day % len(gaps)]
-    put(g, 4 if g in [k for k, _ in actions.items()] else 2.5,
-        f"🔭 {name(g)} — SERP 상위노출 갭: 검색결과 점검·소구 보완")
+    # (3) 주간 SERP 점검 — 월요일에만, 주차별 1건 순환
+    if weekly_review:
+        gaps = ["hrmf", "golf", "driver", "overseas"]
+        g = gaps[now.isocalendar()[1] % len(gaps)]
+        # 같은 상품의 신호 할 일과 겹쳐도 사라지지 않게 별도 키로 둔다
+        put(f"serp:{g}", 4 if g in actions else 2.5, f"🔭 {name(g)} — 주간 SERP 점검: 검색결과·경쟁 소구 확인")
 
     ordered = sorted(actions.values(), key=lambda x: x[0])
     urgent = [txt for pri, txt in ordered if pri <= 0]
@@ -196,8 +210,13 @@ def build_message():
 
     part = "오전" if now.hour < 12 else "오후"
     notice = late_notice(now)
-    parts = ([esc(notice), ""] if notice else []) + [f"🗓️ Modooflow · {now.month}/{now.day}({wd}) {part} — 오늘 할 일 {len(action_lines)}", ""]
-    parts += ["✅ 오늘 할 일 (우선순위)"] + (action_lines or ["· 오늘 특이 액션 없음 — 정기 점검만"])
+    parts = [esc(notice), ""] if notice else []
+    if now.hour < 12:
+        parts += [f"🗓️ Modooflow · {now.month}/{now.day}({wd}) {part} — 오늘 할 일 {len(action_lines)}", ""]
+        parts += ["✅ 오늘 할 일 (우선순위)"] + (action_lines or ["· 새 신호·주기 도래 할 일 없음 — 반복 점검 생략"])
+    else:
+        parts += [f"🗓️ Modooflow · {now.month}/{now.day}({wd}) {part} — 오후 업데이트", ""]
+        parts += ["✅ 오후 변경 사항", "· 오전 할 일 반복 생략 — 새 뉴스·데이터 상태만"]
     if news_lines:
         parts += ["", "📰 주목할 뉴스"] + news_lines
     # 자동화 수집 상태 — 저장된 요약을 믿지 않고 지금 다시 계산해 표시.
