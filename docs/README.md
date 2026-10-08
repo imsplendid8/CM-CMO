@@ -4,6 +4,7 @@
 
 ## 색인
 - **[../STATE.md](../STATE.md)** — 현재 상태·세션 재개 절차 (**먼저 읽기**)
+- **[운영-설정-체크리스트.md](운영-설정-체크리스트.md)** — 워커·GitHub Secrets·data.go.kr 설정 위치와 누락 시 증상
 - **[architecture.md](architecture.md)** — 저장소 구조·디자인 시스템·브랜치/배포·데이터 거버넌스
 - **[tools.md](tools.md)** — 도구별 목적·데이터 모델·사용법
 - **[검색광고-BSA-로드맵.md](검색광고-BSA-로드맵.md)** — 검색광고(SA)·브랜드검색(BSA) 솔루션 로드맵(A1~A6·B1~B3)

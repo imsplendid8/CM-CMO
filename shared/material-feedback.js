@@ -113,8 +113,12 @@
   function emptyState() {
     return { schema_version: SCHEMA_VERSION, updated_at: "", reviews: [], materials: [], agent_requests: [] };
   }
+  // 사파리 개인정보 보호·회사 보안 정책으로 저장소가 막히면 접근 자체가 예외를 던진다 — 도구가 멈추지 않게 감싼다.
+  function storageGet() {
+    try { return localStorage.getItem(STORAGE_KEY); } catch (_) { return null; }
+  }
   function load() {
-    var raw = safeParse(localStorage.getItem(STORAGE_KEY), null);
+    var raw = safeParse(storageGet(), null);
     var data = raw && typeof raw === "object" ? raw : emptyState();
     data.schema_version = SCHEMA_VERSION;
     data.reviews = (Array.isArray(data.reviews) ? data.reviews : []).map(normalizeReview).filter(Boolean);
@@ -125,7 +129,7 @@
   function save(data) {
     data.schema_version = SCHEMA_VERSION;
     data.updated_at = new Date().toISOString();
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (_) {}
     return data;
   }
   function addMaterial(input) {
@@ -210,7 +214,7 @@
     };
   }
   function clear() {
-    localStorage.removeItem(STORAGE_KEY);
+    try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
   }
   function stats(data) {
     var state = data || load();

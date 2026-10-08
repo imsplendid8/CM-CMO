@@ -1337,8 +1337,7 @@ function renderIntel(){
   });
   $("#intelReset").addEventListener("click",()=>{
     if(confirm("저장된 SEO 관측 JSON을 지울까요?")){
-      localStorage.removeItem(SEO_INTEL_STORE);
-      localStorage.removeItem(SEO_INTEL_DRAFT_STORE);
+      try{localStorage.removeItem(SEO_INTEL_STORE);localStorage.removeItem(SEO_INTEL_DRAFT_STORE);}catch(_){}
       SEO_INTEL_DATA=intelDefaultData();
       renderIntel();
       toast("관측 저장소를 초기화했습니다");

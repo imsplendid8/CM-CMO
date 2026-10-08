@@ -16,6 +16,7 @@
 | 팀 실시간 프록시 | `proxy/naver-proxy-worker.js` (Cloudflare Worker · 키=워커 시크릿) |
 | 폰트 | `fonts/PretendardVariable.woff2` (자체호스팅) |
 | 스크립트 | `scripts/` (workflow용: `naver_searchad_volume`·`naver_trends`·`daily_brief`·`capture_serp`·`check_products_sync`; 디버그: `debug-monitor.js`) |
+| 운영 설정 | `docs/운영-설정-체크리스트.md` — 워커 Secret·KV·Cron, GitHub Secrets, data.go.kr 활용신청(누락 시 헬스 체크가 이슈·텔레그램) |
 | 디버그 시스템 | 🐛 `docs/DEBUG.md` — 모든 도구에 내장된 자동 에러 추적·localStorage 로그·GitHub Actions 헬스체크 |
 | 스킬 7종 | `.claude/skills/` — 뉴스·카드뉴스·한국어 윤문 + SERP 소재·FAQ·`insurance-ad-review`(현행 금소법·시행령·감독규정 기반 사전검수)·`cm-seo-title-ops`(SearchAd/GSC 기반 파워컨텐츠 제목 운영) |
 | 배포·자동화 | `.github/workflows/` — pages·ci·daily-brief·trends·searchad·serp-capture(브랜드검색)·news-clip(하루 2회)·signals(수요 신호)·technical-seo·health-check(6시간마다 도구 렌더링 검사) |

@@ -1,17 +1,20 @@
 # STATE — 세션 재개용 현재 상태
 
-_최종 갱신: 2026-08-19_
+_최종 갱신: 2026-10-08_
 
 ## 한 줄 요약
 
 Modooflow는 13개 보험상품의 SEO·키워드·뉴스·SERP·시즌·광고소재 업무를 잇는 GitHub Pages 기반 부서용 대시보드다. 현재 단계는 **제품화 중인 팀 도구**이며, 사용자 인증·서버 저장·완전한 단일 App Shell은 아직 없다.
 
-## 현재 브랜치 작업
+## 지금 먼저 볼 것 (2026-10)
 
-- 브랜치: `claude/material-quality-improvement-7x4w2d`
-- 목적: Google Search Console OAuth 통합으로 seo-audit.html을 기술 SEO 운영 보드로 고도화
-- 상태: GSC OAuth 2.0 구현 완료, Cloudflare Worker 경로 추가, 샘플 데이터 폴백, UI 비인증 진입 가능 상태
-- 상세 진행 상황은 아래 참조
+- **설정 위치·누락 점검**: `docs/운영-설정-체크리스트.md` — 워커 Secret·KV·Cron, GitHub Secrets, data.go.kr 활용신청. 누락은 헬스 체크(`worker-config`)가 이슈+텔레그램으로 알림.
+- **정시 발송**: 워커 Cron(`*/5`) + `GH_DISPATCH_TOKEN`이 06:30~14:00 KST에 workflow_dispatch. 토큰이 없으면 GitHub cron 예비 실행이 1~3시간 늦게 발송하고 브리프 맨 위에 경고.
+- **(특약) 표기 규칙**: `X 보장` → `X 보장(특약)`, `X 특약` → `X(특약)`, SA는 단독 담보명도 표기·파워콘텐츠는 비용 자체 언급엔 미표기. 세 구현 일치 검사 `scripts/check_rider_parity.mjs`.
+- **SA 설명·추가설명**: 42~45자(`coverage_terms.fit_sa`), 안내형 문구 금지.
+- **자동차 등록대수**: 통계누리 form 5498은 누적 등록대수 — 합계 행·열 1회만 사용.
+- **SERP 캡처**: JPEG q80 저장, 공개 사이트엔 최근 4주치만. 저장소 이력(약 530MB) 정리는 별도 결정 필요.
+- **데모 서버 제거**: `server.js`·`api/`·`oauth-dashboard.html` 삭제(10/8). 워커 대시보드 AI 경로는 기본 꺼짐.
 
 ## GSC 통합 현황 (2026-09-11)
 

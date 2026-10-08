@@ -35,7 +35,10 @@ const toolFiles = [
   'serp-tool.html',
   'seasonal-tool.html',
   'adcopy-tool.html',
-  'powercontent-tool.html'
+  'powercontent-tool.html',
+  'material-admin.html',
+  'event-calendar.html',
+  'overview.html'
 ];
 
 let successCount = 0;
