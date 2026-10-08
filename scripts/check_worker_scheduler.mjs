@@ -13,8 +13,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const src = fs.readFileSync(path.join(ROOT, "proxy/naver-proxy-worker.js"), "utf8");
 const tmp = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "worker-")), "worker.mjs");
-fs.writeFileSync(tmp, src + "\nexport { DISPATCH_SCHEDULE, SCHEDULER_CRON, scheduleSlot, runSchedule };\n");
-const { DISPATCH_SCHEDULE, SCHEDULER_CRON, scheduleSlot, runSchedule, default: worker } = await import(pathToFileURL(tmp).href);
+fs.writeFileSync(tmp, src + "\nexport { DISPATCH_SCHEDULE, SCHEDULER_CRON, scheduleSlot, runSchedule, healthReport };\n");
+const { DISPATCH_SCHEDULE, SCHEDULER_CRON, scheduleSlot, runSchedule, healthReport, default: worker } = await import(pathToFileURL(tmp).href);
 
 const toml = fs.readFileSync(path.join(ROOT, "proxy/wrangler.toml"), "utf8");
 const crons = JSON.parse((toml.match(/^crons\s*=\s*(\[.*\])/m) || [])[1] || "[]");
@@ -51,3 +51,17 @@ assert.equal(none[0].ok, false);
 assert.deepEqual(await runSchedule("12:35", { GH_DISPATCH_TOKEN: "t" }, fake), [], "정해진 시각이 아니면 아무것도 호출하지 않음");
 
 console.log(`✔ 정시 스케줄러: Cron 1개(${SCHEDULER_CRON}) · 호출 시각 ${Object.keys(DISPATCH_SCHEDULE).length}개 · 워크플로 호출 계약 확인`);
+
+// /health: 값 없이 빠진 설정 이름과 최근 정시 호출 결과만
+{
+  const kv = new Map();
+  const USAGE = { put: async (k, v) => kv.set(k, v), get: async (k) => kv.get(k) ?? null };
+  await runSchedule("23:00", { USAGE }, fake);
+  const h = await healthReport({ USAGE, NAVER_ID: "secret-value" });
+  assert.equal(h.ok, false);
+  assert.ok(h.missing.includes("GH_DISPATCH_TOKEN") && !h.missing.includes("NAVER_ID"));
+  assert.equal(h.scheduler.slot, "23:00");
+  assert.equal(h.scheduler.results[0].reason, "no_token");
+  assert.ok(!JSON.stringify(h).includes("secret-value"), "/health에 시크릿 값이 실리면 안 됨");
+  console.log("✔ /health: 누락 설정 이름·최근 정시 호출 결과(값 비노출)");
+}

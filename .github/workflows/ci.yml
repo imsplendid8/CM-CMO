@@ -97,6 +97,8 @@ jobs:
         run: node scripts/check_powercontent.mjs
       - name: 파워컨텐츠 원고 재료 검증(안내형 표현·보장 사실·사전검수)
         run: node scripts/check_power_content_articles.mjs
+      - name: (특약) 규칙 구현 일치
+        run: node scripts/check_rider_parity.mjs
       - name: 월간 신규·급상승 키워드 판정 검증
         run: node scripts/check_keyword_monthly.mjs
       - name: 월간 네이버 자동완성 신규·등록 판정 검증

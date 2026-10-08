@@ -1,0 +1,263 @@
+{
+ "_comment": "(특약) 표기 규칙 세 구현(coverage_terms.py · adcopy-tool.html · check_power_content_articles.mjs)이 같은 답을 내는지 보는 기준 예문. 규칙을 바꾸면 이 파일을 다시 확인한다.",
+ "cases": [
+  {
+   "text": "풍수재와 임시거주비 보장",
+   "key": "hrmf",
+   "bare": true,
+   "marked": "풍수재(특약)와 임시거주비 보장(특약)",
+   "missing": [
+    "임시거주비",
+    "풍수재"
+   ]
+  },
+  {
+   "text": "풍수재와 임시거주비 보장",
+   "key": "hrmf",
+   "bare": false,
+   "marked": "풍수재와 임시거주비 보장(특약)",
+   "missing": [
+    "임시거주비"
+   ]
+  },
+  {
+   "text": "풍수재(특약) 보장을 담아요",
+   "key": "hrmf",
+   "bare": true,
+   "marked": "풍수재 보장(특약)을 담아요",
+   "missing": [
+    "풍수재"
+   ]
+  },
+  {
+   "text": "풍수재(특약) 보장을 담아요",
+   "key": "hrmf",
+   "bare": false,
+   "marked": "풍수재 보장(특약)을 담아요",
+   "missing": [
+    "풍수재"
+   ]
+  },
+  {
+   "text": "벌금 특약과 변호사선임비용 특약",
+   "key": "driver",
+   "bare": true,
+   "marked": "벌금(특약)과 변호사선임비용(특약)",
+   "missing": [
+    "벌금",
+    "변호사선임비용"
+   ]
+  },
+  {
+   "text": "벌금 특약과 변호사선임비용 특약",
+   "key": "driver",
+   "bare": false,
+   "marked": "벌금(특약)과 변호사선임비용(특약)",
+   "missing": [
+    "벌금",
+    "변호사선임비용"
+   ]
+  },
+  {
+   "text": "선천이상·미숙아 보장을 준비해요",
+   "key": "birth",
+   "bare": true,
+   "marked": "선천이상(특약)·미숙아 보장(특약)을 준비해요",
+   "missing": [
+    "미숙아",
+    "선천이상"
+   ]
+  },
+  {
+   "text": "선천이상·미숙아 보장을 준비해요",
+   "key": "birth",
+   "bare": false,
+   "marked": "선천이상·미숙아 보장(특약)을 준비해요",
+   "missing": [
+    "미숙아"
+   ]
+  },
+  {
+   "text": "누수 배상책임 보장은",
+   "key": "hrmf",
+   "bare": true,
+   "marked": "누수 배상책임 보장(특약)은",
+   "missing": [
+    "배상책임"
+   ]
+  },
+  {
+   "text": "누수 배상책임 보장은",
+   "key": "hrmf",
+   "bare": false,
+   "marked": "누수 배상책임 보장(특약)은",
+   "missing": [
+    "배상책임"
+   ]
+  },
+  {
+   "text": "급배수시설 누수 손해 특약에 가입",
+   "key": "hrmf",
+   "bare": true,
+   "marked": "급배수시설 누수 손해(특약)에 가입",
+   "missing": [
+    "급배수시설 누수 손해"
+   ]
+  },
+  {
+   "text": "급배수시설 누수 손해 특약에 가입",
+   "key": "hrmf",
+   "bare": false,
+   "marked": "급배수시설 누수 손해(특약)에 가입",
+   "missing": [
+    "급배수시설 누수 손해"
+   ]
+  },
+  {
+   "text": "스크린 홀인원 보장이 있어요",
+   "key": "golf",
+   "bare": true,
+   "marked": "스크린 홀인원 보장(특약)이 있어요",
+   "missing": [
+    "홀인원"
+   ]
+  },
+  {
+   "text": "스크린 홀인원 보장이 있어요",
+   "key": "golf",
+   "bare": false,
+   "marked": "스크린 홀인원 보장(특약)이 있어요",
+   "missing": [
+    "홀인원"
+   ]
+  },
+  {
+   "text": "임시거주비는 어떻게 보장될까",
+   "key": "hrmf",
+   "bare": true,
+   "marked": "임시거주비(특약)는 어떻게 보장될까",
+   "missing": [
+    "임시거주비"
+   ]
+  },
+  {
+   "text": "임시거주비는 어떻게 보장될까",
+   "key": "hrmf",
+   "bare": false,
+   "marked": "임시거주비는 어떻게 보장될까",
+   "missing": []
+  },
+  {
+   "text": "지급한 형사합의금을 실손으로 보상해요",
+   "key": "driver",
+   "bare": true,
+   "marked": "지급한 형사합의금(특약)을 실손으로 보상해요",
+   "missing": [
+    "형사합의금"
+   ]
+  },
+  {
+   "text": "지급한 형사합의금을 실손으로 보상해요",
+   "key": "driver",
+   "bare": false,
+   "marked": "지급한 형사합의금을 실손으로 보상해요",
+   "missing": []
+  },
+  {
+   "text": "행사배상책임보험 보험료를 계산해요",
+   "key": "event",
+   "bare": true,
+   "marked": "행사배상책임보험 보험료를 계산해요",
+   "missing": []
+  },
+  {
+   "text": "행사배상책임보험 보험료를 계산해요",
+   "key": "event",
+   "bare": false,
+   "marked": "행사배상책임보험 보험료를 계산해요",
+   "missing": []
+  },
+  {
+   "text": "일상배상책임(특약)으로 대비해요",
+   "key": "hrmf",
+   "bare": true,
+   "marked": "일상배상책임(특약)으로 대비해요",
+   "missing": []
+  },
+  {
+   "text": "일상배상책임(특약)으로 대비해요",
+   "key": "hrmf",
+   "bare": false,
+   "marked": "일상배상책임(특약)으로 대비해요",
+   "missing": []
+  },
+  {
+   "text": "화재손해(특약)부터 배상책임(특약)까지",
+   "key": "hrmf",
+   "bare": true,
+   "marked": "화재손해(특약)부터 배상책임(특약)까지",
+   "missing": []
+  },
+  {
+   "text": "화재손해(특약)부터 배상책임(특약)까지",
+   "key": "hrmf",
+   "bare": false,
+   "marked": "화재손해(특약)부터 배상책임(특약)까지",
+   "missing": []
+  },
+  {
+   "text": "급발진 변호사선임비용 특약으로",
+   "key": "driver",
+   "bare": true,
+   "marked": "급발진 변호사선임비용(특약)으로",
+   "missing": [
+    "변호사선임비용"
+   ]
+  },
+  {
+   "text": "급발진 변호사선임비용 특약으로",
+   "key": "driver",
+   "bare": false,
+   "marked": "급발진 변호사선임비용(특약)으로",
+   "missing": [
+    "변호사선임비용"
+   ]
+  },
+  {
+   "text": "홀인원비용 특약은 축하 비용을 보상해요",
+   "key": "golf",
+   "bare": true,
+   "marked": "홀인원비용(특약)은 축하 비용을 보상해요",
+   "missing": [
+    "홀인원비용"
+   ]
+  },
+  {
+   "text": "홀인원비용 특약은 축하 비용을 보상해요",
+   "key": "golf",
+   "bare": false,
+   "marked": "홀인원비용(특약)은 축하 비용을 보상해요",
+   "missing": [
+    "홀인원비용"
+   ]
+  },
+  {
+   "text": "해외의료비 보장으로 대비",
+   "key": "overseas",
+   "bare": true,
+   "marked": "해외의료비 보장(특약)으로 대비",
+   "missing": [
+    "해외의료비"
+   ]
+  },
+  {
+   "text": "해외의료비 보장으로 대비",
+   "key": "overseas",
+   "bare": false,
+   "marked": "해외의료비 보장(특약)으로 대비",
+   "missing": [
+    "해외의료비"
+   ]
+  }
+ ]
+}

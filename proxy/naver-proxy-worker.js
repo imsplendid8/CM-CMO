@@ -301,7 +301,9 @@ async function runSchedule(slot, env, fetchImpl = fetch) {
   if (!jobs.length) return [];
   if (!env || !env.GH_DISPATCH_TOKEN) {
     console.warn(`scheduler: GH_DISPATCH_TOKEN 미설정 — ${slot} UTC 호출 생략(GitHub cron 예비 실행에 맡김)`);
-    return jobs.map(j => ({ workflow: j.workflow, status: 0, ok: false }));
+    const skipped = jobs.map(j => ({ workflow: j.workflow, status: 0, ok: false, reason: "no_token" }));
+    await recordSchedule(env, slot, skipped);
+    return skipped;
   }
   const results = [];
   for (const job of jobs) {
@@ -311,10 +313,33 @@ async function runSchedule(slot, env, fetchImpl = fetch) {
     results.push(r);
     console.log(`scheduler ${slot} UTC → ${r.workflow}: ${r.status}`);
   }
-  if (env.USAGE) {
-    try { await env.USAGE.put(`sched:last:${slot}`, JSON.stringify({ at: new Date().toISOString(), results }), { expirationTtl: 172800 }); } catch (e) {}
-  }
+  await recordSchedule(env, slot, results);
   return results;
+}
+
+// 최근 정시 호출 결과를 KV에 남긴다(슬롯별 + 가장 최근 1건). /health가 'sched:last'만 읽어 KV list 비용이 없다.
+async function recordSchedule(env, slot, results) {
+  if (!env || !env.USAGE) return;
+  const rec = JSON.stringify({ slot, at: new Date().toISOString(), results });
+  try {
+    await env.USAGE.put(`sched:last:${slot}`, rec, { expirationTtl: 172800 });
+    await env.USAGE.put("sched:last", rec, { expirationTtl: 172800 });
+  } catch (e) {}
+}
+
+// 공개 /health — 값은 절대 싣지 않고 '빠진 설정 이름'과 최근 정시 호출 결과만 보여 준다(헬스 체크 워크플로가 읽음).
+const REQUIRED_CONFIG = ["USAGE", "NAVER_ID", "NAVER_SECRET", "AD_KEY", "AD_SECRET", "AD_CUSTOMER", "GH_DISPATCH_TOKEN"];
+async function healthReport(env) {
+  const missing = REQUIRED_CONFIG.filter((k) => !env || !env[k]);
+  let scheduler = null;
+  if (env && env.USAGE) {
+    try { scheduler = JSON.parse((await env.USAGE.get("sched:last")) || "null"); } catch (e) {}
+  }
+  if (scheduler && Array.isArray(scheduler.results)) {
+    scheduler = { slot: scheduler.slot, at: scheduler.at, ok: scheduler.results.every((r) => r.ok),
+      results: scheduler.results.map((r) => ({ workflow: r.workflow, status: r.status, ok: r.ok, reason: r.reason })) };
+  }
+  return { ok: missing.length === 0 && (!scheduler || scheduler.ok), service: "modooflow-naver-proxy", missing, scheduler };
 }
 
 export default {
@@ -333,7 +358,8 @@ export default {
     }
 
     // 상태 확인은 공개(모니터링용)
-    if (p === "/" || p === "/health") return jsonFor(origin, { ok: true, service: "modooflow-naver-proxy" });
+    if (p === "/") return jsonFor(origin, { ok: true, service: "modooflow-naver-proxy" });
+    if (p === "/health") return jsonFor(origin, await healthReport(env));
 
     // ① 출처 화이트리스트 — 그 외 전부 차단
     if (!origin) return jsonFor(null, { error: "forbidden: origin not allowed" }, 403);

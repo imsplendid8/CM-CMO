@@ -170,3 +170,19 @@ jobs:
               body,
               labels: ['🐛 debug', '⚠️ incident']
             });
+
+  worker-config:
+    # 워커 설정 누락(USAGE·네이버 키·GH_DISPATCH_TOKEN)과 정시 호출 실패를 감시 — 사건당 이슈 1건 + 텔레그램 1회, 해결되면 자동 종료
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: 워커 /health 점검
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_IDS: ${{ secrets.TELEGRAM_CHAT_IDS }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python3 scripts/check_worker_health.py

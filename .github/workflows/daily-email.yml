@@ -82,6 +82,7 @@ jobs:
       - name: Send daily brief (email)
         if: steps.guard.outputs.skip != 'true'
         env:
+          BRIEF_TRIGGER: ${{ github.event_name == 'schedule' && 'fallback' || '' }}   # 예비 실행이 발송하면 맨 위에 지연 경고
           SMTP_HOST: ${{ secrets.SMTP_HOST }}     # 선택(기본 smtp.gmail.com)
           SMTP_PORT: ${{ secrets.SMTP_PORT }}     # 선택(기본 587)
           SMTP_USER: ${{ secrets.SMTP_USER }}

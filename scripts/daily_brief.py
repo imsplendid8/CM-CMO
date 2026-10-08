@@ -168,6 +168,14 @@ def compute_action_lines(products, main, seasonal, signals, now):
     return (urgent[:2] + focus + serp[:1])[:4]
 
 
+def late_notice(now):
+    """GitHub cron 예비 실행이 발송할 때(=워커 정시 호출이 없었을 때) 브리프 맨 위에 붙일 경고. 정시면 빈 문자열."""
+    if os.environ.get("BRIEF_TRIGGER") != "fallback":
+        return ""
+    return (f"⚠️ 정시 발송 실패 — 워커 정시 호출이 없어 예비 실행으로 {now.strftime('%H:%M')}에 발송됨. "
+            "워커 GH_DISPATCH_TOKEN·Cron 설정 점검 필요")
+
+
 def build_message():
     products, order, main, seasonal, signals, clip, now = _load_context()
     wd = "월화수목금토일"[now.weekday()]
@@ -187,7 +195,8 @@ def build_message():
         )
 
     part = "오전" if now.hour < 12 else "오후"
-    parts = [f"🗓️ Modooflow · {now.month}/{now.day}({wd}) {part} — 오늘 할 일 {len(action_lines)}", ""]
+    notice = late_notice(now)
+    parts = ([esc(notice), ""] if notice else []) + [f"🗓️ Modooflow · {now.month}/{now.day}({wd}) {part} — 오늘 할 일 {len(action_lines)}", ""]
     parts += ["✅ 오늘 할 일 (우선순위)"] + (action_lines or ["· 오늘 특이 액션 없음 — 정기 점검만"])
     if news_lines:
         parts += ["", "📰 주목할 뉴스"] + news_lines
@@ -233,6 +242,9 @@ def render_email():
     wd = "월화수목금토일"[now.weekday()]
     part = "오전" if now.hour < 12 else "오후"
     subject = f"(장기CM사업부) {now.strftime('%y.%m.%d')} 뉴스 모니터링"
+    notice = late_notice(now)
+    warn_html = (f'<div style="padding:10px 12px;margin:0 0 12px;border-radius:8px;background:#fff4e5;'
+                 f'color:#8a4b00;font-size:13px;font-weight:700">{esc(notice)}</div>') if notice else ""
     S = _ES
 
     # 주요 뉴스 — 전체 통틀어 상위 N건을 제목·요약·출처만 한 열로 표시한다.
@@ -278,11 +290,11 @@ def render_email():
             '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" '
             'align="left" style="width:100%;table-layout:fixed;border-collapse:collapse;text-align:left"><tr>'
             '<td align="left" style="padding:0;text-align:left">'
-            f'<div style="{S["wrap"]}">{head}{news_html}{footer}</div>'
+            f'<div style="{S["wrap"]}">{warn_html}{head}{news_html}{footer}</div>'
             '</td></tr></table></body></html>')
 
     # ── 텍스트 대체본(HTML 미지원 클라이언트용) ──
-    P = [f"(장기CM사업부) {now.strftime('%y.%m.%d')} 뉴스 모니터링 · {wd}요일 {part}", ""]
+    P = ([notice, ""] if notice else []) + [f"(장기CM사업부) {now.strftime('%y.%m.%d')} 뉴스 모니터링 · {wd}요일 {part}", ""]
     P += [f"[주요 뉴스 요약 · 전체 상위 {len(news)}건]"]
     for it in news:
         P.append(f"· ({it.get('tag','')}) {it.get('title','')} ({it.get('source','')}·{it.get('date','')})")

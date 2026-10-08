@@ -41,6 +41,18 @@ class TestRiderMarks(unittest.TestCase):
         self.assertEqual(ct.missing_rider_marks("지급한 형사합의금을 실손으로 보상해요", "driver", bare=False), [])
 
 
+class TestRiderParityFixture(unittest.TestCase):
+    def test_python_matches_shared_cases(self):
+        # tests/fixtures/rider_cases.json은 SA 도구·파워콘텐츠 검사(check_rider_parity.mjs)와 공유하는 기준 예문
+        import json
+        with open(os.path.join(ROOT, "tests", "fixtures", "rider_cases.json"), encoding="utf-8") as f:
+            cases = json.load(f)["cases"]
+        for c in cases:
+            self.assertEqual(ct.mark_riders(c["text"], c["key"], bare=c["bare"]), c["marked"], c)
+            self.assertEqual(sorted(ct.missing_rider_marks(c["text"], c["key"], bare=c["bare"])), c["missing"], c)
+            self.assertEqual(ct.missing_rider_marks(c["marked"], c["key"], bare=c["bare"]), [], c)
+
+
 class TestGeneratedSaLength(unittest.TestCase):
     def test_fallback_templates_fill_42_to_45_with_marks(self):
         product = {"key": "hrmf", "name": "주택화재보험", "serpKw": "주택화재보험"}

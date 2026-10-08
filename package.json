@@ -1,22 +1,13 @@
 {
-  "name": "cm-cmo-dashboard-automation",
+  "name": "cm-cmo-tools",
   "version": "1.0.0",
-  "description": "Modooflow 팀 대시보드 — OAuth + Claude API 연동 자동화",
+  "description": "Modooflow 자동화 스크립트용 개발 의존성(브라우저 캡처·헬스 체크). 도구 HTML은 빌드·의존성 없음.",
   "private": true,
-  "main": "server.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js",
     "test": "python -m unittest discover -s tests -p 'test_*.py' -v",
     "check-products": "python scripts/check_products_sync.py",
     "check-adcopy": "node scripts/check_adcopy_export.mjs"
-  },
-  "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5",
-    "dotenv": "^16.0.3",
-    "@anthropic-ai/sdk": "^0.28.0"
   },
   "devDependencies": {
     "playwright": "1.62.1"
@@ -24,9 +15,7 @@
   "keywords": [
     "insurance",
     "marketing",
-    "dashboard",
-    "oauth",
-    "claude-api"
+    "automation"
   ],
   "author": "Hanwha Insurance CM-CMO Team",
   "license": "MIT"
