@@ -102,8 +102,10 @@ dialog{width:min(760px,calc(100vw - 30px));max-height:90vh;border:1px solid var(
         <pre id="ima2Command">npx -y "@openai/codex" login
 npx -y ima2-gen setup
 npx -y ima2-gen serve
-$env:IMAGE_PROVIDER="ima2-oauth"
-py -3 scripts/generate_image_assets.py --execute --provider ima2-oauth --limit 4</pre>
+# 매일 자동 생성(구독 사용량) — 한 번만 등록
+.\scripts\register_image_autogen.ps1
+# 지금 1건 시험
+py -3 scripts/local_image_autogen.py --limit 1</pre>
         <div class="stack">
           <button id="copyIma2Command" class="secondary" type="button">로컬 연결 명령 복사</button>
         </div>

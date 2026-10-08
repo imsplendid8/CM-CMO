@@ -41,6 +41,32 @@ py -3 scripts/generate_image_assets.py --execute --provider ima2-oauth --product
 처음에는 `--limit 1`로 연결을 확인한 뒤 4건 단위로 늘리는 것을 권장합니다.
 미리보기만 하려면 `--execute`를 빼면 됩니다. 이때는 API 호출과 파일 저장이 일어나지 않습니다.
 
+## 자동 실행 (구독 사용량으로 매일 자동 생성)
+
+OAuth 세션은 내 PC에만 있으므로 자동 실행도 **내 PC의 Windows 작업 스케줄러**가 맡습니다.
+위의 최초 설정(로그인·`ima2-gen setup`)을 한 번 마친 뒤, 저장소 폴더의 PowerShell에서 한 번만 실행합니다.
+
+```powershell
+.\scripts\register_image_autogen.ps1            # 매일 12:30 · 최대 8건
+.\scripts\register_image_autogen.ps1 -At 09:10 -Limit 6   # 시각·건수 변경
+.\scripts\register_image_autogen.ps1 -Remove    # 해제
+```
+
+매일 지정 시각에 `scripts/local_image_autogen.py`가 다음을 순서대로 합니다.
+
+1. `main` 최신화(`git pull --ff-only`)
+2. ima2-gen 로컬 서버가 꺼져 있으면 백그라운드로 켬
+3. 대기 썸네일을 최대 N건 생성(`--provider ima2-oauth`) — 대기 항목이 없으면 바로 종료
+4. 큐·이미지 검증(`image_generation_queue.py --validate`, `check_adcopy_images.mjs`)
+5. 생성 파일·큐만 커밋하고 `main`에 푸시 → Pages 자동 배포
+
+- PC가 꺼져 있었으면 다음에 켜질 때 한 번 실행합니다. 실행 기록은 저장소의 `.image-autogen.log`(커밋 안 됨).
+- 지금 시험: `Start-ScheduledTask -TaskName 'Modooflow 썸네일 자동 생성'` 또는 `py -3 scripts\local_image_autogen.py --limit 1`.
+- 미리보기만: `py -3 scripts\local_image_autogen.py --dry-run`.
+- 이 폴더에서 다른 작업 중인 변경이 생성 파일 경로에 있으면 실행을 멈춥니다(덮어쓰지 않음). 자동 실행용으로 저장소를 따로 하나 clone해 두는 것을 권장합니다.
+- 매월 1일 09:30 월간 썸네일 계획이 새 대기 목록(약 48건)을 만들면, 하루 8건 기준 약 6일 안에 모두 생성됩니다.
+- GitHub Actions의 유료 경로(`IMAGE_AUTOGEN_LIMIT` 변수)는 따로 켜지 않는 한 동작하지 않습니다. 둘 다 켜도 같은 대기 항목을 중복 생성하지 않습니다(먼저 생성된 항목은 `generated`).
+
 ## 소재제작소 Admin에서 확인할 것
 
 Admin 우측의 **이미지 생성 연결 · ima2 OAuth** 상자에서 동일한 연결 명령을 복사할 수 있습니다.
