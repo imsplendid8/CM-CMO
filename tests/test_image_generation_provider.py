@@ -29,12 +29,15 @@ class FakeResponse:
 
 
 class TestImageGenerationProvider(unittest.TestCase):
-    def test_workflow_is_manual_and_explicitly_opt_in(self):
+    def test_workflow_is_explicitly_opt_in(self):
+        # 유료 호출은 수동 execute=true 또는 저장소 변수 IMAGE_AUTOGEN_LIMIT(월간 자동)이 있을 때만
         self.assertIn("workflow_dispatch", WORKFLOW)
-        self.assertIn("execute", WORKFLOW)
         self.assertIn("OPENAI_API_KEY", WORKFLOW)
-        self.assertIn("if: ${{ inputs.execute == true }}", WORKFLOW)
-        self.assertNotIn("schedule:", WORKFLOW)
+        self.assertIn("inputs.execute == true", WORKFLOW)
+        self.assertIn("vars.IMAGE_AUTOGEN_LIMIT != '' && vars.IMAGE_AUTOGEN_LIMIT != '0'", WORKFLOW)
+        self.assertIn("if: ${{ env.RUN_EXECUTE == 'true' }}", WORKFLOW)
+        self.assertNotIn("--execute", WORKFLOW.split("Preview image queue")[1].split("Generate PNGs")[0],
+                         "미리보기 단계는 API를 부르지 않아야 함")
 
     def test_provider_does_not_call_api_without_execute(self):
         self.assertIn("if not args.execute", SCRIPT)
