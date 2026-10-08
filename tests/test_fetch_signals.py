@@ -101,6 +101,26 @@ class TestFetchSignals(unittest.TestCase):
         self.assertIn("등록대수(누적", note)
         self.assertNotIn("신규등록", note)
 
+    def test_stat_molit_stock_uses_total_row_and_column_only(self):
+        # 합계 행(시도='계')과 합계 열('총계>계')을 함께 더하면 실제의 4배가 된다(2026-10 실측 1억 674만 대)
+        fetch_signals.CAR_NEWREG_API_URL = "http://stat.molit.go.kr/portal/openapi/service/rest/getList.do"
+        fetch_signals.CAR_NEWREG_KEY = "key"
+        fetch_signals.CAR_NEWREG_FORM_ID = "5498"
+        fetch_signals.CAR_NEWREG_STYLE_NUM = "2"
+        fetch_signals.CAR_NEWREG_EXTRA_PARAMS = ""
+        fetch_signals.CAR_NEWREG_START_DT = "202607"
+        fetch_signals.CAR_NEWREG_END_DT = "202608"
+        def rows(month, seoul, busan):
+            mk = lambda sido, n: {"date": month, "시도명": sido, "승용>계": n - 100, "화물>계": 100, "총계>계": n}
+            return [mk("계", seoul + busan), mk("서울", seoul), mk("부산", busan)]
+        body = json.dumps({"result_data": {"formName": "자동차등록대수현황 시도별",
+                                           "formList": rows("202607", 15000000, 11000000) + rows("202608", 15010000, 11005000)}},
+                          ensure_ascii=False)
+        with patch.object(fetch_signals.urllib.request, "urlopen", return_value=_Response(body)):
+            result = fetch_signals.fetch_car_newreg()
+        self.assertEqual(result["count"], 26015000)
+        self.assertEqual(result["net_change"], 15000)
+
     def test_stat_molit_url_still_requires_form_style(self):
         fetch_signals.CAR_NEWREG_API_URL = "http://stat.molit.go.kr/portal/openapi/service/rest/getList.do"
         fetch_signals.CAR_NEWREG_KEY = "key"

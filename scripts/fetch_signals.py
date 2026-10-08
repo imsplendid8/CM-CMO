@@ -545,28 +545,49 @@ def _extract_molit_series(payload):
         unique[(row["period"], row["count"])] = row
     return sorted(unique.values(), key=lambda row: row["period"])
 
+_TOTAL_WORDS = ("계", "합계", "총계", "전국", "소계")
+# 2026-10 실측 오류: 합계 행·합계 열까지 더해 1억 674만 대(실제의 약 4배)로 표시됨 → 합계가 있으면 합계만 쓴다.
+STOCK_SANE_MAX = 40_000_000
+
+
 def _molit_form_stock(payload):
     """통계누리 '자동차등록대수현황' formList(행=시도×월, 열='차종>용도') → 월별 전국 등록대수(누적).
 
-    각 행에서 '>계' 열(차종별 합계)만 더해 용도별 중복 합산을 피하고, 같은 월의 시도 행을 합친다.
+    - 열: '총계>계'·'계>계'처럼 차종 자리가 합계인 열이 있으면 그 열만, 없으면 차종별 '>계' 열을 더한다.
+    - 행: 시도 값이 '계·합계·전국'인 행이 있으면 그 행만, 없으면 시도 행을 더한다.
     """
     data = payload.get("result_data") if isinstance(payload, dict) else None
     rows = data.get("formList") if isinstance(data, dict) else None
     if not isinstance(rows, list):
         return [], ""
-    totals = {}
+
+    def row_total(row):
+        cols = {str(k): _coerce_float(v) for k, v in row.items() if str(k).endswith(">계")}
+        cols = {k: v for k, v in cols.items() if v is not None}
+        grand = [v for k, v in cols.items() if k.split(">")[0].strip() in _TOTAL_WORDS]
+        return grand[0] if grand else (sum(cols.values()) if cols else None)
+
+    def is_total_row(row):
+        return any(isinstance(v, str) and v.strip() in _TOTAL_WORDS for k, v in row.items() if k != "date")
+
+    by_month = {}
     for row in rows:
         if not isinstance(row, dict):
             continue
         period = re.sub(r"[^0-9]", "", str(row.get("date") or ""))[:6]
-        if len(period) != 6:
+        value = row_total(row)
+        if len(period) != 6 or value is None:
             continue
-        subtotal = [_coerce_float(v) for k, v in row.items() if str(k).endswith(">계")]
-        subtotal = [v for v in subtotal if v is not None]
-        if not subtotal:
-            continue
-        totals[period] = totals.get(period, 0) + sum(subtotal)
-    series = [{"period": k, "count": int(v)} for k, v in sorted(totals.items())]
+        slot = by_month.setdefault(period, {"total": None, "parts": 0})
+        if is_total_row(row):
+            slot["total"] = value
+        else:
+            slot["parts"] += value
+    series = []
+    for period, slot in sorted(by_month.items()):
+        count = slot["total"] if slot["total"] is not None else slot["parts"]
+        if 0 < count <= STOCK_SANE_MAX:
+            series.append({"period": period, "count": int(count)})
     return series, str(data.get("formName") or "")
 
 
