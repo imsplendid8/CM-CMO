@@ -7,10 +7,12 @@ on:
 
 permissions:
   contents: read
-  issues: write   # 렌더링 실패 시 이슈 생성
 
 jobs:
   health-check:
+    permissions:
+      contents: read
+      issues: write   # 렌더링 실패 시 이슈 생성
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -172,6 +174,9 @@ jobs:
             });
 
   worker-config:
+    permissions:
+      contents: read
+      issues: write   # 설정 누락 이슈 생성·자동 종료
     # 워커 설정 누락(USAGE·네이버 키·GH_DISPATCH_TOKEN)과 정시 호출 실패를 감시 — 사건당 이슈 1건 + 텔레그램 1회, 해결되면 자동 종료
     runs-on: ubuntu-latest
     timeout-minutes: 5
