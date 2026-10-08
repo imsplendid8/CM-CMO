@@ -1,8 +1,12 @@
 name: Generate Image Assets
 
-# 유료 이미지 API 호출은 예약 실행하지 않는다. 운영자가 Run workflow에서
-# execute=true를 명시하고, limit/product 범위를 확인한 경우에만 실행한다.
+# 유료 이미지 API 호출은 두 경로로만 실행한다.
+#  ① 수동: Run workflow에서 execute=true + limit/product 지정
+#  ② 월간 자동: 매월 1일 11:00 KST(월간 썸네일 계획 09:30 뒤). 저장소 변수 IMAGE_AUTOGEN_LIMIT(1~20)을
+#     설정했을 때만 그 수만큼 생성 — 변수가 없거나 0이면 미리보기만 하고 API를 부르지 않는다(기본 꺼짐).
 on:
+  schedule:
+    - cron: "0 2 1 * *"
   workflow_dispatch:
     inputs:
       execute:
@@ -36,6 +40,12 @@ concurrency:
 jobs:
   generate:
     runs-on: ubuntu-latest
+    env:
+      # 수동 실행은 입력값, 월간 자동은 저장소 변수(없으면 0=꺼짐)
+      RUN_EXECUTE: ${{ github.event_name == 'workflow_dispatch' && inputs.execute == true || github.event_name == 'schedule' && vars.IMAGE_AUTOGEN_LIMIT != '' && vars.IMAGE_AUTOGEN_LIMIT != '0' }}
+      LIMIT: ${{ github.event_name == 'workflow_dispatch' && inputs.limit || vars.IMAGE_AUTOGEN_LIMIT || '0' }}
+      PRODUCT: ${{ github.event_name == 'workflow_dispatch' && inputs.product || '' }}
+      RETRY_FAILED: ${{ github.event_name == 'workflow_dispatch' && inputs.retry_failed || 'false' }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -44,11 +54,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: Preview image queue
-        env:
-          LIMIT: ${{ inputs.limit }}
-          PRODUCT: ${{ inputs.product }}
-          RETRY_FAILED: ${{ inputs.retry_failed }}
         run: |
+          # 미리보기는 비용이 없다 — 자동 생성이 꺼져 있으면(0) 다음 대기 4건만 보여 준다
+          [ "${LIMIT:-0}" -ge 1 ] 2>/dev/null || LIMIT=4
           args=(--limit "$LIMIT")
           if [ -n "$PRODUCT" ]; then args+=(--product "$PRODUCT"); fi
           if [ "$RETRY_FAILED" = "true" ]; then args+=(--retry-failed); fi
@@ -56,16 +64,13 @@ jobs:
       - name: Generate PNGs (explicit opt-in only)
         id: generate
         continue-on-error: true
-        if: ${{ inputs.execute == true }}
+        if: ${{ env.RUN_EXECUTE == 'true' }}
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_IMAGE_API_URL: ${{ vars.OPENAI_IMAGE_API_URL }}
           OPENAI_IMAGE_MODEL: ${{ vars.OPENAI_IMAGE_MODEL }}
           OPENAI_IMAGE_SIZE: ${{ vars.OPENAI_IMAGE_SIZE }}
           OPENAI_IMAGE_QUALITY: ${{ vars.OPENAI_IMAGE_QUALITY }}
-          LIMIT: ${{ inputs.limit }}
-          PRODUCT: ${{ inputs.product }}
-          RETRY_FAILED: ${{ inputs.retry_failed }}
         run: |
           args=(--execute --limit "$LIMIT")
           if [ -n "$PRODUCT" ]; then args+=(--product "$PRODUCT"); fi
@@ -73,12 +78,12 @@ jobs:
           python3 scripts/generate_image_assets.py "${args[@]}"
       - name: Validate generated assets
         id: validate
-        if: ${{ always() && inputs.execute == true }}
+        if: ${{ always() && env.RUN_EXECUTE == 'true' }}
         run: |
           python3 scripts/image_generation_queue.py --validate
           node scripts/check_adcopy_images.mjs
       - name: Commit generated PNGs
-        if: ${{ always() && inputs.execute == true && steps.validate.outcome == 'success' }}
+        if: ${{ always() && env.RUN_EXECUTE == 'true' && steps.validate.outcome == 'success' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -94,7 +99,7 @@ jobs:
             exit 1
           fi
       - name: Report generation warnings
-        if: ${{ always() && inputs.execute == true && steps.generate.outcome == 'failure' }}
+        if: ${{ always() && env.RUN_EXECUTE == 'true' && steps.generate.outcome == 'failure' }}
         run: |
           echo "::warning::일부 이미지 생성에 실패했습니다. 실패 항목과 오류 요약을 큐에 기록했습니다. retry_failed=true로 재시도하세요."
           if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
