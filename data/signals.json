@@ -1,14 +1,13 @@
 {
-  "asof": "2026-10-08",
+  "asof": "2026-10-09",
   "source": "data.go.kr",
   "weather": {
-    "active": [],
-    "error": "HTTP 403 · { \"OpenAPI_ServiceResponse\": { \"cmmMsgHeader\": { \"errMsg\": \"SERVICE_KEY_IS_NOT_R"
+    "active": []
   },
   "travel": {
-    "overseas_ratio": 86.1,
-    "period": "2026-10-07",
-    "avg": 80.5,
+    "overseas_ratio": 84.6,
+    "period": "2026-10-08",
+    "avg": 80.8,
     "peak": 100,
     "basis": "최근 7일 평균 vs 90일"
   },
@@ -53,10 +52,10 @@
     ]
   },
   "newreg": {
-    "count": 106749136,
+    "count": 1010781,
     "period": "202608",
-    "mom": -0.02,
-    "net_change": -21964,
+    "mom": -0.03,
+    "net_change": -286,
     "kind": "stock",
     "trend": {},
     "source": "stat.molit",
@@ -73,27 +72,27 @@
     "series": [
       {
         "period": "202603",
-        "count": 106436060
+        "count": 1010087
       },
       {
         "period": "202604",
-        "count": 106533928
+        "count": 1010132
       },
       {
         "period": "202605",
-        "count": 106573852
+        "count": 1009593
       },
       {
         "period": "202606",
-        "count": 106705436
+        "count": 1010546
       },
       {
         "period": "202607",
-        "count": 106771100
+        "count": 1011067
       },
       {
         "period": "202608",
-        "count": 106749136
+        "count": 1010781
       }
     ]
   },
@@ -105,7 +104,7 @@
     },
     "driver": {
       "level": "medium",
-      "note": "자동차 등록대수(누적, 202608) 106,749,136대 · 전월 대비 -21,964대 → 운전자보험 잠재 수요 참고",
+      "note": "자동차 등록대수(누적, 202608) 1,010,781대 · 전월 대비 -286대 → 운전자보험 잠재 수요 참고",
       "basis": [
         "자동차등록대수현황 시도별(누적·시도 합계)"
       ]
