@@ -61,7 +61,9 @@ def attach(toml_text, namespaces):
 
 
 def main(path):
-    token, account = os.environ.get("CLOUDFLARE_API_TOKEN"), os.environ.get("CLOUDFLARE_ACCOUNT_ID")
+    # 앞뒤 공백·줄바꿈은 붙여넣기 흔적이라 덜어낸다(중간 줄바꿈은 워크플로 검사에서 막음)
+    token = (os.environ.get("CLOUDFLARE_API_TOKEN") or "").strip()
+    account = (os.environ.get("CLOUDFLARE_ACCOUNT_ID") or "").strip()
     if not (token and account):
         print("CLOUDFLARE_API_TOKEN/CLOUDFLARE_ACCOUNT_ID 필요", file=sys.stderr)
         return 2
