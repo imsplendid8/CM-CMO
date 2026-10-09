@@ -12,6 +12,7 @@ import json
 import os
 import re
 import sys
+import urllib.error
 import urllib.request
 
 # binding → (필수 여부, 네임스페이스 이름 후보) — 안내 문서에서 만들도록 한 이름과 바인딩 이름 자체
@@ -67,7 +68,16 @@ def main(path):
     if not (token and account):
         print("CLOUDFLARE_API_TOKEN/CLOUDFLARE_ACCOUNT_ID 필요", file=sys.stderr)
         return 2
-    namespaces = list_namespaces(token, account)
+    try:
+        namespaces = list_namespaces(token, account)
+    except urllib.error.HTTPError as exc:
+        hint = {
+            401: "토큰이 유효하지 않음 — Global API Key나 토큰 이름이 아니라, Create Token 직후 한 번만 보이는 토큰 값(약 40자)을 넣어야 함. 모르면 API Tokens에서 Roll로 새로 발급",
+            403: "토큰 권한 부족 — 템플릿 'Edit Cloudflare Workers'로 만들고 Account Resources에 이 계정을 포함해야 함",
+            404: "CLOUDFLARE_ACCOUNT_ID가 틀림 — Workers & Pages 화면의 Account ID(32자리)를 다시 확인",
+        }.get(exc.code, "Cloudflare API 오류")
+        print(f"::error::Cloudflare API HTTP {exc.code}: {hint}", file=sys.stderr)
+        return 1
     with open(path, encoding="utf-8") as f:
         text, missing = attach(f.read(), namespaces)
     if missing:
