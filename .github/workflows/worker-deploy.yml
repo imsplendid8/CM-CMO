@@ -1,0 +1,62 @@
+name: Deploy Cloudflare Worker
+
+# proxy/ 가 main에 바뀌면 워커를 자동 배포한다(Cloudflare 편집기 복사·붙여넣기 불필요).
+# wrangler.toml의 Cron(*/5)도 함께 적용된다. 대시보드에서 만든 KV 바인딩은 이름으로 찾아 그대로 이어 붙이고,
+# 워커 Secret(NAVER_ID·GH_DISPATCH_TOKEN 등)은 wrangler가 건드리지 않는다.
+# 필요 GitHub Secrets: CLOUDFLARE_API_TOKEN(템플릿 'Edit Cloudflare Workers'), CLOUDFLARE_ACCOUNT_ID
+# 둘 중 하나라도 없으면 배포를 건너뛴다(실패 아님).
+on:
+  push:
+    branches: [main]
+    paths:
+      - "proxy/**"
+      - ".github/workflows/worker-deploy.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cm-cmo-worker-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Check credentials
+        id: creds
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::CLOUDFLARE_API_TOKEN/CLOUDFLARE_ACCOUNT_ID 미설정 — 워커 자동 배포를 건너뜀(docs/운영-설정-체크리스트.md)"
+          fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: steps.creds.outputs.skip != 'true'
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        if: steps.creds.outputs.skip != 'true'
+        with:
+          node-version: "22"
+      - name: Attach existing KV bindings
+        if: steps.creds.outputs.skip != 'true'
+        working-directory: proxy
+        run: python3 ../scripts/worker_bindings.py wrangler.toml
+      - name: Syntax check
+        if: steps.creds.outputs.skip != 'true'
+        run: node scripts/check_worker_scheduler.mjs
+      - name: Deploy
+        if: steps.creds.outputs.skip != 'true'
+        working-directory: proxy
+        run: npx -y wrangler@4 deploy
+      - name: Verify /health
+        if: steps.creds.outputs.skip != 'true'
+        run: |
+          sleep 10
+          curl -fsS https://modooflow-naver-proxy.angle0102.workers.dev/health | tee /tmp/health.json
+          python3 -c "import json;h=json.load(open('/tmp/health.json'));assert 'missing' in h,'새 코드가 아님';print('빠진 설정:',h['missing'] or '없음')"
