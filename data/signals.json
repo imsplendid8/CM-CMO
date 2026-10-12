@@ -1,13 +1,15 @@
 {
-  "asof": "2026-10-11",
+  "asof": "2026-10-12",
   "source": "data.go.kr",
   "weather": {
-    "active": []
+    "active": [
+      "호우"
+    ]
   },
   "travel": {
-    "overseas_ratio": 78.4,
-    "period": "2026-10-10",
-    "avg": 80.4,
+    "overseas_ratio": 79.4,
+    "period": "2026-10-11",
+    "avg": 80.2,
     "peak": 100,
     "basis": "최근 7일 평균 vs 90일"
   },
@@ -97,6 +99,13 @@
     ]
   },
   "triggers": {
+    "hrmf": {
+      "level": "high",
+      "note": "기상특보 발효 → 호우·태풍 → 누수·침수·풍수재 담보 수요",
+      "kinds": [
+        "호우"
+      ]
+    },
     "overseas": {
       "level": "high",
       "note": "출국 국민 242만 명(202607 · 3개월 +11.3%) → 해외여행보험 출국수요 대응",
