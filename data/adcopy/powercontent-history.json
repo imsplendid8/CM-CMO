@@ -1,25 +1,30 @@
 {
   "_comment": "월간 파워콘텐츠 반복 제안과 검색 의도 카니벌라이제이션을 막기 위한 공개 최소 이력. 성과·내부 URL은 포함하지 않는다.",
   "schema_version": 1,
-  "updated_at": "2026-10-12",
+  "updated_at": "2026-10-19",
   "retention": "latest_600_unique_proposals",
   "entries": [
     {
-      "fingerprint": "fd8ac392d2e5deb34013",
-      "product_key": "cncr",
+      "fingerprint": "fddb6ef854d59d87810d",
+      "product_key": "dntl",
       "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "암보험 가입 전 확인할 조건",
-      "target_query": "암보험",
-      "angle": "situation_first",
-      "sections": [],
-      "source": "search_demand"
+      "asof": "2026-10-12",
+      "title": "치아보험 임플란트·틀니 보장 알아보기",
+      "target_query": "치아보험 임플란트·틀니",
+      "angle": "SERP의 ‘보철·임플란트’ 반복에서 벗어나 약관 탐색으로 전개",
+      "sections": [
+        "임플란트·틀니 보장의 뜻",
+        "보장이 적용되는 경우",
+        "보장하지 않는 경우",
+        "청구할 때 필요한 서류"
+      ],
+      "source": "monthly_serp"
     },
     {
       "fingerprint": "fc126662994954cebf61",
       "product_key": "birth",
       "planning_month": "2026-10",
-      "asof": "2026-10-04",
+      "asof": "2026-10-12",
       "title": "선천이상과 태아, 보장 차이 정리",
       "target_query": "태아보험",
       "angle": "SERP의 ‘태아·실손’ 반복에서 벗어나 항목 간 비교로 전개",
@@ -32,13 +37,942 @@
       "source": "monthly_serp"
     },
     {
+      "fingerprint": "faed2a83fff6dbbe3e95",
+      "product_key": "chronic",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "고혈압과 간편심사, 보장 차이 정리",
+      "target_query": "유병자보험 고혈압",
+      "angle": "SERP의 ‘간편심사·실손’ 반복에서 벗어나 항목 간 비교로 전개",
+      "sections": [
+        "고혈압과 간편심사는 어떻게 다른가요",
+        "고혈압 보장이 적용되는 경우",
+        "간편심사 보장이 적용되는 경우",
+        "내 상황에 맞게 고르기"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "ee8612571c3c91672fc0",
+      "product_key": "woman",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "임신·출산·여성 질환, 보장 기준 차이 정리",
+      "target_query": "여성건강보험 임신·출산",
+      "angle": "SERP의 ‘여성암·임신·출산’ 반복에서 벗어나 항목 간 비교로 전개",
+      "sections": [
+        "임신·출산·여성 질환은 어떻게 다른가요",
+        "임신·출산 보장이 적용되는 경우",
+        "여성 질환 보장이 적용되는 경우",
+        "보장하지 않는 경우"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "e9556b1be2fd20c89ec0",
+      "product_key": "holeinone",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "홀인원 비용·본인, 보장 기준 차이 정리",
+      "target_query": "홀인원보험",
+      "angle": "SERP의 ‘홀인원 축하비용·선물하기’ 반복에서 벗어나 항목 간 비교로 전개",
+      "sections": [
+        "홀인원 비용·본인은 어떻게 다른가요",
+        "홀인원 비용 보장이 적용되는 경우",
+        "본인 보장이 적용되는 경우",
+        "보장하지 않는 경우"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "e0a51748d07ddc2fe55f",
+      "product_key": "cncr",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "암보험 가입 전 알아둘 세 가지",
+      "target_query": "암보험",
+      "angle": "SERP의 ‘진단비·유사암’ 반복에서 벗어나 공식 화면 대조로 전개",
+      "sections": [
+        "가입 목적과 기간 정하기",
+        "진단비 중심으로 보장 고르기",
+        "보험료 계산 전 정할 조건",
+        "가입 전 보장하지 않는 경우"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "d7617fbb38f6204d6a1c",
+      "product_key": "event",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "행사보험 공연행사 보장, 약관으로 알아보기",
+      "target_query": "행사보험 공연행사",
+      "angle": "SERP의 ‘진단비·배상책임’ 반복에서 벗어나 약관 탐색으로 전개",
+      "sections": [
+        "공연행사 보장의 뜻",
+        "보장이 적용되는 경우",
+        "보장하지 않는 경우",
+        "청구할 때 필요한 서류"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "d5c9a924fb712a97ef5f",
+      "product_key": "cncr",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "암보험 유사암 보장 알아보기",
+      "target_query": "암보험 유사암",
+      "angle": "SERP의 ‘진단비·유사암’ 반복에서 벗어나 약관 탐색으로 전개",
+      "sections": [
+        "유사암 보장의 뜻",
+        "보장이 적용되는 경우",
+        "보장하지 않는 경우",
+        "청구할 때 필요한 서류"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "c98ca27451f10f3732c4",
+      "product_key": "chronic",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "유병자보험 가입 과정 한눈에 보기",
+      "target_query": "유병자보험",
+      "angle": "SERP의 ‘간편심사·실손’ 반복에서 벗어나 공식 화면 대조로 전개",
+      "sections": [
+        "보험료 계산에 필요한 정보",
+        "필요한 보장 고르는 방법",
+        "가입 전 확인할 조건",
+        "가입 뒤 받는 안내"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "c8510adb6b94f88d896c",
+      "product_key": "woman",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "여성건강보험 가입 전 알아둘 세 가지",
+      "target_query": "한화시그니처여성보험",
+      "angle": "SERP의 ‘여성암·임신·출산’ 반복에서 벗어나 공식 화면 대조로 전개",
+      "sections": [
+        "가입 목적과 기간 정하기",
+        "임신·출산 중심으로 보장 고르기",
+        "보험료 계산 전 정할 조건",
+        "가입 전 보장하지 않는 경우"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "bfcc5e76e0eee0832d7b",
+      "product_key": "woman",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "여성건강보험 여성암 보장 알아보기",
+      "target_query": "한화시그니처여성보험",
+      "angle": "SERP의 ‘여성암·임신·출산’ 반복에서 벗어나 약관 탐색으로 전개",
+      "sections": [
+        "여성암 보장의 뜻",
+        "보장이 적용되는 경우",
+        "보장하지 않는 경우",
+        "청구할 때 필요한 서류"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "b40644a26573b0bca4d8",
+      "product_key": "birth",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "태아보험 선천이상 보장, 약관으로 알아보기",
+      "target_query": "태아보험",
+      "angle": "SERP의 ‘태아·실손’ 반복에서 벗어나 약관 탐색으로 전개",
+      "sections": [
+        "선천이상 보장의 뜻",
+        "보장이 적용되는 경우",
+        "보장하지 않는 경우",
+        "청구할 때 필요한 서류"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "af6a23503fc1c31efdfe",
+      "product_key": "driver",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "비용 항목·벌금, 보장 기준 차이 정리",
+      "target_query": "운전자보험",
+      "angle": "SERP의 ‘가입 과정·보험료 계산’ 반복에서 벗어나 항목 간 비교로 전개",
+      "sections": [
+        "비용 항목·벌금은 어떻게 다른가요",
+        "비용 항목 보장이 적용되는 경우",
+        "벌금 보장이 적용되는 경우",
+        "보장하지 않는 경우"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "aa5622121d431d1a61c1",
+      "product_key": "hrmf",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "주택화재보험 가입 전 알아둘 세 가지",
+      "target_query": "주택화재보험 누수·풍수재",
+      "angle": "SERP의 ‘누수 피해·주택화재보험 필요성’ 반복에서 벗어나 공식 화면 대조로 전개",
+      "sections": [
+        "가입 목적과 기간 정하기",
+        "누수·풍수재 중심으로 보장 고르기",
+        "보험료 계산 전 정할 조건",
+        "가입 전 보장하지 않는 경우"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "a4c8dcb92a3a7a4b7a82",
+      "product_key": "hrmf",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "누수·풍수재·누수, 보장 기준 차이 정리",
+      "target_query": "주택화재보험",
+      "angle": "SERP의 ‘누수 피해·주택화재보험 필요성’ 반복에서 벗어나 항목 간 비교로 전개",
+      "sections": [
+        "누수·풍수재·누수은 어떻게 다른가요",
+        "누수·풍수재 보장이 적용되는 경우",
+        "누수 보장이 적용되는 경우",
+        "보장하지 않는 경우"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "a17b4654861b546785e2",
+      "product_key": "golf",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "골프보험 골프 배상책임 보장 알아보기",
+      "target_query": "골프보험 골프 배상책임",
+      "angle": "SERP의 ‘홀인원 비용·스크린 골프’ 반복에서 벗어나 약관 탐색으로 전개",
+      "sections": [
+        "골프 배상책임 보장의 뜻",
+        "보장이 적용되는 경우",
+        "보장하지 않는 경우",
+        "청구할 때 필요한 서류"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "93a685a7d6d8d4926dcd",
+      "product_key": "overseas",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "항공 지연·수하물 지연, 보장 기준 차이 정리",
+      "target_query": "해외여행보험",
+      "angle": "SERP의 ‘여행자보험·할인’ 반복에서 벗어나 항목 간 비교로 전개",
+      "sections": [
+        "항공 지연·수하물 지연은 어떻게 다른가요",
+        "항공 지연 보장이 적용되는 경우",
+        "수하물 지연 보장이 적용되는 경우",
+        "보장하지 않는 경우"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "91396b9a1df60cb155a8",
+      "product_key": "cncr",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "진단비·치료비, 보장 기준 차이 정리",
+      "target_query": "암보험",
+      "angle": "SERP의 ‘진단비·유사암’ 반복에서 벗어나 항목 간 비교로 전개",
+      "sections": [
+        "진단비·치료비은 어떻게 다른가요",
+        "진단비 보장이 적용되는 경우",
+        "치료비 보장이 적용되는 경우",
+        "보장하지 않는 경우"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "8d42ac3191ea9b92cd98",
+      "product_key": "dntl",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "스케일링·크라운, 보장 기준 차이 정리",
+      "target_query": "치아보험",
+      "angle": "SERP의 ‘보철·임플란트’ 반복에서 벗어나 항목 간 비교로 전개",
+      "sections": [
+        "스케일링·크라운은 어떻게 다른가요",
+        "스케일링 보장이 적용되는 경우",
+        "크라운 보장이 적용되는 경우",
+        "보장하지 않는 경우"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "8a7853bb7c6d0ed9971d",
+      "product_key": "overseaslong",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "유학생보험 구조송환 보장 알아보기",
+      "target_query": "유학생보험 구조송환",
+      "angle": "SERP의 ‘유학생보험·해외 치료비’ 반복에서 벗어나 약관 탐색으로 전개",
+      "sections": [
+        "구조송환 보장의 뜻",
+        "보장이 적용되는 경우",
+        "보장하지 않는 경우",
+        "청구할 때 필요한 서류"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "878cd5fdc35aa6e914a4",
+      "product_key": "event",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "공연행사가 필요할 때 행사보험 보장 알아보기",
+      "target_query": "행사보험",
+      "angle": "SERP의 ‘진단비·배상책임’ 반복에서 벗어나 생활 질문으로 전개",
+      "sections": [
+        "공연행사가 필요한 생활 장면",
+        "공연행사 보장 내용",
+        "가입 전 알아둘 조건",
+        "보장하지 않는 경우"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "82bfb170f6546df7b41e",
+      "product_key": "overseas",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "해외여행보험 가입 전 알아둘 세 가지",
+      "target_query": "해외여행보험 항공 지연",
+      "angle": "SERP의 ‘여행자보험·할인’ 반복에서 벗어나 공식 화면 대조로 전개",
+      "sections": [
+        "가입 목적과 기간 정하기",
+        "항공 지연 중심으로 보장 고르기",
+        "보험료 계산 전 정할 조건",
+        "가입 전 보장하지 않는 경우"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "76fffd7b571c328c8766",
+      "product_key": "driver",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "운전자보험 벌금·변호사선임 보장 알아보기",
+      "target_query": "운전자보험",
+      "angle": "SERP의 ‘가입 과정·보험료 계산’ 반복에서 벗어나 약관 탐색으로 전개",
+      "sections": [
+        "벌금·변호사선임 보장의 뜻",
+        "보장이 적용되는 경우",
+        "보장하지 않는 경우",
+        "청구할 때 필요한 서류"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "55cd9048b44f79024081",
+      "product_key": "golf",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "필드 홀인원·스크린 홀인원, 보장 기준 차이 정리",
+      "target_query": "골프보험",
+      "angle": "SERP의 ‘홀인원 비용·스크린 골프’ 반복에서 벗어나 항목 간 비교로 전개",
+      "sections": [
+        "필드 홀인원·스크린 홀인원은 어떻게 다른가요",
+        "필드 홀인원 보장이 적용되는 경우",
+        "스크린 홀인원 보장이 적용되는 경우",
+        "보장하지 않는 경우"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "5375f0736654086b1b5b",
+      "product_key": "event",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "가을 불꽃축제·지역행사 앞두고 행사보험 보장 점검",
+      "target_query": "행사보험",
+      "angle": "SERP의 ‘진단비·배상책임’ 반복에서 벗어나 실제 시즌 장면으로 전개",
+      "sections": [
+        "가을 불꽃축제·지역행사에 달라지는 생활 장면",
+        "공연행사·체육행사 보장이 필요한 상황",
+        "시즌 전에 챙길 가입 조건",
+        "보장하지 않는 경우"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "48a36591a5d47832dc3b",
+      "product_key": "hrmf",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "주택화재보험 임시거주비 보장 알아보기",
+      "target_query": "주택화재보험",
+      "angle": "SERP의 ‘누수 피해·주택화재보험 필요성’ 반복에서 벗어나 약관 탐색으로 전개",
+      "sections": [
+        "임시거주비 보장의 뜻",
+        "보장이 적용되는 경우",
+        "보장하지 않는 경우",
+        "청구할 때 필요한 서류"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "3c036b9d67e8a4022bea",
+      "product_key": "driver",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "운전자보험 가입 전 알아둘 세 가지",
+      "target_query": "운전자보험 비용 항목",
+      "angle": "SERP의 ‘가입 과정·보험료 계산’ 반복에서 벗어나 공식 화면 대조로 전개",
+      "sections": [
+        "가입 목적과 기간 정하기",
+        "비용 항목 중심으로 보장 고르기",
+        "보험료 계산 전 정할 조건",
+        "가입 전 보장하지 않는 경우"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "38982ef2d49f05b10454",
+      "product_key": "chronic",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "유병자보험 가입 전 알아둘 세 가지",
+      "target_query": "유병자보험",
+      "angle": "SERP의 ‘간편심사·실손’ 반복에서 벗어나 선택 기준 구체화로 전개",
+      "sections": [
+        "가입 목적과 기간 정하기",
+        "고혈압·간편심사 중 필요한 보장 고르기",
+        "보험료 계산 전 정할 조건",
+        "가입 전 보장하지 않는 경우"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "31d841e5f4e209bce23d",
+      "product_key": "birth",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "태아보험 가입 과정 한눈에 보기",
+      "target_query": "태아보험 태아",
+      "angle": "SERP의 ‘태아·실손’ 반복에서 벗어나 공식 화면 대조로 전개",
+      "sections": [
+        "보험료 계산에 필요한 정보",
+        "필요한 보장 고르는 방법",
+        "가입 전 확인할 조건",
+        "가입 뒤 받는 안내"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "2cfd637b138031ef141f",
+      "product_key": "overseas",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "해외여행보험 휴대품 손해 보장 알아보기",
+      "target_query": "해외여행보험",
+      "angle": "SERP의 ‘여행자보험·할인’ 반복에서 벗어나 약관 탐색으로 전개",
+      "sections": [
+        "휴대품 손해 보장의 뜻",
+        "보장이 적용되는 경우",
+        "보장하지 않는 경우",
+        "청구할 때 필요한 서류"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "2693021d8e2bef3da206",
+      "product_key": "overseaslong",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "체류 목적·해외 치료비, 보장 기준 차이 정리",
+      "target_query": "유학생보험",
+      "angle": "SERP의 ‘유학생보험·해외 치료비’ 반복에서 벗어나 항목 간 비교로 전개",
+      "sections": [
+        "체류 목적·해외 치료비은 어떻게 다른가요",
+        "체류 목적 보장이 적용되는 경우",
+        "해외 치료비 보장이 적용되는 경우",
+        "보장하지 않는 경우"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "240fd1c32fa94c5ee995",
+      "product_key": "dntl",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "치아보험 가입 전 알아둘 세 가지",
+      "target_query": "치아보험",
+      "angle": "SERP의 ‘보철·임플란트’ 반복에서 벗어나 공식 화면 대조로 전개",
+      "sections": [
+        "가입 목적과 기간 정하기",
+        "스케일링 중심으로 보장 고르기",
+        "보험료 계산 전 정할 조건",
+        "가입 전 보장하지 않는 경우"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "23304c845ea81568222a",
+      "product_key": "holeinone",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "홀인원보험 동반 플레이어 보장 알아보기",
+      "target_query": "홀인원보험",
+      "angle": "SERP의 ‘홀인원 축하비용·선물하기’ 반복에서 벗어나 약관 탐색으로 전개",
+      "sections": [
+        "동반 플레이어 보장의 뜻",
+        "보장이 적용되는 경우",
+        "보장하지 않는 경우",
+        "청구할 때 필요한 서류"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "1b05ff77efa2f7417fd3",
+      "product_key": "holeinone",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "홀인원보험 가입 전 알아둘 세 가지",
+      "target_query": "홀인원보험 홀인원 비용",
+      "angle": "SERP의 ‘홀인원 축하비용·선물하기’ 반복에서 벗어나 공식 화면 대조로 전개",
+      "sections": [
+        "가입 목적과 기간 정하기",
+        "홀인원 비용 중심으로 보장 고르기",
+        "보험료 계산 전 정할 조건",
+        "가입 전 보장하지 않는 경우"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "0cf90cdf3f54dde1cc53",
+      "product_key": "overseaslong",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "유학생보험 가입 전 알아둘 세 가지",
+      "target_query": "유학생보험",
+      "angle": "SERP의 ‘유학생보험·해외 치료비’ 반복에서 벗어나 공식 화면 대조로 전개",
+      "sections": [
+        "가입 목적과 기간 정하기",
+        "체류 목적 중심으로 보장 고르기",
+        "보험료 계산 전 정할 조건",
+        "가입 전 보장하지 않는 경우"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "0b283974f23c1e1632ae",
+      "product_key": "golf",
+      "planning_month": "2026-10",
+      "asof": "2026-10-12",
+      "title": "골프보험 가입 전 알아둘 세 가지",
+      "target_query": "골프보험",
+      "angle": "SERP의 ‘홀인원 비용·스크린 골프’ 반복에서 벗어나 공식 화면 대조로 전개",
+      "sections": [
+        "가입 목적과 기간 정하기",
+        "필드 홀인원 중심으로 보장 고르기",
+        "보험료 계산 전 정할 조건",
+        "가입 전 보장하지 않는 경우"
+      ],
+      "source": "monthly_serp"
+    },
+    {
+      "fingerprint": "fd8ac392d2e5deb34013",
+      "product_key": "cncr",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "암보험 가입 전 확인할 조건",
+      "target_query": "암보험",
+      "angle": "situation_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
       "fingerprint": "fadf854dc4a2adc1ff3f",
       "product_key": "cncr",
       "planning_month": "2026-10",
-      "asof": "2026-10-04",
+      "asof": "2026-10-11",
       "title": "암보험: 암보험비교사이트 선택 기준과 주의사항",
       "target_query": "암보험비교사이트",
       "angle": "subject_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "f8502d439790e39284d7",
+      "product_key": "golf",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "1일홀인원보험 비교할 때 놓치기 쉬운 조건",
+      "target_query": "1일홀인원보험",
+      "angle": "scope_limited",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "f2405f101c6acfd51464",
+      "product_key": "event",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "배상책임보험 비교할 때 놓치기 쉬운 조건",
+      "target_query": "배상책임보험",
+      "angle": "scope_limited",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "edf250633cff7dcb083b",
+      "product_key": "hrmf",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "주택화재보험: 가입 전 선택 기준과 주의사항",
+      "target_query": "주택화재보험",
+      "angle": "subject_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "ec0f4aa70156dd04e870",
+      "product_key": "golf",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "골프보험: 가입 전 선택 기준과 주의사항",
+      "target_query": "골프보험",
+      "angle": "subject_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "e737f4376bb6e78db161",
+      "product_key": "woman",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "한화시그니처여성보험 가입 전 확인할 조건",
+      "target_query": "한화시그니처여성보험",
+      "angle": "situation_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "d68a8565233ddf9b767e",
+      "product_key": "woman",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "여성보험 비교할 때 놓치기 쉬운 조건",
+      "target_query": "여성보험",
+      "angle": "scope_limited",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "d1a5cb230c3a2082c6eb",
+      "product_key": "event",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "영업배상책임보험 가입 전 확인할 조건",
+      "target_query": "영업배상책임보험",
+      "angle": "situation_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "c570185f0a24d16280b9",
+      "product_key": "holeinone",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "홀인원보험: 1일홀인원보험 선택 기준과 주의사항",
+      "target_query": "1일홀인원보험",
+      "angle": "subject_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "c24fb669c5a90d5d1625",
+      "product_key": "dntl",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "치아보험 가입 전 확인할 조건",
+      "target_query": "치아보험",
+      "angle": "situation_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "bc4b3db2aaad415e0128",
+      "product_key": "chronic",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "유병자보험: 고혈압진단비 선택 기준과 주의사항",
+      "target_query": "고혈압진단비",
+      "angle": "subject_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "b9e5cc3680a2475129fc",
+      "product_key": "woman",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "여성건강보험: 한화여성보험 선택 기준과 주의사항",
+      "target_query": "한화여성보험",
+      "angle": "subject_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "b9a318fd4be525fda8ca",
+      "product_key": "overseaslong",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "호주워홀보험 비교할 때 놓치기 쉬운 조건",
+      "target_query": "호주워홀보험",
+      "angle": "scope_limited",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "b45ac3defc6a820bc4ef",
+      "product_key": "event",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "행사보험: 재난배상책임보험 선택 기준과 주의사항",
+      "target_query": "재난배상책임보험",
+      "angle": "subject_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "a9b03f76adeff4a2f650",
+      "product_key": "hrmf",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "화재보험 가입 전 확인할 조건",
+      "target_query": "화재보험",
+      "angle": "situation_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "a9a4e15c64f8ac68c0a7",
+      "product_key": "holeinone",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "홀인원보험 가입 전 확인할 조건",
+      "target_query": "홀인원보험",
+      "angle": "situation_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "a667b5093681d9be9b8f",
+      "product_key": "dntl",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "실속보장치아보험 비교할 때 놓치기 쉬운 조건",
+      "target_query": "실속보장치아보험",
+      "angle": "scope_limited",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "a083764c734000fd7b93",
+      "product_key": "chronic",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "유병자보험 가입 전 확인할 조건",
+      "target_query": "유병자보험",
+      "angle": "situation_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "a03bc46e449b2266b7bc",
+      "product_key": "birth",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "태아보험사은품 비교할 때 놓치기 쉬운 조건",
+      "target_query": "태아보험사은품",
+      "angle": "scope_limited",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "855c05f822a8cf65fe52",
+      "product_key": "driver",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "운전자보험비교사이트 비교할 때 놓치기 쉬운 조건",
+      "target_query": "운전자보험비교사이트",
+      "angle": "scope_limited",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "789683c4a8893e38c70b",
+      "product_key": "overseas",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "해외여행보험: 해외여행자보험 선택 기준과 주의사항",
+      "target_query": "해외여행자보험",
+      "angle": "subject_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "6fe6a914fe02ab865cb4",
+      "product_key": "overseaslong",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "유학생보험: 가입 전 선택 기준과 주의사항",
+      "target_query": "유학생보험",
+      "angle": "subject_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "6aa1165909873206859f",
+      "product_key": "golf",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "홀인원보험 가입 전 확인할 조건",
+      "target_query": "홀인원보험",
+      "angle": "situation_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "66001aa9f1c5f8e55402",
+      "product_key": "overseas",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "일본여행자보험 비교할 때 놓치기 쉬운 조건",
+      "target_query": "일본여행자보험",
+      "angle": "scope_limited",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "4cc0660dd75e8b3f84dd",
+      "product_key": "birth",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "태아보험: 태아보험순위비교 선택 기준과 주의사항",
+      "target_query": "태아보험순위비교",
+      "angle": "subject_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "441d847014f6f49f76ca",
+      "product_key": "driver",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "운전자보험 가입 전 확인할 조건",
+      "target_query": "운전자보험",
+      "angle": "situation_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "437d1aa0a6accb142869",
+      "product_key": "hrmf",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "아파트화재보험 비교할 때 놓치기 쉬운 조건",
+      "target_query": "아파트화재보험",
+      "angle": "scope_limited",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "32757cebf94619235394",
+      "product_key": "birth",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "태아보험 가입 전 확인할 조건",
+      "target_query": "태아보험",
+      "angle": "situation_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "1f02d8301da271a5d358",
+      "product_key": "holeinone",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "일일홀인원보험 비교할 때 놓치기 쉬운 조건",
+      "target_query": "일일홀인원보험",
+      "angle": "scope_limited",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "1aa5d54efa334f6fe353",
+      "product_key": "overseas",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "여행자보험 가입 전 확인할 조건",
+      "target_query": "여행자보험",
+      "angle": "situation_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "109f4039604ff12ff464",
+      "product_key": "driver",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "운전자보험: 교통사고합의금 선택 기준과 주의사항",
+      "target_query": "교통사고합의금",
+      "angle": "subject_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "0df6e90943dba342cd98",
+      "product_key": "dntl",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "치아보험: 스케일링비용 선택 기준과 주의사항",
+      "target_query": "스케일링비용",
+      "angle": "subject_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "0abde8ec7ec42fb0f362",
+      "product_key": "cncr",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "암보험비갱신형 비교할 때 놓치기 쉬운 조건",
+      "target_query": "암보험비갱신형",
+      "angle": "scope_limited",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "04593807aa7db11db5f2",
+      "product_key": "overseaslong",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "해외장기체류보험 가입 전 확인할 조건",
+      "target_query": "해외장기체류보험",
+      "angle": "situation_first",
+      "sections": [],
+      "source": "search_demand"
+    },
+    {
+      "fingerprint": "014df2d59d0d148106d1",
+      "product_key": "chronic",
+      "planning_month": "2026-10",
+      "asof": "2026-10-11",
+      "title": "고혈압보험 비교할 때 놓치기 쉬운 조건",
+      "target_query": "고혈압보험",
+      "angle": "scope_limited",
       "sections": [],
       "source": "search_demand"
     },
@@ -59,39 +993,6 @@
       "source": "monthly_serp"
     },
     {
-      "fingerprint": "f8502d439790e39284d7",
-      "product_key": "golf",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "1일홀인원보험 비교할 때 놓치기 쉬운 조건",
-      "target_query": "1일홀인원보험",
-      "angle": "scope_limited",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
-      "fingerprint": "f2405f101c6acfd51464",
-      "product_key": "event",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "배상책임보험 비교할 때 놓치기 쉬운 조건",
-      "target_query": "배상책임보험",
-      "angle": "scope_limited",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
-      "fingerprint": "edf250633cff7dcb083b",
-      "product_key": "hrmf",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "주택화재보험: 가입 전 선택 기준과 주의사항",
-      "target_query": "주택화재보험",
-      "angle": "subject_first",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
       "fingerprint": "ed1588794fa876dde345",
       "product_key": "driver",
       "planning_month": "2026-10",
@@ -106,17 +1007,6 @@
         "보장하지 않는 경우"
       ],
       "source": "monthly_serp"
-    },
-    {
-      "fingerprint": "ec0f4aa70156dd04e870",
-      "product_key": "golf",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "골프보험: 가입 전 선택 기준과 주의사항",
-      "target_query": "골프보험",
-      "angle": "subject_first",
-      "sections": [],
-      "source": "search_demand"
     },
     {
       "fingerprint": "e972036d0ead40d4c7cd",
@@ -135,33 +1025,6 @@
       "source": "monthly_serp"
     },
     {
-      "fingerprint": "e737f4376bb6e78db161",
-      "product_key": "woman",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "한화시그니처여성보험 가입 전 확인할 조건",
-      "target_query": "한화시그니처여성보험",
-      "angle": "situation_first",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
-      "fingerprint": "e0a51748d07ddc2fe55f",
-      "product_key": "cncr",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "암보험 가입 전 알아둘 세 가지",
-      "target_query": "암보험",
-      "angle": "SERP의 ‘진단비·유사암’ 반복에서 벗어나 공식 화면 대조로 전개",
-      "sections": [
-        "가입 목적과 기간 정하기",
-        "진단비 중심으로 보장 고르기",
-        "보험료 계산 전 정할 조건",
-        "가입 전 보장하지 않는 경우"
-      ],
-      "source": "monthly_serp"
-    },
-    {
       "fingerprint": "d9e33c27982f5798e9ba",
       "product_key": "driver",
       "planning_month": "2026-10",
@@ -172,33 +1035,6 @@
       "sections": [
         "가입 목적과 기간 정하기",
         "비용 항목 중심으로 보장 고르기",
-        "보험료 계산 전 정할 조건",
-        "가입 전 보장하지 않는 경우"
-      ],
-      "source": "monthly_serp"
-    },
-    {
-      "fingerprint": "d1a5cb230c3a2082c6eb",
-      "product_key": "event",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "영업배상책임보험 가입 전 확인할 조건",
-      "target_query": "영업배상책임보험",
-      "angle": "situation_first",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
-      "fingerprint": "c8510adb6b94f88d896c",
-      "product_key": "woman",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "여성건강보험 가입 전 알아둘 세 가지",
-      "target_query": "한화시그니처여성보험",
-      "angle": "SERP의 ‘여성암·임신·출산’ 반복에서 벗어나 공식 화면 대조로 전개",
-      "sections": [
-        "가입 목적과 기간 정하기",
-        "임신·출산 중심으로 보장 고르기",
         "보험료 계산 전 정할 조건",
         "가입 전 보장하지 않는 경우"
       ],
@@ -221,17 +1057,6 @@
       "source": "monthly_serp"
     },
     {
-      "fingerprint": "c570185f0a24d16280b9",
-      "product_key": "holeinone",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "홀인원보험: 1일홀인원보험 선택 기준과 주의사항",
-      "target_query": "1일홀인원보험",
-      "angle": "subject_first",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
       "fingerprint": "c4fe677c200624dba6e6",
       "product_key": "overseaslong",
       "planning_month": "2026-10",
@@ -246,28 +1071,6 @@
         "보장하지 않는 경우"
       ],
       "source": "monthly_serp"
-    },
-    {
-      "fingerprint": "c24fb669c5a90d5d1625",
-      "product_key": "dntl",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "치아보험 가입 전 확인할 조건",
-      "target_query": "치아보험",
-      "angle": "situation_first",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
-      "fingerprint": "bc4b3db2aaad415e0128",
-      "product_key": "chronic",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "유병자보험: 고혈압진단비 선택 기준과 주의사항",
-      "target_query": "고혈압진단비",
-      "angle": "subject_first",
-      "sections": [],
-      "source": "search_demand"
     },
     {
       "fingerprint": "b9e8edb3f70df731898e",
@@ -286,28 +1089,6 @@
       "source": "monthly_serp"
     },
     {
-      "fingerprint": "b9e5cc3680a2475129fc",
-      "product_key": "woman",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "여성건강보험: 한화여성보험 선택 기준과 주의사항",
-      "target_query": "한화여성보험",
-      "angle": "subject_first",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
-      "fingerprint": "b9a318fd4be525fda8ca",
-      "product_key": "overseaslong",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "호주워홀보험 비교할 때 놓치기 쉬운 조건",
-      "target_query": "호주워홀보험",
-      "angle": "scope_limited",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
       "fingerprint": "b963b7b64005183a2504",
       "product_key": "holeinone",
       "planning_month": "2026-10",
@@ -324,17 +1105,6 @@
       "source": "monthly_serp"
     },
     {
-      "fingerprint": "b45ac3defc6a820bc4ef",
-      "product_key": "event",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "행사보험: 재난배상책임보험 선택 기준과 주의사항",
-      "target_query": "재난배상책임보험",
-      "angle": "subject_first",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
       "fingerprint": "abf14c9e62890d39fe99",
       "product_key": "hrmf",
       "planning_month": "2026-10",
@@ -349,39 +1119,6 @@
         "보장하지 않는 경우"
       ],
       "source": "monthly_serp"
-    },
-    {
-      "fingerprint": "a9b03f76adeff4a2f650",
-      "product_key": "hrmf",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "화재보험 가입 전 확인할 조건",
-      "target_query": "화재보험",
-      "angle": "situation_first",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
-      "fingerprint": "a9a4e15c64f8ac68c0a7",
-      "product_key": "holeinone",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "홀인원보험 가입 전 확인할 조건",
-      "target_query": "홀인원보험",
-      "angle": "situation_first",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
-      "fingerprint": "a667b5093681d9be9b8f",
-      "product_key": "dntl",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "실속보장치아보험 비교할 때 놓치기 쉬운 조건",
-      "target_query": "실속보장치아보험",
-      "angle": "scope_limited",
-      "sections": [],
-      "source": "search_demand"
     },
     {
       "fingerprint": "a49cfb086b1193ebc25a",
@@ -416,17 +1153,6 @@
       "source": "monthly_serp"
     },
     {
-      "fingerprint": "a083764c734000fd7b93",
-      "product_key": "chronic",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "유병자보험 가입 전 확인할 조건",
-      "target_query": "유병자보험",
-      "angle": "situation_first",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
       "fingerprint": "9d8b8d41f9e23c1c136d",
       "product_key": "dntl",
       "planning_month": "2026-10",
@@ -443,38 +1169,6 @@
       "source": "monthly_serp"
     },
     {
-      "fingerprint": "93a685a7d6d8d4926dcd",
-      "product_key": "overseas",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "항공 지연·수하물 지연, 보장 기준 차이 정리",
-      "target_query": "해외여행보험",
-      "angle": "SERP의 ‘여행자보험·할인’ 반복에서 벗어나 항목 간 비교로 전개",
-      "sections": [
-        "항공 지연·수하물 지연은 어떻게 다른가요",
-        "항공 지연 보장이 적용되는 경우",
-        "수하물 지연 보장이 적용되는 경우",
-        "보장하지 않는 경우"
-      ],
-      "source": "monthly_serp"
-    },
-    {
-      "fingerprint": "8d42ac3191ea9b92cd98",
-      "product_key": "dntl",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "스케일링·크라운, 보장 기준 차이 정리",
-      "target_query": "치아보험",
-      "angle": "SERP의 ‘보철·임플란트’ 반복에서 벗어나 항목 간 비교로 전개",
-      "sections": [
-        "스케일링·크라운은 어떻게 다른가요",
-        "스케일링 보장이 적용되는 경우",
-        "크라운 보장이 적용되는 경우",
-        "보장하지 않는 경우"
-      ],
-      "source": "monthly_serp"
-    },
-    {
       "fingerprint": "87e6b774d2f244b6ff7e",
       "product_key": "event",
       "planning_month": "2026-10",
@@ -485,33 +1179,6 @@
       "sections": [
         "가입 목적과 기간 정하기",
         "공연행사·체육행사 중 필요한 보장 고르기",
-        "보험료 계산 전 정할 조건",
-        "가입 전 보장하지 않는 경우"
-      ],
-      "source": "monthly_serp"
-    },
-    {
-      "fingerprint": "855c05f822a8cf65fe52",
-      "product_key": "driver",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "운전자보험비교사이트 비교할 때 놓치기 쉬운 조건",
-      "target_query": "운전자보험비교사이트",
-      "angle": "scope_limited",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
-      "fingerprint": "82bfb170f6546df7b41e",
-      "product_key": "overseas",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "해외여행보험 가입 전 알아둘 세 가지",
-      "target_query": "해외여행보험 항공 지연",
-      "angle": "SERP의 ‘여행자보험·할인’ 반복에서 벗어나 공식 화면 대조로 전개",
-      "sections": [
-        "가입 목적과 기간 정하기",
-        "항공 지연 중심으로 보장 고르기",
         "보험료 계산 전 정할 조건",
         "가입 전 보장하지 않는 경우"
       ],
@@ -534,44 +1201,6 @@
       "source": "monthly_serp"
     },
     {
-      "fingerprint": "789683c4a8893e38c70b",
-      "product_key": "overseas",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "해외여행보험: 해외여행자보험 선택 기준과 주의사항",
-      "target_query": "해외여행자보험",
-      "angle": "subject_first",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
-      "fingerprint": "76fffd7b571c328c8766",
-      "product_key": "driver",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "운전자보험 벌금·변호사선임 보장 알아보기",
-      "target_query": "운전자보험",
-      "angle": "SERP의 ‘가입 과정·보험료 계산’ 반복에서 벗어나 약관 탐색으로 전개",
-      "sections": [
-        "벌금·변호사선임 보장의 뜻",
-        "보장이 적용되는 경우",
-        "보장하지 않는 경우",
-        "청구할 때 필요한 서류"
-      ],
-      "source": "monthly_serp"
-    },
-    {
-      "fingerprint": "6fe6a914fe02ab865cb4",
-      "product_key": "overseaslong",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "유학생보험: 가입 전 선택 기준과 주의사항",
-      "target_query": "유학생보험",
-      "angle": "subject_first",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
       "fingerprint": "6eb1426e9980253ead8b",
       "product_key": "dntl",
       "planning_month": "2026-10",
@@ -586,28 +1215,6 @@
         "청구할 때 필요한 서류"
       ],
       "source": "monthly_serp"
-    },
-    {
-      "fingerprint": "6aa1165909873206859f",
-      "product_key": "golf",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "홀인원보험 가입 전 확인할 조건",
-      "target_query": "홀인원보험",
-      "angle": "situation_first",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
-      "fingerprint": "66001aa9f1c5f8e55402",
-      "product_key": "overseas",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "일본여행자보험 비교할 때 놓치기 쉬운 조건",
-      "target_query": "일본여행자보험",
-      "angle": "scope_limited",
-      "sections": [],
-      "source": "search_demand"
     },
     {
       "fingerprint": "5f0a75678499ad340273",
@@ -685,44 +1292,6 @@
       "source": "monthly_serp"
     },
     {
-      "fingerprint": "48a36591a5d47832dc3b",
-      "product_key": "hrmf",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "주택화재보험 임시거주비 보장 알아보기",
-      "target_query": "주택화재보험",
-      "angle": "SERP의 ‘누수 피해·주택화재보험 필요성’ 반복에서 벗어나 약관 탐색으로 전개",
-      "sections": [
-        "임시거주비 보장의 뜻",
-        "보장이 적용되는 경우",
-        "보장하지 않는 경우",
-        "청구할 때 필요한 서류"
-      ],
-      "source": "monthly_serp"
-    },
-    {
-      "fingerprint": "441d847014f6f49f76ca",
-      "product_key": "driver",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "운전자보험 가입 전 확인할 조건",
-      "target_query": "운전자보험",
-      "angle": "situation_first",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
-      "fingerprint": "437d1aa0a6accb142869",
-      "product_key": "hrmf",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "아파트화재보험 비교할 때 놓치기 쉬운 조건",
-      "target_query": "아파트화재보험",
-      "angle": "scope_limited",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
       "fingerprint": "384f75faf582e9824dae",
       "product_key": "birth",
       "planning_month": "2026-10",
@@ -750,17 +1319,6 @@
       "source": "monthly_serp"
     },
     {
-      "fingerprint": "32757cebf94619235394",
-      "product_key": "birth",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "태아보험 가입 전 확인할 조건",
-      "target_query": "태아보험",
-      "angle": "situation_first",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
       "fingerprint": "2e10123923510f7357fb",
       "product_key": "woman",
       "planning_month": "2026-10",
@@ -777,22 +1335,6 @@
       "source": "monthly_serp"
     },
     {
-      "fingerprint": "2cfd637b138031ef141f",
-      "product_key": "overseas",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "해외여행보험 휴대품 손해 보장 알아보기",
-      "target_query": "해외여행보험",
-      "angle": "SERP의 ‘여행자보험·할인’ 반복에서 벗어나 약관 탐색으로 전개",
-      "sections": [
-        "휴대품 손해 보장의 뜻",
-        "보장이 적용되는 경우",
-        "보장하지 않는 경우",
-        "청구할 때 필요한 서류"
-      ],
-      "source": "monthly_serp"
-    },
-    {
       "fingerprint": "25cd3e5fdd681ec9102b",
       "product_key": "golf",
       "planning_month": "2026-10",
@@ -805,22 +1347,6 @@
         "필드 홀인원 보장이 적용되는 경우",
         "스크린 홀인원 보장이 적용되는 경우",
         "보장하지 않는 경우"
-      ],
-      "source": "monthly_serp"
-    },
-    {
-      "fingerprint": "23304c845ea81568222a",
-      "product_key": "holeinone",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "홀인원보험 동반 플레이어 보장 알아보기",
-      "target_query": "홀인원보험",
-      "angle": "SERP의 ‘홀인원 축하비용·선물하기’ 반복에서 벗어나 약관 탐색으로 전개",
-      "sections": [
-        "동반 플레이어 보장의 뜻",
-        "보장이 적용되는 경우",
-        "보장하지 않는 경우",
-        "청구할 때 필요한 서류"
       ],
       "source": "monthly_serp"
     },
@@ -852,28 +1378,6 @@
       "source": "search_demand"
     },
     {
-      "fingerprint": "1f02d8301da271a5d358",
-      "product_key": "holeinone",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "일일홀인원보험 비교할 때 놓치기 쉬운 조건",
-      "target_query": "일일홀인원보험",
-      "angle": "scope_limited",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
-      "fingerprint": "1aa5d54efa334f6fe353",
-      "product_key": "overseas",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "여행자보험 가입 전 확인할 조건",
-      "target_query": "여행자보험",
-      "angle": "situation_first",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
       "fingerprint": "10ce85e7e77f643cf141",
       "product_key": "golf",
       "planning_month": "2026-10",
@@ -890,93 +1394,6 @@
       "source": "monthly_serp"
     },
     {
-      "fingerprint": "109f4039604ff12ff464",
-      "product_key": "driver",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "운전자보험: 교통사고합의금 선택 기준과 주의사항",
-      "target_query": "교통사고합의금",
-      "angle": "subject_first",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
-      "fingerprint": "0df6e90943dba342cd98",
-      "product_key": "dntl",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "치아보험: 스케일링비용 선택 기준과 주의사항",
-      "target_query": "스케일링비용",
-      "angle": "subject_first",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
-      "fingerprint": "0cf90cdf3f54dde1cc53",
-      "product_key": "overseaslong",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "유학생보험 가입 전 알아둘 세 가지",
-      "target_query": "유학생보험",
-      "angle": "SERP의 ‘유학생보험·해외 치료비’ 반복에서 벗어나 공식 화면 대조로 전개",
-      "sections": [
-        "가입 목적과 기간 정하기",
-        "체류 목적 중심으로 보장 고르기",
-        "보험료 계산 전 정할 조건",
-        "가입 전 보장하지 않는 경우"
-      ],
-      "source": "monthly_serp"
-    },
-    {
-      "fingerprint": "0b283974f23c1e1632ae",
-      "product_key": "golf",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "골프보험 가입 전 알아둘 세 가지",
-      "target_query": "골프보험",
-      "angle": "SERP의 ‘홀인원 비용·스크린 골프’ 반복에서 벗어나 공식 화면 대조로 전개",
-      "sections": [
-        "가입 목적과 기간 정하기",
-        "필드 홀인원 중심으로 보장 고르기",
-        "보험료 계산 전 정할 조건",
-        "가입 전 보장하지 않는 경우"
-      ],
-      "source": "monthly_serp"
-    },
-    {
-      "fingerprint": "0abde8ec7ec42fb0f362",
-      "product_key": "cncr",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "암보험비갱신형 비교할 때 놓치기 쉬운 조건",
-      "target_query": "암보험비갱신형",
-      "angle": "scope_limited",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
-      "fingerprint": "04593807aa7db11db5f2",
-      "product_key": "overseaslong",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "해외장기체류보험 가입 전 확인할 조건",
-      "target_query": "해외장기체류보험",
-      "angle": "situation_first",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
-      "fingerprint": "014df2d59d0d148106d1",
-      "product_key": "chronic",
-      "planning_month": "2026-10",
-      "asof": "2026-10-04",
-      "title": "고혈압보험 비교할 때 놓치기 쉬운 조건",
-      "target_query": "고혈압보험",
-      "angle": "scope_limited",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
       "fingerprint": "f037c19903c935974099",
       "product_key": "birth",
       "planning_month": "2026-10",
@@ -988,38 +1405,6 @@
         "선천이상이 필요한 상황",
         "선천이상 보장이 적용되는 경우",
         "가입 전 알아둘 조건",
-        "보장하지 않는 경우"
-      ],
-      "source": "monthly_serp"
-    },
-    {
-      "fingerprint": "ee8612571c3c91672fc0",
-      "product_key": "woman",
-      "planning_month": "2026-10",
-      "asof": "2026-09-30",
-      "title": "임신·출산·여성 질환, 보장 기준 차이 정리",
-      "target_query": "여성건강보험 임신·출산",
-      "angle": "SERP의 ‘여성암·임신·출산’ 반복에서 벗어나 항목 간 비교로 전개",
-      "sections": [
-        "임신·출산·여성 질환은 어떻게 다른가요",
-        "임신·출산 보장이 적용되는 경우",
-        "여성 질환 보장이 적용되는 경우",
-        "보장하지 않는 경우"
-      ],
-      "source": "monthly_serp"
-    },
-    {
-      "fingerprint": "e9556b1be2fd20c89ec0",
-      "product_key": "holeinone",
-      "planning_month": "2026-10",
-      "asof": "2026-09-30",
-      "title": "홀인원 비용·본인, 보장 기준 차이 정리",
-      "target_query": "홀인원보험",
-      "angle": "SERP의 ‘홀인원 축하비용·선물하기’ 반복에서 벗어나 항목 간 비교로 전개",
-      "sections": [
-        "홀인원 비용·본인은 어떻게 다른가요",
-        "홀인원 비용 보장이 적용되는 경우",
-        "본인 보장이 적용되는 경우",
         "보장하지 않는 경우"
       ],
       "source": "monthly_serp"
@@ -1073,22 +1458,6 @@
       "source": "monthly_serp"
     },
     {
-      "fingerprint": "bfcc5e76e0eee0832d7b",
-      "product_key": "woman",
-      "planning_month": "2026-10",
-      "asof": "2026-09-30",
-      "title": "여성건강보험 여성암 보장 알아보기",
-      "target_query": "한화시그니처여성보험",
-      "angle": "SERP의 ‘여성암·임신·출산’ 반복에서 벗어나 약관 탐색으로 전개",
-      "sections": [
-        "여성암 보장의 뜻",
-        "보장이 적용되는 경우",
-        "보장하지 않는 경우",
-        "청구할 때 필요한 서류"
-      ],
-      "source": "monthly_serp"
-    },
-    {
       "fingerprint": "b9f647062715b8beef9c",
       "product_key": "event",
       "planning_month": "2026-10",
@@ -1101,70 +1470,6 @@
         "공연행사 보장이 적용되는 경우",
         "가입 전 알아둘 조건",
         "보장하지 않는 경우"
-      ],
-      "source": "monthly_serp"
-    },
-    {
-      "fingerprint": "af6a23503fc1c31efdfe",
-      "product_key": "driver",
-      "planning_month": "2026-10",
-      "asof": "2026-09-30",
-      "title": "비용 항목·벌금, 보장 기준 차이 정리",
-      "target_query": "운전자보험",
-      "angle": "SERP의 ‘가입 과정·보험료 계산’ 반복에서 벗어나 항목 간 비교로 전개",
-      "sections": [
-        "비용 항목·벌금은 어떻게 다른가요",
-        "비용 항목 보장이 적용되는 경우",
-        "벌금 보장이 적용되는 경우",
-        "보장하지 않는 경우"
-      ],
-      "source": "monthly_serp"
-    },
-    {
-      "fingerprint": "aa5622121d431d1a61c1",
-      "product_key": "hrmf",
-      "planning_month": "2026-10",
-      "asof": "2026-09-30",
-      "title": "주택화재보험 가입 전 알아둘 세 가지",
-      "target_query": "주택화재보험 누수·풍수재",
-      "angle": "SERP의 ‘누수 피해·주택화재보험 필요성’ 반복에서 벗어나 공식 화면 대조로 전개",
-      "sections": [
-        "가입 목적과 기간 정하기",
-        "누수·풍수재 중심으로 보장 고르기",
-        "보험료 계산 전 정할 조건",
-        "가입 전 보장하지 않는 경우"
-      ],
-      "source": "monthly_serp"
-    },
-    {
-      "fingerprint": "a4c8dcb92a3a7a4b7a82",
-      "product_key": "hrmf",
-      "planning_month": "2026-10",
-      "asof": "2026-09-30",
-      "title": "누수·풍수재·누수, 보장 기준 차이 정리",
-      "target_query": "주택화재보험",
-      "angle": "SERP의 ‘누수 피해·주택화재보험 필요성’ 반복에서 벗어나 항목 간 비교로 전개",
-      "sections": [
-        "누수·풍수재·누수은 어떻게 다른가요",
-        "누수·풍수재 보장이 적용되는 경우",
-        "누수 보장이 적용되는 경우",
-        "보장하지 않는 경우"
-      ],
-      "source": "monthly_serp"
-    },
-    {
-      "fingerprint": "a17b4654861b546785e2",
-      "product_key": "golf",
-      "planning_month": "2026-10",
-      "asof": "2026-09-30",
-      "title": "골프보험 골프 배상책임 보장 알아보기",
-      "target_query": "골프보험 골프 배상책임",
-      "angle": "SERP의 ‘홀인원 비용·스크린 골프’ 반복에서 벗어나 약관 탐색으로 전개",
-      "sections": [
-        "골프 배상책임 보장의 뜻",
-        "보장이 적용되는 경우",
-        "보장하지 않는 경우",
-        "청구할 때 필요한 서류"
       ],
       "source": "monthly_serp"
     },
@@ -1201,38 +1506,6 @@
       "source": "monthly_serp"
     },
     {
-      "fingerprint": "8a7853bb7c6d0ed9971d",
-      "product_key": "overseaslong",
-      "planning_month": "2026-10",
-      "asof": "2026-09-30",
-      "title": "유학생보험 구조송환 보장 알아보기",
-      "target_query": "유학생보험 구조송환",
-      "angle": "SERP의 ‘유학생보험·해외 치료비’ 반복에서 벗어나 약관 탐색으로 전개",
-      "sections": [
-        "구조송환 보장의 뜻",
-        "보장이 적용되는 경우",
-        "보장하지 않는 경우",
-        "청구할 때 필요한 서류"
-      ],
-      "source": "monthly_serp"
-    },
-    {
-      "fingerprint": "55cd9048b44f79024081",
-      "product_key": "golf",
-      "planning_month": "2026-10",
-      "asof": "2026-09-30",
-      "title": "필드 홀인원·스크린 홀인원, 보장 기준 차이 정리",
-      "target_query": "골프보험",
-      "angle": "SERP의 ‘홀인원 비용·스크린 골프’ 반복에서 벗어나 항목 간 비교로 전개",
-      "sections": [
-        "필드 홀인원·스크린 홀인원은 어떻게 다른가요",
-        "필드 홀인원 보장이 적용되는 경우",
-        "스크린 홀인원 보장이 적용되는 경우",
-        "보장하지 않는 경우"
-      ],
-      "source": "monthly_serp"
-    },
-    {
       "fingerprint": "3c8235f73a4bc081fc10",
       "product_key": "chronic",
       "planning_month": "2026-10",
@@ -1245,38 +1518,6 @@
         "고혈압·간편심사 중 필요한 보장 고르기",
         "보험료 계산 전 정할 조건",
         "가입 전 보장하지 않는 경우"
-      ],
-      "source": "monthly_serp"
-    },
-    {
-      "fingerprint": "3c036b9d67e8a4022bea",
-      "product_key": "driver",
-      "planning_month": "2026-10",
-      "asof": "2026-09-30",
-      "title": "운전자보험 가입 전 알아둘 세 가지",
-      "target_query": "운전자보험 비용 항목",
-      "angle": "SERP의 ‘가입 과정·보험료 계산’ 반복에서 벗어나 공식 화면 대조로 전개",
-      "sections": [
-        "가입 목적과 기간 정하기",
-        "비용 항목 중심으로 보장 고르기",
-        "보험료 계산 전 정할 조건",
-        "가입 전 보장하지 않는 경우"
-      ],
-      "source": "monthly_serp"
-    },
-    {
-      "fingerprint": "2693021d8e2bef3da206",
-      "product_key": "overseaslong",
-      "planning_month": "2026-10",
-      "asof": "2026-09-30",
-      "title": "체류 목적·해외 치료비, 보장 기준 차이 정리",
-      "target_query": "유학생보험",
-      "angle": "SERP의 ‘유학생보험·해외 치료비’ 반복에서 벗어나 항목 간 비교로 전개",
-      "sections": [
-        "체류 목적·해외 치료비은 어떻게 다른가요",
-        "체류 목적 보장이 적용되는 경우",
-        "해외 치료비 보장이 적용되는 경우",
-        "보장하지 않는 경우"
       ],
       "source": "monthly_serp"
     },
@@ -1937,17 +2178,6 @@
       "source": "monthly_serp"
     },
     {
-      "fingerprint": "d68a8565233ddf9b767e",
-      "product_key": "woman",
-      "planning_month": "2026-09",
-      "asof": "2026-09-27",
-      "title": "여성보험 비교할 때 놓치기 쉬운 조건",
-      "target_query": "여성보험",
-      "angle": "scope_limited",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
       "fingerprint": "cf5ba2a125f1e7927056",
       "product_key": "driver",
       "planning_month": "2026-09",
@@ -2013,17 +2243,6 @@
       "source": "search_demand"
     },
     {
-      "fingerprint": "a03bc46e449b2266b7bc",
-      "product_key": "birth",
-      "planning_month": "2026-09",
-      "asof": "2026-09-27",
-      "title": "태아보험사은품 비교할 때 놓치기 쉬운 조건",
-      "target_query": "태아보험사은품",
-      "angle": "scope_limited",
-      "sections": [],
-      "source": "search_demand"
-    },
-    {
       "fingerprint": "855094531b81321f4044",
       "product_key": "event",
       "planning_month": "2026-09",
@@ -2081,17 +2300,6 @@
         "행사 전에 확인할 조건"
       ],
       "source": "monthly_serp"
-    },
-    {
-      "fingerprint": "4cc0660dd75e8b3f84dd",
-      "product_key": "birth",
-      "planning_month": "2026-09",
-      "asof": "2026-09-27",
-      "title": "태아보험: 태아보험순위비교 선택 기준과 주의사항",
-      "target_query": "태아보험순위비교",
-      "angle": "subject_first",
-      "sections": [],
-      "source": "search_demand"
     },
     {
       "fingerprint": "4039235f79f016b6838d",
