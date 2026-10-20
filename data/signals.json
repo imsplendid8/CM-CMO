@@ -1,16 +1,14 @@
 {
-  "asof": "2026-10-18",
+  "asof": "2026-10-20",
   "source": "data.go.kr",
   "weather": {
-    "active": [
-      "강풍",
-      "호우"
-    ]
+    "active": [],
+    "error": "<urlopen error timed out>"
   },
   "travel": {
-    "overseas_ratio": 77.3,
-    "period": "2026-10-17",
-    "avg": 80.2,
+    "overseas_ratio": 77.6,
+    "period": "2026-10-19",
+    "avg": 79.9,
     "peak": 100,
     "basis": "최근 7일 평균 vs 90일"
   },
@@ -55,68 +53,20 @@
     ]
   },
   "newreg": {
-    "count": 1010781,
+    "count": null,
     "period": "202608",
-    "mom": -0.03,
-    "net_change": -286,
-    "kind": "stock",
-    "trend": {},
+    "mom": null,
     "source": "stat.molit",
-    "basis": "자동차등록대수현황 시도별(누적·시도 합계)",
-    "status_code": "INFO-000",
-    "message": "정상 처리되었습니다.",
+    "error": "<urlopen error timed out>",
     "request": {
       "protocol": "stat.molit",
       "form_id": "5498",
       "style_num": "2",
       "start_dt": "202603",
       "end_dt": "202608"
-    },
-    "series": [
-      {
-        "period": "202603",
-        "count": 1010087
-      },
-      {
-        "period": "202604",
-        "count": 1010132
-      },
-      {
-        "period": "202605",
-        "count": 1009593
-      },
-      {
-        "period": "202606",
-        "count": 1010546
-      },
-      {
-        "period": "202607",
-        "count": 1011067
-      },
-      {
-        "period": "202608",
-        "count": 1010781
-      }
-    ]
+    }
   },
   "triggers": {
-    "hrmf": {
-      "level": "high",
-      "note": "기상특보 발효 → 호우·태풍 → 누수·침수·풍수재 담보 수요",
-      "kinds": [
-        "호우"
-      ]
-    },
-    "driver": {
-      "level": "high",
-      "note": "대설·강풍·한파 특보 → 빙판·사고 위험·운전자보험 관심↑ / 자동차 등록대수(누적, 202608) 1,010,781대 · 전월 대비 -286대 → 운전자보험 잠재 수요 참고",
-      "kinds": [
-        "강풍"
-      ],
-      "basis": [
-        "자동차등록대수현황 시도별(누적·시도 합계)"
-      ]
-    },
     "overseas": {
       "level": "high",
       "note": "출국 국민 242만 명(202607 · 3개월 +11.3%) → 해외여행보험 출국수요 대응",
