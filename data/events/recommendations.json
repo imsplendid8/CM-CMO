@@ -1,11 +1,11 @@
 {
- "asof": "2026-10-19",
+ "asof": "2026-10-20",
  "counts": {
-  "events": 43,
-  "recommendations": 28,
+  "events": 41,
+  "recommendations": 24,
   "suppressed_cooldown": 0,
-  "unclassified": 238,
-  "transitions": 0
+  "unclassified": 118,
+  "transitions": 3
  },
  "events": [
   {
@@ -72,7 +72,7 @@
    "id": "firework-festival-2026",
    "name": "가을 불꽃축제·지역행사",
    "type": "지역행사",
-   "state": "cooling",
+   "state": "ended",
    "products": [
     "event"
    ],
@@ -430,30 +430,28 @@
     "chronic"
    ],
    "source": "seasonal"
-  },
-  {
-   "id": "weather-강풍",
-   "name": "강풍 특보",
-   "type": "기상",
-   "state": "active",
-   "products": [
-    "driver"
-   ],
-   "source": "signal"
-  },
-  {
-   "id": "weather-호우",
-   "name": "호우 특보",
-   "type": "기상",
-   "state": "active",
-   "products": [
-    "hrmf",
-    "driver"
-   ],
-   "source": "signal"
   }
  ],
- "transitions": [],
+ "transitions": [
+  {
+   "event_id": "firework-festival-2026",
+   "from": "cooling",
+   "to": "ended",
+   "kind": "ended"
+  },
+  {
+   "event_id": "weather-강풍",
+   "from": "active",
+   "to": "lifted",
+   "kind": "lifted"
+  },
+  {
+   "event_id": "weather-호우",
+   "from": "active",
+   "to": "lifted",
+   "kind": "lifted"
+  }
+ ],
  "recommendations": [
   {
    "fingerprint": "5a5904d647c51df0",
@@ -479,7 +477,7 @@
     "clips",
     "volume"
    ],
-   "valid_from": "2026-10-19",
+   "valid_from": "2026-10-20",
    "valid_to": "2026-11-22",
    "avoid_phrases": [
     "끔찍",
@@ -552,7 +550,7 @@
     "clips",
     "volume"
    ],
-   "valid_from": "2026-10-19",
+   "valid_from": "2026-10-20",
    "valid_to": "2026-11-22",
    "avoid_phrases": [
     "끔찍",
@@ -602,10 +600,82 @@
    "confidence": 0.8
   },
   {
+   "fingerprint": "32722979be9c871f",
+   "fact": [
+    "시즌: 연말 건강검진 (11월, 12월)",
+    "뉴스: '여성보험, 틈새시장 넘어 새 성장동력으로…생·손보사 특화 경쟁 확대' (lcnews.co.kr 2026-10-20)",
+    "검색량: '임신' 14,170회/월"
+   ],
+   "product": "woman",
+   "product_name": "여성건강보험",
+   "event_id": "season-woman-11-12",
+   "event_name": "연말 건강검진",
+   "event_type": "계절",
+   "event_state": "emerging",
+   "transition": null,
+   "title": "연말 건강검진 여성건강보험 미리 대비",
+   "description": "연말 건강검진 시기에 필요한 여성암진단비 보장(특약)을 미리 챙겨 두면 든든해요",
+   "content_subhead": "연말 건강검진 대비 여성암진단비 보장",
+   "purpose": "대비 안내",
+   "reason": "연말 건강검진(emerging) 시기의 여성건강보험 선제/대비 소구",
+   "data_used": [
+    "clips",
+    "seasonal",
+    "volume"
+   ],
+   "valid_from": "2026-10-20",
+   "valid_to": "2026-11-19",
+   "avoid_phrases": [
+    "끔찍",
+    "참사",
+    "비극",
+    "당신도",
+    "큰일",
+    "불행",
+    "공포",
+    "눈앞의 위험",
+    "지금 안 하면",
+    "이 사고 보고도",
+    "더 늦기 전에 가입",
+    "안 하면 후회",
+    "지금 가입 안 하면",
+    "서둘러 가입",
+    "꼭 가입",
+    "즉시 가입",
+    "사고 전에 가입",
+    "피해 전에 가입",
+    "안 들면 손해",
+    "누구나 가입",
+    "무조건",
+    "반드시",
+    "전액",
+    "100%",
+    "완벽 보장",
+    "모두 보장",
+    "가입 보장",
+    "보험금 확정",
+    "보상 확정",
+    "보장 확정",
+    "즉시 보상",
+    "최대 보장",
+    "최저가",
+    "업계 최고",
+    "가장 저렴",
+    "제일 싸",
+    "필수 보험"
+   ],
+   "channels": [
+    "검색광고"
+   ],
+   "product_basis": "미확인",
+   "review_status": "심의 검토 전 · 운영 후보",
+   "confidence": 0.8
+  },
+  {
    "fingerprint": "c73a909a468acb24",
    "fact": [
     "예정: 설 연휴 2027-02-15~2027-02-17",
-    "뉴스: '[건강 칼럼] 치과를 고를 때, 진단 설명과 치료 계획부터 살펴봐야' (idsn.co.kr 2026-10-19)",
+    "뉴스: '[보험사 AX 레이스②] 보험사·설계사·가입자 모두 '윈윈'…AI 오류 ' (news2day.co.kr 2026-10-20)",
     "검색량: '운전자보험' 34,790회/월"
    ],
    "product": "driver",
@@ -678,7 +748,7 @@
    "fingerprint": "9ce6917e3f38dffc",
    "fact": [
     "예정: 설 연휴 2027-02-15~2027-02-17",
-    "뉴스: '[건강 칼럼] 치과를 고를 때, 진단 설명과 치료 계획부터 살펴봐야' (idsn.co.kr 2026-10-19)",
+    "뉴스: '[보험사 AX 레이스②] 보험사·설계사·가입자 모두 '윈윈'…AI 오류 ' (news2day.co.kr 2026-10-20)",
     "검색량: '여행자보험' 157,900회/월"
    ],
    "product": "overseas",
@@ -769,7 +839,7 @@
     "calendar",
     "volume"
    ],
-   "valid_from": "2026-10-19",
+   "valid_from": "2026-10-20",
    "valid_to": "2026-12-27",
    "avoid_phrases": [
     "끔찍",
@@ -840,7 +910,7 @@
     "calendar",
     "volume"
    ],
-   "valid_from": "2026-10-19",
+   "valid_from": "2026-10-20",
    "valid_to": "2026-12-27",
    "avoid_phrases": [
     "끔찍",
@@ -911,7 +981,7 @@
     "calendar",
     "volume"
    ],
-   "valid_from": "2026-10-19",
+   "valid_from": "2026-10-20",
    "valid_to": "2026-12-27",
    "avoid_phrases": [
     "끔찍",
@@ -982,7 +1052,7 @@
     "calendar",
     "volume"
    ],
-   "valid_from": "2026-10-19",
+   "valid_from": "2026-10-20",
    "valid_to": "2026-12-27",
    "avoid_phrases": [
     "끔찍",
@@ -1053,8 +1123,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-10-19",
-   "valid_to": "2026-11-18",
+   "valid_from": "2026-10-20",
+   "valid_to": "2026-11-19",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1123,8 +1193,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-10-19",
-   "valid_to": "2026-11-18",
+   "valid_from": "2026-10-20",
+   "valid_to": "2026-11-19",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1193,8 +1263,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-10-19",
-   "valid_to": "2026-11-18",
+   "valid_from": "2026-10-20",
+   "valid_to": "2026-11-19",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1263,78 +1333,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-10-19",
-   "valid_to": "2026-11-18",
-   "avoid_phrases": [
-    "끔찍",
-    "참사",
-    "비극",
-    "당신도",
-    "큰일",
-    "불행",
-    "공포",
-    "눈앞의 위험",
-    "지금 안 하면",
-    "이 사고 보고도",
-    "더 늦기 전에 가입",
-    "안 하면 후회",
-    "지금 가입 안 하면",
-    "서둘러 가입",
-    "꼭 가입",
-    "즉시 가입",
-    "사고 전에 가입",
-    "피해 전에 가입",
-    "안 들면 손해",
-    "누구나 가입",
-    "무조건",
-    "반드시",
-    "전액",
-    "100%",
-    "완벽 보장",
-    "모두 보장",
-    "가입 보장",
-    "보험금 확정",
-    "보상 확정",
-    "보장 확정",
-    "즉시 보상",
-    "최대 보장",
-    "최저가",
-    "업계 최고",
-    "가장 저렴",
-    "제일 싸",
-    "필수 보험"
-   ],
-   "channels": [
-    "검색광고"
-   ],
-   "product_basis": "미확인",
-   "review_status": "심의 검토 전 · 운영 후보",
-   "confidence": 0.5
-  },
-  {
-   "fingerprint": "32722979be9c871f",
-   "fact": [
-    "시즌: 연말 건강검진 (11월, 12월)",
-    "검색량: '임신' 14,170회/월"
-   ],
-   "product": "woman",
-   "product_name": "여성건강보험",
-   "event_id": "season-woman-11-12",
-   "event_name": "연말 건강검진",
-   "event_type": "계절",
-   "event_state": "emerging",
-   "transition": null,
-   "title": "연말 건강검진 여성건강보험 미리 대비",
-   "description": "연말 건강검진 시기에 필요한 여성암진단비 보장(특약)을 미리 챙겨 두면 든든해요",
-   "content_subhead": "연말 건강검진 대비 여성암진단비 보장",
-   "purpose": "대비 안내",
-   "reason": "연말 건강검진(emerging) 시기의 여성건강보험 선제/대비 소구",
-   "data_used": [
-    "seasonal",
-    "volume"
-   ],
-   "valid_from": "2026-10-19",
-   "valid_to": "2026-11-18",
+   "valid_from": "2026-10-20",
+   "valid_to": "2026-11-19",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1403,8 +1403,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-10-19",
-   "valid_to": "2026-11-18",
+   "valid_from": "2026-10-20",
+   "valid_to": "2026-11-19",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1473,8 +1473,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-10-19",
-   "valid_to": "2026-11-18",
+   "valid_from": "2026-10-20",
+   "valid_to": "2026-11-19",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1543,8 +1543,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-10-19",
-   "valid_to": "2026-11-18",
+   "valid_from": "2026-10-20",
+   "valid_to": "2026-11-19",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1613,8 +1613,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-10-19",
-   "valid_to": "2026-11-18",
+   "valid_from": "2026-10-20",
+   "valid_to": "2026-11-19",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1660,286 +1660,6 @@
    "product_basis": "미확인",
    "review_status": "심의 검토 전 · 운영 후보",
    "confidence": 0.5
-  },
-  {
-   "fingerprint": "ecbad2b88c88c3ce",
-   "fact": [
-    "기상특보: 강풍 특보 발효(기준 2026-10-18)",
-    "검색량: '운전자보험' 34,790회/월"
-   ],
-   "product": "driver",
-   "product_name": "운전자보험",
-   "event_id": "weather-강풍",
-   "event_name": "강풍 특보",
-   "event_type": "기상",
-   "event_state": "active",
-   "transition": null,
-   "title": "강풍 특보 운전자보험 지금 대비",
-   "description": "강풍 특보 시기에 필요한 벌금 보장(특약)을 운전자보험으로 미리 챙겨 두세요",
-   "content_subhead": "강풍 특보 대비 벌금 보장",
-   "purpose": "시즌 대응",
-   "reason": "강풍 특보(active) 시기의 운전자보험 선제/대비 소구",
-   "data_used": [
-    "signals",
-    "volume"
-   ],
-   "valid_from": "2026-10-19",
-   "valid_to": "2026-11-18",
-   "avoid_phrases": [
-    "끔찍",
-    "참사",
-    "비극",
-    "당신도",
-    "큰일",
-    "불행",
-    "공포",
-    "눈앞의 위험",
-    "지금 안 하면",
-    "이 사고 보고도",
-    "더 늦기 전에 가입",
-    "안 하면 후회",
-    "지금 가입 안 하면",
-    "서둘러 가입",
-    "꼭 가입",
-    "즉시 가입",
-    "사고 전에 가입",
-    "피해 전에 가입",
-    "안 들면 손해",
-    "누구나 가입",
-    "무조건",
-    "반드시",
-    "전액",
-    "100%",
-    "완벽 보장",
-    "모두 보장",
-    "가입 보장",
-    "보험금 확정",
-    "보상 확정",
-    "보장 확정",
-    "즉시 보상",
-    "최대 보장",
-    "최저가",
-    "업계 최고",
-    "가장 저렴",
-    "제일 싸",
-    "필수 보험"
-   ],
-   "channels": [
-    "검색광고"
-   ],
-   "product_basis": "미확인",
-   "review_status": "심의 검토 전 · 운영 후보",
-   "confidence": 0.5
-  },
-  {
-   "fingerprint": "ce83fb745c901277",
-   "fact": [
-    "기상특보: 호우 특보 발효(기준 2026-10-18)",
-    "검색량: '화재' 59,970회/월"
-   ],
-   "product": "hrmf",
-   "product_name": "주택화재보험",
-   "event_id": "weather-호우",
-   "event_name": "호우 특보",
-   "event_type": "기상",
-   "event_state": "active",
-   "transition": null,
-   "title": "호우 특보 주택화재보험 지금 대비",
-   "description": "호우 특보 시기에 필요한 화재손해 보장(특약)을 주택화재보험으로 챙겨 두세요",
-   "content_subhead": "호우 특보 대비 화재손해 보장",
-   "purpose": "시즌 대응",
-   "reason": "호우 특보(active) 시기의 주택화재보험 선제/대비 소구",
-   "data_used": [
-    "signals",
-    "volume"
-   ],
-   "valid_from": "2026-10-19",
-   "valid_to": "2026-11-18",
-   "avoid_phrases": [
-    "끔찍",
-    "참사",
-    "비극",
-    "당신도",
-    "큰일",
-    "불행",
-    "공포",
-    "눈앞의 위험",
-    "지금 안 하면",
-    "이 사고 보고도",
-    "더 늦기 전에 가입",
-    "안 하면 후회",
-    "지금 가입 안 하면",
-    "서둘러 가입",
-    "꼭 가입",
-    "즉시 가입",
-    "사고 전에 가입",
-    "피해 전에 가입",
-    "안 들면 손해",
-    "누구나 가입",
-    "무조건",
-    "반드시",
-    "전액",
-    "100%",
-    "완벽 보장",
-    "모두 보장",
-    "가입 보장",
-    "보험금 확정",
-    "보상 확정",
-    "보장 확정",
-    "즉시 보상",
-    "최대 보장",
-    "최저가",
-    "업계 최고",
-    "가장 저렴",
-    "제일 싸",
-    "필수 보험"
-   ],
-   "channels": [
-    "검색광고"
-   ],
-   "product_basis": "미확인",
-   "review_status": "심의 검토 전 · 운영 후보",
-   "confidence": 0.5
-  },
-  {
-   "fingerprint": "6aba8faa3b338556",
-   "fact": [
-    "기상특보: 호우 특보 발효(기준 2026-10-18)",
-    "검색량: '운전자보험' 34,790회/월"
-   ],
-   "product": "driver",
-   "product_name": "운전자보험",
-   "event_id": "weather-호우",
-   "event_name": "호우 특보",
-   "event_type": "기상",
-   "event_state": "active",
-   "transition": null,
-   "title": "호우 특보 운전자보험 지금 대비",
-   "description": "호우 특보 시기에 필요한 벌금 보장(특약)을 운전자보험으로 미리 챙겨 두세요",
-   "content_subhead": "호우 특보 대비 벌금 보장",
-   "purpose": "시즌 대응",
-   "reason": "호우 특보(active) 시기의 운전자보험 선제/대비 소구",
-   "data_used": [
-    "signals",
-    "volume"
-   ],
-   "valid_from": "2026-10-19",
-   "valid_to": "2026-11-18",
-   "avoid_phrases": [
-    "끔찍",
-    "참사",
-    "비극",
-    "당신도",
-    "큰일",
-    "불행",
-    "공포",
-    "눈앞의 위험",
-    "지금 안 하면",
-    "이 사고 보고도",
-    "더 늦기 전에 가입",
-    "안 하면 후회",
-    "지금 가입 안 하면",
-    "서둘러 가입",
-    "꼭 가입",
-    "즉시 가입",
-    "사고 전에 가입",
-    "피해 전에 가입",
-    "안 들면 손해",
-    "누구나 가입",
-    "무조건",
-    "반드시",
-    "전액",
-    "100%",
-    "완벽 보장",
-    "모두 보장",
-    "가입 보장",
-    "보험금 확정",
-    "보상 확정",
-    "보장 확정",
-    "즉시 보상",
-    "최대 보장",
-    "최저가",
-    "업계 최고",
-    "가장 저렴",
-    "제일 싸",
-    "필수 보험"
-   ],
-   "channels": [
-    "검색광고"
-   ],
-   "product_basis": "미확인",
-   "review_status": "심의 검토 전 · 운영 후보",
-   "confidence": 0.5
-  },
-  {
-   "fingerprint": "468426232b469f01",
-   "fact": [
-    "예정: 가을 불꽃축제·지역행사 2026-10-03~2026-10-12",
-    "검색량: '여행자보험' 157,900회/월"
-   ],
-   "product": "event",
-   "product_name": "행사배상책임보험",
-   "event_id": "firework-festival-2026",
-   "event_name": "가을 불꽃축제·지역행사",
-   "event_type": "지역행사",
-   "event_state": "cooling",
-   "transition": null,
-   "title": "가을 불꽃축제·지역행사 행사배상책임보험 끝까지 대비",
-   "description": "가을 불꽃축제·지역행사 시기에 필요한 행사배상책임 보장(특약)을 챙겨 두세요",
-   "content_subhead": "가을 불꽃축제·지역행사 대비 행사배상책임 보장",
-   "purpose": "마무리 안내",
-   "reason": "가을 불꽃축제·지역행사(cooling) 시기의 행사배상책임보험 선제/대비 소구",
-   "data_used": [
-    "calendar",
-    "volume"
-   ],
-   "valid_from": "2026-10-19",
-   "valid_to": "2026-10-19",
-   "avoid_phrases": [
-    "끔찍",
-    "참사",
-    "비극",
-    "당신도",
-    "큰일",
-    "불행",
-    "공포",
-    "눈앞의 위험",
-    "지금 안 하면",
-    "이 사고 보고도",
-    "더 늦기 전에 가입",
-    "안 하면 후회",
-    "지금 가입 안 하면",
-    "서둘러 가입",
-    "꼭 가입",
-    "즉시 가입",
-    "사고 전에 가입",
-    "피해 전에 가입",
-    "안 들면 손해",
-    "누구나 가입",
-    "무조건",
-    "반드시",
-    "전액",
-    "100%",
-    "완벽 보장",
-    "모두 보장",
-    "가입 보장",
-    "보험금 확정",
-    "보상 확정",
-    "보장 확정",
-    "즉시 보상",
-    "최대 보장",
-    "최저가",
-    "업계 최고",
-    "가장 저렴",
-    "제일 싸",
-    "필수 보험"
-   ],
-   "channels": [
-    "검색광고"
-   ],
-   "product_basis": "미확인",
-   "review_status": "심의 검토 전 · 운영 후보",
-   "confidence": 0.4
   },
   {
    "fingerprint": "afc3f689dc3edbd0",
@@ -2105,8 +1825,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-10-19",
-   "valid_to": "2026-11-18",
+   "valid_from": "2026-10-20",
+   "valid_to": "2026-11-19",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2175,8 +1895,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-10-19",
-   "valid_to": "2026-11-18",
+   "valid_from": "2026-10-20",
+   "valid_to": "2026-11-19",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2245,8 +1965,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-10-19",
-   "valid_to": "2026-11-18",
+   "valid_from": "2026-10-20",
+   "valid_to": "2026-11-19",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2315,8 +2035,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-10-19",
-   "valid_to": "2026-11-18",
+   "valid_from": "2026-10-20",
+   "valid_to": "2026-11-19",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2385,8 +2105,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-10-19",
-   "valid_to": "2026-11-18",
+   "valid_from": "2026-10-20",
+   "valid_to": "2026-11-19",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2436,66 +2156,101 @@
  ],
  "unclassified": [
   {
-   "title": "[시니어그룹] 8개월 걸린 치아 치료 후... 남편이 데려간 곳",
-   "src": "ohmynews.com",
+   "title": "[이하진의 보험을 워딩하다] 콩 스프 이론(Bean Soup Theory)",
+   "src": "insnews.co.kr",
    "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/047/0002532703?sid=103",
+   "url": "https://www.insnews.co.kr/news/articleView.html?idxno=93279",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "씹을 때마다 시릿, 결국 47살에 받은 경고",
-   "src": "ohmynews.com",
+   "title": "[메타리치 MRC의 보험 라운지] 7년 만에 열어본 CI보험 증권",
+   "src": "insnews.co.kr",
    "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/047/0002532595?sid=103",
+   "url": "https://www.insnews.co.kr/news/articleView.html?idxno=93172",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "부분틀니 사용해도 남은 치아는 따로 닦아야",
-   "src": "vegannews.co.kr",
+   "title": "NH농협은행·신한은행·롯데카드 등 금융권, 맞춤형 생활 혜택부터 AI 인프라·주택 보장·육아 특화 협력까지' 활기'",
+   "src": "dailypop.kr",
    "date": "2026-10-17",
-   "url": "https://www.vegannews.co.kr/news/article.html?no=393481",
+   "url": "http://www.dailypop.kr/news/articleView.html?idxno=103480",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "“혼자 닦을래” 해도…보호자가 마무리해야 할 때",
-   "src": "vegannews.co.kr",
-   "date": "2026-10-17",
-   "url": "https://www.vegannews.co.kr/news/article.html?no=393443",
+   "title": "[금융픽] 우리금융, 청주에 두 번째 '굿윌스토어' 오픈 外",
+   "src": "newsian.co.kr",
+   "date": "2026-10-16",
+   "url": "http://www.newsian.co.kr/news/articleView.html?idxno=97199",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "송파노인복지관, 스탠다드치과와 어르신 구강 건강 특별강좌 진행",
-   "src": "gukjenews.com",
-   "date": "2026-10-17",
-   "url": "https://www.gukjenews.com/news/articleView.html?idxno=3724259",
+   "title": "[은행가] KB국민은행, 기업 대상 DB 퇴직연금 실무교육 등",
+   "src": "smarttoday.co.kr",
+   "date": "2026-10-16",
+   "url": "https://www.smarttoday.co.kr/ko-kr/articles/112816",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "[패트롤]칠곡군-대구북구-대구남구-영남이공대-영남대-영남대병원",
+   "title": "[Who Is ?] 이문화 삼성화재 대표이사 사장",
+   "src": "businesspost.co.kr",
+   "date": "2026-10-20",
+   "url": "https://www.businesspost.co.kr/BP?command=article_view&num=449248",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "한화손보, 산모 맞춤형 보험 선봬…\"임신부터 출산 후 회복까지 보장\"",
+   "src": "apnews.kr",
+   "date": "2026-10-20",
+   "url": "https://www.apnews.kr/news/articleView.html?idxno=3052262",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "가입률 94%인데 손보사 보험료 수입은 줄었다…업계 \"공제조합·보험료 인하 정책 복합 영향\"",
+   "src": "greened.kr",
+   "date": "2026-10-19",
+   "url": "https://www.greened.kr/news/articleView.html?idxno=352460",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[보험 뉴스브리핑] 롯데손보 '댕댕이랑 여행갈땐보험' 출시",
+   "src": "asiatime.co.kr",
+   "date": "2026-10-19",
+   "url": "https://www.asiatime.co.kr/article/20261019500426",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[보험사 풍향계] 한화손해보험, 임산부 위한 보험상품 선봬 外",
    "src": "ekn.kr",
-   "date": "2026-10-16",
-   "url": "https://www.ekn.kr/web/view.php?key=20261016021437423",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "원데이 레저보험 1000원에 1억 보장? 골절 진단비는 10만~30만원",
-   "src": "imaeil.com",
-   "date": "2026-10-16",
-   "url": "https://n.news.naver.com/mnews/article/088/0001034839?sid=101",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[KPGA] '제네시스 챔피언십' 22일 개막, KPGA 투어 선수 36명 출전",
-   "src": "newspim.com",
    "date": "2026-10-19",
-   "url": "https://www.newspim.com/news/view/20261019000124",
+   "url": "https://www.ekn.kr/web/view.php?key=20261019021058189",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "[명의가 사는 법]로봇 신장이식 수술 명의! 서울아산병원 신·췌장이식외과 신성 교수",
-   "src": "ikunkang.com",
+   "title": "한화손보, 임신·출산 위험 보장 '다이렉트 임산부보험' 출시",
+   "src": "finomy.com",
    "date": "2026-10-19",
-   "url": "https://www.ikunkang.com/news/articleView.html?idxno=51588",
+   "url": "http://www.finomy.com/news/articleView.html?idxno=263977",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "한화손보, '한화 다이렉트 임산부보험' 출시",
+   "src": "smarttimes.co.kr",
+   "date": "2026-10-19",
+   "url": "http://www.smarttimes.co.kr/news/articleView.html?idxno=49818",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[보험브리핑]KB라이프·한화손보·삼성화재·NH농협손보",
+   "src": "metroseoul.co.kr",
+   "date": "2026-10-19",
+   "url": "http://www.metroseoul.co.kr/article/20261019500437",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "임신부터 산후 회복까지…한화손해보험, '산모 맞춤형 보험' 출시",
+   "src": "joseilbo.com",
+   "date": "2026-10-19",
+   "url": "https://n.news.naver.com/mnews/article/123/0002392130?sid=101",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
@@ -2548,6 +2303,20 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "[KPGA] '제네시스 챔피언십' 22일 개막, KPGA 투어 선수 36명 출전",
+   "src": "newspim.com",
+   "date": "2026-10-19",
+   "url": "https://www.newspim.com/news/view/20261019000124",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[명의가 사는 법]로봇 신장이식 수술 명의! 서울아산병원 신·췌장이식외과 신성 교수",
+   "src": "ikunkang.com",
+   "date": "2026-10-19",
+   "url": "https://www.ikunkang.com/news/articleView.html?idxno=51588",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "미리 낸 세금 돌려받은 인적용역 사업자 95%가 ‘저소득’",
    "src": "khan.co.kr",
    "date": "2026-10-18",
@@ -2555,94 +2324,66 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "[mhn포토] 한아름-전영민, 집중해서 살핀다",
-   "src": "mhnse.com",
-   "date": "2026-10-18",
-   "url": "https://m.sports.naver.com/golf/article/445/0000479144",
+   "title": "잇몸병도 전신건강 위협…\"고혈압·당뇨처럼 평생 관리\"",
+   "src": "medipana.com",
+   "date": "2026-10-20",
+   "url": "https://www.medipana.com/news/articleView.html?idxno=419625",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "[mhn포토] 한아름, 칩 인을 노린다",
-   "src": "mhnse.com",
-   "date": "2026-10-18",
-   "url": "https://m.sports.naver.com/golf/article/445/0000479146",
+   "title": "[칼럼] 이해할 수 없는 임상재평가 의약품 낙인찍기",
+   "src": "apsk.co.kr",
+   "date": "2026-10-20",
+   "url": "https://www.apsk.co.kr/news/articleView.html?idxno=540798",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "NH농협은행 경북본부, 파크골프대회서 농업인 보이스피싱 예방 홍보",
-   "src": "hidomin.com",
-   "date": "2026-10-18",
-   "url": "https://www.hidomin.com/news/articleView.html?idxno=725366",
+   "title": "자기 치아 살리려는 신경치료, 건보도 더 응원해줘야",
+   "src": "kmib.co.kr",
+   "date": "2026-10-20",
+   "url": "https://n.news.naver.com/mnews/article/005/0001879656?sid=103",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "농업인 자산 지킨다…NH농협은행 경북본부, 보이스피싱 예방 홍보",
-   "src": "kyongbuk.co.kr",
-   "date": "2026-10-18",
-   "url": "https://www.kyongbuk.co.kr/news/articleView.html?idxno=4087612",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "정찬민, 3년 만에 '와이어 투 와이어' 우승...KPGA투어 더 채리티 클래식, 1타 차 '진땀승'",
-   "src": "g-enews.com",
-   "date": "2026-10-18",
-   "url": "https://www.g-enews.com/view.php?ud=202610181306142768daecd3dad5_1",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "KPGA 투어 2026시즌 우승자 명단…정찬민, 더채리티클래식 우승",
-   "src": "golfhankook.hankooki.com",
-   "date": "2026-10-18",
-   "url": "https://golfhankook.hankooki.com/news/articleView.html?idxno=20022291",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[단독]세금 떼였다 전액 환급받은 영세사업자 95.9%는 연 2000만원",
-   "src": "khan.co.kr",
-   "date": "2026-10-18",
-   "url": "https://n.news.naver.com/mnews/article/032/0003476942?sid=101",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[이하진의 보험을 워딩하다] 콩 스프 이론(Bean Soup Theory)",
-   "src": "insnews.co.kr",
+   "title": "[시니어그룹] 8개월 걸린 치아 치료 후... 남편이 데려간 곳",
+   "src": "ohmynews.com",
    "date": "2026-10-19",
-   "url": "https://www.insnews.co.kr/news/articleView.html?idxno=93279",
+   "url": "https://n.news.naver.com/mnews/article/047/0002532703?sid=103",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "[메타리치 MRC의 보험 라운지] 7년 만에 열어본 CI보험 증권",
-   "src": "insnews.co.kr",
+   "title": "씹을 때마다 시릿, 결국 47살에 받은 경고",
+   "src": "ohmynews.com",
    "date": "2026-10-19",
-   "url": "https://www.insnews.co.kr/news/articleView.html?idxno=93172",
+   "url": "https://n.news.naver.com/mnews/article/047/0002532595?sid=103",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "NH농협은행·신한은행·롯데카드 등 금융권, 맞춤형 생활 혜택부터 AI 인프라·주택 보장·육아 특화 협력까지' 활기'",
-   "src": "dailypop.kr",
+   "title": "부분틀니 사용해도 남은 치아는 따로 닦아야",
+   "src": "vegannews.co.kr",
    "date": "2026-10-17",
-   "url": "http://www.dailypop.kr/news/articleView.html?idxno=103480",
+   "url": "https://www.vegannews.co.kr/news/article.html?no=393481",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "[금융픽] 우리금융, 청주에 두 번째 '굿윌스토어' 오픈 外",
-   "src": "newsian.co.kr",
-   "date": "2026-10-16",
-   "url": "http://www.newsian.co.kr/news/articleView.html?idxno=97199",
+   "title": "“혼자 닦을래” 해도…보호자가 마무리해야 할 때",
+   "src": "vegannews.co.kr",
+   "date": "2026-10-17",
+   "url": "https://www.vegannews.co.kr/news/article.html?no=393443",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "[은행가] KB국민은행, 기업 대상 DB 퇴직연금 실무교육 등",
-   "src": "smarttoday.co.kr",
-   "date": "2026-10-16",
-   "url": "https://www.smarttoday.co.kr/ko-kr/articles/112816",
+   "title": "송파노인복지관, 스탠다드치과와 어르신 구강 건강 특별강좌 진행",
+   "src": "gukjenews.com",
+   "date": "2026-10-17",
+   "url": "https://www.gukjenews.com/news/articleView.html?idxno=3724259",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "[금융지주 풍향계] 우리금융, ‘굿윌스토어 밀알청주흥덕점’ 개점 外",
-   "src": "ekn.kr",
-   "date": "2026-10-16",
-   "url": "https://www.ekn.kr/web/view.php?key=20261016022307341",
+   "title": "구리소방서, 가을철 산행 안전 위한 '119안심콜 서비스' 홍보",
+   "src": "m-i.kr",
+   "date": "2026-10-20",
+   "url": "https://www.m-i.kr/news/articleView.html?idxno=2007747",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
@@ -2681,269 +2422,66 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "\"진짜 차가 날았다\"…테슬라 로드스터 등장에 전세계 '패러디 봇물'",
-   "src": "gpkorea.com",
-   "date": "2026-10-19",
-   "url": "https://www.gpkorea.com/news/articleView.html?idxno=147693",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "진정한 필수의료와 지역의료는 1차 의료다",
-   "src": "medicaltimes.com",
-   "date": "2026-10-19",
-   "url": "https://www.medicaltimes.com/Main/News/NewsView.html?ID=1171233&ref=naverpc",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "홍원학 삼성생명 대표, 보험 밖으로 넓힌 성장판⋯첫 연임 도전 [보험 CEO 연임 레이스 ①]",
-   "src": "etoday.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.etoday.co.kr/news/view/2636286",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "\"사고에서 미래 위험까지\" 보험사가 연구소를 두는 이유",
-   "src": "insnews.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.insnews.co.kr/news/articleView.html?idxno=93322",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "치솟는 금리에 투자손익 ‘주춤’… 3분기 보험사 실적 ‘먹구름’",
-   "src": "dt.co.kr",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/029/0003053957?sid=101",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[관점3문3답]현대해상 안전운전 특약 가입 47% 늘었다…사고율·손해율로 이어질까",
-   "src": "nspna.com",
-   "date": "2026-10-19",
-   "url": "https://www.nspna.com/news/?mode=view&newsid=832221",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "“캐피탈, 차 할부에 머물러선 안 돼…미래산업 투자로 넓혀야”",
-   "src": "g-enews.com",
-   "date": "2026-10-19",
-   "url": "https://www.g-enews.com/view.php?ud=202610191726396123e30fcb1ba8_1",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[현장에서]\"車금융 넘어 생산금융으로\"…카드학회, 캐피탈 규제 개선 한목소리",
-   "src": "metroseoul.co.kr",
-   "date": "2026-10-19",
-   "url": "http://www.metroseoul.co.kr/article/20261019500577",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "생산적 금융의 '빈틈'…캐피탈 새로운 역할 부상",
-   "src": "pointdaily.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.pointdaily.co.kr/news/articleView.html?idxno=322824",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "신용카드학회, '2026 캐피탈 미래비전 포럼' 개최",
-   "src": "srtimes.kr",
-   "date": "2026-10-19",
-   "url": "http://www.srtimes.kr/news/articleView.html?idxno=215215",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "투자손익 감소에 발목 잡힌 손보사···하반기 실적 둔화 전망",
-   "src": "smartbizn.com",
-   "date": "2026-10-19",
-   "url": "https://www.smartbizn.com/news/articleView.html?idxno=156883",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "자동차 할부 넘어 AI·로봇까지⋯캐피탈사, 미래산업 금융 확대 모색",
-   "src": "inews24.com",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/031/0001067291?sid=101",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "캐피탈업계 \"혁신기업 돕는 생산적 금융 나서야\"",
-   "src": "straightnews.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.straightnews.co.kr/news/articleView.html?idxno=313448",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "건강보험 재정, 올해 영업적자 약 7조 전망 : AI로 '가짜 보험 증거'까지 뚝딱, 새로운 위협이 떠오른다",
-   "src": "huffingtonpost.kr",
-   "date": "2026-10-19",
-   "url": "https://www.huffingtonpost.kr/article/261336",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "박용갑 의원 \"본인부담상한제·실손보험 사후정산 도입해야\"",
-   "src": "ccdn.co.kr",
-   "date": "2026-10-18",
-   "url": "https://www.ccdn.co.kr/news/articleView.html?idxno=1105341",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "한화손보 3분기 순익 27.8% 증가 전망…투자손익 적자",
-   "src": "vegannews.co.kr",
-   "date": "2026-10-18",
-   "url": "https://www.vegannews.co.kr/news/article.html?no=393981",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "AI가 보험상품도 비교·추천…보험업계 새로운 경쟁 변수로 부상",
-   "src": "financialpost.co.kr",
-   "date": "2026-10-18",
-   "url": "https://www.financialpost.co.kr/news/articleView.html?idxno=280917",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "한화손보, '다이렉트 임산부보험' 출시...여성 웰니스 보장",
-   "src": "pointdaily.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.pointdaily.co.kr/news/articleView.html?idxno=322690",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "한화손보, ‘엄마 건강’ 챙기는 다이렉트 임산부보험 출시",
-   "src": "biz.heraldcorp.com",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/016/0002710976?sid=101",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "한화손보, 임신·출산 질환 보장하는 '다이렉트 임산부보험' 출시",
-   "src": "ftoday.co.kr",
-   "date": "2026-10-19",
-   "url": "http://www.ftoday.co.kr/news/articleView.html?idxno=367530",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "한화손보, 임신·출산부터 산후 회복까지 보장하는 '임산부보험' 출시",
+   "title": "청주차량등록사업소, 상반기 의무보험 미가입 210건 송치",
    "src": "news1.kr",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/421/0009235040?sid=101",
+   "date": "2026-10-20",
+   "url": "https://n.news.naver.com/mnews/article/421/0009237820?sid=102",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "\"임신부터 출산 후 회복까지\"…한화손보, 임산부 전용 보험 출시",
-   "src": "ajunews.com",
-   "date": "2026-10-19",
-   "url": "https://www.ajunews.com/view/20261019082548507",
+   "title": "청주시 특사팀, 무보험 차량 운행 410건 검찰 송치",
+   "src": "inews365.com",
+   "date": "2026-10-20",
+   "url": "https://www.inews365.com/news/article.html?no=939890",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "한화손보, 임신부터 출산 후 회복까지 보장하는 ‘다이렉트 임산부보험’ 출시",
-   "src": "ziksir.com",
-   "date": "2026-10-19",
-   "url": "https://www.ziksir.com/news/articleView.html?idxno=149785",
+   "title": "2조원 반도체 상생금융 가동…하나은행, SK하이닉스 추천사에 7500억원",
+   "src": "newsquest.co.kr",
+   "date": "2026-10-20",
+   "url": "https://www.newsquest.co.kr/news/articleView.html?idxno=302990",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "\"태아 대신 산모 건강에 집중\"…한화손보, '다이렉트 임산부보험' 선봬",
-   "src": "thefairnews.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.thefairnews.co.kr/news/articleView.html?idxno=91063",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[보험 뉴스브리핑] 롯데손보 '댕댕이랑 여행갈땐보험' 출시",
-   "src": "asiatime.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.asiatime.co.kr/article/20261019500426",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[보험사 풍향계] 한화손해보험, 임산부 위한 보험상품 선봬 外",
-   "src": "ekn.kr",
-   "date": "2026-10-19",
-   "url": "https://www.ekn.kr/web/view.php?key=20261019021058189",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "한화손보, 임신·출산 위험 보장 '다이렉트 임산부보험' 출시",
-   "src": "finomy.com",
-   "date": "2026-10-19",
-   "url": "http://www.finomy.com/news/articleView.html?idxno=263977",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "한화손보, '한화 다이렉트 임산부보험' 출시",
-   "src": "smarttimes.co.kr",
-   "date": "2026-10-19",
-   "url": "http://www.smarttimes.co.kr/news/articleView.html?idxno=49818",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[보험브리핑]KB라이프·한화손보·삼성화재·NH농협손보",
-   "src": "metroseoul.co.kr",
-   "date": "2026-10-19",
-   "url": "http://www.metroseoul.co.kr/article/20261019500437",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "임신부터 산후 회복까지…한화손해보험, '산모 맞춤형 보험' 출시",
-   "src": "joseilbo.com",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/123/0002392130?sid=101",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "한화손해보험, 임산부 전용보험 출시…한 번 납입으로 최대 3년 보장",
+   "title": "청주시, 상반기 무보험 운행 210건 검찰 송치…범칙금 2510만원",
    "src": "newspim.com",
-   "date": "2026-10-19",
-   "url": "https://www.newspim.com/news/view/20261019000980",
+   "date": "2026-10-20",
+   "url": "https://www.newspim.com/news/view/20261020000213",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "한화손해보험, 임신·출산 넘어 산후 정신건강까지…산모 전용보험 출시",
-   "src": "e-science.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.e-science.co.kr/news/articleView.html?idxno=137629",
+   "title": "손보사, 3분기 자동차·실손 '본업' 회복 기대↑",
+   "src": "topdaily.kr",
+   "date": "2026-10-20",
+   "url": "https://www.topdaily.kr/articles/112406",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "한화손보, 임신부터 산후까지 보장한 '임산부보험' 선봬",
-   "src": "whitepaper.co.kr",
-   "date": "2026-10-19",
-   "url": "http://www.whitepaper.co.kr/news/articleView.html?idxno=267905",
+   "title": "[Invest]신한금융, 롯데손보 관리 가능? 돈도 사람도 시간도 없다",
+   "src": "investchosun.com",
+   "date": "2026-10-20",
+   "url": "https://www.investchosun.com/site/data/html_dir/2026/10/19/2026101980185.html",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "[주목! e금융] 신한라이프·롯데손보·한화손보·업비트·빗썸...\"맞춤형 보장부터 금융교육까지\"",
-   "src": "kdfnews.com",
-   "date": "2026-10-19",
-   "url": "http://www.kdfnews.com/news/articleView.html?idxno=189517",
+   "title": "구본욱 KB손보 대표, 영업·AI 성과 불구 수익성 뒷걸음질…2연임 성공할까?",
+   "src": "consumernews.co.kr",
+   "date": "2026-10-20",
+   "url": "http://www.consumernews.co.kr/news/articleView.html?idxno=766084",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "가입은 쉬워졌는데…디지털 앞세운 보험사들은 왜 합칠까",
-   "src": "kukinews.com",
-   "date": "2026-10-16",
-   "url": "https://www.kukinews.com/article/view/kuk202610150171",
+   "title": "교통사고 내니 변호사 연결해준 보험사… 좋아진걸까? '글쎄'",
+   "src": "it.chosun.com",
+   "date": "2026-10-20",
+   "url": "https://it.chosun.com/news/articleView.html?idxno=2023092172301",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "[보험 뉴스브리핑] 현대해상 '월별 안전운전점수 할인 특약' 특허 취득",
-   "src": "asiatime.co.kr",
-   "date": "2026-10-15",
-   "url": "https://www.asiatime.co.kr/article/20261015500356",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[더밸류 브리핑] 오늘의 보험 소식…현대해상·KB손해보험·한화손해보험",
-   "src": "thevaluenews.co.kr",
-   "date": "2026-10-15",
-   "url": "http://www.thevaluenews.co.kr/news/view.php?idx=202386",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "해외 유학생 13만명 돌파···송금·보험 서비스 확대",
-   "src": "hansbiz.co.kr",
-   "date": "2026-10-19",
-   "url": "http://www.hansbiz.co.kr/news/articleView.html?idxno=874002",
+   "title": "유학·취업부터 한 달 살기까지···센트비 등 해외생활 편의 지원 나서",
+   "src": "sports.khan.co.kr",
+   "date": "2026-10-20",
+   "url": "https://n.news.naver.com/mnews/article/144/0001145090?sid=103",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
@@ -2954,17 +2492,17 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "센트비 등 해외생활 지원 서비스 확대...유학생·취업자 숙소부터 송금까지 지원",
-   "src": "thebigdata.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.thebigdata.co.kr/view.php?ud=2026101917221048269aeda69934_23",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
    "title": "한국인 유학생 13만 명 넘어...해외 장기체류 맞춤 서비스 수요 확대",
    "src": "beyondpost.co.kr",
    "date": "2026-10-19",
    "url": "http://www.beyondpost.co.kr/view.php?ud=2026101917235217199aeda69934_30",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "센트비 등 해외생활 지원 서비스 확대...유학생·취업자 숙소부터 송금까지 지원",
+   "src": "thebigdata.co.kr",
+   "date": "2026-10-19",
+   "url": "https://www.thebigdata.co.kr/view.php?ud=2026101917221048269aeda69934_23",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
@@ -2989,66 +2527,17 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "해외 유학생 13만명 돌파···송금·보험 서비스 확대",
+   "src": "hansbiz.co.kr",
+   "date": "2026-10-19",
+   "url": "http://www.hansbiz.co.kr/news/articleView.html?idxno=874002",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "[팩트로 본 외국인 보론④] 한국은 이미 ‘이민국가’인가...5%보다 중요한 것은?",
    "src": "eroun.net",
    "date": "2026-10-16",
    "url": "https://www.eroun.net/news/articleView.html?idxno=90489",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "한국에서 일하며 늙어가는 이주민",
-   "src": "slownews.kr",
-   "date": "2026-10-15",
-   "url": "https://slownews.kr/167994",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[팩트로 본 외국인 보론②] E-9 노동자와 AI 연구자를 같은 ‘외국인’으로 부를 것인가",
-   "src": "eroun.net",
-   "date": "2026-10-14",
-   "url": "https://www.eroun.net/news/articleView.html?idxno=90481",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[일문일답] 카카오뱅크 외국인 서비스 출시… “한국인 쓰는 그대로 외국인에게 적용”",
-   "src": "newscj.com",
-   "date": "2026-10-12",
-   "url": "https://www.newscj.com/news/articleView.html?idxno=3439534",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[현장] 카뱅, 외국인에 50여개 서비스 개방…자체 대출은 장기 과제",
-   "src": "4th.kr",
-   "date": "2026-10-12",
-   "url": "http://www.4th.kr/news/articleView.html?idxno=2119545",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "1개월 일하고 평생 연금? 논란에 가려진 어떤 이들의 삶 [소셜 코리아]",
-   "src": "ohmynews.com",
-   "date": "2026-10-08",
-   "url": "https://n.news.naver.com/mnews/article/047/0002531641?sid=102",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "KT Japan, 일본 장기체류자 대상 MVNO 출시",
-   "src": "fetv.co.kr",
-   "date": "2026-10-05",
-   "url": "https://www.fetv.co.kr/news/articleView.html?idxno=311251",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "중국자본 침공에 질식하는 제주? 진실은 무엇일까?",
-   "src": "jejusori.net",
-   "date": "2026-09-26",
-   "url": "https://www.jejusori.net/news/articleView.html?idxno=506849",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "7만 넘은 부산 외국인… 부산은행, 글로벌 생활금융 시대 열다",
-   "src": "seoul.co.kr",
-   "date": "2026-09-18",
-   "url": "https://n.news.naver.com/mnews/article/081/0003681446?sid=102",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
@@ -3066,7 +2555,7 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "\"연휴엔 뛰고, 치고\"…보험업계 '생활밀착형 상품'으로 러닝·골프족",
+   "title": "\"연휴엔 뛰고, 치고\"…보험업계 '생활밀착형 상품'으로 러닝·골프족 잡는다",
    "src": "news1.kr",
    "date": "2026-10-05",
    "url": "https://n.news.naver.com/mnews/article/421/0009209446?sid=101",
@@ -3101,6 +2590,20 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "한화손해보험, 임산부 전용보험 출시…한 번 납입으로 최대 3년 보장",
+   "src": "newspim.com",
+   "date": "2026-10-19",
+   "url": "https://www.newspim.com/news/view/20261019000980",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "한화손보, 임신부터 산후까지 보장한 '임산부보험' 선봬",
+   "src": "whitepaper.co.kr",
+   "date": "2026-10-19",
+   "url": "http://www.whitepaper.co.kr/news/articleView.html?idxno=267905",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "한화손보가 출산 후 산모 건강 챙긴다 : 스트레스·수면 검사 보장으로 '여성 웰니스 케어' 확대",
    "src": "huffingtonpost.kr",
    "date": "2026-10-19",
@@ -3115,7 +2618,7 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "[더밸류 브리핑] 오늘의 보험 소식…삼성화재·한화손해보험·롯데손해보험",
+   "title": "[더밸류 브리핑] 오늘의 보험 소식…삼성화재·한화손해보험",
    "src": "thevaluenews.co.kr",
    "date": "2026-10-19",
    "url": "http://www.thevaluenews.co.kr/news/view.php?idx=202446",
@@ -3126,132 +2629,6 @@
    "src": "4th.kr",
    "date": "2026-10-19",
    "url": "http://www.4th.kr/news/articleView.html?idxno=2119966",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "한화손보, '한화 다이렉트 임산부보험' 출시",
-   "src": "mt.co.kr",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/008/0005428168?sid=101",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "“보험 어디서 들까?” 물어보니…AI가 꼽은 ‘1등 금융사’는 어디",
-   "src": "mk.co.kr",
-   "date": "2026-10-17",
-   "url": "https://n.news.naver.com/mnews/article/009/0005749991?sid=101",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "이석기 교보증권 대표, '사람 살리는 금융' 릴레이 캠페인 동참 外",
-   "src": "rcast.co.kr",
-   "date": "2026-10-16",
-   "url": "https://www.rcast.co.kr/news/articleView.html?idxno=31835",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "생성형 AI가 추천하는 보험사 달랐다…어린이보험 현대해상·실손 삼성화재 1위",
-   "src": "megaeconomy.co.kr",
-   "date": "2026-10-16",
-   "url": "https://www.megaeconomy.co.kr/news/newsview.php?ncode=1065604801544096",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "4대 생성형 AI 보험 선호도 분석… 어린이 현대해상·실손 삼성화재 선두 - 퍼블릭뉴스통신(Public news-network for TTL)",
-   "src": "ttlnews.com",
-   "date": "2026-10-16",
-   "url": "http://www.ttlnews.com/news/articleView.html?idxno=3152568",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "에이아이빅스랩, 보험 AI 지수 발표",
-   "src": "hansbiz.co.kr",
-   "date": "2026-10-16",
-   "url": "http://www.hansbiz.co.kr/news/articleView.html?idxno=873414",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "테슬라 로드스터보다 먼저 날아간 '밈' [해시태그]",
-   "src": "etoday.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.etoday.co.kr/news/view/2637484",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "진옥동 신한금융의 손해보험 판 다시 짠다 : 성장 한계 부딪힌 신한EZ손보 디지털 전략에 롯데손보 영업 기반 더해 돌파",
-   "src": "huffingtonpost.kr",
-   "date": "2026-10-19",
-   "url": "https://www.huffingtonpost.kr/article/261339",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "삼성화재, 맞춤형 건강보험 ‘더 핏‘ 출시",
-   "src": "viva100.com",
-   "date": "2026-10-19",
-   "url": "https://www.viva100.com/article/20261019500221",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "탐정의 보험사기 탐지는 ‘반인륜적·조직적 사기’에 초점을 두는 ‘선택과 집중’ 바람직 [탐정학술칼럼 제40회]",
-   "src": "siminilbo.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.siminilbo.co.kr/news/newsview.php?ncode=1160267654655189",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[THE Biz&CEO] 순익 1조 넘어 미래이익까지… 김중현의 메리츠화재 '성장 공식'",
-   "src": "the-biz.co.kr",
-   "date": "2026-10-16",
-   "url": "http://www.the-biz.co.kr/news/articleView.html?idxno=729311",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "\"얼마면 되냐\" 수표 내밀더니…음주운전 의심 교통사고 내고 사라진",
-   "src": "newsis.com",
-   "date": "2026-10-16",
-   "url": "https://n.news.naver.com/mnews/article/003/0014257264?sid=102",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "현대해상, 안전운전 9개월 달성 시 보험료 5% 추가 할인 기술 특허 취득",
-   "src": "thefirstmedia.net",
-   "date": "2026-10-15",
-   "url": "http://www.thefirstmedia.net/news/articleView.html?idxno=210994",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "현대해상, 가입 후 안전운전 반영 기술 특허 취득",
-   "src": "press9.kr",
-   "date": "2026-10-15",
-   "url": "http://www.press9.kr/news/articleView.html?idxno=84334",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "현대해상, 가입 후 운전습관까지 분석…안전운전 데이터로 보험료 할인",
-   "src": "e-science.co.kr",
-   "date": "2026-10-15",
-   "url": "https://www.e-science.co.kr/news/articleView.html?idxno=137454",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "현대해상, '월별 안전운전점수 할인 특약' 특허 취득",
-   "src": "news.bbsi.co.kr",
-   "date": "2026-10-15",
-   "url": "https://news.bbsi.co.kr/news/articleView.html?idxno=4112581",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "현대해상, 안전운전 지속하면 보험료 5% 추가 할인…관련 기술 특허 취득",
-   "src": "ziksir.com",
-   "date": "2026-10-15",
-   "url": "https://www.ziksir.com/news/articleView.html?idxno=149559",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[한주간의 별자리 운세] 이번 주는 '확인 또 확인'…계약·투자는 서두르지 마세요",
-   "src": "theopiniontimes.news",
-   "date": "2026-10-19",
-   "url": "https://theopiniontimes.news/%ed%95%9c%ec%a3%bc%ea%b0%84%ec%9d%98-%eb%b3%84%ec%9e%90%eb%a6%ac-%ec%9a%b4%ec%84%b8-%ec%9d%b4%eb%b2%88-%ec%a3%bc%eb%8a%94-%ed%99%95%ec%9d%b8-%eb%98%90-%ed%99%95%ec%9d%b8%ea%b3%84/",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
@@ -3283,234 +2660,10 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "보험사 혁신도 AI 쏠림…새 보장·가입방식 개발은 뒷전",
-   "src": "ajunews.com",
-   "date": "2026-10-16",
-   "url": "https://www.ajunews.com/view/20261016144045980",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[더밸류 브리핑] 오늘의 신한금융 소식…신한은행·신한라이프·신한EZ손해보험",
-   "src": "thevaluenews.co.kr",
-   "date": "2026-10-16",
-   "url": "http://www.thevaluenews.co.kr/news/view.php?idx=202410",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "응급병상 정보 345만 건 연계 중단…심평원 전산복구 체계 허점 드러나",
-   "src": "sentv.co.kr",
-   "date": "2026-10-16",
-   "url": "https://www.sentv.co.kr/article/view/sentv202610160044",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[`26 국감-관세청] 짝퉁 마운자로에 환경호르몬 말랑이까지…불법 반입 판친다",
-   "src": "sejungilbo.com",
-   "date": "2026-10-15",
-   "url": "https://www.sejungilbo.com/news/articleView.html?idxno=60646",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "\"여행객 1인당 4만원 추가\"... 태국, 내·외국인 '출국세' 부과 추진",
-   "src": "insight.co.kr",
-   "date": "2026-10-15",
-   "url": "https://www.insight.co.kr/news/577852",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "“4인 가족 태국 가면 16만원 더”…35년 만에 출국세 올린다",
-   "src": "etnews.com",
-   "date": "2026-10-15",
-   "url": "https://n.news.naver.com/mnews/article/030/0003475330?sid=104",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "\"4인 가족 여행 가면 16만원 더 낼 판\"…35년 만에 출국세 부활 검토하는 태국",
-   "src": "view.asiae.co.kr",
-   "date": "2026-10-15",
-   "url": "https://n.news.naver.com/mnews/article/277/0005828712?sid=104",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "한화손보, 임신·출산 질환 보장하는 '한화 다이렉트 임산부보험' 출시",
-   "src": "cstimes.com",
+   "title": "[한주간의 별자리 운세] 이번 주는 '확인 또 확인'…계약·투자는 서두르지 마세요",
+   "src": "theopiniontimes.news",
    "date": "2026-10-19",
-   "url": "https://www.cstimes.com/news/articleView.html?idxno=724352",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[비만치료제의 역풍]① 49kg도 위고비·마운자로...젊은층 오남용 심각",
-   "src": "newspost.kr",
-   "date": "2026-10-19",
-   "url": "https://www.newspost.kr/news/articleView.html?idxno=226379",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "헬스캘린더 '세계 유방암의 날', 조용히 찾아오는 유방암…정기 검진 통한 조기 발견이 중요하다",
-   "src": "mkhealth.co.kr",
-   "date": "2026-10-19",
-   "url": "http://www.mkhealth.co.kr/news/articleView.html?idxno=80501",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[김성재 칼럼] 11월 중간선거는 MAGA와 포퓰리스트 운동 '운명의 시험대'",
-   "src": "womaneconomy.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.womaneconomy.co.kr/news/articleView.html?idxno=259869",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[포럼] 인구전략 핵심은 출산율 회복",
-   "src": "fnnews.com",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/014/0005591375?sid=110",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "온라인 스포츠 도박 합법화 후, 항우울제 처방 늘었다",
-   "src": "health.chosun.com",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/346/0000117547?sid=004",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "첫 4주 공급가 13만원···국산 비만약 '에페' 위고비 잡을까",
-   "src": "womaneconomy.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.womaneconomy.co.kr/news/articleView.html?idxno=259906",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[10월 19일 병원‧의료소식] 삼성서울병원·가천대 길병원·한양대병원·순천향대천안병원·강남세브란스병원·서울아산병원",
-   "src": "kmedinfo.co.kr",
-   "date": "2026-10-19",
-   "url": "http://www.kmedinfo.co.kr/news/articleView.html?idxno=98320",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[보험·카드24시] 신용카드학회, 캐피탈 미래비전 포럼 개최 外",
-   "src": "news.dealsitetv.com",
-   "date": "2026-10-19",
-   "url": "https://news.dealsitetv.com/articles/177170",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "‘수도권’ 중소병원도 생존 기로… 문 닫고 진료 기능 축소",
-   "src": "health.chosun.com",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/346/0000117541?sid=004",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "삼성화재, 건강보험 'THE FIT' 출시…간∙폐∙신장질환까지 보장 확대",
-   "src": "kdfnews.com",
-   "date": "2026-10-19",
-   "url": "http://www.kdfnews.com/news/articleView.html?idxno=189473",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "삼성화재, 건강상태·치료여정·생애주기 맞춤 건강보험 'THE FIT' 출시",
-   "src": "getnews.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.getnews.co.kr/news/articleView.html?idxno=883935",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "삼성화재, '마이핏' 확장한 종합 건강보험 'THE FIT' 출시",
-   "src": "ftoday.co.kr",
-   "date": "2026-10-19",
-   "url": "http://www.ftoday.co.kr/news/articleView.html?idxno=367536",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "삼성화재, 건강상태·생애주기 맞춤 건강보험 ‘THE FIT’ 출시",
-   "src": "biz.heraldcorp.com",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/016/0002710979?sid=101",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "삼성화재, 맞춤형 건강보험 '더 핏' 출시… 생애주기별 위험 보장",
-   "src": "newsdream.kr",
-   "date": "2026-10-19",
-   "url": "http://www.newsdream.kr/news/articleView.html?idxno=120199",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "삼성화재, 맞춤형 건강보험 ‘THE FIT’ 출시…치료부터 일상 회복까지 보장",
-   "src": "ziksir.com",
-   "date": "2026-10-19",
-   "url": "https://www.ziksir.com/news/articleView.html?idxno=149787",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "삼성화재, 고객 건강·생애주기 맞춤형 건강보험 'THE FIT' 출시",
-   "src": "view.asiae.co.kr",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/277/0005830046?sid=101",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "삼성화재, 건강보험 'THE FIT' 출시…간·폐·신장질환까지 보장 확대",
-   "src": "the-today.com",
-   "date": "2026-10-19",
-   "url": "https://www.the-today.com/news/articleView.html?idxno=91968",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "삼성화재, 맞춤형 건강보험 'THE FIT' 출시…간·폐·신장질환까지 보장 확대",
-   "src": "webeconomy.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.webeconomy.co.kr/news/articleView.html?idxno=2338599",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "생활밀착형 바우처 도입… 삼성화재 건강보험 강화",
-   "src": "fnnews.com",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/014/0005591360?sid=101",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[보험 NOW] 삼성화재·농협손보·KB라이프·현대해상·신한라이프",
-   "src": "wikileaks-kr.org",
-   "date": "2026-10-19",
-   "url": "https://www.wikileaks-kr.org/news/articleView.html?idxno=193433",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "삼성화재, 질병 보장 넓힌 'THE FIT' 출시",
-   "src": "sports.hankooki.com",
-   "date": "2026-10-19",
-   "url": "https://sports.hankooki.com/news/articleView.html?idxno=6941928",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "삼성화재 고객 맞춤형 건강보험 '더 핏' 출시, \"고객 건강·삶에",
-   "src": "businesspost.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.businesspost.co.kr/BP?command=article_view&num=449725",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "삼성생명, 美 장기채 급락에 '복잡한 속내'",
-   "src": "sisajournal-e.com",
-   "date": "2026-10-19",
-   "url": "https://www.sisajournal-e.com/news/articleView.html?idxno=424418",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "3분기 보험사 순익 전망…생보 10%대 감소, 손보 증가",
-   "src": "srtimes.kr",
-   "date": "2026-10-19",
-   "url": "http://www.srtimes.kr/news/articleView.html?idxno=215186",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "현대캐피탈, 2년 만의 컵대회서 OK저축은행 3-2 제압⋯장추안 18점",
-   "src": "etoday.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.etoday.co.kr/news/view/2637541",
+   "url": "https://theopiniontimes.news/%ed%95%9c%ec%a3%bc%ea%b0%84%ec%9d%98-%eb%b3%84%ec%9e%90%eb%a6%ac-%ec%9a%b4%ec%84%b8-%ec%9d%b4%eb%b2%88-%ec%a3%bc%eb%8a%94-%ed%99%95%ec%9d%b8-%eb%98%90-%ed%99%95%ec%9d%b8%ea%b3%84/",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
@@ -3577,213 +2730,136 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "\"아이와 함께 뛰며 건강과 성취감 쌓는다\"…현대해상, 가족 운동회 전개",
-   "src": "thefairnews.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.thefairnews.co.kr/news/articleView.html?idxno=91082",
+   "title": "[손보사 분석①] 순익 1조 넘었지만…메리츠화재, 보험이익 줄고 부실여신 비율 6.43%",
+   "src": "news.ifm.kr",
+   "date": "2026-10-20",
+   "url": "https://news.ifm.kr/news/articleView.html?idxno=482113",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "[포토] 현대해상, 부모와 아이가 함께 하는 '가족운동회'",
-   "src": "fetv.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.fetv.co.kr/news/articleView.html?idxno=311970",
+   "title": "[오늘의 일정] 10월 20일 화요일 스포츠 경기",
+   "src": "jeonmae.co.kr",
+   "date": "2026-10-20",
+   "url": "https://www.jeonmae.co.kr/news/articleView.html?idxno=1303038",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "현대해상, 1500명 가족 운동회 개최",
-   "src": "smarttoday.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.smarttoday.co.kr/ko-kr/articles/112846",
+   "title": "세터 유광우에 끈질긴 수비·연결까지…왕빈 없이도 잘 싸운 삼성화재, 토미 감독과 함께 확 달라져 돌아왔다[SS현장]",
+   "src": "sportsseoul.com",
+   "date": "2026-10-20",
+   "url": "https://m.sports.naver.com/volleyball/article/468/0001273762",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "[제53대 변협 반환점 성과③] 위자료·소송비용 현실화 추진… 법률서비스 혁신도 속도",
-   "src": "news.koreanbar.or.kr",
-   "date": "2026-10-19",
-   "url": "https://news.koreanbar.or.kr/news/articleView.html?idxno=36203",
+   "title": "[이 보험, 뭐가 다른가] 삼성화재 'THE FIT', 치료비부터 일상관리까지 보장 확장",
+   "src": "dailypop.kr",
+   "date": "2026-10-20",
+   "url": "http://www.dailypop.kr/news/articleView.html?idxno=103526",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "국민연금, 석 달 반 새 주식 평가액 182조원 증발…삼성·SK하이닉스에 손실 72% 집중",
-   "src": "newsroad.co.kr",
-   "date": "2026-10-19",
-   "url": "http://www.newsroad.co.kr/news/articleView.html?idxno=65987",
+   "title": "핀다, 보험 영업 고객 확보 채널 다각화…'더열심히'와 협력",
+   "src": "digitaltoday.co.kr",
+   "date": "2026-10-20",
+   "url": "https://www.digitaltoday.co.kr/news/articleView.html?idxno=708338",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "듀레이션 갭 축소에 보험사 금리 영향 최소화…투자 손익은 부담",
-   "src": "news.einfomax.co.kr",
-   "date": "2026-10-19",
-   "url": "https://news.einfomax.co.kr/news/articleView.html?idxno=4439823",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "책임경영 전면 나선 현대해상 3세 정경선",
-   "src": "news.dealsitetv.com",
-   "date": "2026-10-19",
-   "url": "https://news.dealsitetv.com/articles/177088",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "'삼전닉스' 폭락 직격탄…국민연금 주식 100일 새 182조 증발",
-   "src": "ziksir.com",
-   "date": "2026-10-19",
-   "url": "https://www.ziksir.com/news/articleView.html?idxno=149784",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "삼전닉스, 외국인 매도에 '와르르'···국민연금 손실에 딥시크 변수까지",
-   "src": "smartbizn.com",
-   "date": "2026-10-19",
-   "url": "https://www.smartbizn.com/news/articleView.html?idxno=156770",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "국민연금도 ‘반도체 쇼크’…100일 만에 182조원 평가 손실",
-   "src": "segye.com",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/022/0004167722?sid=101",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "‘두 번째 신인왕’ 예약한 왕정훈 “군 입대 ‘경력 단절’ 딛고 다시 세계 무대로”",
-   "src": "hankookilbo.com",
-   "date": "2026-10-19",
-   "url": "https://m.sports.naver.com/golf/article/469/0000960395",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "보험업권, 취약어르신 65만명에 낙상 치료비·치매배상책임보험 무료 지원",
-   "src": "insnews.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.insnews.co.kr/news/articleView.html?idxno=93387",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "보험업권, 취약노인 지원 105억원 투입…낙상·치매 위험 보장",
-   "src": "ftoday.co.kr",
-   "date": "2026-10-19",
-   "url": "http://www.ftoday.co.kr/news/articleView.html?idxno=367627",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "보험권 상생기금, 소상공인 이어 '취약 어르신'으로…65만명에 낙상치료비·치매배상보험 무상 지원",
-   "src": "greened.kr",
-   "date": "2026-10-19",
-   "url": "https://www.greened.kr/news/articleView.html?idxno=352417",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[더밸류 브리핑] 오늘의 보험계 소식…대산문화재단·현대해상·토스인슈어런스",
-   "src": "thevaluenews.co.kr",
-   "date": "2026-10-19",
-   "url": "http://www.thevaluenews.co.kr/news/view.php?idx=202475",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "부산국제금융센터에 '선박금융·선주보험·투자전문' 3개 사 입점",
-   "src": "news1.kr",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/421/0009235049?sid=102",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "부산 BIFC에 금융사 3곳 추가…해양금융 밸류체인 강화",
-   "src": "sedaily.com",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/011/0004672557?sid=102",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "부산국제금융센터 63층에 금융기업 3개사 유치…총 10개사 집적",
-   "src": "yna.co.kr",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/001/0016384415?sid=102",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "부산시, BIFC 디스페이스에 선박금융 기업 3곳 유치…\"해양금융 중심지 도약\"",
-   "src": "newspim.com",
-   "date": "2026-10-19",
-   "url": "https://www.newspim.com/news/view/20261019000048",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "'제네시스 챔피언십' 개막 D-4... KPGA 투어 선수 36명 결정, 랭킹 1위 신상훈 \"DP월드투어 선수들과 경쟁서 좋은 활약 펼칠 것\"",
+   "title": "\"(신경전) 피하지 않겠다\" 옛 동료가 적으로, 올 시즌 히트상품 예감 '대한항공 VS 삼성화재' 더비 [여수 현장]",
    "src": "starnewskorea.com",
-   "date": "2026-10-19",
-   "url": "https://m.sports.naver.com/golf/article/108/0003479828",
+   "date": "2026-10-20",
+   "url": "https://m.sports.naver.com/volleyball/article/108/0003480148",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "[이혁중 CISO 칼럼] AI 시대에도 아무것도 믿지 말라",
-   "src": "dailysecu.com",
-   "date": "2026-10-19",
-   "url": "https://www.dailysecu.com/news/articleView.html?idxno=208919",
+   "title": "핀다, 보험 영업시장 공략···고객 발굴부터 상담 연결까지",
+   "src": "hansbiz.co.kr",
+   "date": "2026-10-20",
+   "url": "http://www.hansbiz.co.kr/news/articleView.html?idxno=874321",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "[보험사 AX 레이스①] 보험업계 IT 경쟁 후끈…AI로 승부수",
+   "title": "삼성화재 누른 정지석 \"예상했던 분위기, 지고 싶지 않았다\"",
+   "src": "hansbiz.co.kr",
+   "date": "2026-10-20",
+   "url": "http://www.hansbiz.co.kr/news/articleView.html?idxno=874297",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[기자수첩] 해킹에 뚫린 금융권, 사이버보험 활성화해야",
+   "src": "dealsite.co.kr",
+   "date": "2026-10-20",
+   "url": "https://dealsite.co.kr/articles/170851",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "코스피, 장 초반 3%대 밀려 5,550선…삼전·하이닉스 동반 하락",
    "src": "news2day.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.news2day.co.kr/article/20261016500248",
+   "date": "2026-10-20",
+   "url": "https://www.news2day.co.kr/article/20261020500098",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "[오늘의 주요일정·19일] 김지용 초대 중수청장 취임 후 첫 도어스테핑",
-   "src": "safetimes.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.safetimes.co.kr/news/articleView.html?idxno=246580",
+   "title": "[ETF 포커스] \"삼전닉스 아니라 주주환원이 문제…자칫하면 물린다\"",
+   "src": "dealsite.co.kr",
+   "date": "2026-10-20",
+   "url": "https://dealsite.co.kr/articles/170841",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "市, BIFC에 금융기업 3곳 유치… 해양금융 밸류체인 강화",
-   "src": "fnnews.com",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/014/0005591445?sid=102",
+   "title": "비급여 암치료비 3천만→5천만원…보험사, 암 보장 한도 상향 경쟁",
+   "src": "raonnews.com",
+   "date": "2026-10-20",
+   "url": "https://www.raonnews.com/news/article.html?no=62023",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "부산국제금융센터에 금융기업 3곳 새 둥지 튼다",
-   "src": "hankyung.com",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/015/0005344193?sid=102",
+   "title": "삼성생명, 금리상승기 해외조달 나선 이유",
+   "src": "news.dealsitetv.com",
+   "date": "2026-10-20",
+   "url": "https://news.dealsitetv.com/articles/176879",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "장유빈의 7개 대회 독주 끝냈다...신상훈, 제네시스 포인트 선두",
-   "src": "gukjenews.com",
-   "date": "2026-10-19",
-   "url": "https://www.gukjenews.com/news/articleView.html?idxno=3725957",
+   "title": "부산시, BIFC 63층 D-Space에 금융기업 3곳 유치",
+   "src": "breaknews.com",
+   "date": "2026-10-20",
+   "url": "http://www.breaknews.com/1244072",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "[업앤다운]보험주 상승…미래에셋생명↑·롯데손보↓",
-   "src": "nspna.com",
-   "date": "2026-10-19",
-   "url": "https://www.nspna.com/news/?mode=view&newsid=832203",
+   "title": "보험사 자사주 소각 3조4491억원…미래에셋생명 1조원으로 최다",
+   "src": "ceoscoredaily.com",
+   "date": "2026-10-20",
+   "url": "https://www.ceoscoredaily.com/page/view/2026101419265501293",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "[더벨][인사이드 헤지펀드] DB운용, ETF 넘어 해외 대체펀드 재간접 확대",
-   "src": "thebell.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.thebell.co.kr/free/content/ArticleView.asp?key=202610151020392920101963",
+   "title": "실손 계약재매입 시행 임박…손보사 준비 분주",
+   "src": "fins.co.kr",
+   "date": "2026-10-20",
+   "url": "http://www.fins.co.kr/news/articleView.html?idxno=110266",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "큐에이드, 큐밍 브랜드 신제품 2종 출시…미니 김치냉장고·가열식 가습기 선보여",
-   "src": "hankyung.com",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/015/0005343828?sid=101",
+   "title": "김제시, 지평선축제 식중독 유증상자 최초 신고 14일 만에 '시장 없는 첫 브리핑'...피해 신고 931명 불구 '시민 안전의식 부재' 비판",
+   "src": "jbsori.com",
+   "date": "2026-10-20",
+   "url": "http://www.jbsori.com/news/articleView.html?idxno=18059",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "큐에이드, 큐밍 브랜드 겨울 가전 신제품 2종 출시…실용성 강화",
-   "src": "etnews.com",
+   "title": "[2026국감]'해킹 사태'에 고개 숙인 은행장들…\"연임 자격 있나\" 질타도(종합)",
+   "src": "view.asiae.co.kr",
    "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/030/0003476125?sid=105",
+   "url": "https://n.news.naver.com/mnews/article/277/0005830615?sid=101",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "\"고객정보도 못 지키면서 연임?\"···5대 은행장 국감서 진땀(종합)",
+   "src": "newsway.co.kr",
+   "date": "2026-10-19",
+   "url": "https://www.newsway.co.kr/news/view?ud=2026101918135244425",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
@@ -3791,6 +2867,13 @@
    "src": "news.lghellovision.net",
    "date": "2026-10-19",
    "url": "http://news.lghellovision.net/news/articleView.html?idxno=558887",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[보험·카드24시] 신용카드학회, 캐피탈 미래비전 포럼 개최 外",
+   "src": "news.dealsitetv.com",
+   "date": "2026-10-19",
+   "url": "https://news.dealsitetv.com/articles/177170",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
@@ -3815,290 +2898,87 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "세종시의회 교육안전위원회 행감, 시민 안전 및 치안망 강화 당부",
-   "src": "ccnnews.co.kr",
-   "date": "2026-10-19",
-   "url": "http://www.ccnnews.co.kr/news/articleView.html?idxno=416403",
+   "title": "송춘수 농협손보 대표 “불법사금융 고통받는 이웃 보호 금융사 책무”",
+   "src": "g-enews.com",
+   "date": "2026-10-20",
+   "url": "https://www.g-enews.com/view.php?ud=202610200949066667a6e8311f64_1",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "큐에이드, ‘큐밍’ 김치냉장고·가열식 가습기 출시…겨울 가전 라인업 확대",
-   "src": "economist.co.kr",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/243/0000104385?sid=101",
+   "title": "[금융권 이모저모]한국투자신탁운용, 연금 가이드북 최대 10만명 무료 배송 外",
+   "src": "businessplus.kr",
+   "date": "2026-10-20",
+   "url": "https://www.businessplus.kr/news/articleView.html?idxno=118423",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "[단독] 막대한 적자에 소송·대주단 반대 가능성...전문가들 \"재홍수 우려...철수 검토해야\"(네팔 참사 50일)",
+   "title": "[진옥동 2기 과제②] 증권 하나가 끌어올린 비은행…지속 가능한가",
+   "src": "newswatch.kr",
+   "date": "2026-10-20",
+   "url": "http://www.newswatch.kr/news/articleView.html?idxno=81574",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "보험업권 105억 투입…취약계층 어르신에 낙상 치료비·치매보험 지원",
+   "src": "mbn.co.kr",
+   "date": "2026-10-20",
+   "url": "https://n.news.naver.com/mnews/article/057/0001974277?sid=004",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "보험업권 105억 투입…취약계층 어르신에 낙상 치료비·치매보험 지원",
+   "src": "mbn.mk.co.kr",
+   "date": "2026-10-20",
+   "url": "https://n.news.naver.com/mnews/article/057/0001974268?sid=101",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[IB탈탈털기] 신한금융, 롯데손보 6933억 인수 계약…잔여지분·자본확충 ‘두 비용’ 남아",
+   "src": "newsworker.co.kr",
+   "date": "2026-10-20",
+   "url": "https://www.newsworker.co.kr/news/articleView.html?idxno=509445",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "제네시스 포인트 1위 신상훈 \"이 기세 살려 우승까지 노려보겠다\"",
+   "src": "view.asiae.co.kr",
+   "date": "2026-10-20",
+   "url": "https://m.sports.naver.com/golf/article/277/0005830748",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[경제일보] KB금융, 증권·보험 우위…신한, 롯데손보 인수에도 추격에 시간 필요",
    "src": "ajunews.com",
-   "date": "2026-10-18",
-   "url": "https://www.ajunews.com/view/20261018140412770",
+   "date": "2026-10-20",
+   "url": "https://www.ajunews.com/view/20261020082436248",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "≪브레이크뉴스≫ 증평군, 어린이 안전사고 예방 총력… 11월 6일까지 놀이기구 상태 및 안전관리 실태점검",
-   "src": "breaknews.com",
-   "date": "2026-10-16",
-   "url": "http://www.breaknews.com/1243362",
+   "title": "신한금융, 롯데손보 품고 KB금융 추격…보험 이익 격차 좁힐까",
+   "src": "press9.kr",
+   "date": "2026-10-20",
+   "url": "http://www.press9.kr/news/articleView.html?idxno=84536",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "[창립 71주년] 현대해상, 수익·환원·신사업 다각화 속도",
-   "src": "kfenews.co.kr",
-   "date": "2026-10-16",
-   "url": "https://www.kfenews.co.kr/news/articleView.html?idxno=666032",
+   "title": "[오늘의 주요일정·20일] 윤호중 장관 핼러윈 대비 안전관리 대책 점검회의",
+   "src": "safetimes.co.kr",
+   "date": "2026-10-20",
+   "url": "https://www.safetimes.co.kr/news/articleView.html?idxno=246628",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "산재 승인됐는데 회사는 배상 거부…추가 손해배상 어디까지 가능할까 [최은영 변호사 칼럼]",
-   "src": "mediafine.co.kr",
-   "date": "2026-10-15",
-   "url": "https://www.mediafine.co.kr/news/articleView.html?idxno=92652",
+   "title": "'한국전력 데뷔' 이민규 \"외국인과 호흡 더 좋아질 것\"",
+   "src": "hansbiz.co.kr",
+   "date": "2026-10-20",
+   "url": "http://www.hansbiz.co.kr/news/articleView.html?idxno=874295",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
-   "title": "동작구, 17일 '2026 동작구민 화합 체육대회' 개최...주민 간 소통과",
-   "src": "cnbizm.com",
-   "date": "2026-10-14",
-   "url": "https://www.cnbizm.com/news/articleView.html?idxno=318031",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "왜 인류는 새로운 종류의 야만 상태에 빠졌는가?",
-   "src": "jejusori.net",
-   "date": "2026-10-19",
-   "url": "https://www.jejusori.net/news/articleView.html?idxno=507482",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "동양생명, 우리금융 편입 후 첫 정기검사",
-   "src": "globalepic.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.globalepic.co.kr/view.php?ud=2026101908522468047cc35ccc5c_29",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "반려견 돌발행동·견주 상해까지…롯데손보 '댕댕이랑 여행갈땐 보험' 출시",
-   "src": "etnews.com",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/030/0003476133?sid=101",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "농협손해보험, 농업수입안정보험 양파·마늘 판매 개시",
-   "src": "etnews.com",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/030/0003476129?sid=101",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "IT사고 나고도 몰랐던 금융권...최근 5년간 91건 늑장 발견, 17건은 1년 넘게 몰라",
-   "src": "chosun.com",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/023/0004004602?sid=101",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "NH농협손보, 양파·마늘 농업수입안정보험 판매…보험료 최대 60% 지원",
-   "src": "news1.kr",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/421/0009235119?sid=101",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[2026국감] 금융권 사이버 침해사고 인지 ‘깜깜이’ 심각… 롯데손보 902일 ‘최장’",
-   "src": "srtimes.kr",
-   "date": "2026-10-19",
-   "url": "http://www.srtimes.kr/news/articleView.html?idxno=215085",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "위베어소프트, 금융권 첫 'CertBear' 인증서 자동화 솔루션 오픈…흥국화재 도입",
-   "src": "cbci.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.cbci.co.kr/news/articleView.html?idxno=616831",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "위베어소프트, 흥국화재에 SSL/TLS 인증서 자동화 관리 솔루션 적용",
-   "src": "datanet.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.datanet.co.kr/news/articleView.html?idxno=215195",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "신영석의 벽은 높았다… 한국전력, KB손보 꺾고 KOVO컵 첫 승",
-   "src": "sportsworldi.com",
-   "date": "2026-10-19",
-   "url": "https://m.sports.naver.com/volleyball/article/396/0000758385",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "'쇼 23점' 한국전력, KB손해보험 3-1 격파…대회 첫 승 신고",
-   "src": "stoo.com",
-   "date": "2026-10-19",
-   "url": "http://www.stoo.com/article.php?aid=109441017136",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "2년 만에 KOVO 컵대회 돌아온 현대캐피탈, OK에 3-2 승리(종합)",
-   "src": "yna.co.kr",
-   "date": "2026-10-19",
-   "url": "https://m.sports.naver.com/volleyball/article/001/0016386902",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "'이민규 올리고 쇼 마무리' 석진욱호 한국전력, KB손해보험 3-1로 격파 [여수 현장리뷰]",
-   "src": "starnewskorea.com",
-   "date": "2026-10-19",
-   "url": "https://m.sports.naver.com/volleyball/article/108/0003480054",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "‘NEW 삼각편대’ 43점 합작한 현대캐피탈, OK저축은행 꺾고 개막전 첫 승…한국전력은 KB손해보험 제압",
-   "src": "sports.khan.co.kr",
-   "date": "2026-10-19",
-   "url": "https://m.sports.naver.com/volleyball/article/144/0001145044",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "쇼·윤하준부터 방강호·이태호까지 터졌다...달라진 한국전력, KB 3-1 격파",
-   "src": "mydaily.co.kr",
-   "date": "2026-10-19",
-   "url": "https://m.sports.naver.com/volleyball/article/117/0004116463",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[지식산업센터 돋보기] 더챔버 라티파니, 입주기업 ‘0’…하나자산신탁 '진땀'",
-   "src": "dealsite.co.kr",
-   "date": "2026-10-19",
-   "url": "https://dealsite.co.kr/articles/170695",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "배당·감자 뒤 희망퇴직…어피니티, 국감서 고용 책임 답할까",
-   "src": "news.tf.co.kr",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/629/0000543084?sid=101",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "주요 손보사 인보험 뒷걸음질…메리츠화재, 나홀로 21% 고속 성장",
-   "src": "bloter.net",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/293/0000091785?sid=101",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "손보사 3분기 전망, 예상 보다 ‘흐림’…투자손익↓",
-   "src": "ekn.kr",
-   "date": "2026-10-19",
-   "url": "https://www.ekn.kr/web/view.php?key=20261019029187626",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "롯데·신한EZ 합병 시 자산 14조…손보업계 7위권 접전 예고",
-   "src": "ebn.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.ebn.co.kr/news/articleView.html?idxno=1728301",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "GAK·인카금융, 3분기 매출 200억원 '훌쩍'",
-   "src": "fins.co.kr",
-   "date": "2026-10-19",
-   "url": "http://www.fins.co.kr/news/articleView.html?idxno=110257",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "60대 1세대 실손→5세대 3년간 보험료 559만원 절약…대신 주의할 점은? [머니뭐니]",
-   "src": "biz.heraldcorp.com",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/016/0002711088?sid=101",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "고양이 음수량 kg당 50ml, 건사료 수분은 10%뿐…가을 방광염 막는 습식 캔 계산법",
-   "src": "imaeil.com",
-   "date": "2026-10-18",
-   "url": "https://n.news.naver.com/mnews/article/088/0001035005?sid=004",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "반려동물 119개 카테고리 AI 인용 순위 공개… 사료는 로얄캐닌, 간식은 이나바",
-   "src": "ibabynews.com",
-   "date": "2026-10-18",
-   "url": "https://www.ibabynews.com/news/articleView.html?idxno=155308",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "장동혁 국민의힘 대표 \"경제·안보 위기\"…정점식 \"증시 폭락",
-   "src": "breaknews.com",
-   "date": "2026-10-17",
-   "url": "http://www.breaknews.com/1243708",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[이슈] KB 이재근 체제, 비은행 강화·성장 기반 다지기 집중",
-   "src": "datasom.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.datasom.co.kr/news/articleView.html?idxno=210392",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[Epic Why] 신한지주는 왜 롯데손보를 품었나",
-   "src": "globalepic.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.globalepic.co.kr/view.php?ud=202610190844492627cc35ccc5c_29",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "[청년일보] \"밑빠진 독\" 된 헬스케어사업...KB손보, 본업 부진에 대체투자도 '경고등'",
-   "src": "youthdaily.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.youthdaily.co.kr/news/article.html?no=228465",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "◇오늘의 경기(19일)",
-   "src": "yna.co.kr",
-   "date": "2026-10-19",
-   "url": "https://m.sports.naver.com/general/article/001/0016384366",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "◇내일의 경기(20일)",
-   "src": "yna.co.kr",
-   "date": "2026-10-19",
-   "url": "https://m.sports.naver.com/general/article/001/0016384367",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "일상이 된 폭염·폭우… 즉시 보상하는 ‘지수형 기후보험’ 뜬다 [마이머니]",
-   "src": "segye.com",
-   "date": "2026-10-19",
-   "url": "https://n.news.naver.com/mnews/article/022/0004167698?sid=101",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "보험사 사옥 매각 확산… 자산 효율화·자본 부담 완화",
-   "src": "insnews.co.kr",
-   "date": "2026-10-19",
-   "url": "https://www.insnews.co.kr/news/articleView.html?idxno=93336",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "‘쇼 23득점’ 석진욱 감독 체제 한국전력, KB손해보험 3-1로 꺾고 ‘첫 승’ 신고[현장리뷰]",
-   "src": "sportsseoul.com",
-   "date": "2026-10-19",
-   "url": "https://m.sports.naver.com/volleyball/article/468/0001273667",
-   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
-  },
-  {
-   "title": "오늘의 경기(10월 19일)",
-   "src": "idaegu.co.kr",
-   "date": "2026-10-18",
-   "url": "https://www.idaegu.co.kr/news/articleView.html?idxno=562610",
+   "title": "[유지율 성적표] 5대 손보사, 장단기 나란히 상승…5년 현대 '최고'",
+   "src": "fetv.co.kr",
+   "date": "2026-10-20",
+   "url": "https://www.fetv.co.kr/news/articleView.html?idxno=311962",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   }
  ]
