@@ -2,8 +2,12 @@ name = "modooflow-naver-proxy"
 main = "naver-proxy-worker.js"
 compatibility_date = "2024-11-01"
 
+# 배포: main의 proxy/ 가 바뀌면 GitHub Actions 'Deploy Cloudflare Worker'가 자동 배포한다(이 파일의 Cron 포함).
+#       대시보드 KV(USAGE·GSC_TOKENS)는 scripts/worker_bindings.py가 이름으로 찾아 배포 시점에만 붙인다(ID 커밋 안 함).
+#       필요 GitHub Secrets: CLOUDFLARE_API_TOKEN · CLOUDFLARE_ACCOUNT_ID — docs/운영-설정-체크리스트.md
+
 # 정시 실행 스케줄러 — 5분마다 깨어나 naver-proxy-worker.js의 DISPATCH_SCHEDULE 시각이면 GitHub workflow_dispatch 호출.
-# 무료 요금제 Cron Trigger 제한(5개) 안에 들도록 1개만 쓴다. 대시보드 배포 시: Settings → Trigger Events → Cron Triggers에 같은 식 추가.
+# 무료 요금제 Cron Trigger 제한(5개) 안에 들도록 1개만 쓴다. 자동 배포가 이 값을 적용한다(편집기 붙여넣기 배포는 Cron이 빠짐).
 # 필요 시크릿: GH_DISPATCH_TOKEN  (파인그레인드 PAT · CM-CMO만 · Actions: Read and write)
 [triggers]
 crons = ["*/5 * * * *"]
