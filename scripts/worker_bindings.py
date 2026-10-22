@@ -37,6 +37,22 @@ def list_namespaces(token, account):
         page += 1
 
 
+def verify_token(token, account):
+    """사용자 토큰·계정 토큰 둘 다 검증해 상태만 돌려준다(토큰 값은 출력하지 않음)."""
+    out = []
+    for label, url in (("사용자 토큰", "https://api.cloudflare.com/client/v4/user/tokens/verify"),
+                       ("계정 토큰", f"https://api.cloudflare.com/client/v4/accounts/{account}/tokens/verify")):
+        try:
+            req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
+            with urllib.request.urlopen(req, timeout=20) as r:
+                out.append(f"{label}=유효({json.load(r).get('result', {}).get('status')})")
+        except urllib.error.HTTPError as exc:
+            out.append(f"{label}=HTTP {exc.code}")
+        except Exception as exc:  # 네트워크 등
+            out.append(f"{label}={type(exc).__name__}")
+    return ", ".join(out) + f" · 토큰 길이 {len(token)}자"
+
+
 def pick(namespaces, candidates):
     by_title = {str(n.get("title", "")).strip().lower(): n for n in namespaces}
     for name in candidates:
@@ -71,6 +87,12 @@ def main(path):
     try:
         namespaces = list_namespaces(token, account)
     except urllib.error.HTTPError as exc:
+        try:   # Cloudflare 오류 코드·문구(값 아님)를 그대로 보여 원인을 좁힌다
+            errs = json.loads(exc.read().decode("utf-8", "replace")).get("errors") or []
+            print("Cloudflare 응답:", "; ".join(f"{e.get('code')} {e.get('message')}" for e in errs), file=sys.stderr)
+        except Exception:
+            pass
+        print("토큰 검증:", verify_token(token, account), file=sys.stderr)
         hint = {
             401: "토큰이 유효하지 않음 — Global API Key나 토큰 이름이 아니라, Create Token 직후 한 번만 보이는 토큰 값(약 40자)을 넣어야 함. 모르면 API Tokens에서 Roll로 새로 발급",
             403: "토큰 권한 부족 — 템플릿 'Edit Cloudflare Workers'로 만들고 Account Resources에 이 계정을 포함해야 함",

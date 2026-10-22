@@ -10,6 +10,7 @@ on:
     branches: [main]
     paths:
       - "proxy/**"
+      - "scripts/worker_bindings.py"
       - ".github/workflows/worker-deploy.yml"
   workflow_dispatch:
 
