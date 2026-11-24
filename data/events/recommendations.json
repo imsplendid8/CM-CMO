@@ -1,11 +1,11 @@
 {
- "asof": "2026-11-24",
+ "asof": "2026-11-25",
  "counts": {
   "events": 42,
   "recommendations": 27,
   "suppressed_cooldown": 0,
-  "unclassified": 156,
-  "transitions": 20
+  "unclassified": 212,
+  "transitions": 0
  },
  "events": [
   {
@@ -442,131 +442,10 @@
    "source": "signal"
   }
  ],
- "transitions": [
-  {
-   "event_id": "golf-peak-fall-2026",
-   "from": "active",
-   "to": "ended",
-   "kind": "ended"
-  },
-  {
-   "event_id": "season-birth-1",
-   "from": "ended",
-   "to": "upcoming",
-   "kind": "change"
-  },
-  {
-   "event_id": "season-chronic-1",
-   "from": "ended",
-   "to": "upcoming",
-   "kind": "change"
-  },
-  {
-   "event_id": "season-chronic-11-12",
-   "from": "emerging",
-   "to": "active",
-   "kind": "onset"
-  },
-  {
-   "event_id": "season-cncr-1",
-   "from": "ended",
-   "to": "upcoming",
-   "kind": "change"
-  },
-  {
-   "event_id": "season-cncr-11-12",
-   "from": "emerging",
-   "to": "active",
-   "kind": "onset"
-  },
-  {
-   "event_id": "season-dntl-1-2-7-8",
-   "from": "ended",
-   "to": "upcoming",
-   "kind": "change"
-  },
-  {
-   "event_id": "season-driver-12-1",
-   "from": "upcoming",
-   "to": "emerging",
-   "kind": "change"
-  },
-  {
-   "event_id": "season-driver-2-9-10",
-   "from": "active",
-   "to": "cooling",
-   "kind": "winddown"
-  },
-  {
-   "event_id": "season-event-12",
-   "from": "upcoming",
-   "to": "emerging",
-   "kind": "change"
-  },
-  {
-   "event_id": "season-event-9-10",
-   "from": "active",
-   "to": "cooling",
-   "kind": "winddown"
-  },
-  {
-   "event_id": "season-golf-12-1-2",
-   "from": "upcoming",
-   "to": "emerging",
-   "kind": "change"
-  },
-  {
-   "event_id": "season-home-1-2",
-   "from": "ended",
-   "to": "upcoming",
-   "kind": "change"
-  },
-  {
-   "event_id": "season-hrmf-11-12-1-2",
-   "from": "upcoming",
-   "to": "active",
-   "kind": "onset"
-  },
-  {
-   "event_id": "season-overseas-1-2",
-   "from": "ended",
-   "to": "upcoming",
-   "kind": "change"
-  },
-  {
-   "event_id": "season-overseas-5-9-10",
-   "from": "active",
-   "to": "cooling",
-   "kind": "winddown"
-  },
-  {
-   "event_id": "season-overseaslong-8-9",
-   "from": "cooling",
-   "to": "ended",
-   "kind": "ended"
-  },
-  {
-   "event_id": "season-woman-10",
-   "from": "active",
-   "to": "cooling",
-   "kind": "winddown"
-  },
-  {
-   "event_id": "season-woman-11-12",
-   "from": "emerging",
-   "to": "active",
-   "kind": "onset"
-  },
-  {
-   "event_id": "yearend-checkup-2026",
-   "from": "emerging",
-   "to": "active",
-   "kind": "onset"
-  }
- ],
+ "transitions": [],
  "recommendations": [
   {
-   "fingerprint": "4a92b85539065c36",
+   "fingerprint": "4f4495c8b5059454",
    "fact": [
     "예정: 연말 건강검진 시즌 2026-11-01~2026-12-20",
     "뉴스: '플랜비보험, 연말 건강검진 앞두고 일반암·유사암 진단비 구분 짚어…암보험' (mediafine.co.kr 2026-11-23)",
@@ -578,24 +457,18 @@
    "event_name": "연말 건강검진 시즌",
    "event_type": "캠페인일",
    "event_state": "active",
-   "transition": {
-    "event_id": "yearend-checkup-2026",
-    "from": "emerging",
-    "to": "active",
-    "kind": "onset"
-   },
+   "transition": null,
    "title": "연말 건강검진 시즌 암보험 지금 대비",
    "description": "연말 건강검진 시즌 시기에 필요한 암진단비 보장(특약)을 암보험으로 챙겨 두세요",
    "content_subhead": "연말 건강검진 시즌 대비 암진단비 보장",
-   "purpose": "본격 대응",
-   "reason": "연말 건강검진 시즌 상태 전이(emerging→active)에 따른 암보험 본격 대응",
+   "purpose": "시즌 대응",
+   "reason": "연말 건강검진 시즌(active) 시기의 암보험 선제/대비 소구",
    "data_used": [
     "calendar",
     "clips",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-11-24",
+   "valid_from": "2026-11-25",
    "valid_to": "2026-12-27",
    "avoid_phrases": [
     "끔찍",
@@ -645,7 +518,7 @@
    "confidence": 0.8
   },
   {
-   "fingerprint": "0bab5cc2eb6e9eeb",
+   "fingerprint": "ae766b31b714f768",
    "fact": [
     "예정: 연말 건강검진 시즌 2026-11-01~2026-12-20",
     "뉴스: '플랜비보험, 연말 건강검진 앞두고 일반암·유사암 진단비 구분 짚어…암보험' (mediafine.co.kr 2026-11-23)",
@@ -657,24 +530,18 @@
    "event_name": "연말 건강검진 시즌",
    "event_type": "캠페인일",
    "event_state": "active",
-   "transition": {
-    "event_id": "yearend-checkup-2026",
-    "from": "emerging",
-    "to": "active",
-    "kind": "onset"
-   },
+   "transition": null,
    "title": "연말 건강검진 시즌 여성건강보험 지금 대비",
    "description": "연말 건강검진 시즌 시기에 필요한 여성암진단비 보장(특약)을 챙겨 두면 든든해요",
    "content_subhead": "연말 건강검진 시즌 대비 여성암진단비 보장",
-   "purpose": "본격 대응",
-   "reason": "연말 건강검진 시즌 상태 전이(emerging→active)에 따른 여성건강보험 본격 대응",
+   "purpose": "시즌 대응",
+   "reason": "연말 건강검진 시즌(active) 시기의 여성건강보험 선제/대비 소구",
    "data_used": [
     "calendar",
     "clips",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-11-24",
+   "valid_from": "2026-11-25",
    "valid_to": "2026-12-27",
    "avoid_phrases": [
     "끔찍",
@@ -724,7 +591,7 @@
    "confidence": 0.8
   },
   {
-   "fingerprint": "2f4dc28c34275829",
+   "fingerprint": "d068750c9f45b68a",
    "fact": [
     "예정: 연말 건강검진 시즌 2026-11-01~2026-12-20",
     "뉴스: '플랜비보험, 연말 건강검진 앞두고 일반암·유사암 진단비 구분 짚어…암보험' (mediafine.co.kr 2026-11-23)",
@@ -736,24 +603,18 @@
    "event_name": "연말 건강검진 시즌",
    "event_type": "캠페인일",
    "event_state": "active",
-   "transition": {
-    "event_id": "yearend-checkup-2026",
-    "from": "emerging",
-    "to": "active",
-    "kind": "onset"
-   },
+   "transition": null,
    "title": "연말 건강검진 시즌 치아보험 지금 대비",
    "description": "연말 건강검진 시즌 시기에 필요한 임플란트 보장(특약)을 치아보험으로 챙겨 두세요",
    "content_subhead": "연말 건강검진 시즌 대비 임플란트 보장",
-   "purpose": "본격 대응",
-   "reason": "연말 건강검진 시즌 상태 전이(emerging→active)에 따른 치아보험 본격 대응",
+   "purpose": "시즌 대응",
+   "reason": "연말 건강검진 시즌(active) 시기의 치아보험 선제/대비 소구",
    "data_used": [
     "calendar",
     "clips",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-11-24",
+   "valid_from": "2026-11-25",
    "valid_to": "2026-12-27",
    "avoid_phrases": [
     "끔찍",
@@ -803,7 +664,7 @@
    "confidence": 0.8
   },
   {
-   "fingerprint": "2fc76945f3a400cb",
+   "fingerprint": "e15118d10a0dc2eb",
    "fact": [
     "예정: 연말 건강검진 시즌 2026-11-01~2026-12-20",
     "뉴스: '플랜비보험, 연말 건강검진 앞두고 일반암·유사암 진단비 구분 짚어…암보험' (mediafine.co.kr 2026-11-23)",
@@ -815,24 +676,18 @@
    "event_name": "연말 건강검진 시즌",
    "event_type": "캠페인일",
    "event_state": "active",
-   "transition": {
-    "event_id": "yearend-checkup-2026",
-    "from": "emerging",
-    "to": "active",
-    "kind": "onset"
-   },
+   "transition": null,
    "title": "연말 건강검진 시즌 유병자 간편보험 지금 대비",
    "description": "연말 건강검진 시즌 시기에 필요한 입원비 보장(특약)을 미리 챙겨 두면 든든해요",
    "content_subhead": "연말 건강검진 시즌 대비 입원비 보장",
-   "purpose": "본격 대응",
-   "reason": "연말 건강검진 시즌 상태 전이(emerging→active)에 따른 유병자 간편보험 본격 대응",
+   "purpose": "시즌 대응",
+   "reason": "연말 건강검진 시즌(active) 시기의 유병자 간편보험 선제/대비 소구",
    "data_used": [
     "calendar",
     "clips",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-11-24",
+   "valid_from": "2026-11-25",
    "valid_to": "2026-12-27",
    "avoid_phrases": [
     "끔찍",
@@ -905,8 +760,8 @@
     "signals",
     "volume"
    ],
-   "valid_from": "2026-11-24",
-   "valid_to": "2026-12-24",
+   "valid_from": "2026-11-25",
+   "valid_to": "2026-12-25",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1112,25 +967,19 @@
    "event_name": "방학 치과 성수기",
    "event_type": "계절",
    "event_state": "upcoming",
-   "transition": {
-    "event_id": "season-dntl-1-2-7-8",
-    "from": "ended",
-    "to": "upcoming",
-    "kind": "change"
-   },
+   "transition": null,
    "title": "방학 치과 성수기 치아보험 미리 준비",
    "description": "방학 치과 성수기 시기에 필요한 임플란트 보장(특약)을 치아보험으로 챙겨 두세요",
    "content_subhead": "방학 치과 성수기 대비 임플란트 보장",
    "purpose": "선제 예고",
-   "reason": "방학 치과 성수기 상태 전이(ended→upcoming)에 따른 치아보험 선제 예고",
+   "reason": "방학 치과 성수기(upcoming) 시기의 치아보험 선제/대비 소구",
    "data_used": [
     "clips",
     "seasonal",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-11-24",
-   "valid_to": "2026-12-24",
+   "valid_from": "2026-11-25",
+   "valid_to": "2026-12-25",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1190,25 +1039,19 @@
    "event_name": "겨울·설 연휴 여행",
    "event_type": "계절",
    "event_state": "upcoming",
-   "transition": {
-    "event_id": "season-overseas-1-2",
-    "from": "ended",
-    "to": "upcoming",
-    "kind": "change"
-   },
+   "transition": null,
    "title": "겨울·설 연휴 여행 해외여행보험 미리 준비",
    "description": "겨울·설 연휴 여행 시기에 필요한 해외의료비 보장(특약)을 챙겨 두면 든든해요",
    "content_subhead": "겨울·설 연휴 여행 대비 해외의료비 보장",
    "purpose": "선제 예고",
-   "reason": "겨울·설 연휴 여행 상태 전이(ended→upcoming)에 따른 해외여행보험 선제 예고",
+   "reason": "겨울·설 연휴 여행(upcoming) 시기의 해외여행보험 선제/대비 소구",
    "data_used": [
     "clips",
     "seasonal",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-11-24",
-   "valid_to": "2026-12-24",
+   "valid_from": "2026-11-25",
+   "valid_to": "2026-12-25",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1256,7 +1099,7 @@
    "confidence": 0.64
   },
   {
-   "fingerprint": "a63cab1fe8c81b4e",
+   "fingerprint": "82448eda98ba1100",
    "fact": [
     "시즌: 겨울 난방화재·동파 (정확 기간 11-15~02-20)",
     "검색량: '화재' 59,970회/월"
@@ -1267,24 +1110,18 @@
    "event_name": "겨울 난방화재·동파",
    "event_type": "계절",
    "event_state": "active",
-   "transition": {
-    "event_id": "season-hrmf-11-12-1-2",
-    "from": "upcoming",
-    "to": "active",
-    "kind": "onset"
-   },
+   "transition": null,
    "title": "겨울 난방화재·동파 주택화재보험 지금 대비",
    "description": "겨울 난방화재·동파 시기에 필요한 화재손해 보장(특약)을 챙겨 두면 든든해요",
    "content_subhead": "겨울 난방화재·동파 대비 화재손해 보장",
-   "purpose": "본격 대응",
-   "reason": "겨울 난방화재·동파 상태 전이(upcoming→active)에 따른 주택화재보험 본격 대응",
+   "purpose": "시즌 대응",
+   "reason": "겨울 난방화재·동파(active) 시기의 주택화재보험 선제/대비 소구",
    "data_used": [
     "seasonal",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-11-24",
-   "valid_to": "2026-12-24",
+   "valid_from": "2026-11-25",
+   "valid_to": "2026-12-25",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1353,8 +1190,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-11-24",
-   "valid_to": "2026-12-24",
+   "valid_from": "2026-11-25",
+   "valid_to": "2026-12-25",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1413,24 +1250,18 @@
    "event_name": "겨울 스크린골프",
    "event_type": "계절",
    "event_state": "emerging",
-   "transition": {
-    "event_id": "season-golf-12-1-2",
-    "from": "upcoming",
-    "to": "emerging",
-    "kind": "change"
-   },
+   "transition": null,
    "title": "겨울 스크린골프 골프보험 미리 대비",
    "description": "겨울 스크린골프 시기에 필요한 홀인원비용 보장(특약)을 골프보험으로 챙겨 두세요",
    "content_subhead": "겨울 스크린골프 대비 홀인원비용 보장",
    "purpose": "대비 안내",
-   "reason": "겨울 스크린골프 상태 전이(upcoming→emerging)에 따른 골프보험 대비 안내",
+   "reason": "겨울 스크린골프(emerging) 시기의 골프보험 선제/대비 소구",
    "data_used": [
     "seasonal",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-11-24",
-   "valid_to": "2026-12-24",
+   "valid_from": "2026-11-25",
+   "valid_to": "2026-12-25",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1478,7 +1309,7 @@
    "confidence": 0.5
   },
   {
-   "fingerprint": "e8c7e66ae2b870e7",
+   "fingerprint": "e59d56297248a801",
    "fact": [
     "시즌: 연말정산 소득공제 (11월, 12월)",
     "검색량: '건강보험' 83,900회/월"
@@ -1489,24 +1320,18 @@
    "event_name": "연말정산 소득공제",
    "event_type": "계절",
    "event_state": "active",
-   "transition": {
-    "event_id": "season-cncr-11-12",
-    "from": "emerging",
-    "to": "active",
-    "kind": "onset"
-   },
+   "transition": null,
    "title": "연말정산 소득공제 암보험 지금 대비",
    "description": "연말정산 소득공제 시기에 필요한 암진단비 보장(특약)을 암보험으로 챙겨 두세요",
    "content_subhead": "연말정산 소득공제 대비 암진단비 보장",
-   "purpose": "본격 대응",
-   "reason": "연말정산 소득공제 상태 전이(emerging→active)에 따른 암보험 본격 대응",
+   "purpose": "시즌 대응",
+   "reason": "연말정산 소득공제(active) 시기의 암보험 선제/대비 소구",
    "data_used": [
     "seasonal",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-11-24",
-   "valid_to": "2026-12-24",
+   "valid_from": "2026-11-25",
+   "valid_to": "2026-12-25",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1565,24 +1390,18 @@
    "event_name": "겨울 빙판·눈길",
    "event_type": "계절",
    "event_state": "emerging",
-   "transition": {
-    "event_id": "season-driver-12-1",
-    "from": "upcoming",
-    "to": "emerging",
-    "kind": "change"
-   },
+   "transition": null,
    "title": "겨울 빙판·눈길 운전자보험 미리 대비",
    "description": "겨울 빙판·눈길 시기에 필요한 벌금 보장(특약)을 운전자보험으로 챙겨 두세요",
    "content_subhead": "겨울 빙판·눈길 대비 벌금 보장",
    "purpose": "대비 안내",
-   "reason": "겨울 빙판·눈길 상태 전이(upcoming→emerging)에 따른 운전자보험 대비 안내",
+   "reason": "겨울 빙판·눈길(emerging) 시기의 운전자보험 선제/대비 소구",
    "data_used": [
     "seasonal",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-11-24",
-   "valid_to": "2026-12-24",
+   "valid_from": "2026-11-25",
+   "valid_to": "2026-12-25",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1630,7 +1449,7 @@
    "confidence": 0.5
   },
   {
-   "fingerprint": "028945f74564eaef",
+   "fingerprint": "d4ade7d5cb126d15",
    "fact": [
     "시즌: 연말 건강검진 (11월, 12월)",
     "검색량: '임신' 14,170회/월"
@@ -1641,24 +1460,18 @@
    "event_name": "연말 건강검진",
    "event_type": "계절",
    "event_state": "active",
-   "transition": {
-    "event_id": "season-woman-11-12",
-    "from": "emerging",
-    "to": "active",
-    "kind": "onset"
-   },
+   "transition": null,
    "title": "연말 건강검진 여성건강보험 지금 대비",
    "description": "연말 건강검진 시기에 필요한 여성암진단비 보장(특약)을 미리 챙겨 두면 든든해요",
    "content_subhead": "연말 건강검진 대비 여성암진단비 보장",
-   "purpose": "본격 대응",
-   "reason": "연말 건강검진 상태 전이(emerging→active)에 따른 여성건강보험 본격 대응",
+   "purpose": "시즌 대응",
+   "reason": "연말 건강검진(active) 시기의 여성건강보험 선제/대비 소구",
    "data_used": [
     "seasonal",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-11-24",
-   "valid_to": "2026-12-24",
+   "valid_from": "2026-11-25",
+   "valid_to": "2026-12-25",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1727,8 +1540,8 @@
     "seasonal",
     "volume"
    ],
-   "valid_from": "2026-11-24",
-   "valid_to": "2026-12-24",
+   "valid_from": "2026-11-25",
+   "valid_to": "2026-12-25",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1787,24 +1600,18 @@
    "event_name": "연말 행사·공연",
    "event_type": "계절",
    "event_state": "emerging",
-   "transition": {
-    "event_id": "season-event-12",
-    "from": "upcoming",
-    "to": "emerging",
-    "kind": "change"
-   },
+   "transition": null,
    "title": "연말 행사·공연 행사배상책임보험 미리 대비",
    "description": "연말 행사·공연 시기에 필요한 행사배상책임 보장(특약)을 챙겨 두면 든든해요",
    "content_subhead": "연말 행사·공연 대비 행사배상책임 보장",
    "purpose": "대비 안내",
-   "reason": "연말 행사·공연 상태 전이(upcoming→emerging)에 따른 행사배상책임보험 대비 안내",
+   "reason": "연말 행사·공연(emerging) 시기의 행사배상책임보험 선제/대비 소구",
    "data_used": [
     "seasonal",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-11-24",
-   "valid_to": "2026-12-24",
+   "valid_from": "2026-11-25",
+   "valid_to": "2026-12-25",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -1852,7 +1659,7 @@
    "confidence": 0.5
   },
   {
-   "fingerprint": "036d2e7790908da3",
+   "fingerprint": "5afd5801456972d9",
    "fact": [
     "시즌: 연말정산·보장 점검 (11월, 12월)",
     "검색량: '간병인보험' 34,900회/월"
@@ -1863,24 +1670,18 @@
    "event_name": "연말정산·보장 점검",
    "event_type": "계절",
    "event_state": "active",
-   "transition": {
-    "event_id": "season-chronic-11-12",
-    "from": "emerging",
-    "to": "active",
-    "kind": "onset"
-   },
+   "transition": null,
    "title": "연말정산·보장 점검 유병자 간편보험 지금 대비",
    "description": "연말정산·보장 점검 시기에 필요한 입원비 보장(특약)을 미리 챙겨 두면 든든해요",
    "content_subhead": "연말정산·보장 점검 대비 입원비 보장",
-   "purpose": "본격 대응",
-   "reason": "연말정산·보장 점검 상태 전이(emerging→active)에 따른 유병자 간편보험 본격 대응",
+   "purpose": "시즌 대응",
+   "reason": "연말정산·보장 점검(active) 시기의 유병자 간편보험 선제/대비 소구",
    "data_used": [
     "seasonal",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-11-24",
-   "valid_to": "2026-12-24",
+   "valid_from": "2026-11-25",
+   "valid_to": "2026-12-25",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2081,24 +1882,18 @@
    "event_name": "신년 건강계획",
    "event_type": "계절",
    "event_state": "upcoming",
-   "transition": {
-    "event_id": "season-cncr-1",
-    "from": "ended",
-    "to": "upcoming",
-    "kind": "change"
-   },
+   "transition": null,
    "title": "신년 건강계획 암보험 미리 준비",
    "description": "신년 건강계획 시기에 필요한 암진단비 보장(특약)을 암보험으로 미리 챙겨 두세요",
    "content_subhead": "신년 건강계획 대비 암진단비 보장",
    "purpose": "선제 예고",
-   "reason": "신년 건강계획 상태 전이(ended→upcoming)에 따른 암보험 선제 예고",
+   "reason": "신년 건강계획(upcoming) 시기의 암보험 선제/대비 소구",
    "data_used": [
     "seasonal",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-11-24",
-   "valid_to": "2026-12-24",
+   "valid_from": "2026-11-25",
+   "valid_to": "2026-12-25",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2146,7 +1941,7 @@
    "confidence": 0.4
   },
   {
-   "fingerprint": "63d3d9bfcac59a1c",
+   "fingerprint": "49125d277a7fafe8",
    "fact": [
     "시즌: 명절 장거리 운전 (2월, 9월, 10월)",
     "검색량: '운전자보험' 34,790회/월"
@@ -2157,24 +1952,18 @@
    "event_name": "명절 장거리 운전",
    "event_type": "계절",
    "event_state": "cooling",
-   "transition": {
-    "event_id": "season-driver-2-9-10",
-    "from": "active",
-    "to": "cooling",
-    "kind": "winddown"
-   },
+   "transition": null,
    "title": "명절 장거리 운전 운전자보험 끝까지 대비",
    "description": "명절 장거리 운전 시기에 필요한 벌금 보장(특약)을 운전자보험으로 챙겨 두세요",
    "content_subhead": "명절 장거리 운전 대비 벌금 보장",
-   "purpose": "마무리 전환",
-   "reason": "명절 장거리 운전 상태 전이(active→cooling)에 따른 운전자보험 마무리 전환",
+   "purpose": "마무리 안내",
+   "reason": "명절 장거리 운전(cooling) 시기의 운전자보험 선제/대비 소구",
    "data_used": [
     "seasonal",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-11-24",
-   "valid_to": "2026-12-24",
+   "valid_from": "2026-11-25",
+   "valid_to": "2026-12-25",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2222,7 +2011,7 @@
    "confidence": 0.4
   },
   {
-   "fingerprint": "e864d0d5032e7dd9",
+   "fingerprint": "c3422c179220567d",
    "fact": [
     "시즌: 유방암 예방의 달(핑크리본) (10월)",
     "검색량: '임신' 14,170회/월"
@@ -2233,24 +2022,18 @@
    "event_name": "유방암 예방의 달(핑크리본)",
    "event_type": "계절",
    "event_state": "cooling",
-   "transition": {
-    "event_id": "season-woman-10",
-    "from": "active",
-    "to": "cooling",
-    "kind": "winddown"
-   },
+   "transition": null,
    "title": "유방암 예방의 달(핑크리본) 여성건강보험 끝까지 대비",
    "description": "유방암 예방의 달(핑크리본) 시기에 필요한 여성암진단비 보장(특약)을 챙겨 두세요",
    "content_subhead": "유방암 예방의 달(핑크리본) 대비 여성암진단비 보장",
-   "purpose": "마무리 전환",
-   "reason": "유방암 예방의 달(핑크리본) 상태 전이(active→cooling)에 따른 여성건강보험 마무리 전환",
+   "purpose": "마무리 안내",
+   "reason": "유방암 예방의 달(핑크리본)(cooling) 시기의 여성건강보험 선제/대비 소구",
    "data_used": [
     "seasonal",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-11-24",
-   "valid_to": "2026-12-24",
+   "valid_from": "2026-11-25",
+   "valid_to": "2026-12-25",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2309,24 +2092,18 @@
    "event_name": "신년 가족계획",
    "event_type": "계절",
    "event_state": "upcoming",
-   "transition": {
-    "event_id": "season-birth-1",
-    "from": "ended",
-    "to": "upcoming",
-    "kind": "change"
-   },
+   "transition": null,
    "title": "신년 가족계획 임신·출산(태아)보험 미리 준비",
    "description": "신년 가족계획 시기에 필요한 선천이상 보장(특약)을 미리 챙겨 두면 든든해요",
    "content_subhead": "신년 가족계획 대비 선천이상 보장",
    "purpose": "선제 예고",
-   "reason": "신년 가족계획 상태 전이(ended→upcoming)에 따른 임신·출산(태아)보험 선제 예고",
+   "reason": "신년 가족계획(upcoming) 시기의 임신·출산(태아)보험 선제/대비 소구",
    "data_used": [
     "seasonal",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-11-24",
-   "valid_to": "2026-12-24",
+   "valid_from": "2026-11-25",
+   "valid_to": "2026-12-25",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2374,7 +2151,7 @@
    "confidence": 0.4
   },
   {
-   "fingerprint": "c80dc9cc5b764341",
+   "fingerprint": "f62b575538f8f27e",
    "fact": [
     "시즌: 봄·가을 황금연휴/추석 (5월, 9월, 10월)",
     "검색량: '여행자보험' 157,900회/월"
@@ -2385,24 +2162,18 @@
    "event_name": "봄·가을 황금연휴/추석",
    "event_type": "계절",
    "event_state": "cooling",
-   "transition": {
-    "event_id": "season-overseas-5-9-10",
-    "from": "active",
-    "to": "cooling",
-    "kind": "winddown"
-   },
+   "transition": null,
    "title": "봄·가을 황금연휴/추석 해외여행보험 끝까지 대비",
    "description": "봄·가을 황금연휴/추석 시기에 필요한 해외의료비 보장(특약)을 챙겨 두면 든든해요",
    "content_subhead": "봄·가을 황금연휴/추석 대비 해외의료비 보장",
-   "purpose": "마무리 전환",
-   "reason": "봄·가을 황금연휴/추석 상태 전이(active→cooling)에 따른 해외여행보험 마무리 전환",
+   "purpose": "마무리 안내",
+   "reason": "봄·가을 황금연휴/추석(cooling) 시기의 해외여행보험 선제/대비 소구",
    "data_used": [
     "seasonal",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-11-24",
-   "valid_to": "2026-12-24",
+   "valid_from": "2026-11-25",
+   "valid_to": "2026-12-25",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2450,7 +2221,7 @@
    "confidence": 0.4
   },
   {
-   "fingerprint": "78e271bfddb0fc71",
+   "fingerprint": "f0ad8301acab06a7",
    "fact": [
     "시즌: 가을 축제·불꽃놀이 (9월, 10월)",
     "검색량: '여행자보험' 157,900회/월"
@@ -2461,24 +2232,18 @@
    "event_name": "가을 축제·불꽃놀이",
    "event_type": "계절",
    "event_state": "cooling",
-   "transition": {
-    "event_id": "season-event-9-10",
-    "from": "active",
-    "to": "cooling",
-    "kind": "winddown"
-   },
+   "transition": null,
    "title": "가을 축제·불꽃놀이 행사배상책임보험 끝까지 대비",
    "description": "가을 축제·불꽃놀이 시기에 필요한 행사배상책임 보장(특약)을 챙겨 두면 든든해요",
    "content_subhead": "가을 축제·불꽃놀이 대비 행사배상책임 보장",
-   "purpose": "마무리 전환",
-   "reason": "가을 축제·불꽃놀이 상태 전이(active→cooling)에 따른 행사배상책임보험 마무리 전환",
+   "purpose": "마무리 안내",
+   "reason": "가을 축제·불꽃놀이(cooling) 시기의 행사배상책임보험 선제/대비 소구",
    "data_used": [
     "seasonal",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-11-24",
-   "valid_to": "2026-12-24",
+   "valid_from": "2026-11-25",
+   "valid_to": "2026-12-25",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2537,24 +2302,18 @@
    "event_name": "신년 건강계획",
    "event_type": "계절",
    "event_state": "upcoming",
-   "transition": {
-    "event_id": "season-chronic-1",
-    "from": "ended",
-    "to": "upcoming",
-    "kind": "change"
-   },
+   "transition": null,
    "title": "신년 건강계획 유병자 간편보험 미리 준비",
    "description": "신년 건강계획 시기에 필요한 입원비 보장(특약)을 유병자 간편보험으로 챙겨 두세요",
    "content_subhead": "신년 건강계획 대비 입원비 보장",
    "purpose": "선제 예고",
-   "reason": "신년 건강계획 상태 전이(ended→upcoming)에 따른 유병자 간편보험 선제 예고",
+   "reason": "신년 건강계획(upcoming) 시기의 유병자 간편보험 선제/대비 소구",
    "data_used": [
     "seasonal",
-    "state_history",
     "volume"
    ],
-   "valid_from": "2026-11-24",
-   "valid_to": "2026-12-24",
+   "valid_from": "2026-11-25",
+   "valid_to": "2026-12-25",
    "avoid_phrases": [
     "끔찍",
     "참사",
@@ -2674,6 +2433,27 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "[치과에 대한 모든 것]고령층 치아 상실 후 틀니 고려한다면 알아야 할 관리 방법",
+   "src": "medicalworldnews.co.kr",
+   "date": "2026-11-24",
+   "url": "https://medicalworldnews.co.kr/news/view.php?idx=1510978609",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[N-제약Bio] 동국제약, 윤종신과 함께한 ‘인사돌’ 신규 TV-CF 온에어 外",
+   "src": "theviewers.co.kr",
+   "date": "2026-11-24",
+   "url": "https://theviewers.co.kr/View.aspx?No=4327401",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "2027년부터 영구치 레진 건강보험 만 13세까지 확대…충치 치료 시 유의할 점은",
+   "src": "dhnews.co.kr",
+   "date": "2026-11-24",
+   "url": "https://dhnews.co.kr/news/view/1065590383479946",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "\"해 넘기면 혜택 소멸\" 짝수년생 구강검진 대상 연말까지 받아야",
    "src": "medical-tribune.co.kr",
    "date": "2026-11-23",
@@ -2709,6 +2489,13 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "푸본현대생명, 암 진단부터 치료까지 보장하는 TM 전용 보험 출시",
+   "src": "thepublic.kr",
+   "date": "2026-11-24",
+   "url": "https://www.thepublic.kr/news/articleView.html?idxno=328253",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "[보험 NOW] 한화손보·iM라이프·동양생명·한화생명·DB손보",
    "src": "wikileaks-kr.org",
    "date": "2026-11-23",
@@ -2734,6 +2521,13 @@
    "src": "newscape.co.kr",
    "date": "2026-11-23",
    "url": "http://www.newscape.co.kr/news/articleView.html?idxno=126016",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[메가경제·한국화재보험협회 공동기획 ② 현장 르포] 일상 파고든 신종 화재 위험…실험 현장에서 찾은 인명피해 저감 해법",
+   "src": "megaeconomy.co.kr",
+   "date": "2026-11-24",
+   "url": "https://www.megaeconomy.co.kr/news/newsview.php?ncode=1065602653995194",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
@@ -2842,6 +2636,62 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "포항시, 빅데이터로 의료·교통·관광 현안 분석…정책 활용 확대",
+   "src": "newstown.co.kr",
+   "date": "2026-11-24",
+   "url": "http://www.newstown.co.kr/news/articleView.html?idxno=723216",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "포항시, 빅데이터로 지역 현안 살핀다…의료·교통·관광 정책 활용 모색",
+   "src": "dkilbo.com",
+   "date": "2026-11-24",
+   "url": "https://www.dkilbo.com/news/articleView.html?idxno=561991",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "포항시, 빅데이터 분석해 정책 수립…“데이터 기반 행정 강화”",
+   "src": "seoul.co.kr",
+   "date": "2026-11-24",
+   "url": "https://n.news.naver.com/mnews/article/081/0003702742?sid=102",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "금융 유관기관장 '민간 출신' 대세···생·손보협회장 바통 이어받나",
+   "src": "seoulfn.com",
+   "date": "2026-11-24",
+   "url": "https://www.seoulfn.com/news/articleView.html?idxno=643797",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "손보업계, 3분기 누적 순익 6.1조원… 투자 부진에 미래 수익까지 '먹구름'",
+   "src": "newslock.co.kr",
+   "date": "2026-11-24",
+   "url": "http://www.newslock.co.kr/news/articleView.html?idxno=140823",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "보험협회장 인선 임박…경영 전문성·현안 대응력 주목",
+   "src": "hansbiz.co.kr",
+   "date": "2026-11-24",
+   "url": "http://www.hansbiz.co.kr/news/articleView.html?idxno=886565",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "보험본업이 살린 DB손보 vs 투자에 발목 잡힌 메리츠화재",
+   "src": "mediapen.com",
+   "date": "2026-11-24",
+   "url": "https://www.mediapen.com/news/view/1139713",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "포항시, 빅데이터로 의료·교통·관광 정책 정밀 분석",
+   "src": "dtnews24.com",
+   "date": "2026-11-24",
+   "url": "http://www.dtnews24.com/news/articleView.html?idxno=817568",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "그린재킷, 친구 가입 때 추천인에 캐디피 5000원 할인쿠폰",
    "src": "siminilbo.co.kr",
    "date": "2026-11-24",
@@ -2902,6 +2752,20 @@
    "src": "hankookilbo.com",
    "date": "2026-11-24",
    "url": "https://n.news.naver.com/mnews/article/469/0000967317?sid=102",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "골프존 티스캐너, 2026년 거래액 1조원 돌파 전망…누적 예약 100만건 눈앞",
+   "src": "dailypop.kr",
+   "date": "2026-11-24",
+   "url": "http://www.dailypop.kr/news/articleView.html?idxno=104973",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "그린재킷, 친구 초대이벤트 캐디피 할인쿠폰 증정",
+   "src": "segyebiz.com",
+   "date": "2026-11-24",
+   "url": "http://www.segyebiz.com/newsView/20261124513371?OutUrl=naver",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
@@ -3262,6 +3126,76 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "[라이브뉴스] KB손해보험, 이주배경 산모·영아 지원 '맘이음' 추진…수도권 20가구 대상",
+   "src": "livesnews.com",
+   "date": "2026-11-24",
+   "url": "https://www.livesnews.com/news/article.html?no=66329",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "기침 한번에 주저앉는 척추…50대 이후 '뼈'부터 살피자",
+   "src": "cctoday.co.kr",
+   "date": "2026-11-24",
+   "url": "https://www.cctoday.co.kr/news/articleView.html?idxno=2240886",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "“췌장암만큼 무서운 암”… 담도암 피하려면 ‘이 생선’ 먹지 말아야",
+   "src": "health.chosun.com",
+   "date": "2026-11-24",
+   "url": "https://n.news.naver.com/mnews/article/346/0000119408?sid=103",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[보험 트렌드] KB손해보험, 이주배경 산모·영아 건강권 지원…사회공헌사업 ‘맘이음’ 추진外",
+   "src": "ibabynews.com",
+   "date": "2026-11-24",
+   "url": "https://www.ibabynews.com/news/articleView.html?idxno=157258",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "무릎 인공관절 수술 환자 고령화… 80세 이상 10년 새 74% 증가",
+   "src": "newscj.com",
+   "date": "2026-11-24",
+   "url": "https://www.newscj.com/news/articleView.html?idxno=3451778",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "이주배경 산모∙영아 의료 공백 메운다…기아대책∙KB손보 맞손",
+   "src": "donga.com",
+   "date": "2026-11-24",
+   "url": "https://n.news.naver.com/mnews/article/020/0003764825?sid=102",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[더나은미래 경제브리핑] 젠슨황 복귀 엔비디아 31% 폭등…코스피",
+   "src": "futurechosun.com",
+   "date": "2026-11-24",
+   "url": "https://futurechosun.com/?p=167562",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[보험 NOW] KB손해보험·AXA손해보험·한화생명",
+   "src": "wikileaks-kr.org",
+   "date": "2026-11-24",
+   "url": "https://www.wikileaks-kr.org/news/articleView.html?idxno=195156",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[보험 뉴스브리핑] ABL생명 자금세탁방지의 날 대통령 표창 수상",
+   "src": "asiatime.co.kr",
+   "date": "2026-11-24",
+   "url": "https://www.asiatime.co.kr/article/20261124500436",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "KB손보, 이주배경 산모·영아 건강권 지원",
+   "src": "hansbiz.co.kr",
+   "date": "2026-11-24",
+   "url": "http://www.hansbiz.co.kr/news/articleView.html?idxno=886650",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "호텔 욕실 세면대 앞에서 미끄러진 아버지… 호텔에 책임 물을 수 있나",
    "src": "lawtalknews.co.kr",
    "date": "2026-11-24",
@@ -3287,6 +3221,13 @@
    "src": "topdaily.kr",
    "date": "2026-11-24",
    "url": "https://www.topdaily.kr/articles/113045",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[오늘의 ESG] 알보젠코리아·우진산전·세라젬·트리니티항공·태광그룹·남양유업·TYM",
+   "src": "financialreview.co.kr",
+   "date": "2026-11-24",
+   "url": "http://www.financialreview.co.kr/news/articleView.html?idxno=46565",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
@@ -3329,6 +3270,13 @@
    "src": "m-i.kr",
    "date": "2026-11-22",
    "url": "https://www.m-i.kr/news/articleView.html?idxno=2021694",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "상품 개발·보험금 지급 ‘업계 최고’…교보생명, 고객 가치 높였다",
+   "src": "segyebiz.com",
+   "date": "2026-11-24",
+   "url": "http://www.segyebiz.com/newsView/20261124514504?OutUrl=naver",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
@@ -3451,6 +3399,69 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "[인사] DB손해보험·DB생명보험",
+   "src": "apnews.kr",
+   "date": "2026-11-24",
+   "url": "https://www.apnews.kr/news/articleView.html?idxno=3053496",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "V리그 2라운드 달굴 베테랑 대기록과 특급 외인 귀환…염혜선·정호영 금자탑 눈앞·우리카드 비예나 영입",
+   "src": "dailysportshankook.co.kr",
+   "date": "2026-11-24",
+   "url": "https://www.dailysportshankook.co.kr/news/articleView.html?idxno=435914",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "'V리그 6시즌 활약' 비예나, 우리카드 합류",
+   "src": "yonhapnewstv.co.kr",
+   "date": "2026-11-24",
+   "url": "https://m.sports.naver.com/general/article/422/0000929597",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "대한항공, OK저축은행에 풀세트 진땀승으로 '2연승'",
+   "src": "news.sbs.co.kr",
+   "date": "2026-11-24",
+   "url": "https://m.sports.naver.com/general/article/055/0001405553",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[AI상보] '임동혁 28점' 대한항공, 2시간 37분 풀세트 접전 끝에 OK저축은행 제압",
+   "src": "newspim.com",
+   "date": "2026-11-24",
+   "url": "https://www.newspim.com/news/view/20261124001471",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[11월24일 인사종합] DB손해보험·DB생명 외",
+   "src": "dt.co.kr",
+   "date": "2026-11-24",
+   "url": "https://n.news.naver.com/mnews/article/029/0003060973?sid=102",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[기획] \"ETF 투자자 잡아라\"…자산운용사가 유튜브에 공들이는 이유",
+   "src": "startuptoday.co.kr",
+   "date": "2026-11-24",
+   "url": "https://www.startuptoday.co.kr/news/articleView.html?idxno=819986",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "60대 경영진 장악한 농협, 직원들 40세부터 희망퇴직",
+   "src": "autodaily.co.kr",
+   "date": "2026-11-24",
+   "url": "https://www.autodaily.co.kr/news/articleView.html?idxno=602385",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "대한항공, OK저축은행에 풀세트 진땀승…헤난 감독 복귀 후 연승(종합)",
+   "src": "yna.co.kr",
+   "date": "2026-11-24",
+   "url": "https://m.sports.naver.com/volleyball/article/001/0016461518",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "[인사] DB손해보험 임원",
    "src": "newscape.co.kr",
    "date": "2026-11-24",
@@ -3490,6 +3501,55 @@
    "src": "newscj.com",
    "date": "2026-11-24",
    "url": "https://www.newscj.com/news/articleView.html?idxno=3451667",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "DB손해보험, 계열 사모펀드 2건 거래 공시",
+   "src": "vegannews.co.kr",
+   "date": "2026-11-24",
+   "url": "https://www.vegannews.co.kr/news/article.html?no=410621",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[인사] DB손해보험·DB생명보험",
+   "src": "ceoscoredaily.com",
+   "date": "2026-11-24",
+   "url": "https://www.ceoscoredaily.com/page/view/2026112421250794730",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[인사] DB손해보험·DB생명",
+   "src": "newsinside.kr",
+   "date": "2026-11-24",
+   "url": "https://www.newsinside.kr/news/articleView.html?idxno=5055721",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "하나저축銀서도 552명 개인정보 유출…두 달 간 저축은행 5곳서 털려",
+   "src": "weekly.hankooki.com",
+   "date": "2026-11-24",
+   "url": "https://weekly.hankooki.com/news/articleView.html?idxno=7195550",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[인사] 한전원자력연료 외",
+   "src": "segye.com",
+   "date": "2026-11-24",
+   "url": "https://n.news.naver.com/mnews/article/022/0004177817?sid=102",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "하나저축은행, 해킹으로 고객 552명 개인정보 유출",
+   "src": "newscj.com",
+   "date": "2026-11-24",
+   "url": "https://www.newscj.com/news/articleView.html?idxno=3451791",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[업앤다운] 보험주 상승 우세…코리안리 3.54% 하락",
+   "src": "nspna.com",
+   "date": "2026-11-24",
+   "url": "https://www.nspna.com/news/?mode=view&newsid=837542",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
@@ -3556,6 +3616,69 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "삼성생명·화재 대표 유임 가닥",
+   "src": "sedaily.com",
+   "date": "2026-11-24",
+   "url": "https://n.news.naver.com/mnews/article/011/0004685777?sid=101",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "국민 6만여 명이 뽑은 '사회공헌 맛집' 10곳 … 한경협, 첫",
+   "src": "worktoday.co.kr",
+   "date": "2026-11-24",
+   "url": "http://www.worktoday.co.kr/news/articleView.html?idxno=92604",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "삼성·현대차·SKT 등 10곳, 국민이 뽑은 사회공헌 우수기업 선정",
+   "src": "m-i.kr",
+   "date": "2026-11-24",
+   "url": "https://www.m-i.kr/news/articleView.html?idxno=2022915",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "'디펜딩 챔프의 저력' 신진서, 역전패에 역전승으로 반격... 최종국서 명인 가린다",
+   "src": "starnewskorea.com",
+   "date": "2026-11-24",
+   "url": "https://m.sports.naver.com/general/article/108/0003489881",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "삼성화재·한국릴리, 알츠하이머병 치료·관리 지원체계 구축 추진",
+   "src": "webeconomy.co.kr",
+   "date": "2026-11-24",
+   "url": "https://www.webeconomy.co.kr/news/articleView.html?idxno=2388192",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "삼성화재·한국릴리, 알츠하이머 가족의 경제적 부담 덜 길 찾는다",
+   "src": "insidevina.com",
+   "date": "2026-11-24",
+   "url": "https://www.insidevina.com/news/articleView.html?idxno=44583",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "삼성 준감위, 주주환원 시점 결정 관련 \"준법위반·이해상충 아냐\"",
+   "src": "asiatoday.co.kr",
+   "date": "2026-11-24",
+   "url": "https://www.asiatoday.co.kr/kn/view.php?key=20261124010009402",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "삼성 준감위 \"주주환원 결정, 준법 위반·이해상충 아니다\"",
+   "src": "mt.co.kr",
+   "date": "2026-11-24",
+   "url": "https://n.news.naver.com/mnews/article/008/0005445874?sid=101",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "삼성 준감위 \"주주환원 결정, 준법 위반·이해상충 해당 안 돼\"",
+   "src": "news1.kr",
+   "date": "2026-11-24",
+   "url": "https://n.news.naver.com/mnews/article/421/0009308027?sid=101",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "금융권 보안 여전히 '빨간불'...예별손보도 주민등록번호 포함 개인정보 유출",
    "src": "greened.kr",
    "date": "2026-11-24",
@@ -3612,6 +3735,27 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "[데이터 뉴스룸] 금융業 50곳 1년 새 고용 300명대 증가…한화손해보험 400명대 고용 늘고 vs 국민은행 400명대 줄어",
+   "src": "greened.kr",
+   "date": "2026-11-24",
+   "url": "https://www.greened.kr/news/articleView.html?idxno=355462",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "“1988~1994년생 실수령액 얼마야? 나부터 공개할게”... 그러자 너도나도 공개",
+   "src": "wikitree.co.kr",
+   "date": "2026-11-24",
+   "url": "https://www.wikitree.co.kr/articles/1177417",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "현대해상, 대체투자 평가손실 1400억…대응카드는 '대출형 자산'",
+   "src": "bloter.net",
+   "date": "2026-11-24",
+   "url": "https://n.news.naver.com/mnews/article/293/0000093752?sid=101",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "남자배구 우리카드, 아라우조 대체자로 득점왕 출신 비예나 영입",
    "src": "newsis.com",
    "date": "2026-11-24",
@@ -3644,6 +3788,13 @@
    "src": "ytn.co.kr",
    "date": "2026-11-24",
    "url": "https://m.sports.naver.com/volleyball/article/052/0002437336",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "외인 3G 만에 부상 이탈→득점왕 출신 베테랑 품었다…우리카드, 대체 외인 '비예나' 영입",
+   "src": "spotvnews.co.kr",
+   "date": "2026-11-24",
+   "url": "https://m.sports.naver.com/volleyball/article/477/0000640641",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
