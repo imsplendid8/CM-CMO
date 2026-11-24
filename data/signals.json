@@ -1,5 +1,5 @@
 {
-  "asof": "2026-10-22",
+  "asof": "2026-11-24",
   "source": "data.go.kr",
   "weather": {
     "active": [
@@ -7,9 +7,9 @@
     ]
   },
   "travel": {
-    "overseas_ratio": 79.7,
-    "period": "2026-10-21",
-    "avg": 80.1,
+    "overseas_ratio": 68.2,
+    "period": "2026-11-23",
+    "avg": 77.4,
     "peak": 100,
     "basis": "최근 7일 평균 vs 90일"
   },
@@ -54,10 +54,10 @@
     ]
   },
   "newreg": {
-    "count": 1010781,
-    "period": "202608",
-    "mom": -0.03,
-    "net_change": -286,
+    "count": 1011332,
+    "period": "202609",
+    "mom": 0.05,
+    "net_change": 551,
     "kind": "stock",
     "trend": {},
     "source": "stat.molit",
@@ -68,14 +68,10 @@
       "protocol": "stat.molit",
       "form_id": "5498",
       "style_num": "2",
-      "start_dt": "202603",
-      "end_dt": "202608"
+      "start_dt": "202604",
+      "end_dt": "202609"
     },
     "series": [
-      {
-        "period": "202603",
-        "count": 1010087
-      },
       {
         "period": "202604",
         "count": 1010132
@@ -95,13 +91,17 @@
       {
         "period": "202608",
         "count": 1010781
+      },
+      {
+        "period": "202609",
+        "count": 1011332
       }
     ]
   },
   "triggers": {
     "driver": {
       "level": "high",
-      "note": "대설·강풍·한파 특보 → 빙판·사고 위험·운전자보험 관심↑ / 자동차 등록대수(누적, 202608) 1,010,781대 · 전월 대비 -286대 → 운전자보험 잠재 수요 참고",
+      "note": "대설·강풍·한파 특보 → 빙판·사고 위험·운전자보험 관심↑ / 자동차 등록대수(누적, 202609) 1,011,332대 · 전월 대비 +551대 → 운전자보험 잠재 수요 참고",
       "kinds": [
         "강풍"
       ],
