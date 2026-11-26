@@ -1,10 +1,10 @@
 {
  "asof": "2026-11-26",
  "counts": {
-  "events": 46,
-  "recommendations": 31,
+  "events": 51,
+  "recommendations": 36,
   "suppressed_cooldown": 0,
-  "unclassified": 160,
+  "unclassified": 239,
   "transitions": 1
  },
  "events": [
@@ -472,6 +472,56 @@
    "source": "news"
   },
   {
+   "id": "news-카카오페이손보-독감-보험금-청구-12단계를-2단계로-줄인",
+   "name": "독감",
+   "type": "긴급뉴스",
+   "state": "active",
+   "products": [
+    "chronic"
+   ],
+   "source": "news"
+  },
+  {
+   "id": "news-카카오페이손보-독감-보험금-평균-4-41초-지급-AI-보상",
+   "name": "독감",
+   "type": "긴급뉴스",
+   "state": "active",
+   "products": [
+    "chronic"
+   ],
+   "source": "news"
+  },
+  {
+   "id": "news-카카오페이손보-AI-기반-바로보상-도입-독감-보험금-지급",
+   "name": "독감",
+   "type": "긴급뉴스",
+   "state": "active",
+   "products": [
+    "chronic"
+   ],
+   "source": "news"
+  },
+  {
+   "id": "news-카카오페이손보-독감-보험금-평균-4-41초-만에-지급-자동",
+   "name": "독감",
+   "type": "긴급뉴스",
+   "state": "active",
+   "products": [
+    "chronic"
+   ],
+   "source": "news"
+  },
+  {
+   "id": "news-카카오페이손보-독감-보험금-청구-간소화-AI가-심사부터-지",
+   "name": "독감",
+   "type": "긴급뉴스",
+   "state": "active",
+   "products": [
+    "chronic"
+   ],
+   "source": "news"
+  },
+  {
    "id": "news-청구부터-지급까지-AI가-척척-카카오페이손보-독감-보험금",
    "name": "독감",
    "type": "긴급뉴스",
@@ -785,7 +835,7 @@
    "fingerprint": "42a89fcfc446e8f6",
    "fact": [
     "시즌: 방학 치과 성수기 (1월, 2월, 7월, 8월)",
-    "뉴스: '치협 \"건보공단 '노인 무료 임플란트 유인·알선 실태점검' 환영\"' (medipana.com 2026-11-25)",
+    "뉴스: '내년부터 치아 없는 어르신도 임플란트 보험 가능' (hemophilia.co.kr 2026-11-26)",
     "검색량: '미래에셋생명' 58,100회/월"
    ],
    "product": "dntl",
@@ -1079,6 +1129,366 @@
    "product": "chronic",
    "product_name": "유병자 간편보험",
    "event_id": "news-카카오페이손보-자녀-독감-보험금-바로보상-도입-최종-확인",
+   "event_name": "독감",
+   "event_type": "긴급뉴스",
+   "event_state": "active",
+   "transition": null,
+   "title": "독감 유병자 간편보험 대비",
+   "description": "독감 소식이 이어질 때 입원비 보장(특약)을 유병자 간편보험으로 챙겨 두세요",
+   "content_subhead": "독감 대비 입원비 보장",
+   "purpose": "시즌 대응",
+   "reason": "독감(active) 시기의 유병자 간편보험 선제/대비 소구",
+   "data_used": [
+    "clips",
+    "volume"
+   ],
+   "valid_from": "2026-11-26",
+   "valid_to": "2026-12-26",
+   "avoid_phrases": [
+    "끔찍",
+    "참사",
+    "비극",
+    "당신도",
+    "큰일",
+    "불행",
+    "공포",
+    "눈앞의 위험",
+    "지금 안 하면",
+    "이 사고 보고도",
+    "더 늦기 전에 가입",
+    "안 하면 후회",
+    "지금 가입 안 하면",
+    "서둘러 가입",
+    "꼭 가입",
+    "즉시 가입",
+    "사고 전에 가입",
+    "피해 전에 가입",
+    "안 들면 손해",
+    "누구나 가입",
+    "무조건",
+    "반드시",
+    "전액",
+    "100%",
+    "완벽 보장",
+    "모두 보장",
+    "가입 보장",
+    "보험금 확정",
+    "보상 확정",
+    "보장 확정",
+    "즉시 보상",
+    "최대 보장",
+    "최저가",
+    "업계 최고",
+    "가장 저렴",
+    "제일 싸",
+    "필수 보험"
+   ],
+   "channels": [
+    "콘텐츠",
+    "블로그"
+   ],
+   "product_basis": "미확인",
+   "review_status": "심의 검토 전 · 운영 후보",
+   "confidence": 0.6
+  },
+  {
+   "fingerprint": "2f393dece3c46782",
+   "fact": [
+    "뉴스: '카카오페이손보, 독감 보험금 청구 12단계를 2단계로 줄인 '바로보상' ' (bizwnews.com 2026-11-26)",
+    "뉴스: '카카오페이손보, 독감 보험금 4.41초만에 지급 … '바로보상' 론칭' (efnews.co.kr 2026-11-26)",
+    "검색량: '간병인보험' 34,900회/월"
+   ],
+   "product": "chronic",
+   "product_name": "유병자 간편보험",
+   "event_id": "news-카카오페이손보-독감-보험금-청구-12단계를-2단계로-줄인",
+   "event_name": "독감",
+   "event_type": "긴급뉴스",
+   "event_state": "active",
+   "transition": null,
+   "title": "독감 유병자 간편보험 대비",
+   "description": "독감 소식이 이어질 때 입원비 보장(특약)을 유병자 간편보험으로 챙겨 두세요",
+   "content_subhead": "독감 대비 입원비 보장",
+   "purpose": "시즌 대응",
+   "reason": "독감(active) 시기의 유병자 간편보험 선제/대비 소구",
+   "data_used": [
+    "clips",
+    "volume"
+   ],
+   "valid_from": "2026-11-26",
+   "valid_to": "2026-12-26",
+   "avoid_phrases": [
+    "끔찍",
+    "참사",
+    "비극",
+    "당신도",
+    "큰일",
+    "불행",
+    "공포",
+    "눈앞의 위험",
+    "지금 안 하면",
+    "이 사고 보고도",
+    "더 늦기 전에 가입",
+    "안 하면 후회",
+    "지금 가입 안 하면",
+    "서둘러 가입",
+    "꼭 가입",
+    "즉시 가입",
+    "사고 전에 가입",
+    "피해 전에 가입",
+    "안 들면 손해",
+    "누구나 가입",
+    "무조건",
+    "반드시",
+    "전액",
+    "100%",
+    "완벽 보장",
+    "모두 보장",
+    "가입 보장",
+    "보험금 확정",
+    "보상 확정",
+    "보장 확정",
+    "즉시 보상",
+    "최대 보장",
+    "최저가",
+    "업계 최고",
+    "가장 저렴",
+    "제일 싸",
+    "필수 보험"
+   ],
+   "channels": [
+    "콘텐츠",
+    "블로그"
+   ],
+   "product_basis": "미확인",
+   "review_status": "심의 검토 전 · 운영 후보",
+   "confidence": 0.6
+  },
+  {
+   "fingerprint": "a70419ec41fcf34c",
+   "fact": [
+    "뉴스: '카카오페이손보, 독감 보험금 평균 4.41초 지급…AI 보상서비스 강화' (megaeconomy.co.kr 2026-11-26)",
+    "뉴스: '카카오페이손보, 독감 보험금 4.41초만에 지급 … '바로보상' 론칭' (efnews.co.kr 2026-11-26)",
+    "검색량: '간병인보험' 34,900회/월"
+   ],
+   "product": "chronic",
+   "product_name": "유병자 간편보험",
+   "event_id": "news-카카오페이손보-독감-보험금-평균-4-41초-지급-AI-보상",
+   "event_name": "독감",
+   "event_type": "긴급뉴스",
+   "event_state": "active",
+   "transition": null,
+   "title": "독감 유병자 간편보험 대비",
+   "description": "독감 소식이 이어질 때 입원비 보장(특약)을 유병자 간편보험으로 챙겨 두세요",
+   "content_subhead": "독감 대비 입원비 보장",
+   "purpose": "시즌 대응",
+   "reason": "독감(active) 시기의 유병자 간편보험 선제/대비 소구",
+   "data_used": [
+    "clips",
+    "volume"
+   ],
+   "valid_from": "2026-11-26",
+   "valid_to": "2026-12-26",
+   "avoid_phrases": [
+    "끔찍",
+    "참사",
+    "비극",
+    "당신도",
+    "큰일",
+    "불행",
+    "공포",
+    "눈앞의 위험",
+    "지금 안 하면",
+    "이 사고 보고도",
+    "더 늦기 전에 가입",
+    "안 하면 후회",
+    "지금 가입 안 하면",
+    "서둘러 가입",
+    "꼭 가입",
+    "즉시 가입",
+    "사고 전에 가입",
+    "피해 전에 가입",
+    "안 들면 손해",
+    "누구나 가입",
+    "무조건",
+    "반드시",
+    "전액",
+    "100%",
+    "완벽 보장",
+    "모두 보장",
+    "가입 보장",
+    "보험금 확정",
+    "보상 확정",
+    "보장 확정",
+    "즉시 보상",
+    "최대 보장",
+    "최저가",
+    "업계 최고",
+    "가장 저렴",
+    "제일 싸",
+    "필수 보험"
+   ],
+   "channels": [
+    "콘텐츠",
+    "블로그"
+   ],
+   "product_basis": "미확인",
+   "review_status": "심의 검토 전 · 운영 후보",
+   "confidence": 0.6
+  },
+  {
+   "fingerprint": "d3097fdef007e5bf",
+   "fact": [
+    "뉴스: '카카오페이손보, AI 기반 '바로보상' 도입…독감 보험금 지급 평균 4.' (thepublic.kr 2026-11-26)",
+    "뉴스: '카카오페이손보, 독감 보험금 4.41초만에 지급 … '바로보상' 론칭' (efnews.co.kr 2026-11-26)",
+    "검색량: '간병인보험' 34,900회/월"
+   ],
+   "product": "chronic",
+   "product_name": "유병자 간편보험",
+   "event_id": "news-카카오페이손보-AI-기반-바로보상-도입-독감-보험금-지급",
+   "event_name": "독감",
+   "event_type": "긴급뉴스",
+   "event_state": "active",
+   "transition": null,
+   "title": "독감 유병자 간편보험 대비",
+   "description": "독감 소식이 이어질 때 입원비 보장(특약)을 유병자 간편보험으로 챙겨 두세요",
+   "content_subhead": "독감 대비 입원비 보장",
+   "purpose": "시즌 대응",
+   "reason": "독감(active) 시기의 유병자 간편보험 선제/대비 소구",
+   "data_used": [
+    "clips",
+    "volume"
+   ],
+   "valid_from": "2026-11-26",
+   "valid_to": "2026-12-26",
+   "avoid_phrases": [
+    "끔찍",
+    "참사",
+    "비극",
+    "당신도",
+    "큰일",
+    "불행",
+    "공포",
+    "눈앞의 위험",
+    "지금 안 하면",
+    "이 사고 보고도",
+    "더 늦기 전에 가입",
+    "안 하면 후회",
+    "지금 가입 안 하면",
+    "서둘러 가입",
+    "꼭 가입",
+    "즉시 가입",
+    "사고 전에 가입",
+    "피해 전에 가입",
+    "안 들면 손해",
+    "누구나 가입",
+    "무조건",
+    "반드시",
+    "전액",
+    "100%",
+    "완벽 보장",
+    "모두 보장",
+    "가입 보장",
+    "보험금 확정",
+    "보상 확정",
+    "보장 확정",
+    "즉시 보상",
+    "최대 보장",
+    "최저가",
+    "업계 최고",
+    "가장 저렴",
+    "제일 싸",
+    "필수 보험"
+   ],
+   "channels": [
+    "콘텐츠",
+    "블로그"
+   ],
+   "product_basis": "미확인",
+   "review_status": "심의 검토 전 · 운영 후보",
+   "confidence": 0.6
+  },
+  {
+   "fingerprint": "7b13bf38bf587284",
+   "fact": [
+    "뉴스: '카카오페이손보, 독감 보험금 평균 4.41초 만에 지급…자동보상 확대' (lcnews.co.kr 2026-11-26)",
+    "뉴스: '카카오페이손보, 독감 보험금 4.41초만에 지급 … '바로보상' 론칭' (efnews.co.kr 2026-11-26)",
+    "검색량: '간병인보험' 34,900회/월"
+   ],
+   "product": "chronic",
+   "product_name": "유병자 간편보험",
+   "event_id": "news-카카오페이손보-독감-보험금-평균-4-41초-만에-지급-자동",
+   "event_name": "독감",
+   "event_type": "긴급뉴스",
+   "event_state": "active",
+   "transition": null,
+   "title": "독감 유병자 간편보험 대비",
+   "description": "독감 소식이 이어질 때 입원비 보장(특약)을 유병자 간편보험으로 챙겨 두세요",
+   "content_subhead": "독감 대비 입원비 보장",
+   "purpose": "시즌 대응",
+   "reason": "독감(active) 시기의 유병자 간편보험 선제/대비 소구",
+   "data_used": [
+    "clips",
+    "volume"
+   ],
+   "valid_from": "2026-11-26",
+   "valid_to": "2026-12-26",
+   "avoid_phrases": [
+    "끔찍",
+    "참사",
+    "비극",
+    "당신도",
+    "큰일",
+    "불행",
+    "공포",
+    "눈앞의 위험",
+    "지금 안 하면",
+    "이 사고 보고도",
+    "더 늦기 전에 가입",
+    "안 하면 후회",
+    "지금 가입 안 하면",
+    "서둘러 가입",
+    "꼭 가입",
+    "즉시 가입",
+    "사고 전에 가입",
+    "피해 전에 가입",
+    "안 들면 손해",
+    "누구나 가입",
+    "무조건",
+    "반드시",
+    "전액",
+    "100%",
+    "완벽 보장",
+    "모두 보장",
+    "가입 보장",
+    "보험금 확정",
+    "보상 확정",
+    "보장 확정",
+    "즉시 보상",
+    "최대 보장",
+    "최저가",
+    "업계 최고",
+    "가장 저렴",
+    "제일 싸",
+    "필수 보험"
+   ],
+   "channels": [
+    "콘텐츠",
+    "블로그"
+   ],
+   "product_basis": "미확인",
+   "review_status": "심의 검토 전 · 운영 후보",
+   "confidence": 0.6
+  },
+  {
+   "fingerprint": "78fcd2e556202f8d",
+   "fact": [
+    "뉴스: '카카오페이손보, 독감 보험금 청구 간소화…AI가 심사부터 지급까지' (kpinews.kr 2026-11-26)",
+    "뉴스: '카카오페이손보, 독감 보험금 4.41초만에 지급 … '바로보상' 론칭' (efnews.co.kr 2026-11-26)",
+    "검색량: '간병인보험' 34,900회/월"
+   ],
+   "product": "chronic",
+   "product_name": "유병자 간편보험",
+   "event_id": "news-카카오페이손보-독감-보험금-청구-간소화-AI가-심사부터-지",
    "event_name": "독감",
    "event_type": "긴급뉴스",
    "event_state": "active",
@@ -2720,6 +3130,13 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "'장기보험' 키운 흥국화재…상품 차별화로 성장 기반 다진다",
+   "src": "ftoday.co.kr",
+   "date": "2026-11-26",
+   "url": "http://www.ftoday.co.kr/news/articleView.html?idxno=370648",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "용종부터 암 치료까지…푸본현대생명, '100세까지 암케어보험' 출시",
    "src": "newsis.com",
    "date": "2026-11-25",
@@ -2738,6 +3155,20 @@
    "src": "mydaily.co.kr",
    "date": "2026-11-24",
    "url": "https://n.news.naver.com/mnews/article/117/0004127635?sid=103",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[부천소식]부천소방서, '취약계층 주택화재 안심보험' 종료 홍보 등",
+   "src": "newsis.com",
+   "date": "2026-11-26",
+   "url": "https://n.news.naver.com/mnews/article/003/0014348019?sid=102",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "대한은퇴자협회, AI부정행위 식별 ‘시니어 전문 시험감독관’ 도입 제안",
+   "src": "seoul.co.kr",
+   "date": "2026-11-26",
+   "url": "https://n.news.naver.com/mnews/article/081/0003703555?sid=102",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
@@ -2930,6 +3361,69 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "고창군, 사상 첫 예산 1조원 시대 열었다",
+   "src": "sjbnews.com",
+   "date": "2026-11-26",
+   "url": "https://sjbnews.com/news/news.php?number=893695",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "성낙인 창녕군수, 지역경제·관광활성화 역점",
+   "src": "gndomin.com",
+   "date": "2026-11-26",
+   "url": "http://www.gndomin.com/news/articleView.html?idxno=498532",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "\"주식·채권 변동성 커질수록 年10% 수익 사모신용 부각\" [인터뷰]",
+   "src": "fnnews.com",
+   "date": "2026-11-26",
+   "url": "https://n.news.naver.com/mnews/article/014/0005610510?sid=101",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "포스코이앤씨 '더샵 일산센트로' 526가구 공급",
+   "src": "fnnews.com",
+   "date": "2026-11-26",
+   "url": "https://n.news.naver.com/mnews/article/014/0005610477?sid=101",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "성낙인 창녕군수 \"내년 8010억 투입, 창녕 새 미래 열 것\"",
+   "src": "newsfreezone.co.kr",
+   "date": "2026-11-26",
+   "url": "https://www.newsfreezone.co.kr/news/articleView.html?idxno=721596",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "창녕군, 민선 9기 첫 예산안 8,010억 원…미래 성장동력 확보에 방점",
+   "src": "g-enews.com",
+   "date": "2026-11-26",
+   "url": "https://www.g-enews.com/view.php?ud=202611261647471781104339cca1_1",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "고창군 사상 최초 살림 1조원 시대 연다",
+   "src": "jjn.co.kr",
+   "date": "2026-11-26",
+   "url": "http://www.jjn.co.kr/news/articleView.html?idxno=1058384",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "창녕군, 2027년 본예산 8,010억 원 편성···‘창창한 창녕, 행복한 군민’ 실현 시동",
+   "src": "enewstoday.co.kr",
+   "date": "2026-11-26",
+   "url": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2497649",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "‘더샵 일산센트로’ 27일 견본주택 개관",
+   "src": "sedaily.com",
+   "date": "2026-11-26",
+   "url": "https://n.news.naver.com/mnews/article/011/0004686519?sid=101",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "\"AI 진료ㆍ서면 초안 대신해도 최종 판단과 책임은 전문가 몫\"",
    "src": "newsmp.com",
    "date": "2026-11-26",
@@ -2948,6 +3442,13 @@
    "src": "dailymedi.com",
    "date": "2026-11-26",
    "url": "https://dailymedi.com/news/news_view.php?wr_id=942981",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "섬마을 건강 지키는 ‘바다 위 병원’…제도적 뒷받침은 ‘아직’",
+   "src": "kjdaily.com",
+   "date": "2026-11-26",
+   "url": "http://www.kjdaily.com/article.php?aid=1795690503693703002",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
@@ -3028,6 +3529,76 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "에이전트 주문 51% 차지한 메타 뮤즈, 아마존서 막힌 결제 풀리나…양사 협상 중",
+   "src": "wikitree.co.kr",
+   "date": "2026-11-26",
+   "url": "https://www.wikitree.co.kr/articles/1178153",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "타워 FY26 보고이익 5200만NZ달러…최종배당 주당 10센트",
+   "src": "vegannews.co.kr",
+   "date": "2026-11-26",
+   "url": "https://www.vegannews.co.kr/news/article.html?no=411797",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[11월26일 인사종합] 경찰청 외",
+   "src": "dt.co.kr",
+   "date": "2026-11-26",
+   "url": "https://n.news.naver.com/mnews/article/029/0003061456?sid=102",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[인사] 현대해상",
+   "src": "lcnews.co.kr",
+   "date": "2026-11-26",
+   "url": "https://www.lcnews.co.kr/news/articleView.html?idxno=212114",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "현대해상, 영업·보상·디지털 등 주요 사업 부문 인사 단행",
+   "src": "betanews.net",
+   "date": "2026-11-26",
+   "url": "https://www.betanews.net/article/view/beta202611260143",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[리포트]대리기사 매단 질주 살인...유족 배상은 '막막'",
+   "src": "tjmbc.co.kr",
+   "date": "2026-11-26",
+   "url": "https://tjmbc.co.kr/NewsArticle/875697",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[인사] 현대해상",
+   "src": "newsian.co.kr",
+   "date": "2026-11-26",
+   "url": "https://www.newsian.co.kr/news/articleView.html?idxno=102111",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[인사] 현대해상",
+   "src": "fins.co.kr",
+   "date": "2026-11-26",
+   "url": "http://www.fins.co.kr/news/articleView.html?idxno=110725",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "현대해상, 임원·부서장 인사 단행…부문장·본부장 등 13명 전보",
+   "src": "ttlnews.com",
+   "date": "2026-11-26",
+   "url": "http://www.ttlnews.com/news/articleView.html?idxno=3166823",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[인사] 현대해상",
+   "src": "moneystorm.kr",
+   "date": "2026-11-26",
+   "url": "https://www.moneystorm.kr/news/articleView.html?idxno=8902",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "“손바닥 결제부터 맞춤형 AI 에이전트까지”… 금융 신기술 집결한",
    "src": "dt.co.kr",
    "date": "2026-11-25",
@@ -3081,6 +3652,13 @@
    "src": "cnbizm.com",
    "date": "2026-11-26",
    "url": "https://www.cnbizm.com/news/articleView.html?idxno=322784",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "교통사고후 보험접수까지 했는데 뺑소니 인정, 왜?",
+   "src": "newsis.com",
+   "date": "2026-11-26",
+   "url": "https://n.news.naver.com/mnews/article/003/0014348017?sid=102",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
@@ -3186,6 +3764,76 @@
    "src": "fnnews.com",
    "date": "2026-11-26",
    "url": "https://n.news.naver.com/mnews/article/014/0005609955?sid=103",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "대한신경과학회 \"초고령사회 뇌 건강 지키려면 전문인력ㆍ수가 뒷받침 필수\"",
+   "src": "newsmp.com",
+   "date": "2026-11-26",
+   "url": "http://www.newsmp.com/news/articleView.html?idxno=259552",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "“스치기만 해도 아파, 걷지도 못했다” 44세 나르샤의 고백…여성도",
+   "src": "sedaily.com",
+   "date": "2026-11-26",
+   "url": "https://n.news.naver.com/mnews/article/011/0004686619?sid=103",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[병원계 소식] 11월 26일",
+   "src": "doctorstimes.com",
+   "date": "2026-11-26",
+   "url": "http://www.doctorstimes.com/news/articleView.html?idxno=241275",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[TN 현장] 청년 76.9% “이주민 혐오 여전”…외국 국적 청년은 교류 피하기도",
+   "src": "ntoday.co.kr",
+   "date": "2026-11-26",
+   "url": "https://www.ntoday.co.kr/news/articleView.html?idxno=131164",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "\"위고비·마운자로로 살 뺐는데 근육까지?\"…체중보다 중요한 것은",
+   "src": "mkhealth.co.kr",
+   "date": "2026-11-26",
+   "url": "https://www.mkhealth.co.kr/news/articleView.html?idxno=81074",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "대한신경과학회 \"초고령사회 필수의료 제도적 지원 필요\"",
+   "src": "safetimes.co.kr",
+   "date": "2026-11-26",
+   "url": "https://www.safetimes.co.kr/news/articleView.html?idxno=247965",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "﻿심평원, 수가 혁신 본격화…진료행위량 중심 탈피",
+   "src": "dailymedi.com",
+   "date": "2026-11-26",
+   "url": "https://dailymedi.com/news/news_view.php?wr_id=942985",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "성북구, 영구 불임 예상 ‘난자·정자 냉동’ 비용 지원",
+   "src": "siminilbo.co.kr",
+   "date": "2026-11-26",
+   "url": "https://www.siminilbo.co.kr/news/newsview.php?ncode=1160287773218107",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "알츠하이머는 검사비, 뇌졸중은 의사 부족⋯신경과학회 “초고령사회, 정책 개선 시급”",
+   "src": "kormedi.com",
+   "date": "2026-11-26",
+   "url": "https://n.news.naver.com/mnews/article/296/0000107853?sid=102",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "김미란 서울성모병원 교수, 국내 최초 산부인과 로봇수술 3000례 달성",
+   "src": "sentv.co.kr",
+   "date": "2026-11-26",
+   "url": "https://www.sentv.co.kr/article/view/sentv202611260192",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
@@ -3329,6 +3977,41 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "[보험 NOW] DB손보·카카오페이손보",
+   "src": "wikileaks-kr.org",
+   "date": "2026-11-26",
+   "url": "https://www.wikileaks-kr.org/news/articleView.html?idxno=195299",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "계열사 CEO 2연속 행장 발탁…하나금융 인선 향방은 [함영주號 하나금융 인사]",
+   "src": "fntimes.com",
+   "date": "2026-11-26",
+   "url": "https://www.fntimes.com/html/view.php?ud=2026112616380134031b5a221379_18",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[금융 이모저모] KB금융, AI·디지털 경쟁력 강화…제8회 KB테크포럼 개최",
+   "src": "goodkyung.com",
+   "date": "2026-11-26",
+   "url": "https://www.goodkyung.com/news/articleView.html?idxno=293911",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "경남도, 겨울철 도민 생명·재산 보호 총력…민생안정 종합대책 추진",
+   "src": "enewstoday.co.kr",
+   "date": "2026-11-26",
+   "url": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2497548",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[더밸류 브리핑] 오늘의 손해보험사 소식...DB손해보험·NH농협손해보험·카카오페이손해보험",
+   "src": "thevaluenews.co.kr",
+   "date": "2026-11-26",
+   "url": "http://www.thevaluenews.co.kr/news/view.php?idx=203679",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "[청소년뉴스] 서구청소년문화의집 시소센터, ‘북트래블러 2기’ 운영…청소년이 그림자 인형극 직접 제작 外",
    "src": "ibabynews.com",
    "date": "2026-11-25",
@@ -3413,6 +4096,69 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "DB손보, 국가품질혁신상 고객만족 부문 대통령표창 받아",
+   "src": "bizwnews.com",
+   "date": "2026-11-26",
+   "url": "http://www.bizwnews.com/news/articleView.html?idxno=153329",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[현장] 일하는 AI, 결정하는 인간…보험산업의 딜레마",
+   "src": "ntoday.co.kr",
+   "date": "2026-11-26",
+   "url": "https://www.ntoday.co.kr/news/articleView.html?idxno=131172",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "컨테이너 끌고 벌크선 밀고…호황 이끈다 [CEO 라운지]",
+   "src": "mk.co.kr",
+   "date": "2026-11-26",
+   "url": "https://n.news.naver.com/mnews/article/024/0000109915?sid=102",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[단독] \"실손보험료 더 냈다고?\"…사상 첫 3000억 환급 나오나",
+   "src": "hankyung.com",
+   "date": "2026-11-26",
+   "url": "https://n.news.naver.com/mnews/article/015/0005358820?sid=101",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "박남구 대전컨택센터협회장 \"AI와 사람이 융합된 산업생태계 만든다\"",
+   "src": "joongdo.co.kr",
+   "date": "2026-11-26",
+   "url": "https://www.joongdo.co.kr/web/view.php?key=20261126010009496",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[업앤다운]보험 주요 10종목 7곳 하락…인카금융서비스 3.10%↓",
+   "src": "nspna.com",
+   "date": "2026-11-26",
+   "url": "https://www.nspna.com/news/?mode=view&newsid=837973",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[금융新세계] \"판단 재료는 AI에게, 책임은 인간에게\"…AI 시대",
+   "src": "weekly.hankooki.com",
+   "date": "2026-11-26",
+   "url": "https://weekly.hankooki.com/news/articleView.html?idxno=7195957",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "DB손해보험, '보험금 처리부터 민원까지' AI 활용 확대",
+   "src": "sisacast.kr",
+   "date": "2026-11-26",
+   "url": "http://www.sisacast.kr/news/articleView.html?idxno=102432",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "보험료 할인해도…5세대 실손 전환 저조",
+   "src": "hankyung.com",
+   "date": "2026-11-26",
+   "url": "https://n.news.naver.com/mnews/article/015/0005358740?sid=101",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "[인사] 삼성화재",
    "src": "lcnews.co.kr",
    "date": "2026-11-26",
@@ -3483,6 +4229,69 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "1위 점프 '우리 달라졌나요' 호키·왕빈 44점 합작 삼성화재, 우리카드 꺾고 4연승",
+   "src": "mydaily.co.kr",
+   "date": "2026-11-26",
+   "url": "https://m.sports.naver.com/volleyball/article/117/0004128496",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[AI그래픽] 26일 KOVO 삼성화재-우리카드전, 삼성화재 블로킹 3개 우위",
+   "src": "newspim.com",
+   "date": "2026-11-26",
+   "url": "https://www.newspim.com/news/view/20261126001352",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "남자배구 삼성화재, 3년 18일 만에 V리그 선두",
+   "src": "ytn.co.kr",
+   "date": "2026-11-26",
+   "url": "https://m.sports.naver.com/volleyball/article/052/0002438675",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "1114일 만에 감격의 1위…3년 전 악몽 잊지 않았다, \"마지막까지\"",
+   "src": "sportschosun.com",
+   "date": "2026-11-26",
+   "url": "https://m.sports.naver.com/volleyball/article/076/0004470141",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "“이겨서 기쁘지만, 만족하면 안 돼” 3년 만에 선두 등극, 삼성화재는 더 큰 목표를 바라봤다 [MK현장]",
+   "src": "mk.co.kr",
+   "date": "2026-11-26",
+   "url": "https://m.sports.naver.com/volleyball/article/410/0001148483",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "남자배구 삼성화재, 1천114일 만에 순위표 맨 꼭대기로",
+   "src": "yna.co.kr",
+   "date": "2026-11-26",
+   "url": "https://m.sports.naver.com/volleyball/article/001/0016466703",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "4연승으로 ‘선두’ 등극, 삼성화재 토미 감독 “순위 크게 의미 두지 않아, 정상 향한 과정”[현장인터뷰]",
+   "src": "sportsseoul.com",
+   "date": "2026-11-26",
+   "url": "https://m.sports.naver.com/volleyball/article/468/0001283806",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "남자배구 삼성화재, 1천114일 만에 리그 1위 등극",
+   "src": "news.sbs.co.kr",
+   "date": "2026-11-26",
+   "url": "https://m.sports.naver.com/volleyball/article/055/0001406175",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "“원래 그 정도 실력 가진 선수” 손유민의 21득점 깜짝 활약, 박철우 감독은 놀라지 않았다 [현장인터뷰]",
+   "src": "mk.co.kr",
+   "date": "2026-11-26",
+   "url": "https://m.sports.naver.com/volleyball/article/410/0001148480",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "마라톤 도로 통제로 넘어진 70대…\"못 걷게 됐는데 보상 나 몰라라\"",
    "src": "yonhapnewstv.co.kr",
    "date": "2026-11-26",
@@ -3536,6 +4345,27 @@
    "src": "yna.co.kr",
    "date": "2026-11-26",
    "url": "https://m.sports.naver.com/general/article/001/0016464093",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "마라톤 통제에 발길 돌리다 '꽈당'…75세 노인, 인공관절 수술",
+   "src": "view.asiae.co.kr",
+   "date": "2026-11-26",
+   "url": "https://n.news.naver.com/mnews/article/277/0005848490?sid=102",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "마라톤 통행 제한에 발길 돌리다 중상…70대 피해 구제 논란",
+   "src": "jnilbo.com",
+   "date": "2026-11-26",
+   "url": "https://www.jnilbo.com/news/articleView.html?idxno=90000087066",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "마라톤에 막힌 횡단보도…발길 돌리다 넘어져 못 걷게 된 70대(종합2보)",
+   "src": "yna.co.kr",
+   "date": "2026-11-26",
+   "url": "https://n.news.naver.com/mnews/article/001/0016466442?sid=102",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
@@ -3665,6 +4495,34 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "KB금융, 계열사 AI 에이전트·개발 사례 공유…테크포럼 개최",
+   "src": "onews.tv",
+   "date": "2026-11-26",
+   "url": "https://www.onews.tv/news/articleView.html?idxno=292575",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "KB금융, '제8회 테크포럼' 개최…AI·디지털 기술 혁신 사례 공유",
+   "src": "apnews.kr",
+   "date": "2026-11-26",
+   "url": "https://www.apnews.kr/news/articleView.html?idxno=3053623",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "오늘의 경기(11월 27일)",
+   "src": "idaegu.co.kr",
+   "date": "2026-11-26",
+   "url": "https://www.idaegu.co.kr/news/articleView.html?idxno=566627",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "'셧아웃 패배→4연패' 그래도 이런 선수를 발견하다니…\"원래 기량 있는 선수\"",
+   "src": "sportschosun.com",
+   "date": "2026-11-26",
+   "url": "https://m.sports.naver.com/volleyball/article/076/0004470137",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "최경주재단 골프꿈나무 17기 선발전 개최… 심층 면접 거쳐 최종 선발",
    "src": "seoul.co.kr",
    "date": "2026-11-26",
@@ -3690,6 +4548,27 @@
    "src": "globalepic.co.kr",
    "date": "2026-11-26",
    "url": "https://www.globalepic.co.kr/view.php?ud=2026112609041159027cc35ccc5c_29",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[인사] 현대해상",
+   "src": "ulsanpress.net",
+   "date": "2026-11-26",
+   "url": "https://www.ulsanpress.net/news/articleView.html?idxno=587757",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[인사] 경찰청 외",
+   "src": "segye.com",
+   "date": "2026-11-26",
+   "url": "https://n.news.naver.com/mnews/article/022/0004178427?sid=102",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "“기량부터 인성까지 본다”… 최경주재단, 군산CC서 17기 골프꿈나무 선발전",
+   "src": "hankyung.com",
+   "date": "2026-11-26",
+   "url": "https://m.sports.naver.com/golf/article/015/0005358825",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
@@ -3777,6 +4656,69 @@
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   },
   {
+   "title": "자본시장 개혁 새판 짠다…메리츠 김용범 주도 민간위원회 출범",
+   "src": "hansbiz.co.kr",
+   "date": "2026-11-26",
+   "url": "http://www.hansbiz.co.kr/news/articleView.html?idxno=887848",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "민간 자본시장 개혁기구 출범 추진…위원장에 김용범",
+   "src": "newsian.co.kr",
+   "date": "2026-11-26",
+   "url": "https://www.newsian.co.kr/news/articleView.html?idxno=102113",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "금융위, 자본시장 개혁기구 추진…이억원 위원장·김용범 메리츠금융 부회장 면담",
+   "src": "weekly.hankooki.com",
+   "date": "2026-11-26",
+   "url": "https://weekly.hankooki.com/news/articleView.html?idxno=7195969",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "'자본시장 대전환 위원회' 출범 … 초대 위원장에 김용범 메리츠 부회장",
+   "src": "biz.newdaily.co.kr",
+   "date": "2026-11-26",
+   "url": "https://biz.newdaily.co.kr/site/data/html/2026/11/26/2026112650434.html",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "\"1주의 가치는 같다\"…김용범 메리츠 부회장, 자본시장 개혁 사령탑",
+   "src": "financialpost.co.kr",
+   "date": "2026-11-26",
+   "url": "https://www.financialpost.co.kr/news/articleView.html?idxno=303534",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "김종민 메리츠증권 대표, 불법사금융 예방 '사람 살리는 금융' 캠페인 동참",
+   "src": "bizwnews.com",
+   "date": "2026-11-26",
+   "url": "http://www.bizwnews.com/news/articleView.html?idxno=153297",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "‘李대통령 주문’ 자본시장 개혁기구 수장에 메리츠 김용범 부회장",
+   "src": "khan.co.kr",
+   "date": "2026-11-26",
+   "url": "https://n.news.naver.com/mnews/article/032/0003485360?sid=101",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "'자본시장 개혁기구' 출범…수장에 김용범 메리츠 부회장",
+   "src": "metroseoul.co.kr",
+   "date": "2026-11-26",
+   "url": "http://www.metroseoul.co.kr/article/20261126500615",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "김용범 메리츠 부회장 '자본시장개혁기구' 수장 맡아",
+   "src": "koreareport.co.kr",
+   "date": "2026-11-26",
+   "url": "https://www.koreareport.co.kr/news/articleView.html?idxno=55202",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
    "title": "KB금융, AI 에이전트로 금융 업무 혁신 가속…전 계열사 AI 기술·개발 노하우 공유",
    "src": "aitimes.kr",
    "date": "2026-11-26",
@@ -3809,6 +4751,27 @@
    "src": "view.asiae.co.kr",
    "date": "2026-11-26",
    "url": "https://n.news.naver.com/mnews/article/277/0005848205?sid=101",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "[AI상보] '호키·왕빈 쌍끌이' 삼성화재, 우리카드 원정서 3-0 완승...4연승 선두 질주",
+   "src": "newspim.com",
+   "date": "2026-11-26",
+   "url": "https://www.newspim.com/news/view/20261126001332",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "남자배구 삼성화재, 우리카드 3-0 완파하고 1114일 만에 선두",
+   "src": "newsis.com",
+   "date": "2026-11-26",
+   "url": "https://m.sports.naver.com/volleyball/article/003/0014348296",
+   "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
+  },
+  {
+   "title": "KB금융, '제8회 KB테크포럼' 개최…AI 기반 업무혁신 확산",
+   "src": "kfenews.co.kr",
+   "date": "2026-11-26",
+   "url": "https://www.kfenews.co.kr/news/articleView.html?idxno=668918",
    "reason": "상품·이벤트 매핑 불가 → 사람 분류 필요"
   }
  ]
